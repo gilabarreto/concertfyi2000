@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap');
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 21px;
+  margin-right: 21px;
+  align-items: center;
+  font-family: "Roboto Condensed", sans-serif;
+  color: white;
+  font-weight: 700;
+  padding: 17px;
+}
+
+.logo {
+  display: flex;
+  align-items: flex-end;
+  width: 157px;
+}
+
+.loginIcon {
+  display: flex;
+  height: 40px;
+  cursor: pointer;
+  filter: brightness(0) invert(1);
+}
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  z-index: 2;
+  box-shadow: 0px 1px 2px 2px white;
+  border: 1px;
+  border-radius: 10px;
+  padding: 20px 20px;
+  top: 72px;
+}
+
+.login {
+  justify-content: center;
+}
+
+.submit-button {
+  border-radius: 25px;
+  box-shadow: unset;
+  border-style: unset;
+  height: 30px;
+  width: 80px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background-color: #75ABBC;
+}
+
+.separator {
+  box-shadow: 0px 0px 0.5px 0.5px white;
+  border-color: white;
+  border-width: 0;
+}
+
+.toggle-register-login {
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: bold;
+  color: black
+}
+
+.social-media-icons {
+  display: flex;
+  right: 10px;
+  gap: 5px;
+}
+
+.nav-icons {
+  display: flex;
+  gap: 30px;
+}
+
+.input-container-login {
+  margin-bottom: 10px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.input-text-login {
+  border-radius: 25px;
+  height: 25px;
+  width: 125px;
+  padding-left: 10px;
+}
+
+.register-login-text {
+  color: black
+}
