@@ -1,4 +1,3 @@
-import logo from "../icons/logo-white-ish.png";
 import jwtdecode from "jwt-decode";
 import { useCallback, useState } from "react";
 import loginIcon from "../icons/login.png";
@@ -6,7 +5,6 @@ import { SocialIcon } from "react-social-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../api/api";
 import SearchBar from "./SearchBar";
-
 
 function Navbar(props) {
   const [dropdownLogin, setDropdownLogin] = useState(false);
@@ -83,33 +81,41 @@ function Navbar(props) {
   }, [navigate]);
 
   return (
-    <div>
-      <nav>
+    <div className="relative bg-white shadow">
+      <nav className="container mx-auto flex items-center justify-between px-6 py-4 font-sans">
         <div>
-          <Link to="/search">
+          <Link
+            to="/search"
+            className="flex items-center"
+            onClick={() => props.setValue("")}
+          >
             concertfyi
           </Link>
         </div>
-      <div>
-        <SearchBar
-          setSetlist={props.setSetlist}
-          setTicketmaster={props.setTicketmaster}
-          setLat={props.setLat}
-          setLong={props.setLong}
-          value={props.value}
-          setValue={props.setValue}
-        />
-      </div>
+        <div className="flex-1 mx-8">
+          <SearchBar
+            setSetlist={props.setSetlist}
+            setTicketmaster={props.setTicketmaster}
+            setLat={props.setLat}
+            setLong={props.setLong}
+            value={props.value}
+            setValue={props.setValue}
+          />
+        </div>
 
-        <div className="nav-icons">
-          <div className="social-media-icons">
-            <SocialIcon network="instagram" style={{ height: 35, width: 35 }} />
-            <SocialIcon network="twitter" style={{ height: 35, width: 35 }} />
-            <SocialIcon network="facebook" style={{ height: 35, width: 35 }} />
-          </div>
-          <img src={loginIcon} className="loginIcon" onClick={toggleLogin} alt="Login Icon" />
+        <div className="flex items-center gap-6">
+          <SocialIcon network="instagram" className="h-8 w-8" />
+          <SocialIcon network="twitter" className="h-8 w-8" />
+          <SocialIcon network="facebook" className="h-8 w-8" />
+
+          <img
+            src={loginIcon}
+            alt="Login"
+            onClick={toggleLogin}
+            className="h-10 w-10 cursor-pointer filter brightness-0 invert"
+          />
           {dropdownLogin && (
-            <div className="dropdown">
+            <div className="absolute right-6 top-16 z-20 w-64 bg-white rounded-lg shadow-lg p-5">
               {isUserLogged ? (
                 <>
                   <button
@@ -152,7 +158,9 @@ function Navbar(props) {
                             type="password"
                             placeholder="Password"
                             value={password}
-                            onChange={(event) => setPassword(event.target.value)}
+                            onChange={(event) =>
+                              setPassword(event.target.value)
+                            }
                           />
                         </div>
                         <div>
@@ -198,7 +206,9 @@ function Navbar(props) {
                             type="password"
                             placeholder="Password"
                             value={password}
-                            onChange={(event) => setPassword(event.target.value)}
+                            onChange={(event) =>
+                              setPassword(event.target.value)
+                            }
                           />
                         </div>
                         <div>
@@ -211,7 +221,9 @@ function Navbar(props) {
                   )}
                   {isRegistered === false && (
                     <>
-                      <span className="register-login-text">Not a member? </span>
+                      <span className="register-login-text">
+                        Not a member?{" "}
+                      </span>
                       <span
                         className="toggle-register-login"
                         onClick={() => {
@@ -225,7 +237,9 @@ function Navbar(props) {
                   )}
                   {isRegistered === true && (
                     <>
-                      <span className="register-login-text">Have an account? </span>
+                      <span className="register-login-text">
+                        Have an account?{" "}
+                      </span>
                       <span
                         className="toggle-register-login"
                         onClick={() => {
@@ -243,7 +257,7 @@ function Navbar(props) {
           )}
         </div>
       </nav>
-      <hr className="separator"></hr>
+      <hr className="border-t border-white opacity-50" />
     </div>
   );
 }

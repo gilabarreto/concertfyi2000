@@ -6,7 +6,12 @@ import { getTicketmasterSuggest, addFavourite } from "../api/api";
 
 export default function SearchPage(props) {
   const navigate = useNavigate();
-  const { setlist = [], ticketmaster = {}, favourites = [], setFavourites } = props;
+  const {
+    setlist = [],
+    ticketmaster = {},
+    favourites = [],
+    setFavourites,
+  } = props;
   const attractions = ticketmaster.attractions || [];
   const events = ticketmaster.events || [];
 
@@ -16,7 +21,8 @@ export default function SearchPage(props) {
 
       if (!artistImage.startsWith("http")) {
         const res = await getTicketmasterSuggest(artist);
-        imageToUse = res.data._embedded?.attractions?.[0]?.images?.[0]?.url || logo;
+        imageToUse =
+          res.data._embedded?.attractions?.[0]?.images?.[0]?.url || logo;
       }
 
       const response = await addFavourite(artistId, artist, imageToUse);
@@ -40,14 +46,22 @@ export default function SearchPage(props) {
   const nextConcertDate = (localDate) => {
     if (!localDate) return null;
     const date = new Date(localDate);
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const lastConcertDate = (eventDate) => {
     const [day, month, year] = eventDate.split("-");
     const date = new Date(`${year}-${month}-${day}`);
     if (date > new Date()) return null;
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
   };
 
   const noUpcomingConcert = setlist.filter((item) => {
@@ -66,12 +80,14 @@ export default function SearchPage(props) {
   if (!setlist.length || !ticketmaster) return null;
 
   return (
-    <div className="search-card-container">
+    <div className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {uniqueSetlist.slice(0, 3).map((setlistItem) => {
         const artistId = setlistItem.artist.mbid;
         const concertId = setlistItem.id;
         const artist = setlistItem.artist.name;
-        const ticketmasterMap = attractions.find((item) => item.name === artist);
+        const ticketmasterMap = attractions.find(
+          (item) => item.name === artist
+        );
 
         let spotify = null;
         let artistImage = logo;
@@ -87,27 +103,42 @@ export default function SearchPage(props) {
           .filter((item) =>
             item._embedded?.attractions?.some((a) => a.name === artist)
           )
-          .sort((a, b) => a.dates.start.localDate.localeCompare(b.dates.start.localDate));
+          .sort((a, b) =>
+            a.dates.start.localDate.localeCompare(b.dates.start.localDate)
+          );
 
         const localDate = artistEvents?.[0]?.dates?.start?.localDate || null;
 
         return (
-          <div key={artistId} className="search-page-card">
-            <div className="search-page-image-box">
-              <img
-                alt={artist}
-                src={artistImage}
-                className="search-page-image"
-                onClick={() => navigate(`/artists/${artistId}/concerts/${concertId}`)}
-              />
-            </div>
-            <div className="search-page-info-box" onClick={() => navigate(`/artists/${artistId}/concerts/${concertId}`)}>
-              <h1 className="search-artist">{artist}</h1>
-            </div>
+          <div
+            key={artistId}
+            className="bg-gray-800 bg-opacity-70 rounded-xl overflow-hidden shadow-lg flex flex-col items-center p-4"
+          >
+            <img
+              alt={artist}
+              src={artistImage}
+              className="w-full h-40 object-cover cursor-pointer"
+              onClick={() =>
+                navigate(`/artists/${artistId}/concerts/${concertId}`)
+              }
+            />
+
+            <h1
+              className="mt-2 text-xl text-white font-semibold cursor-pointer"
+              onClick={() =>
+                navigate(`/artists/${artistId}/concerts/${concertId}`)
+              }
+            >
+              {artist}
+            </h1>
             <FontAwesomeIcon
               icon="heart"
               size="2x"
-              className={`favourite-icon${favourites.find((item) => item.artistid === artistId) ? " active" : ""}`}
+              className={`favourite-icon${
+                favourites.find((item) => item.artistid === artistId)
+                  ? " active"
+                  : ""
+              }`}
               onClick={() => handleFavourite(artistId, artist, artistImage)}
             />
             <div className="search-page-box">
@@ -123,7 +154,12 @@ export default function SearchPage(props) {
                 <>
                   <span className="spotify-play-now">Play now</span>
                   <a href={spotify} target="_blank" rel="noopener noreferrer">
-                    <FontAwesomeIcon icon="fa-brands fa-spotify" color="LimeGreen" size="3x" className="spotify-true" />
+                    <FontAwesomeIcon
+                      icon="fa-brands fa-spotify"
+                      color="LimeGreen"
+                      size="3x"
+                      className="spotify-true"
+                    />
                   </a>
                 </>
               ) : (

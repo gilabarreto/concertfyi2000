@@ -1,60 +1,58 @@
-import React, { useEffect, useCallback } from "react"
-import useDebounce from "../hooks/useDebounce"
-import { useNavigate, useParams } from "react-router-dom"
-import { getSetlist, getTicketmaster } from "../api/api"
+import React, { useEffect, useCallback } from "react";
+import useDebounce from "../hooks/useDebounce";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSetlist, getTicketmaster } from "../api/api";
 
 export default function SearchBar(props) {
-  const { value, setValue, setSetlist, setTicketmaster } = props
-  const navigate = useNavigate()
-  const { artistId } = useParams()
+  const { value, setValue, setSetlist, setTicketmaster } = props;
+  const navigate = useNavigate();
+  const { artistId } = useParams();
 
   const handleChange = (event) => {
     if (artistId) {
-      navigate("/search")
+      navigate("/search");
     }
-    setValue(event.target.value)
-  }
+    setValue(event.target.value);
+  };
 
-  const term = useDebounce(value, 700)
+  const term = useDebounce(value, 700);
 
   const fetchData = useCallback(() => {
-    console.log("🔍 Buscando dados para:", value)
+    console.log("🔍 Buscando dados para:", value);
 
-    Promise.all([
-      getSetlist(value),
-      getTicketmaster(value)
-    ])
+    Promise.all([getSetlist(value), getTicketmaster(value)])
       .then(([setlistResponse, ticketmasterResponse]) => {
-        const setlists = setlistResponse.data.setlist || []
-        const ticketmasterData = ticketmasterResponse.data._embedded || {}
+        const setlists = setlistResponse.data.setlist || [];
+        const ticketmasterData = ticketmasterResponse.data._embedded || {};
 
-        console.log("🎵 Setlist API response:", setlists)
-        console.log("🎫 Ticketmaster API response:", ticketmasterData)
+        console.log("🎵 Setlist API response:", setlists);
+        console.log("🎫 Ticketmaster API response:", ticketmasterData);
 
-        setSetlist(setlists)
-        setTicketmaster(ticketmasterData)
+        setSetlist(setlists);
+        setTicketmaster(ticketmasterData);
       })
       .catch((err) => {
-        console.error("Erro ao buscar dados:", err)
-      })
-  }, [value, setSetlist, setTicketmaster])
+        console.error("Erro ao buscar dados:", err);
+      });
+  }, [value, setSetlist, setTicketmaster]);
 
   useEffect(() => {
-    if (!term || term.length === 0) return
-    fetchData()
-  }, [term, fetchData])
+    if (!term || term.length === 0) return;
+    fetchData();
+  }, [term, fetchData]);
 
   return (
-    <div className="search">
-      <form className="input-container" onSubmit={(event) => event.preventDefault()}>
-        <input
-          className="input-text-search"
-          type="search"
-          value={value}
-          placeholder="Search"
-          onChange={handleChange}
-        />
-      </form>
-    </div>
-  )
+    <form
+      onSubmit={(e) => e.preventDefault()}
+      className="flex w-full max-w-lg mx-auto"
+    >
+      <input
+        type="search"
+        value={value}
+        onChange={handleChange}
+        placeholder="Search your favorite artist"
+        className="flex-1 h-10 px-4 rounded-full bg-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      />
+    </form>
+  );
 }

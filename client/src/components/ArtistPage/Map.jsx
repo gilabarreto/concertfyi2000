@@ -1,33 +1,41 @@
-import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api"
+import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 
-export default function Map(props) {
-  // Get the coordinates from the concert object
-  const coordinates = props.concert.venue.city.coords;
+export default function Map({ concert }) {
+  // Safely grab coords or bail out
+  const coords = concert?.venue?.city?.coords;
+  if (!coords) return null;
 
-  // Load the Google Maps API using the useLoadScript hook
   const { isLoaded } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY
-  })
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY,
+  });
 
-  // If the Google Maps API is not loaded yet, display a loading message
-  if (!isLoaded) return <div>Loading...</div>
-
-  // Render the ArtistMap component with the coordinates as props
-  return <ArtistMap latitude={coordinates.lat} longitude={coordinates.long} />
-}
-
-// ArtistMap component that displays the GoogleMap with a marker at a specific location
-function ArtistMap(props) {
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center h-64 md:h-full">
+        Loading…
+      </div>
+    );
+  }
 
   return (
-    // Render the GoogleMap component with the latitude and longitude as center
+    <ArtistMap
+      latitude={coords.lat}
+      longitude={coords.long}
+    />
+  );
+}
+
+function ArtistMap({ latitude, longitude }) {
+  const lat = parseFloat(latitude);
+  const lng = parseFloat(longitude);
+
+  return (
     <GoogleMap
-      zoom={13}
-      center={{ lat: parseFloat(props.latitude), lng: parseFloat(props.longitude) }}
-      mapContainerClassName="map-container"
+      zoom={12}
+      center={{ lat, lng }}
+      mapContainerClassName="w-full h-64 md:h-full rounded-xl shadow"
     >
-      {/* Add a marker to the map at the latitude and longitude */}
-      <MarkerF position={{ lat: parseFloat(props.latitude), lng: parseFloat(props.longitude) }}></MarkerF>
+      <MarkerF position={{ lat, lng }} />
     </GoogleMap>
   );
 }
