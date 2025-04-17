@@ -2,7 +2,6 @@ import React, { useEffect, useCallback } from "react"
 import useDebounce from "../hooks/useDebounce"
 import { useNavigate, useParams } from "react-router-dom"
 import { getSetlist, getTicketmaster } from "../api/api"
-import "./SearchBar.css"
 
 export default function SearchBar(props) {
   const { value, setValue, setSetlist, setTicketmaster } = props
@@ -41,7 +40,7 @@ export default function SearchBar(props) {
   }, [value, setSetlist, setTicketmaster])
 
   useEffect(() => {
-    if (term.length === 0) return
+    if (!term || term.length === 0) return
     fetchData()
   }, [term, fetchData])
 
@@ -52,7 +51,7 @@ export default function SearchBar(props) {
           className="input-text-search"
           type="search"
           value={value}
-          placeholder="Search your favorite artist here and find your next adventure"
+          placeholder="Search"
           onChange={handleChange}
         />
       </form>

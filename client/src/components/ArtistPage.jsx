@@ -1,8 +1,5 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-
-import "./styles/styles.css";
-
 import ConcertInfo from "./ArtistPage/ConcertInfo";
 import Map from "./ArtistPage/Map";
 import Setlist from "./ArtistPage/Setlist";

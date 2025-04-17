@@ -1,11 +1,12 @@
 import logo from "../icons/logo-white-ish.png";
 import jwtdecode from "jwt-decode";
-import "./NavbarStyles.css";
 import { useCallback, useState } from "react";
 import loginIcon from "../icons/login.png";
 import { SocialIcon } from "react-social-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../api/api";
+import SearchBar from "./SearchBar";
+
 
 function Navbar(props) {
   const [dropdownLogin, setDropdownLogin] = useState(false);
@@ -86,10 +87,19 @@ function Navbar(props) {
       <nav>
         <div>
           <Link to="/search">
-            <img src={logo} className="logo" onClick={handleClick} alt="Logo" />
+            concertfyi
           </Link>
         </div>
-        <div>Home · About · Contact</div>
+      <div>
+        <SearchBar
+          setSetlist={props.setSetlist}
+          setTicketmaster={props.setTicketmaster}
+          setLat={props.setLat}
+          setLong={props.setLong}
+          value={props.value}
+          setValue={props.setValue}
+        />
+      </div>
 
         <div className="nav-icons">
           <div className="social-media-icons">

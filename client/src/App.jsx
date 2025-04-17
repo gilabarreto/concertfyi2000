@@ -1,12 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import "./App.css";
 import Navbar from "./components/Navbar";
 import ArtistPage from "./components/ArtistPage";
 import SearchPage from "./components/SearchPage";
 import Favourites from "./components/Favourites";
-import Main from "./components/Main";
-import BackgroundImage from "./components/BackgroundImage";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { faHeart, faMusic, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -27,16 +24,17 @@ function App() {
   const fetchDataByFavourite = useCallback((favourite) => {
     Promise.all([
       getSetlist(favourite.artistname),
-      getTicketmaster(favourite.artistname)
+      getTicketmaster(favourite.artistname),
     ])
       .then(([setlistResponse, ticketmasterResponse]) => {
-        const filteredSetlist = setlistResponse.data.setlist?.filter(item => {
-          const [day, month, year] = item.eventDate.split("-");
-          return new Date(`${year}-${month}-${day}`) < new Date();
-        }) || [];
+        const filteredSetlist =
+          setlistResponse.data.setlist?.filter((item) => {
+            const [day, month, year] = item.eventDate.split("-");
+            return new Date(`${year}-${month}-${day}`) < new Date();
+          }) || [];
 
         const uniqueArtists = [];
-        const uniqueSetlist = filteredSetlist.filter(item => {
+        const uniqueSetlist = filteredSetlist.filter((item) => {
           if (!uniqueArtists.includes(item.artist.mbid)) {
             uniqueArtists.push(item.artist.mbid);
             return true;
@@ -44,34 +42,36 @@ function App() {
           return false;
         });
 
-        setFavouritesConcerts(prev => ([
+        setFavouritesConcerts((prev) => [
           ...prev,
           {
             artistname: favourite.artistname,
             lastConcert: uniqueSetlist[0]?.eventDate || null,
-          }
-        ]));
+          },
+        ]);
 
         const events = ticketmasterResponse.data._embedded?.events || [];
-        const nextEvent = events.find(event =>
-          event._embedded?.attractions?.some(a => a.name === favourite.artistname)
+        const nextEvent = events.find((event) =>
+          event._embedded?.attractions?.some(
+            (a) => a.name === favourite.artistname
+          )
         );
 
-        setFavouritesTickets(prev => ([
+        setFavouritesTickets((prev) => [
           ...prev,
           {
             artistname: favourite.artistname,
             upcomingConcert: nextEvent?.dates?.start?.localDate || null,
-          }
-        ]));
+          },
+        ]);
       })
-      .catch(err => console.error("Erro ao buscar dados por favorito:", err));
+      .catch((err) => console.error("Erro ao buscar dados por favorito:", err));
   }, []);
 
   useEffect(() => {
     setLoadingfavourites(true);
     getFavourites()
-      .then(res => {
+      .then((res) => {
         setFavourites(res.data);
         setLoadingfavourites(false);
       })
@@ -88,16 +88,14 @@ function App() {
 
   return (
     <Router>
-      <BackgroundImage />
       <div className="App">
-        <Navbar setValue={setValue} />
-        <Main
+        <Navbar
+          setValue={setValue}
+          value={value}
           setSetlist={setSetlist}
           setTicketmaster={setTicketmaster}
           setLat={setLat}
           setLong={setLong}
-          value={value}
-          setValue={setValue}
         />
         <Routes>
           <Route
