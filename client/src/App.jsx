@@ -97,7 +97,7 @@ function App() {
         setLat={setLat}
         setLong={setLong}
       />
-      <div className="pt-16 pb-16">
+      <div className="pt-16 pb-24 mx-16">
         <Routes>
           <Route
             path="/favourite"

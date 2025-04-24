@@ -1,10 +1,10 @@
 import jwtdecode from "jwt-decode";
 import { useCallback, useState } from "react";
-import loginIcon from "../icons/login.png";
-import { SocialIcon } from "react-social-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../api/api";
 import SearchBar from "./SearchBar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function Navbar(props) {
   const [dropdownLogin, setDropdownLogin] = useState(false);
@@ -82,14 +82,14 @@ function Navbar(props) {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="container mx-auto flex items-center justify-between h-16 px-6 font-sans">
+      <nav className="container mx-auto px-16 flex items-center justify-between h-16 font-sans">
         <div>
           <Link
             to="/search"
             className="flex text-2xl items-center"
             onClick={() => props.setValue("")}
           >
-            concertfyi
+            © concertfyi
           </Link>
         </div>
         <div className="flex-1 mx-8">
@@ -102,20 +102,15 @@ function Navbar(props) {
             setValue={props.setValue}
           />
         </div>
-
-        <div className="flex items-center gap-6">
-          <SocialIcon network="instagram" className="h-8 w-8" />
-          <SocialIcon network="twitter" className="h-8 w-8" />
-          <SocialIcon network="facebook" className="h-8 w-8" />
-
-          <img
-            src={loginIcon}
-            alt="Login"
+        <div className="flex">
+          <FontAwesomeIcon
+            icon={faUser}
             onClick={toggleLogin}
-            className="h-10 w-10 cursor-pointer filter brightness-0 invert"
-          />
+            className="h-10 w-10 cursor-pointer filter brightness-0"
+          ></FontAwesomeIcon>
           {dropdownLogin && (
-            <div className="absolute right-6 top-16 z-20 w-64 bg-white rounded-lg shadow-lg p-5">
+            <div className="absolute right-16 top-16 z-20 w-64 bg-white rounded-lg shadow-lg p-5">
+              {" "}
               {isUserLogged ? (
                 <>
                   <button

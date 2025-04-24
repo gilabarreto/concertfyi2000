@@ -1,4 +1,3 @@
-// ✅ SearchPage.js atualizado com chamadas centralizadas
 import logo from "../icons/logo-small.png";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
