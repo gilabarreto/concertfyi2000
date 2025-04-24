@@ -118,14 +118,18 @@ export default function SearchPage(props) {
               src={artistImage}
               className="w-full h-40 object-cover cursor-pointer"
               onClick={() =>
-                navigate(`/artists/${artistId}/concerts/${concertId}`)
+                navigate(`/artists/${artistId}/concerts/${concertId}`, {
+                  state: { artistImage },
+                })
               }
             />
 
             <h1
               className="mt-2 text-xl text-white font-semibold cursor-pointer"
               onClick={() =>
-                navigate(`/artists/${artistId}/concerts/${concertId}`)
+                navigate(`/artists/${artistId}/concerts/${concertId}`, {
+                  state: { artistImage },
+                })
               }
             >
               {artist}

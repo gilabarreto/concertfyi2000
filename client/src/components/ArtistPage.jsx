@@ -4,7 +4,7 @@ import ConcertInfo from "./ArtistPage/ConcertInfo";
 import Map from "./ArtistPage/Map";
 import Setlist from "./ArtistPage/Setlist";
 import Player from "./ArtistPage/Player";
-import UpcomingConcertList from "./ArtistPage/UpcomingConcertList";
+import UpcomingConcertList from "./ArtistPage/UpcomingConcerts";
 import PreviousConcerts from "./ArtistPage/PreviousConcerts";
 
 export default function ArtistPage(props) {
@@ -22,21 +22,11 @@ export default function ArtistPage(props) {
   // Get the concert data that matches the concertId
   const concert = props.setlist.find((result) => result.id === concertId);
 
-  // let artistImage = logo;
-  // if (ticketmasterMap?.images) {
-  //   artistImage = ticketmasterMap.images[0].url;
-  // }
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
       {/* Concert info section */}
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
-          {/* <img
-            alt="Artist"
-            src={artistImage}
-            className="w-full h-40 object-cover cursor-pointer"
-            }
-          /> */}
           <ConcertInfo
             concert={concert}
             setlist={props.setlist}
