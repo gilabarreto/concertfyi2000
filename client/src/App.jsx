@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import ArtistPage from "./components/ArtistPage";
 import SearchPage from "./components/SearchPage";
 import Favourites from "./components/Favourites";
+import Footer from "./components/Footer";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { faHeart, faMusic, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -88,15 +89,15 @@ function App() {
 
   return (
     <Router>
-      <div className="App">
-        <Navbar
-          setValue={setValue}
-          value={value}
-          setSetlist={setSetlist}
-          setTicketmaster={setTicketmaster}
-          setLat={setLat}
-          setLong={setLong}
-        />
+      <Navbar
+        setValue={setValue}
+        value={value}
+        setSetlist={setSetlist}
+        setTicketmaster={setTicketmaster}
+        setLat={setLat}
+        setLong={setLong}
+      />
+      <div className="pt-16 pb-16">
         <Routes>
           <Route
             path="/favourite"
@@ -151,6 +152,7 @@ function App() {
             }
           />
         </Routes>
+        <Footer />
       </div>
     </Router>
   );

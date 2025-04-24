@@ -53,12 +53,10 @@ export default function UpcomingConcertList(props) {
 
   return (
     <>
-      {upcomingConcerts.length === 0 ? (
-        "There are no upcoming concerts.\n Please come back later"
-      ) : (
-        // Renders the upcoming concert items
-        mapConcerts
-      )}
+      {upcomingConcerts.length === 0
+        ? "There are no upcoming concerts.\n Please come back later"
+        : // Renders the upcoming concert items
+          mapConcerts}
     </>
   );
 }
@@ -66,7 +64,7 @@ export default function UpcomingConcertList(props) {
 function UpcomingConcertListItem(props) {
   // Renders an upcoming concert item with a clickable link to buy tickets
   return (
-    <div className="upcoming-concerts-container">
+    <div>
       {props.upcomingConcert.split("-").reverse().join("-")}&ensp;
       <span
         className="get-tickets"
@@ -74,6 +72,7 @@ function UpcomingConcertListItem(props) {
       >
         Get Tickets!
       </span>
+      <hr class="border-t border-gray-300 opacity-50"></hr>
     </div>
   );
 }

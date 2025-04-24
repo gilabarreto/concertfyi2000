@@ -81,12 +81,12 @@ function Navbar(props) {
   }, [navigate]);
 
   return (
-    <div className="relative bg-white shadow">
-      <nav className="container mx-auto flex items-center justify-between px-6 py-4 font-sans">
+    <div className="fixed top-0 left-0 w-full bg-white shadow z-20">
+      <nav className="container mx-auto flex items-center justify-between h-16 px-6 font-sans">
         <div>
           <Link
             to="/search"
-            className="flex items-center"
+            className="flex text-2xl items-center"
             onClick={() => props.setValue("")}
           >
             concertfyi
@@ -257,7 +257,7 @@ function Navbar(props) {
           )}
         </div>
       </nav>
-      <hr className="border-t border-white opacity-50" />
+      <hr className="border-t border-gray-200" />
     </div>
   );
 }

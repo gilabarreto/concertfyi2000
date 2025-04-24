@@ -16,19 +16,19 @@ export default function Setlist(props) {
       <span className="setlist-title">Setlist</span>
       {/* A unordered list to display the songs */}
       <ul className="setlist-songs-ul">
-          {/* Displaying a message if there are no songs in the setlist, otherwise displaying the list of songs */}
-          {songsList.length === 0
-            ? "There are no songs in this setlist.\n Please come back later"
-            : songsList.map((song, songIndex) => (
-                <div className="setlist-songs" key={songIndex}>
-                  {/* Displaying a FontAwesomeIcon before each song */}
-                  <FontAwesomeIcon icon="fa-solid fa-music" />
-                  {/* Displaying the name of the song */}
-                  &ensp;{song}
-                </div>
-              ))}
+        {/* Displaying a message if there are no songs in the setlist, otherwise displaying the list of songs */}
+        {songsList.length === 0
+          ? "There are no songs in this setlist.\n Please come back later"
+          : songsList.map((song, songIndex) => (
+              <div className="setlist-songs" key={songIndex}>
+                {/* Displaying a FontAwesomeIcon before each song */}
+                <FontAwesomeIcon icon="fa-solid fa-music" />
+                {/* Displaying the name of the song */}
+                &ensp;{song}
+                <hr class="border-t border-gray-300 opacity-50"></hr>
+              </div>
+            ))}
       </ul>
     </>
   );
 }
-

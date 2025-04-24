@@ -51,7 +51,14 @@ export default function SearchBar(props) {
         value={value}
         onChange={handleChange}
         placeholder="Search your favorite artist"
-        className="flex-1 h-10 px-4 rounded-full bg-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="
+        flex-1 h-10 px-4 rounded-full
+        bg-red-600 placeholder-white text-white
+        ring-0
+        focus:outline-none
+        focus:ring-2
+        focus:ring-black
+      "
       />
     </form>
   );
