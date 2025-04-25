@@ -12,7 +12,7 @@ export default function PreviousConcerts(props) {
       const date = new Date(year, month - 1, day);
       return date < new Date(); // only past shows
     })
-    .slice(0, 10); // limit to 10 most recent
+    .slice(0, 5); // limit to 10 most recent
 
   return (
     <>
