@@ -1,4 +1,6 @@
 import { ticketFinder } from "../../helpers/selectors";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 
 export default function UpcomingConcertList(props) {
   // Extracts the relevant events from the Ticketmaster API data based on the artist's name
@@ -70,7 +72,7 @@ function UpcomingConcertListItem(props) {
         className="get-tickets"
         onClick={() => window.open(props.ticketsUrl, "_blank")}
       >
-        Get Tickets!
+        <FontAwesomeIcon icon={faCartShopping} />
       </span>
       <hr class="border-t border-gray-300 opacity-50"></hr>
     </div>

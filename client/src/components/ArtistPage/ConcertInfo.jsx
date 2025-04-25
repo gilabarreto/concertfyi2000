@@ -76,7 +76,7 @@ export default function ConcertInfo(props) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <FontAwesomeIcon icon="fa-brands fa-youtube" size="2x" />
+                  <FontAwesomeIcon icon="fa-brands fa-youtube" className="text-gray-500" size="2x" />
                 </a>
               ) : null}
               {ticketmaster.attractions ? (
@@ -88,7 +88,7 @@ export default function ConcertInfo(props) {
                   rel="noreferrer"
                 >
                   &ensp;
-                  <FontAwesomeIcon icon="fa-brands fa-instagram" size="2x" />
+                  <FontAwesomeIcon icon="fa-brands fa-instagram" className="text-gray-500" size="2x" />
                 </a>
               ) : null}
               {ticketmaster.attractions ? (
@@ -100,7 +100,7 @@ export default function ConcertInfo(props) {
                   rel="noreferrer"
                 >
                   &ensp;
-                  <FontAwesomeIcon icon="fa-brands fa-twitter" size="2x" />
+                  <FontAwesomeIcon icon="fa-brands fa-twitter" className="text-gray-500" size="2x" />
                 </a>
               ) : null}
             </span>
