@@ -60,3 +60,79 @@ export function longitudeFinder(ticketmasterData) {
 
   return result; // Return the longitude
 }
+
+
+// /**
+//  * Ordena um array de eventos Ticketmaster pela data de início.
+//  * @param {Array} events 
+//  * @returns {Array} novos objetos { originalEvent, date, url, venues }
+//  */
+// function sortEventsByDate(events = []) {
+//   return [...events]
+//     .map(event => ({
+//       originalEvent: event,
+//       date: new Date(event.dates.start.localDate),
+//       url: event.url,
+//       venues: event._embedded?.venues || []
+//     }))
+//     .sort((a, b) => a.date - b.date);
+// }
+
+// /**
+//  * Filtra apenas os eventos cujo artista aparece na lista de atrações,
+//  * e já os ordena.
+//  * @param {Object} ticketmasterData 
+//  * @param {string} artistName 
+//  * @returns {Array}
+//  */
+// export function getArtistEvents(ticketmasterData = {}, artistName) {
+//   const all = ticketmasterData.events || [];
+//   const filtered = all.filter(event =>
+//     event._embedded?.attractions?.some(a => a.name === artistName)
+//   );
+//   return sortEventsByDate(filtered);
+// }
+
+// /**
+//  * Retorna os próximos eventos (datas > hoje).
+//  */
+// export function getUpcomingEvents(ticketmasterData, artistName) {
+//   const now = Date.now();
+//   return getArtistEvents(ticketmasterData, artistName)
+//     .filter(item => item.date.getTime() > now);
+// }
+
+// /**
+//  * Retorna os shows já passados (datas < hoje), mais recentes primeiro.
+//  */
+// export function getPreviousEvents(ticketmasterData, artistName) {
+//   const now = Date.now();
+//   return getArtistEvents(ticketmasterData, artistName)
+//     .filter(item => item.date.getTime() < now)
+//     .sort((a, b) => b.date - a.date);
+// }
+
+// /**
+//  * Retorna o array de URLs de ingressos dos próximos shows.
+//  */
+// export function ticketFinder(ticketmasterData, artistName) {
+//   return getUpcomingEvents(ticketmasterData, artistName)
+//     .map(item => item.url);
+// }
+
+// /**
+//  * Retorna latitude do primeiro próximo show.
+//  */
+// export function latitudeFinder(ticketmasterData, artistName) {
+//   const next = getUpcomingEvents(ticketmasterData, artistName)[0];
+//   return next?.venues[0]?.location?.latitude ?? null;
+// }
+
+// /**
+//  * Retorna longitude do primeiro próximo show.
+//  */
+// export function longitudeFinder(ticketmasterData, artistName) {
+//   const next = getUpcomingEvents(ticketmasterData, artistName)[0];
+//   return next?.venues[0]?.location?.longitude ?? null;
+// }
+

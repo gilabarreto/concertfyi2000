@@ -3,11 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
 
 export default function ConcertInfo(props) {
-  const { setlist, concert, ticketmaster } = props;
+  const { concert, setlist, ticketmaster, artistImage } = props;
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
-  const { state } = useLocation();
-  const artistImage = state?.artistImage;
 
   //Filter setlsit by artist id
   let previousConcertId;
@@ -76,7 +74,11 @@ export default function ConcertInfo(props) {
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <FontAwesomeIcon icon="fa-brands fa-youtube" className="text-gray-500" size="2x" />
+                  <FontAwesomeIcon
+                    icon="fa-brands fa-youtube"
+                    className="text-gray-500"
+                    size="2x"
+                  />
                 </a>
               ) : null}
               {ticketmaster.attractions ? (
@@ -88,7 +90,11 @@ export default function ConcertInfo(props) {
                   rel="noreferrer"
                 >
                   &ensp;
-                  <FontAwesomeIcon icon="fa-brands fa-instagram" className="text-gray-500" size="2x" />
+                  <FontAwesomeIcon
+                    icon="fa-brands fa-instagram"
+                    className="text-gray-500"
+                    size="2x"
+                  />
                 </a>
               ) : null}
               {ticketmaster.attractions ? (
@@ -100,7 +106,11 @@ export default function ConcertInfo(props) {
                   rel="noreferrer"
                 >
                   &ensp;
-                  <FontAwesomeIcon icon="fa-brands fa-twitter" className="text-gray-500" size="2x" />
+                  <FontAwesomeIcon
+                    icon="fa-brands fa-twitter"
+                    className="text-gray-500"
+                    size="2x"
+                  />
                 </a>
               ) : null}
             </span>

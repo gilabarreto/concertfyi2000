@@ -22,6 +22,11 @@ export default function ArtistPage(props) {
   // Get the concert data that matches the concertId
   const concert = props.setlist.find((result) => result.id === concertId);
 
+  const attraction = props.ticketmaster.attractions?.find(
+        (a) => a.name === concert.artist.name
+      );
+      const artistImage = attraction?.images?.[0]?.url || "";
+
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
       {/* Concert info section */}
@@ -31,6 +36,7 @@ export default function ArtistPage(props) {
             concert={concert}
             setlist={props.setlist}
             ticketmaster={props.ticketmaster}
+            artistImage={artistImage}
           />
         </div>
 
@@ -69,7 +75,6 @@ export default function ArtistPage(props) {
 
           {/* Previous concerts section */}
           <div className="bg-white rounded-xl p-6 shadow">
-            <span className="text-lg font-semibold">Previous Concerts</span>
             <PreviousConcerts
               concert={concert}
               setlist={props.setlist}
