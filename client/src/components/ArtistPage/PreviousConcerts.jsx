@@ -33,30 +33,28 @@ export default function PreviousConcerts(props) {
             const state = concert.venue.city?.state || "";
             const country = concert.venue.city?.country.code || "";
 
-            const concertLabel = `${date.toLocaleDateString(
-              "en-US",
-              options
-            )} - ${city}, ${state}, ${country}`;
-
             return (
               <li
                 key={concert.id}
                 className="flex items-center justify-between border-b border-gray-300/50 py-1"
               >
                 <span
-                  className="cursor-pointer"
+                  className="cursor-pointer flex items-center space-x-2"
                   onClick={() =>
                     navigate(
                       `/artists/${props.artistId}/concerts/${concert.id}`
                     )
                   }
                 >
-                  {concertLabel}
+                  <span>{date.toLocaleDateString("en-US", options)}</span>
+                  <span className="text-gray-500">
+                    ({city}, {state}, {country})
+                  </span>
                 </span>
                 <span>
                   <FontAwesomeIcon
                     icon={faRotateLeft}
-                    className="text-red-600 hover:text-red-800"
+                    className="cursor-pointer text-red-600 hover:text-red-800"
                     onClick={() =>
                       navigate(
                         `/artists/${props.artistId}/concerts/${concert.id}`

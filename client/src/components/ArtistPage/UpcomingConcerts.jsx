@@ -1,95 +1,112 @@
+import { useState } from "react";
 import { ticketFinder } from "../../helpers/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
 
 export default function UpcomingConcertList(props) {
-  // Extracts the relevant events from the Ticketmaster API data based on the artist's name
+  const [page, setPage] = useState(0);
+  const pageSize = 5;
+
   const ticketmasterEvents = props.ticketmaster.events
     ? props.ticketmaster.events
-        .filter((item) => {
-          // Filters out events that do not have any attractions or the artist's name does not match
-          if (item._embedded.attractions !== undefined) {
-            for (const attraction of item._embedded.attractions) {
-              if (attraction.name === props.concert.artist.name) {
-                return item;
-              }
-            }
-          }
-          return item;
-        })
-        // Sorts the events by start date
-        .sort((a, b) => a.dates.start.localDate - b.dates.start.localDate)
+        .filter((item) =>
+          item._embedded.attractions?.some(
+            (a) => a.name === props.concert.artist.name
+          )
+        )
+        .sort(
+          (a, b) =>
+            new Date(a.dates.start.localDate) -
+            new Date(b.dates.start.localDate)
+        )
     : [];
 
-  // Converts the dates of the upcoming concerts to a readable format
-  const upcomingConcerts = ticketmasterEvents.map((upcomingConcert) => {
-    const str = upcomingConcert.dates.start.localDate;
-    const [year, month, day] = str.split("-");
-    const date = new Date(year, month - 1, day);
-    const options = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    return date.toLocaleDateString("en-US", options);
-  });
+  const totalShows = ticketmasterEvents.length;
+  const pageCount = Math.ceil(totalShows / pageSize);
 
-  // Creates an array of upcoming concert items to render
-  const mapConcerts =
-    upcomingConcerts.length > 0
-      ? upcomingConcerts
-          .slice(0, 10) // Limits the number of items to 10
-          .map((upcomingConcert, upcomingConcertIndex) => {
-            const ticketArr = ticketFinder(props.ticketmaster);
-            const ticketsUrl = ticketArr[upcomingConcertIndex];
-            const ticketmasterEvent = ticketmasterEvents[upcomingConcertIndex];
-
-            return (
-              <UpcomingConcertListItem
-                key={upcomingConcertIndex}
-                ticketsUrl={ticketsUrl}
-                upcomingConcert={upcomingConcert}
-                ticketmasterEvent={ticketmasterEvent}
-              />
-            );
-          })
-      : [];
+  const sliceStart = page * pageSize;
+  const sliceEnd = sliceStart + pageSize;
+  const currentPage = ticketmasterEvents.slice(sliceStart, sliceEnd);
 
   return (
     <>
       <h2 className="text-4xl font-bold mb-4">Upcoming Concerts</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
-      {upcomingConcerts.length === 0 ? (
-        <p className="py-2">
-          There are no upcoming concerts. Please come back later.
+
+      {totalShows === 0 ? (
+        <p className="py-2 ml-6">
+          There are no upcoming concerts. Please check back later.
         </p>
       ) : (
-        <ol className="pl-6">{mapConcerts}</ol>
+        <>
+          <ol className="pl-6">
+            {currentPage.map((event, eventIndex) => {
+              const dateString = event.dates.start.localDate;
+              const [year, month, day] = dateString.split("-");
+              const date = new Date(year, month - 1, day);
+              const dateLabel = date.toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              });
+              const ticketsUrl = ticketFinder(props.ticketmaster)[
+                sliceStart + eventIndex
+              ];
+              const venue = event._embedded.venues?.[0];
+              const eventLocation = venue
+                ? `${venue.city.name}, ${venue.country.countryCode}`
+                : "";
+
+              return (
+                <li
+                  key={event.id}
+                  className="flex items-center justify-between border-b border-gray-300/50 py-1"
+                >
+                  <span className="flex-1 cursor-pointer">
+                    {dateLabel}{" "}
+                    <span className="text-gray-500 ml-2">({eventLocation})</span>
+                  </span>
+                  <FontAwesomeIcon
+                    icon={faTicketSimple}
+                    className="text-red-600 hover:text-red-800 cursor-pointer"
+                    onClick={() => window.open(ticketsUrl, "_blank")}
+                  />
+                </li>
+              );
+            })}
+          </ol>
+
+          <div className="flex items-center justify-center space-x-2 mt-4">
+            <button
+              className="px-2 py-1 rounded disabled:opacity-50"
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 0}
+            >
+              &lt; Prev
+            </button>
+            {Array.from({ length: pageCount }).map((_, i) => (
+              <button
+                key={i}
+                className={`px-2 py-1 rounded ${
+                  i === page
+                    ? "bg-red-600 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+                onClick={() => setPage(i)}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              className="px-2 py-1 rounded disabled:opacity-50"
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === pageCount - 1}
+            >
+              Next &gt;
+            </button>
+          </div>
+        </>
       )}
     </>
-  );
-}
-
-function UpcomingConcertListItem(props) {
-  const { upcomingConcert, ticketsUrl, ticketmasterEvent } = props;
-  // Renders an upcoming concert item with a clickable link to buy tickets
-  return (
-    <li
-      className="flex items-center justify-between border-b border-gray-300/50 py-1"
-      onClick={() => window.open(ticketsUrl, "_blank")}
-    >
-      <span className="flex">
-        {upcomingConcert.split("-").reverse().join("-")}
-        <span className="text-gray-500 ml-2">
-          ({ticketmasterEvent._embedded.venues[0].city.name},{" "}
-          {ticketmasterEvent._embedded.venues[0].country.name},{" "}
-          {ticketmasterEvent._embedded.venues[0].country.countryCode})
-        </span>
-      </span>
-      <FontAwesomeIcon
-        icon={faTicketSimple}
-        className="text-red-600 hover:text-red-800"
-      />
-    </li>
   );
 }

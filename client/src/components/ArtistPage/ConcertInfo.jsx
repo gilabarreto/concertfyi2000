@@ -63,59 +63,16 @@ export default function ConcertInfo(props) {
           )}
         </div>
         <div className="flex-1">
-          <div className="flex flex-1 justify-around">
+          <div className="flex flex-1 justify-around mb-4">
             <h2 className="flex-1 text-4xl font-bold">{artist}</h2>
             <span className="flex items-end">
-              {ticketmaster.attractions ? (
-                <a
-                  href={
-                    ticketmaster.attractions[0].externalLinks.youtube[0].url
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <FontAwesomeIcon
-                    icon="fa-brands fa-youtube"
-                    className="text-gray-500"
-                    size="2x"
-                  />
-                </a>
-              ) : null}
-              {ticketmaster.attractions ? (
-                <a
-                  href={
-                    ticketmaster.attractions[0].externalLinks.instagram[0].url
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  &ensp;
-                  <FontAwesomeIcon
-                    icon="fa-brands fa-instagram"
-                    className="text-gray-500"
-                    size="2x"
-                  />
-                </a>
-              ) : null}
-              {ticketmaster.attractions ? (
-                <a
-                  href={
-                    ticketmaster.attractions[0].externalLinks.twitter[0].url
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  &ensp;
-                  <FontAwesomeIcon
-                    icon="fa-brands fa-twitter"
-                    className="text-gray-500"
-                    size="2x"
-                  />
-                </a>
-              ) : null}
+              <FontAwesomeIcon
+                icon="fa-solid fa-heart"
+                className="text-gray-500"
+                size="2x"
+              />
             </span>
           </div>
-          <br></br>
 
           <ol className="pl-6">
             <hr className="border-t border-gray-300 opacity-50"></hr>
@@ -156,6 +113,51 @@ export default function ConcertInfo(props) {
             </h2>
             <hr className="border-t border-gray-300 opacity-50"></hr>
           </ol>
+          <span className="flex justify-center mt-4">
+            {ticketmaster.attractions ? (
+              <a
+                href={ticketmaster.attractions[0].externalLinks.youtube[0].url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FontAwesomeIcon
+                  icon="fa-brands fa-youtube"
+                  className="text-gray-500"
+                  size="2x"
+                />
+              </a>
+            ) : null}
+            {ticketmaster.attractions ? (
+              <a
+                href={
+                  ticketmaster.attractions[0].externalLinks.instagram[0].url
+                }
+                target="_blank"
+                rel="noreferrer"
+              >
+                &ensp;
+                <FontAwesomeIcon
+                  icon="fa-brands fa-instagram"
+                  className="text-gray-500"
+                  size="2x"
+                />
+              </a>
+            ) : null}
+            {ticketmaster.attractions ? (
+              <a
+                href={ticketmaster.attractions[0].externalLinks.twitter[0].url}
+                target="_blank"
+                rel="noreferrer"
+              >
+                &ensp;
+                <FontAwesomeIcon
+                  icon="fa-brands fa-twitter"
+                  className="text-gray-500"
+                  size="2x"
+                />
+              </a>
+            ) : null}
+          </span>
         </div>
       </div>
     </>
