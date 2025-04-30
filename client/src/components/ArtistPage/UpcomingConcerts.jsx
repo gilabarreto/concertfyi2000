@@ -21,8 +21,8 @@ export default function UpcomingConcertList(props) {
         )
     : [];
 
-  const totalShows = ticketmasterEvents.length;
-  const pageCount = Math.ceil(totalShows / pageSize);
+  const totalConcerts = ticketmasterEvents.length;
+  const pageCount = Math.ceil(totalConcerts / pageSize);
 
   const sliceStart = page * pageSize;
   const sliceEnd = sliceStart + pageSize;
@@ -33,15 +33,15 @@ export default function UpcomingConcertList(props) {
       <h2 className="text-4xl font-bold mb-4">Upcoming Concerts</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
-      {totalShows === 0 ? (
+      {totalConcerts === 0 ? (
         <p className="py-2 ml-6">
           There are no upcoming concerts. Please check back later.
         </p>
       ) : (
         <>
           <ol className="pl-6">
-            {currentPage.map((event, eventIndex) => {
-              const dateString = event.dates.start.localDate;
+            {currentPage.map((concert, concertIndex) => {
+              const dateString = concert.dates.start.localDate;
               const [year, month, day] = dateString.split("-");
               const date = new Date(year, month - 1, day);
               const dateLabel = date.toLocaleDateString("en-US", {
@@ -50,21 +50,26 @@ export default function UpcomingConcertList(props) {
                 day: "numeric",
               });
               const ticketsUrl = ticketFinder(props.ticketmaster)[
-                sliceStart + eventIndex
+                sliceStart + concertIndex
               ];
-              const venue = event._embedded.venues?.[0];
-              const eventLocation = venue
+              const venue = concert._embedded.venues?.[0];
+              const concertLocation = venue
                 ? `${venue.city.name}, ${venue.country.countryCode}`
                 : "";
 
               return (
                 <li
-                  key={event.id}
+                  key={concert.id}
                   className="flex items-center justify-between border-b border-gray-300/50 py-1"
                 >
-                  <span className="flex-1 cursor-pointer">
-                    {dateLabel}{" "}
-                    <span className="text-gray-500 ml-2">({eventLocation})</span>
+                  <span
+                    className="cursor-pointer flex items-center space-x-2"
+                    onClick={() => window.open(ticketsUrl, "_blank")}
+                  >
+                    <span>{dateLabel}</span>
+                    <span className="text-gray-500 ml-2">
+                      ({concertLocation})
+                    </span>
                   </span>
                   <FontAwesomeIcon
                     icon={faTicketSimple}

@@ -1,4 +1,4 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
 
@@ -46,7 +46,6 @@ export default function ConcertInfo(props) {
   const tour = concert.tour?.name || "No tour name";
   const venue = concert.venue?.name;
   const city = concert.venue.city?.name;
-  const stateCode = concert.venue.city?.state;
   const country = concert.venue.city?.country.code;
 
   return (
@@ -109,7 +108,7 @@ export default function ConcertInfo(props) {
             <h2>Venue:&ensp;{venue}</h2>
             <hr className="border-t border-gray-300 opacity-50"></hr>
             <h2>
-              Location:&ensp;{city}, {stateCode}, {country}
+              Location:&ensp;{city}, {country}
             </h2>
             <hr className="border-t border-gray-300 opacity-50"></hr>
           </ol>
