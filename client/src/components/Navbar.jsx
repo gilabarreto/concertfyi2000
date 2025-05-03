@@ -86,10 +86,11 @@ function Navbar(props) {
         <div>
           <Link
             to="/search"
-            className="flex text-2xl items-center"
+            className="text-3xl font-medium tracking-tight items-center"
             onClick={() => props.setValue("")}
           >
-            © concertfyi
+            concert{"{"}<span className="text-3xl tracking-tight font-bold text-red-600">fyi</span>
+            {"}"}
           </Link>
         </div>
         <div className="flex-1 mx-8">

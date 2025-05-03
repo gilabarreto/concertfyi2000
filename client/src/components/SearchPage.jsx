@@ -2,31 +2,27 @@ import logo from "../icons/logo-small.png";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getTicketmasterSuggest, addFavourite } from "../api/api";
+import { getBestImage } from "../helpers/selectors";
 
-export default function SearchPage(props) {
+export default function SearchPage({
+  setlist = [],
+  ticketmaster = {},
+  favourites = [],
+  setFavourites,
+}) {
   const navigate = useNavigate();
-  const {
-    setlist = [],
-    ticketmaster = {},
-    favourites = [],
-    setFavourites,
-  } = props;
-  const attractions = ticketmaster.attractions || [];
-  const events = ticketmaster.events || [];
+  const { attractions = [], events = [] } = ticketmaster;
 
   const handleFavourite = async (artistId, artist, artistImage) => {
     try {
       let imageToUse = artistImage;
-
-      if (!artistImage.startsWith("http")) {
+      if (!artistImage?.startsWith("http")) {
         const res = await getTicketmasterSuggest(artist);
         imageToUse =
           res.data._embedded?.attractions?.[0]?.images?.[0]?.url || logo;
       }
-
       const response = await addFavourite(artistId, artist, imageToUse);
-      const artist_id = response.data.favourite.artist_id;
-
+      const { artist_id } = response.data.favourite;
       setFavourites((prev) => [
         ...prev,
         {
@@ -41,137 +37,132 @@ export default function SearchPage(props) {
       alert("Erro ao adicionar favorito");
     }
   };
+  
 
-  const nextConcertDate = (localDate) => {
-    if (!localDate) return null;
-    const date = new Date(localDate);
-    return date.toLocaleDateString("en-US", {
+  const formatDate = (date) =>
+    date.toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
+  const nextConcertDate = (localDate) =>
+    localDate ? formatDate(new Date(localDate)) : null;
   const lastConcertDate = (eventDate) => {
+    if (!eventDate) return null;
     const [day, month, year] = eventDate.split("-");
     const date = new Date(`${year}-${month}-${day}`);
-    if (date > new Date()) return null;
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return date <= new Date() ? formatDate(date) : null;
   };
 
-  const noUpcomingConcert = setlist.filter((item) => {
-    const [day, month, year] = item.eventDate.split("-");
-    const date = new Date(`${year}-${month}-${day}`);
-    return date < new Date();
-  });
-
-  const uniqueIds = [];
-  const uniqueSetlist = noUpcomingConcert.filter((item) => {
-    const isDuplicate = uniqueIds.includes(item.artist.mbid);
-    if (!isDuplicate) uniqueIds.push(item.artist.mbid);
-    return !isDuplicate;
-  });
-
-  if (!setlist.length || !ticketmaster) return null;
+  const uniqueSetlist = Array.from(
+    new Map(
+      setlist
+        .filter((item) => {
+          const [day, month, year] = item.eventDate.split("-");
+          return new Date(`${year}-${month}-${day}`) < new Date();
+        })
+        .map((item) => [item.artist.mbid, item])
+    ).values()
+  );
+  if (!uniqueSetlist.length) return null;
 
   return (
-    <div className="container mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {uniqueSetlist.slice(0, 3).map((setlistItem) => {
-        const artistId = setlistItem.artist.mbid;
-        const concertId = setlistItem.id;
-        const artist = setlistItem.artist.name;
-        const ticketmasterMap = attractions.find(
-          (item) => item.name === artist
-        );
-
-        let spotify = null;
-        let artistImage = logo;
-
-        if (ticketmasterMap?.externalLinks?.spotify) {
-          spotify = ticketmasterMap.externalLinks.spotify[0].url;
-        }
-        if (ticketmasterMap?.images) {
-          artistImage = ticketmasterMap.images[0].url;
-        }
-
-        const artistEvents = events
-          .filter((item) =>
-            item._embedded?.attractions?.some((a) => a.name === artist)
-          )
-          .sort((a, b) =>
-            a.dates.start.localDate.localeCompare(b.dates.start.localDate)
+    <div className="container mx-auto px-6 py-8">
+      <h2 className="text-4xl font-bold mb-4">Search Results</h2>
+      <hr className="border-t border-gray-300 opacity-50 mb-6" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+        {uniqueSetlist.map((item) => {
+          const artistId = item.artist.mbid;
+          const concertId = item.id;
+          const artist = item.artist.name;
+          const ticketmasterMap =
+            attractions.find((a) => a.name === artist) || {};
+          const rawImages = ticketmasterMap.images || [];
+          const bestImageUrl = getBestImage(rawImages) || logo;
+          const spotifyLink = ticketmasterMap.externalLinks?.spotify?.[0]?.url;
+          const isFavourite = favourites.some(
+            (fav) => fav.artistid === artistId
           );
 
-        const localDate = artistEvents?.[0]?.dates?.start?.localDate || null;
+          const artistEvents = events
+            .filter((e) =>
+              e._embedded?.attractions?.some((a) => a.name === artist)
+            )
+            .sort((a, b) =>
+              a.dates.start.localDate.localeCompare(b.dates.start.localDate)
+            );
+          const localDate = artistEvents[0]?.dates?.start?.localDate;
+          const handleNavigate = () =>
+            navigate(`/artists/${artistId}/concerts/${concertId}`, {
+              state: { artistImage: rawImages },
+            });
 
-        return (
-          <div
-            key={artistId}
-            className="bg-gray-800 bg-opacity-70 rounded-xl overflow-hidden shadow-lg flex flex-col items-center p-4"
-          >
-            <img
-              alt={artist}
-              src={artistImage}
-              className="w-full h-40 object-cover cursor-pointer"
-              onClick={() =>
-                navigate(`/artists/${artistId}/concerts/${concertId}`, {
-                  state: { artistImage },
-                })
-              }
-            />
-
-            <h1
-              className="mt-2 text-xl text-white font-semibold cursor-pointer"
-              onClick={() =>
-                navigate(`/artists/${artistId}/concerts/${concertId}`, {
-                  state: { artistImage },
-                })
-              }
+          return (
+            <div
+              key={artistId}
+              className="
+    relative w-full max-w-[500px] aspect-video rounded-xl overflow-hidden
+    border-4 border-transparent border-solid
+    transition-all duration-300
+    hover:border-zinc-800
+    cursor-pointer
+  "
+              style={{ background: `url(${bestImageUrl}) center/cover` }}
+              onClick={handleNavigate}
             >
-              {artist}
-            </h1>
-            <FontAwesomeIcon
-              icon="heart"
-              size="2x"
-              className={`favourite-icon${
-                favourites.find((item) => item.artistid === artistId)
-                  ? " active"
-                  : ""
-              }`}
-              onClick={() => handleFavourite(artistId, artist, artistImage)}
-            />
-            <div className="search-page-box">
-              <div className="next-concert">Next concert</div>
-              <h3>{localDate ? nextConcertDate(localDate) : "Unavailable"}</h3>
+              <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex flex-col justify-between p-6 hover:bg-opacity-80 transition duration-300">
+                <div className="flex justify-between items-center">
+                  <h1 className="text-4xl font-bold text-white lg:text-4xl">
+                    {artist}
+                  </h1>
+                  <FontAwesomeIcon
+                    icon="heart"
+                    size="2x"
+                    className={`favourite-icon${isFavourite ? " active" : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleFavourite(artistId, artist, bestImageUrl);
+                    }}
+                  />
+                </div>
+                <div>
+                  <div className="text-2xl text-gray-300 mt-2 ml-4">
+                    Next concert
+                  </div>
+                  <div className="text-xl text-white ml-4">
+                    {localDate ? nextConcertDate(localDate) : "Unavailable"}
+                  </div>
+                  <div className="text-2xl text-gray-300 mt-2 ml-4">
+                    Last concert
+                  </div>
+                  <div className="text-xl text-white ml-4">
+                    {lastConcertDate(item.eventDate) || "Unavailable"}
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  {spotifyLink ? (
+                    <a
+                      href={spotifyLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <FontAwesomeIcon
+                        icon={["fab", "spotify"]}
+                        size="3x"
+                        className="spotify-true"
+                      />
+                    </a>
+                  ) : (
+                    <FontAwesomeIcon icon={["fab", "spotify"]} size="3x" />
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="search-page-box">
-              <div className="last-concert">Last concert</div>
-              <h3>{lastConcertDate(setlistItem.eventDate)}</h3>
-            </div>
-            <div className="search-page-box">
-              {spotify ? (
-                <>
-                  <span className="spotify-play-now">Play now</span>
-                  <a href={spotify} target="_blank" rel="noopener noreferrer">
-                    <FontAwesomeIcon
-                      icon="fa-brands fa-spotify"
-                      color="LimeGreen"
-                      size="3x"
-                      className="spotify-true"
-                    />
-                  </a>
-                </>
-              ) : (
-                <FontAwesomeIcon icon="fa-brands fa-spotify" size="3x" />
-              )}
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -2,18 +2,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { getPreviousConcertsByArtist } from "../../helpers/selectors";
 
 export default function PreviousConcerts(props) {
   const navigate = useNavigate();
   const pageSize = 5;
   const [page, setPage] = useState(0);
 
-  const setlistEvents = props.setlist
-    .filter((item) => item.artist.mbid === props.artistId)
-    .filter((concert) => {
-      const [day, month, year] = concert.eventDate.split("-");
-      return new Date(year, month - 1, day) < new Date();
-    });
+  const setlistEvents = getPreviousConcertsByArtist(props.setlist, props.artistId);
 
   const totalConcerts = setlistEvents.length;
   const pageCount = Math.ceil(totalConcerts / pageSize);
