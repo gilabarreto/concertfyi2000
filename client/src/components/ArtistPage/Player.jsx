@@ -4,7 +4,8 @@ import SpotifyPlayer from "react-spotify-player";
 export default function Player(props) {
   // Get the Spotify URL from the ticketmaster object, or set it to null if not available
   const spotify = props.ticketmaster.attractions
-    ? props.ticketmaster.attractions[0].externalLinks.spotify[0].url
+    ? props.ticketmaster.attractions[0]?.externalLinks?.spotify?.[0]?.url ||
+      null
     : null;
 
   // Set the size, view, and theme of the Spotify player
@@ -14,6 +15,14 @@ export default function Player(props) {
   };
   const view = "list"; // or 'coverart'
   const theme = "black"; // or 'white'
+
+  if (!spotify) {
+    return (
+      <div className="text-white text-center">
+        Spotify link not available for this artist.
+      </div>
+    );
+  }
 
   // Render the SpotifyPlayer component with the Spotify URI and settings as props
   return (

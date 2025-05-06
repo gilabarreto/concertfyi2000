@@ -5,6 +5,7 @@ import ArtistPage from "./components/ArtistPage";
 import SearchPage from "./components/SearchPage";
 import Favourites from "./components/Favourites";
 import Footer from "./components/Footer";
+import Swiper from "./components/Swiper";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { faHeart, faMusic, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -118,24 +119,31 @@ function App() {
           <Route
             path="/"
             element={
-              <SearchPage
-                favourites={favourites}
-                setFavourites={setFavourites}
-                setlist={[]}
-                ticketmaster={[]}
-              />
+              <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
+                <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center text-gray-800 tracking-tight">
+                Live Music Lives Here.
+                </h1>
+                <div className="w-full max-w-7xl">
+                  <Swiper
+                    setSetlist={setSetlist}
+                    setTicketmaster={setTicketmaster}
+                  />
+                </div>
+              </div>
             }
           />
 
           <Route
             path="/search"
             element={
-              <SearchPage
-                favourites={favourites}
-                setFavourites={setFavourites}
-                setlist={setlist}
-                ticketmaster={ticketmaster}
-              />
+              <>
+                <SearchPage
+                  favourites={favourites}
+                  setFavourites={setFavourites}
+                  setlist={setlist}
+                  ticketmaster={ticketmaster}
+                />
+              </>
             }
           />
 

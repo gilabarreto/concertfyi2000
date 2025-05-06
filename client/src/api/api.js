@@ -42,6 +42,19 @@ export const getTicketmaster = (artistName) =>
         apikey: import.meta.env.VITE_TICKETMASTER_KEY,
       },
     })
+
+    export const getLocalEvents = (lat, long) => {
+      return axios.get('https://app.ticketmaster.com/discovery/v2/events.json', {
+        params: {
+          apikey: import.meta.env.VITE_TICKETMASTER_KEY,
+          latlong: `${lat},${long}`,
+          radius: '50',
+          unit: 'km',
+          locale: '*',
+          classificationName: 'Music',
+        },
+      });
+    };
   
   export const addFavourite = (artistId, artistName, artistImage) =>
     API.post("/favourite/add", {

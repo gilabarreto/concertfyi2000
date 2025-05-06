@@ -85,7 +85,7 @@ function Navbar(props) {
       <nav className="container mx-auto px-16 flex items-center justify-between h-16 font-sans">
         <div>
           <Link
-            to="/search"
+            to="/"
             className="text-3xl font-medium tracking-tight items-center"
             onClick={() => props.setValue("")}
           >
