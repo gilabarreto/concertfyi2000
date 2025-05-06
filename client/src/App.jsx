@@ -98,7 +98,7 @@ function App() {
         setLat={setLat}
         setLong={setLong}
       />
-      <div className="pt-16 pb-24 mx-16">
+      <div className="pt-16 pb-16">
         <Routes>
           <Route
             path="/favourite"
@@ -119,11 +119,16 @@ function App() {
           <Route
             path="/"
             element={
-              <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12">
-                <h1 className="text-4xl md:text-5xl font-bold mb-12 text-center text-gray-800 tracking-tight">
-                Live Music Lives Here.
+              <div className="min-h-full flex flex-col items-center justify-center px-4 py-4">
+                <h1 className="text-3xl font-medium tracking-tight items-center my-4">
+                  concert{"{"}
+                  <span className="text-3xl tracking-tight font-bold text-red-600">
+                    fyi
+                  </span>
+                  {"}"}
                 </h1>
-                <div className="w-full max-w-7xl">
+
+                <div className="w-full ">
                   <Swiper
                     setSetlist={setSetlist}
                     setTicketmaster={setTicketmaster}
