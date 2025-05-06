@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import ConcertInfo from "./ArtistPage/ConcertInfo";
 import Map from "./ArtistPage/Map";
 import Setlist from "./ArtistPage/Setlist";
@@ -8,6 +8,8 @@ import UpcomingConcertList from "./ArtistPage/UpcomingConcerts";
 import PreviousConcerts from "./ArtistPage/PreviousConcerts";
 
 export default function ArtistPage(props) {
+    const navigate = useNavigate();
+  
   // State for Spotify artist or track
   const [spotifyArtist, setSpotifyArtist] = useState([]);
 
@@ -21,6 +23,14 @@ export default function ArtistPage(props) {
 
   // Get the concert data that matches the concertId
   const concert = props.setlist.find((result) => result.id === concertId);
+
+  useEffect(() => {
+    if (!concert) {
+      navigate("/");
+    }
+  }, [concert, navigate]);
+
+  if (!concert) return null;
 
   const attraction = props.ticketmaster.attractions?.find(
     (a) => a.name === concert.artist.name

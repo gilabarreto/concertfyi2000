@@ -119,22 +119,30 @@ function App() {
           <Route
             path="/"
             element={
-              <div className="min-h-full flex flex-col items-center justify-center px-4 py-4">
-                <h1 className="text-3xl font-medium tracking-tight items-center my-4">
-                  concert{"{"}
-                  <span className="text-3xl tracking-tight font-bold text-red-600">
-                    fyi
-                  </span>
-                  {"}"}
-                </h1>
-
-                <div className="w-full ">
-                  <Swiper
-                    setSetlist={setSetlist}
-                    setTicketmaster={setTicketmaster}
-                  />
+              value ? (
+                <SearchPage
+                  favourites={favourites}
+                  setFavourites={setFavourites}
+                  setlist={setlist}
+                  ticketmaster={ticketmaster}
+                />
+              ) : (
+                <div className="min-h-full flex flex-col items-center justify-center px-4 py-4">
+                  <h1 className="text-3xl font-medium tracking-tight items-center my-4">
+                    concert{"{"}
+                    <span className="text-3xl tracking-tight font-bold text-red-600">
+                      fyi
+                    </span>
+                    {"}"}
+                  </h1>
+                  <div className="w-full">
+                    <Swiper
+                      setSetlist={setSetlist}
+                      setTicketmaster={setTicketmaster}
+                    />
+                  </div>
                 </div>
-              </div>
+              )
             }
           />
 
