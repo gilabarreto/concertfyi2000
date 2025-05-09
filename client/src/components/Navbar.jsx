@@ -82,7 +82,7 @@ function Navbar(props) {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="mx-[1%] flex items-center justify-between px-6 py-4 h-16 font-sans">
+      <nav className="flex items-center justify-between px-6 py-4 h-16 font-sans">
         <div>
           <Link
             to="/"

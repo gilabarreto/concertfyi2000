@@ -1,61 +1,46 @@
 import { useState } from "react";
-import { ticketFinder } from "../../helpers/selectors";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
+import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { getLastConcertsByArtist } from "../../helpers/selectors";
 
-export default function UpcomingConcertList(props) {
-  const [page, setPage] = useState(0);
+export default function LastConcerts(props) {
+  const navigate = useNavigate();
   const pageSize = 5;
+  const [page, setPage] = useState(0);
 
-  const ticketmasterEvents = props.ticketmaster.events
-    ? props.ticketmaster.events
-        .filter((item) =>
-          item._embedded.attractions?.some(
-            (a) => a.name === props.concert.artist.name
-          )
-        )
-        .sort(
-          (a, b) =>
-            new Date(a.dates.start.localDate) -
-            new Date(b.dates.start.localDate)
-        )
-    : [];
-
-  const totalConcerts = ticketmasterEvents.length;
+  const setlistEvents = getLastConcertsByArtist(props.setlist, props.artistId);
+  console.log("setlistEvents:", setlistEvents, "artistId:", props.artistId);
+  
+  const totalConcerts = setlistEvents.length;
   const pageCount = Math.ceil(totalConcerts / pageSize);
 
   const sliceStart = page * pageSize;
   const sliceEnd = sliceStart + pageSize;
-  const currentPage = ticketmasterEvents.slice(sliceStart, sliceEnd);
+  const currentPage = setlistEvents.slice(sliceStart, sliceEnd);
 
   return (
     <>
-      <h2 className="text-4xl font-bold mb-4">Upcoming Concerts</h2>
+      <h2 className="text-4xl font-bold mb-4">Last Concerts</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {totalConcerts === 0 ? (
         <p className="py-2 ml-6">
-          There are no upcoming concerts. Please check back later.
+          There are no last concerts. Please check back later.
         </p>
       ) : (
         <>
           <ol className="pl-6">
-            {currentPage.map((concert, concertIndex) => {
-              const dateString = concert.dates.start.localDate;
-              const [year, month, day] = dateString.split("-");
+            {currentPage.map((concert) => {
+              const [day, month, year] = concert.eventDate.split("-");
               const date = new Date(year, month - 1, day);
               const dateLabel = date.toLocaleDateString("en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",
               });
-              const ticketsUrl = ticketFinder(props.ticketmaster)[
-                sliceStart + concertIndex
-              ];
-              const venue = concert._embedded.venues?.[0];
-              const concertLocation = venue
-                ? `${venue.city.name}, ${venue.country.countryCode}`
-                : "";
+              const city = concert.venue.city?.name || "";
+              const country = concert.venue.city?.country.code || "";
 
               return (
                 <li
@@ -64,24 +49,32 @@ export default function UpcomingConcertList(props) {
                 >
                   <span
                     className="cursor-pointer flex items-center space-x-2"
-                    onClick={() => window.open(ticketsUrl, "_blank")}
+                    onClick={() =>
+                      navigate(
+                        `/artists/${props.artistId}/concerts/${concert.id}`
+                      )
+                    }
                   >
                     <span>{dateLabel}</span>
                     <span className="text-gray-500 ml-2">
-                      ({concertLocation})
+                      ({city}, {country})
                     </span>
                   </span>
                   <FontAwesomeIcon
-                    icon={faTicketSimple}
-                    className="text-red-600 hover:text-red-800 cursor-pointer"
-                    onClick={() => window.open(ticketsUrl, "_blank")}
+                    icon={faRotateLeft}
+                    className="cursor-pointer text-red-600 hover:text-red-800"
+                    onClick={() =>
+                      navigate(
+                        `/artists/${props.artistId}/concerts/${concert.id}`
+                      )
+                    }
                   />
                 </li>
               );
             })}
           </ol>
 
-          <div className="flex items-center justify-center space-x-2 mt-4">
+          <div className="flex items-center justify-center space-x-2 mt-4 ml-6">
             <button
               className="px-2 py-1 rounded disabled:opacity-50"
               onClick={() => setPage((p) => p - 1)}

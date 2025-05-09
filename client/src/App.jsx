@@ -63,7 +63,7 @@ function App() {
           ...prev,
           {
             artistname: favourite.artistname,
-            upcomingConcert: nextEvent?.dates?.start?.localDate || null,
+            nextConcert: nextEvent?.dates?.start?.localDate || null,
           },
         ]);
       })
@@ -98,7 +98,7 @@ function App() {
         setLat={setLat}
         setLong={setLong}
       />
-      <div className="pt-16 pb-16">
+      <div className="pt-16 pb-16 w-full">
         <Routes>
           <Route
             path="/favourite"

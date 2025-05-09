@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
 import { getBestImage } from "../../helpers/selectors";
-import { getPreviousConcertsByArtist } from "../../helpers/selectors";
+import { getLastConcertsByArtist } from "../../helpers/selectors";
 
 export default function ConcertInfo(props) {
   const { concert, setlist, ticketmaster, artistImage } = props;
@@ -16,11 +16,11 @@ export default function ConcertInfo(props) {
 
   const bestImageUrl = getBestImage(imagesArray);
 
-  const previousConcerts = getPreviousConcertsByArtist(setlist, artistId);
+  const lastConcerts = getLastConcertsByArtist(setlist, artistId);
 
   useEffect(() => {
-    if (!previousConcerts.length) return;
-    const latestId = String(previousConcerts[0].id);
+    if (!lastConcerts.length) return;
+    const latestId = String(lastConcerts[0].id);
     if (String(concertId) !== latestId) {
       navigate(
         `/artists/${artistId}/concerts/${latestId}`,
@@ -29,11 +29,11 @@ export default function ConcertInfo(props) {
     }
   }, []);
 
-  const idx = previousConcerts.findIndex(
+  const idx = lastConcerts.findIndex(
     (c) => String(c.id) === String(concertId)
   );
-  const previousConcertId = previousConcerts[idx + 1]?.id;
-  const nextConcertId = previousConcerts[idx - 1]?.id;
+  const lastConcertId = lastConcerts[idx + 1]?.id;
+  const nextConcertId = lastConcerts[idx - 1]?.id;
 
   const concertDate = () => {
     const [day, month, year] = concert.eventDate.split("-");
@@ -79,13 +79,13 @@ export default function ConcertInfo(props) {
           <hr className="border-t border-gray-300 opacity-50" />
           <h2 className="artist-page-button-aligner">
             Concert date:&ensp;
-            {previousConcertId && (
+            {lastConcertId && (
               <FontAwesomeIcon
                 icon={faBackward}
                 className="text-xs text-red-600 cursor-pointer mr-2"
                 onClick={() =>
                   navigate(
-                    `/artists/${artistId}/concerts/${previousConcertId}`,
+                    `/artists/${artistId}/concerts/${lastConcertId}`,
                     { state: { artistImage } }
                   )
                 }

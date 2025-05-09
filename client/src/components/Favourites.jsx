@@ -73,7 +73,7 @@ export default function Favourites(props) {
               <h3>
                 {favouritesTickets.find((item) => item.artistname === artist)
                   ? nextConcertDate(
-                      favouritesTickets.find((item) => item.artistname === artist).upcomingConcert
+                      favouritesTickets.find((item) => item.artistname === artist).lastConcert
                     )
                   : "Unavailable"}
               </h3>

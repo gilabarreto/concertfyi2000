@@ -1,6 +1,6 @@
 // src/helpers/selectors.js
 
-export function getPreviousConcertsByArtist(setlist = [], artistId) {
+export function getLastConcertsByArtist(setlist = [], artistId) {
 
   const sortedSetlist = setlist
     // 1. filtra só o artista
@@ -40,38 +40,38 @@ export function getBestImage(images = []) {
 // This function takes in a Ticketmaster data object and returns an array of ticket URLs
 export function ticketFinder(ticketmasterData) {
 
-  // Extract an array of upcoming concert dates
-  const upcomingConcerts = ticketmasterData?.events?.map((upcomingConcert) => {
-    return upcomingConcert.dates.start.localDate
+  // Extract an array of last concert dates
+  const lastConcerts = ticketmasterData?.events?.map((lastConcert) => {
+    return lastConcert.dates.start.localDate
   }).sort()
 
   // Map over the events and return an array of ticket URLs
-  const tickets = ticketmasterData?.events?.map((upcomingConcert, index) => {
+  const tickets = ticketmasterData?.events?.map((lastConcert, index) => {
 
-    // Check if the current event has the same date as the first upcoming concert
-    if (upcomingConcert?.dates?.start?.localDate === upcomingConcerts[index]?.dates?.start?.localDate) {
+    // Check if the current event has the same date as the first last concert
+    if (lastConcert?.dates?.start?.localDate === lastConcerts[index]?.dates?.start?.localDate) {
       return null // If yes, return null
     }
-    return upcomingConcert?.url // If not, return the ticket URL
+    return lastConcert?.url // If not, return the ticket URL
   })
 
   return tickets // Return the array of ticket URLs
 }
 
-// This function takes in a Ticketmaster data object and returns the latitude of the venue for the first upcoming concert
+// This function takes in a Ticketmaster data object and returns the latitude of the venue for the first last concert
 export function latitudeFinder(ticketmasterData) {
 
-  // Extract an array of upcoming concert dates
-  const upcomingConcerts = ticketmasterData?.events?.map((upcomingConcert) => {
-    return upcomingConcert.dates.start.localDate
+  // Extract an array of last concert dates
+  const lastConcerts = ticketmasterData?.events?.map((lastConcert) => {
+    return lastConcert.dates.start.localDate
   }).sort()
 
-  // Find the event with the same date as the first upcoming concert and return its latitude
-  const latitude = ticketmasterData?.events?.find((upcomingConcert) => {
-    if (!upcomingConcerts[0]) { // Check if there is at least one upcoming concert
+  // Find the event with the same date as the first last concert and return its latitude
+  const latitude = ticketmasterData?.events?.find((lastConcert) => {
+    if (!lastConcerts[0]) { // Check if there is at least one last concert
       return null
     }
-    return upcomingConcert.dates.start.localDate === upcomingConcerts[0]
+    return lastConcert.dates.start.localDate === lastConcerts[0]
   })
 
   const result = latitude?._embedded?.venues[0].location.latitude
@@ -79,20 +79,20 @@ export function latitudeFinder(ticketmasterData) {
   return result; // Return the latitude
 }
 
-// This function takes in a Ticketmaster data object and returns the longitude of the venue for the first upcoming concert
+// This function takes in a Ticketmaster data object and returns the longitude of the venue for the first last concert
 export function longitudeFinder(ticketmasterData) {
 
-  // Extract an array of upcoming concert dates
-  const upcomingConcerts = ticketmasterData?.events?.map((upcomingConcert) => {
-    return upcomingConcert.dates.start.localDate
+  // Extract an array of last concert dates
+  const lastConcerts = ticketmasterData?.events?.map((lastConcert) => {
+    return lastConcert.dates.start.localDate
   }).sort()
 
-  // Find the event with the same date as the first upcoming concert and return its longitude
-  const longitude = ticketmasterData?.events?.find((upcomingConcert) => {
-    if (!upcomingConcerts[0]) { // Check if there is at least one upcoming concert
+  // Find the event with the same date as the first last concert and return its longitude
+  const longitude = ticketmasterData?.events?.find((lastConcert) => {
+    if (!lastConcerts[0]) { // Check if there is at least one last concert
       return null
     }
-    return upcomingConcert.dates.start.localDate === upcomingConcerts[0]
+    return lastConcert.dates.start.localDate === lastConcerts[0]
   })
 
   const result = longitude?._embedded?.venues[0].location.longitude
@@ -135,7 +135,7 @@ export function longitudeFinder(ticketmasterData) {
 // /**
 //  * Retorna os próximos eventos (datas > hoje).
 //  */
-// export function getUpcomingEvents(ticketmasterData, artistName) {
+// export function getLastEvents(ticketmasterData, artistName) {
 //   const now = Date.now();
 //   return getArtistEvents(ticketmasterData, artistName)
 //     .filter(item => item.date.getTime() > now);
@@ -144,7 +144,7 @@ export function longitudeFinder(ticketmasterData) {
 // /**
 //  * Retorna os shows já passados (datas < hoje), mais recentes primeiro.
 //  */
-// export function getPreviousEvents(ticketmasterData, artistName) {
+// export function getLastEvents(ticketmasterData, artistName) {
 //   const now = Date.now();
 //   return getArtistEvents(ticketmasterData, artistName)
 //     .filter(item => item.date.getTime() < now)
@@ -155,7 +155,7 @@ export function longitudeFinder(ticketmasterData) {
 //  * Retorna o array de URLs de ingressos dos próximos shows.
 //  */
 // export function ticketFinder(ticketmasterData, artistName) {
-//   return getUpcomingEvents(ticketmasterData, artistName)
+//   return getLastEvents(ticketmasterData, artistName)
 //     .map(item => item.url);
 // }
 
@@ -163,7 +163,7 @@ export function longitudeFinder(ticketmasterData) {
 //  * Retorna latitude do primeiro próximo show.
 //  */
 // export function latitudeFinder(ticketmasterData, artistName) {
-//   const next = getUpcomingEvents(ticketmasterData, artistName)[0];
+//   const next = getLastEvents(ticketmasterData, artistName)[0];
 //   return next?.venues[0]?.location?.latitude ?? null;
 // }
 
@@ -171,7 +171,7 @@ export function longitudeFinder(ticketmasterData) {
 //  * Retorna longitude do primeiro próximo show.
 //  */
 // export function longitudeFinder(ticketmasterData, artistName) {
-//   const next = getUpcomingEvents(ticketmasterData, artistName)[0];
+//   const next = getLastEvents(ticketmasterData, artistName)[0];
 //   return next?.venues[0]?.location?.longitude ?? null;
 // }
 
