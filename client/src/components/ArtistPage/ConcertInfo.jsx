@@ -52,18 +52,18 @@ export default function ConcertInfo(props) {
   const country = concert.venue.city?.country.code;
 
   return (
-    <div className="flex-1 flex items-center justify-between space-x-6">
-      <div className="flex-1 flex justify-center">
+<div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+<div className="flex-1 flex justify-center sm:justify-start">
         {bestImageUrl && (
           <img
             src={bestImageUrl}
             alt={`${artist} portrait`}
-            className="object-cover rounded-md max-w-[300px] w-full h-auto"
+        className="object-cover w-full h-full sm:max-w-[300px] sm:h-auto rounded-md"
           />
         )}
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 w-full sm:w-auto">
         <div className="flex flex-1 justify-around mb-4">
           <h2 className="flex-1 text-4xl font-bold">{artist}</h2>
           <span className="flex items-end">
