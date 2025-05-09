@@ -5,8 +5,8 @@
 @tailwind utilities;
 
 @layer base {
-    html {
-      font-size: small;
+  html {
+    font-size: small;
   }
   input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: searchfield-cancel-button;
@@ -17,4 +17,18 @@
     filter: brightness(0) invert(1);
     cursor: pointer;
   }
+}
+
+html,
+body {
+  margin: 1%; /* Retira qualquer margem padrão */
+  padding: 0;
+}
+
+.container {
+  padding: 0; /* Controle o espaçamento interno de todo o conteúdo */
+}
+
+body {
+  font-family: "DM Sans", sans-serif; /* Definir fonte padrão */
 }

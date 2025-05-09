@@ -82,18 +82,26 @@ function Navbar(props) {
 
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="container mx-auto px-16 flex items-center justify-between h-16 font-sans">
+      <nav className="mx-[1%] flex items-center justify-between px-6 py-4 h-16 font-sans">
         <div>
           <Link
             to="/"
             className="text-3xl font-medium tracking-tight items-center"
             onClick={() => props.setValue("")}
           >
-            concert{"{"}<span className="text-3xl tracking-tight font-bold text-red-600">fyi</span>
-            {"}"}
+            <span className="hidden sm:inline">concert</span>
+            <span className="text-3xl font-medium tracking-tight items-center">
+              {"{"}
+            </span>
+            <span className="text-3xl tracking-tight font-bold text-red-600">
+              fyi
+            </span>
+            <span className="text-3xl font-medium tracking-tight items-center">
+              {"}"}
+            </span>
           </Link>
         </div>
-        <div className="flex-1 mx-8">
+        <div className="flex-1 mx-4">
           <SearchBar
             setSetlist={props.setSetlist}
             setTicketmaster={props.setTicketmaster}

@@ -8,8 +8,8 @@ import UpcomingConcertList from "./ArtistPage/UpcomingConcerts";
 import PreviousConcerts from "./ArtistPage/PreviousConcerts";
 
 export default function ArtistPage(props) {
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+
   // State for Spotify artist or track
   const [spotifyArtist, setSpotifyArtist] = useState([]);
 
@@ -30,7 +30,11 @@ export default function ArtistPage(props) {
     }
   }, [concert, navigate]);
 
-  if (!concert) return null;
+  if (!concert) {
+    return (
+      <div className="p-8 text-center text-gray-400">Loading concert info…</div>
+    );
+  }
 
   const attraction = props.ticketmaster.attractions?.find(
     (a) => a.name === concert.artist.name

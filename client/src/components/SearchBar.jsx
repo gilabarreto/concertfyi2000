@@ -39,7 +39,13 @@ export default function SearchBar(props) {
   useEffect(() => {
     if (!term || term.length === 0) return;
     fetchData();
+  
+    // redireciona automaticamente para /search
+    if (location.pathname !== "/search") {
+      navigate("/search");
+    }
   }, [term, fetchData]);
+  
 
   return (
     <form

@@ -116,7 +116,7 @@ export default function ConcertInfo(props) {
         </ol>
 
         <span className="flex justify-center mt-4 space-x-4">
-          {ticketmaster.attractions?.[0]?.externalLinks.youtube && (
+          {ticketmaster.attractions?.[0]?.externalLinks?.youtube && (
             <a
               href={ticketmaster.attractions[0].externalLinks.youtube[0].url}
               target="_blank"

@@ -81,9 +81,9 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
   return (
     <>
       <div className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[500px] flex items-center justify-center overflow-hidden">
-              <h1 className="absolute text-4xl top-0 md:text-5xl font-bold text-center text-gray-800 tracking-tight">
-                Live Music Lives Here.
-              </h1>
+        <h1 className="absolute text-4xl top-0 md:text-5xl font-bold text-center text-gray-800 tracking-tight">
+          Live Music Lives Here.
+        </h1>
         {slides.map((slide, i) => {
           const offset = i - active;
           const depth = Math.abs(offset);
@@ -100,18 +100,16 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
             background: `url(${image}) center/cover no-repeat`,
           };
           return (
-              <div
-                key={slide.eventId}
-                onClick={() => handleSlideClick(slide)}
-                className="absolute -translate-x-1/2 w-[600px] aspect-video rounded-xl overflow-hidden border-4 border-transparent transition-all duration-300 hover:border-zinc-800 cursor-pointer"
-                style={style}
-              >
-                <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex items-end p-6 hover:bg-opacity-80 transition duration-300">
-                  <h3 className="text-2xl font-bold text-white">
-                    {slide.title}
-                  </h3>
-                </div>
+            <div
+              key={slide.eventId}
+              onClick={() => handleSlideClick(slide)}
+              className="absolute -translate-x-1/2 w-[95%] sm:w-[60%] md:w-[50%] lg:w-[40%] aspect-video rounded-xl overflow-hidden border-4 border-transparent transition-all duration-300 hover:border-zinc-800 cursor-pointer"
+              style={style}
+            >
+              <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex items-end p-6 hover:bg-opacity-80 transition duration-300">
+                <h3 className="text-2xl font-bold text-white">{slide.title}</h3>
               </div>
+            </div>
           );
         })}
 

@@ -4,7 +4,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 export default function Footer() {
   return (
     <div className="fixed bottom-0 left-0 w-full bg-red-600 shadow z-20">
-      <footer className="container mx-auto flex items-center justify-between px-16 py-4 text-center text-white font-sans">
+      <footer className="mx-[1%] flex items-center justify-between px-6 py-4 text-center text-white font-sans">
         © 2025 concertfyi. all rights reserved.
         <div className="flex items-center gap-6">
           <FontAwesomeIcon icon="fa-brands fa-instagram" size="2x" />
