@@ -129,7 +129,7 @@ export default function ConcertInfo(props) {
               />
             </a>
           )}
-          {ticketmaster.attractions?.[0]?.externalLinks.instagram && (
+          {ticketmaster.attractions?.[0]?.externalLinks?.instagram && (
             <a
               href={ticketmaster.attractions[0].externalLinks.instagram[0].url}
               target="_blank"
@@ -142,7 +142,7 @@ export default function ConcertInfo(props) {
               />
             </a>
           )}
-          {ticketmaster.attractions?.[0]?.externalLinks.twitter && (
+          {ticketmaster.attractions?.[0]?.externalLinks?.twitter && (
             <a
               href={ticketmaster.attractions[0].externalLinks.twitter[0].url}
               target="_blank"

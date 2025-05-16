@@ -22,6 +22,8 @@ function App() {
   const [loadingfavourites, setLoadingfavourites] = useState(false);
   const [favouritesConcerts, setFavouritesConcerts] = useState([]);
   const [favouritesTickets, setFavouritesTickets] = useState([]);
+  const [city, setCity] = useState("");
+
 
   const fetchDataByFavourite = useCallback((favourite) => {
     Promise.all([
@@ -97,6 +99,9 @@ function App() {
         setTicketmaster={setTicketmaster}
         setLat={setLat}
         setLong={setLong}
+        lat={lat}
+        long={long}
+        city={city}
       />
       <div className="pt-16 pb-16 w-full">
         <Routes>
@@ -139,6 +144,7 @@ function App() {
                     <Swiper
                       setSetlist={setSetlist}
                       setTicketmaster={setTicketmaster}
+                      setCity={setCity}
                     />
                   </div>
                 </div>

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../api/api";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faUser, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 function Navbar(props) {
   const [dropdownLogin, setDropdownLogin] = useState(false);
@@ -101,6 +101,11 @@ function Navbar(props) {
             </span>
           </Link>
         </div>
+        <div className="hidden sm:block px-4 whitespace-nowrap">
+        <FontAwesomeIcon className="text-2xl tracking-tight font-bold text-red-600 px-1" icon={faLocationDot} /> 
+        <span className="text-2xl font-medium tracking-tight items-center">{props.city || "Locating..."}</span>
+        </div>
+
         <div className="flex-1 mx-4">
           <SearchBar
             setSetlist={props.setSetlist}
