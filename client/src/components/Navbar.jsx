@@ -1,88 +1,13 @@
-import jwtdecode from "jwt-decode";
-import { useCallback, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { loginUser, registerUser } from "../api/api";
+import { Link } from "react-router-dom";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 
 function Navbar(props) {
-  const [dropdownLogin, setDropdownLogin] = useState(false);
-  const toggleLogin = useCallback(() => {
-    setDropdownLogin((opened) => !opened);
-  }, []);
-
-  const [isUserLogged, setIsUserLogged] = useState(
-    JSON.parse(localStorage.getItem("user")) || false
-  );
-  const [isRegistered, setIsRegistered] = useState(
-    JSON.parse(localStorage.getItem("user")) || false
-  );
-
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const navigate = useNavigate();
-
-  const clear = () => {
-    setName("");
-    setPassword("");
-    setEmail("");
-    setErrorMsg("");
-  };
-
-  const handleClick = () => {
-    props.setValue("");
-  };
-
-  const register = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await registerUser(name, email, password);
-      setIsUserLogged(true);
-      const { token } = res.data;
-      const decode = jwtdecode(token);
-      localStorage.setItem("user", JSON.stringify(decode));
-      clear();
-      setDropdownLogin(false);
-    } catch (err) {
-      console.log(err);
-      const error = err.response?.data?.error;
-      if (error) setErrorMsg(error);
-    }
-  };
-
-  const login = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await loginUser(email, password);
-      setIsUserLogged(true);
-      const { token } = res.data;
-      const decode = jwtdecode(token);
-      localStorage.setItem("user", JSON.stringify(decode));
-      localStorage.setItem("token", token);
-      clear();
-      setDropdownLogin(false);
-    } catch (err) {
-      console.log(err);
-      const error = err.response?.data?.error;
-      if (error) setErrorMsg(error);
-    }
-  };
-
-  const logout = useCallback(() => {
-    setIsUserLogged(false);
-    setDropdownLogin(false);
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    navigate("/");
-  }, [navigate]);
 
   return (
     <div className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="flex items-center justify-between px-6 py-4 h-16 font-sans">
+      <nav className="flex w-full justify-evenly items-center px-6 py-4 h-16 font-sans flex-wrap gap-2">
         <div>
           <Link
             to="/"
@@ -101,12 +26,18 @@ function Navbar(props) {
             </span>
           </Link>
         </div>
+
         <div className="hidden sm:block px-4 whitespace-nowrap">
-        <FontAwesomeIcon className="text-2xl tracking-tight font-bold text-red-600 px-1" icon={faLocationDot} /> 
-        <span className="text-2xl font-medium tracking-tight items-center">{props.city || "Locating..."}</span>
+          <FontAwesomeIcon
+            className="text-2xl tracking-tight font-bold text-red-600 px-1"
+            icon={faLocationDot}
+          />
+          <span className="text-2xl font-medium tracking-tight items-center">
+            {props.city || "Locating..."}
+          </span>
         </div>
 
-        <div className="flex-1 mx-4">
+        <div className="flex flex-1 mx-4">
           <SearchBar
             setSetlist={props.setSetlist}
             setTicketmaster={props.setTicketmaster}
@@ -116,154 +47,31 @@ function Navbar(props) {
             setValue={props.setValue}
           />
         </div>
+
+        <div className="hamburger-menu">
+          <div className="hamburger-icon" onClick={() => toggleMenu()}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div className="menu-links">
+            <span className="text-xl font-medium tracking-tight items-center mx-2">
+              <a href="#about" onClick={() => toggleMenu()}>Home</a>
+            </span>
+            <span className="text-xl font-medium tracking-tight items-center mx-2">
+              <a href="#experience" onClick={() => toggleMenu()}>About</a>
+            </span>
+            <span className="text-xl font-medium tracking-tight items-center mx-2">
+              <a href="#contact" onClick={() => toggleMenu()}>Contact</a>
+            </span>
+          </div>
+        </div>
+
         <div className="flex">
           <FontAwesomeIcon
             icon={faUser}
-            onClick={toggleLogin}
             className="h-10 w-10 cursor-pointer filter brightness-0"
-          ></FontAwesomeIcon>
-          {dropdownLogin && (
-            <div className="absolute right-16 top-16 z-20 w-64 bg-white rounded-lg shadow-lg p-5">
-              {" "}
-              {isUserLogged ? (
-                <>
-                  <button
-                    className="submit-button"
-                    onClick={() => {
-                      navigate("/favourite");
-                      toggleLogin();
-                    }}
-                  >
-                    Favourites
-                  </button>
-                  <button className="submit-button" onClick={logout}>
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <>
-                  {isRegistered === false && (
-                    <span id="login-form">
-                      <form onSubmit={login}>
-                        {errorMsg && (
-                          <span style={{ fontWeight: "bold", color: "red" }}>
-                            {errorMsg}
-                          </span>
-                        )}
-                        <div className="input-container-login">
-                          <input
-                            className="input-text-login"
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                          />
-                        </div>
-                        <div className="input-container-login">
-                          <input
-                            className="input-text-login"
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(event) =>
-                              setPassword(event.target.value)
-                            }
-                          />
-                        </div>
-                        <div>
-                          <button className="submit-button" type="submit">
-                            Login
-                          </button>
-                        </div>
-                      </form>
-                    </span>
-                  )}
-                  {isRegistered === true && (
-                    <span id="register-form">
-                      <form onSubmit={register}>
-                        {errorMsg && (
-                          <span style={{ fontWeight: "bold", color: "red" }}>
-                            {errorMsg}
-                          </span>
-                        )}
-                        <div className="input-container-login">
-                          <input
-                            className="input-text-login"
-                            name="name"
-                            type="text"
-                            placeholder="Name"
-                            value={name}
-                            onChange={(event) => setName(event.target.value)}
-                          />
-                        </div>
-                        <div className="input-container-login">
-                          <input
-                            className="input-text-login"
-                            name="email"
-                            type="email"
-                            placeholder="Email"
-                            value={email}
-                            onChange={(event) => setEmail(event.target.value)}
-                          />
-                        </div>
-                        <div className="input-container-login">
-                          <input
-                            className="input-text-login"
-                            name="password"
-                            type="password"
-                            placeholder="Password"
-                            value={password}
-                            onChange={(event) =>
-                              setPassword(event.target.value)
-                            }
-                          />
-                        </div>
-                        <div>
-                          <button className="submit-button" type="submit">
-                            Register
-                          </button>
-                        </div>
-                      </form>
-                    </span>
-                  )}
-                  {isRegistered === false && (
-                    <>
-                      <span className="register-login-text">
-                        Not a member?{" "}
-                      </span>
-                      <span
-                        className="toggle-register-login"
-                        onClick={() => {
-                          setIsRegistered((prev) => !prev);
-                          clear();
-                        }}
-                      >
-                        Register
-                      </span>
-                    </>
-                  )}
-                  {isRegistered === true && (
-                    <>
-                      <span className="register-login-text">
-                        Have an account?{" "}
-                      </span>
-                      <span
-                        className="toggle-register-login"
-                        onClick={() => {
-                          setIsRegistered((prev) => !prev);
-                          clear();
-                        }}
-                      >
-                        Login
-                      </span>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          )}
+          />
         </div>
       </nav>
       <hr className="border-t border-gray-200" />

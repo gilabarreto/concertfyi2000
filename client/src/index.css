@@ -21,15 +21,16 @@
 
 html,
 body {
-  margin: 0%; /* Retira qualquer margem padrão */
-  padding: 0;
+  margin: 0; /* Retira qualquer margem padrão */
+  padding: 0; /* Retira qualquer padding padrão */
+  width: 100%; /* Garante que o body ocupe 100% da largura */
+  height: 100%; /* Garante que o body ocupe 100% da altura */
 }
 
 .container {
-  margin: 1%;
   padding: 0; /* Controle o espaçamento interno de todo o conteúdo */
 }
 
 body {
-  font-family: "DM Sans", sans-serif;
+  font-family: "DM Sans", sans-serif; /* Definir fonte padrão */
 }
