@@ -50,7 +50,7 @@ export default function SearchBar(props) {
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
-      className="flex w-full max-w-lg mx-auto"
+      className="flex w-full mx-auto"
     >
       <input
         type="search"
@@ -58,12 +58,12 @@ export default function SearchBar(props) {
         onChange={handleChange}
         placeholder="Search your favorite artist"
         className="
-        flex-1 h-10 px-4 rounded-full
+        flex h-10  max-w-xs px-4 rounded-full
         bg-red-600 placeholder-white text-white
         ring-0
         focus:outline-none
         focus:ring-2
-        focus:ring-black
+        focus:ring-black md:w-96
       "
       />
     </form>

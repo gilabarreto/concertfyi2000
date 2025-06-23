@@ -141,7 +141,7 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
     border-4 border-transparent border-solid
     transition-all duration-300
     border-zinc-800
-    cursor-pointer w-[95%] sm:w-[60%] md:w-[50%] lg:w-[40%] "
+    cursor-pointer w-[100%] sm:w-[40%]"
                 style={style}
               >
                 <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex items-end p-6 hover:bg-opacity-80 transition duration-300">
@@ -154,13 +154,13 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
           })}
           <button
             onClick={() => setActive((a) => Math.max(a - 1, 0))}
-            className="absolute top-1/2 -translate-y-1/2 left-32 text-red-600 text-9xl p-2 z-20 cursor-pointer sm:text-[14rem]"
+            className="absolute top-1/2 -translate-y-1/2 left-0 text-red-600 text-9xl p-2 z-20 cursor-pointer sm:text-[14rem]"
           >
             {"{"}
           </button>
           <button
             onClick={() => setActive((a) => Math.min(a + 1, slides.length - 1))}
-            className="absolute top-1/2 -translate-y-1/2 right-32 text-red-600 text-9xl p-2 z-20 cursor-pointer sm:text-[14rem]"
+            className="absolute top-1/2 -translate-y-1/2 right-0 text-red-600 text-9xl p-2 z-20 cursor-pointer sm:text-[14rem]"
           >
             {"}"}
           </button>

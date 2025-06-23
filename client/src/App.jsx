@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ArtistPage from "./components/ArtistPage";
@@ -14,9 +14,6 @@ function App() {
   const [token, setToken] = useState("");
   const [value, setValue] = useState("");
   const [favourites, setFavourites] = useState([]);
-  const [loadingfavourites, setLoadingfavourites] = useState(false);
-  const [favouritesConcerts, setFavouritesConcerts] = useState([]);
-  const [favouritesTickets, setFavouritesTickets] = useState([]);
   const [city, setCity] = useState("");
 
   return (
