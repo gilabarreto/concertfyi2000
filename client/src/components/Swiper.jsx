@@ -72,14 +72,39 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
     getLocalEvents(lat, long)
       .then(({ data }) => {
         const events = data._embedded?.events || [];
-        const list = events.map((ev) => ({
+
+        // [1] Filtra apenas eventos com artistas válidos
+        const eventsWithArtists = events.filter(
+          ev => ev._embedded?.attractions?.[0]?.name
+        );
+
+        // [2] Remove artistas duplicados
+        const uniqueArtists = [];
+        const seenArtists = new Set();
+
+        for (const ev of eventsWithArtists) {
+          const artistName = ev._embedded.attractions[0].name;
+          if (!seenArtists.has(artistName)) {
+            seenArtists.add(artistName);
+            uniqueArtists.push(ev);
+          }
+        }
+
+        // [3] Ordena aleatoriamente
+        const shuffledArtists = [...uniqueArtists].sort(() => Math.random() - 0.5);
+
+        // [4] Formata os dados finais
+        const list = shuffledArtists.map((ev) => ({
           eventId: ev.id,
-          artistId: ev._embedded.attractions?.[0]?.id || ev.id,
-          artistName: ev._embedded.attractions?.[0]?.name || "",
+          artistId: ev._embedded.attractions[0].id,
+          artistName: ev._embedded.attractions[0].name,
           title: ev.name,
           date: ev.dates.start.localDate,
           images: ev.images || [],
         }));
+
+        console.log("🎤 Artistas encontrados:", list.map(a => a.artistName));
+        console.log("🖼️ Lista final de slides:", list);
 
         setSlides(list);
         setActive(Math.floor(list.length / 2));
