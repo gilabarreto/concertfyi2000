@@ -70,7 +70,7 @@ function Navbar({
       </div>
 
       <div className="hidden sm:flex justify-center items-center gap-2">
-        <span className="text-3xl font-medium tracking-tight items-center">
+        <span className="text-2xl font-medium tracking-tight items-center">
           {"{"}
         </span>
         {navLinks.map((link) => (
@@ -83,7 +83,7 @@ function Navbar({
             {link.label}
           </Link>
         ))}
-        <span className="text-3xl font-medium tracking-tight items-center">
+        <span className="text-2xl font-medium tracking-tight items-center">
           {"}"}
         </span>
 

@@ -42,7 +42,7 @@ function App() {
                   ticketmaster={ticketmaster}
                 />
               ) : (
-                <div className="flex flex-col items-center justify-between w-full flex-1 m-4">                      <Swiper
+                <div className="flex flex-col items-center justify-evenly w-full flex-1 m-4">                      <Swiper
                   setSetlist={setSetlist}
                   setTicketmaster={setTicketmaster}
                   setCity={setCity}
