@@ -23,8 +23,6 @@ html,
 body {
   margin: 0; /* Retira qualquer margem padrão */
   padding: 0; /* Retira qualquer padding padrão */
-  width: 100%; /* Garante que o body ocupe 100% da largura */
-  height: 100%; /* Garante que o body ocupe 100% da altura */
 }
 
 .container {
@@ -32,5 +30,6 @@ body {
 }
 
 body {
+  @apply text-zinc-800;
   font-family: "DM Sans", sans-serif; /* Definir fonte padrão */
 }

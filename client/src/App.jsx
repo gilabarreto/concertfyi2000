@@ -29,7 +29,7 @@ function App() {
         long={long}
         city={city}
       />
-      <div className="pt-16 pb-16 w-full">
+      <main className="pt-16 pb-16 min-h-screen w-full box-border flex">
         <Routes>
           <Route
             path="/"
@@ -42,21 +42,11 @@ function App() {
                   ticketmaster={ticketmaster}
                 />
               ) : (
-                <div className="min-h-full flex flex-col items-center justify-center px-4 py-4">
-                  <h1 className="text-3xl font-medium tracking-tight items-center my-4">
-                    concert{"{"}
-                    <span className="text-3xl tracking-tight font-bold text-red-600">
-                      fyi
-                    </span>
-                    {"}"}
-                  </h1>
-                  <div className="w-full">
-                    <Swiper
-                      setSetlist={setSetlist}
-                      setTicketmaster={setTicketmaster}
-                      setCity={setCity}
-                    />
-                  </div>
+                <div className="flex flex-col items-center justify-between w-full flex-1 m-4">                      <Swiper
+                  setSetlist={setSetlist}
+                  setTicketmaster={setTicketmaster}
+                  setCity={setCity}
+                />
                 </div>
               )
             }
@@ -89,8 +79,8 @@ function App() {
             }
           />
         </Routes>
-        <Footer />
-      </div>
+      </main>
+      <Footer />
     </Router>
   );
 }

@@ -169,13 +169,25 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
 
   return (
     <>
-      <div className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[500px] flex items-center justify-center overflow-hidden">
 
-        <h1 className="absolute text-4xl top-0 md:text-5xl font-bold text-center text-gray-800 tracking-tight">
+      <div className="w-full flex items-center justify-center overflow-hidden">
+        <h1 className="text-3xl font-medium tracking-tight items-center my-4">
+          concert{"{"}
+          <span className="text-3xl tracking-tight font-bold text-red-600">
+            fyi
+          </span>
+          {"}"}
+        </h1>
+      </div>
+      <div className="w-full flex items-center justify-center overflow-hidden">
+
+        <h1 className=" text-4xl top-0 md:text-5xl font-bold text-center text-zinc-800 tracking-tight">
           Live Music Lives Here.
         </h1>
+      </div>
+      <div className="relative w-full h-[250px] sm:h-[350px] flex items-center justify-center overflow-hidden">
 
-        <div className="relative w-full h-[300px] sm:h-[350px] md:h-[400px] lg:h-[500px] flex items-center justify-center overflow-hidden">
+        <div className="relative w-full h-[250px] sm:h-[405px] flex items-center justify-center overflow-hidden">
 
           {slides.map((slide, i) => {
             const offset = i - active;
@@ -189,7 +201,7 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
                 onClick={() => handleSlideClick(slide)}
                 className="group absolute -translate-x-1/2 aspect-video rounded-xl overflow-hidden
   border-4 border-transparent border-solid transition-all duration-300
-  border-zinc-800 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%]"
+  border-zinc-800 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[35%]"
                 style={style}
               >
                 <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex items-end p-6 transition duration-300 group-hover:bg-opacity-80 pointer-events-none">
@@ -201,7 +213,7 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
                           setActive((a) => Math.max(a - 1, 0));
                         }}
                         aria-label="Previous"
-                        className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                        className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
                       >
                         {"{"}
                       </button>
@@ -211,15 +223,15 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
                           setActive((a) => Math.min(a + 1, slides.length - 1));
                         }}
                         aria-label="Next"
-                        className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                        className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
                       >
                         {"}"}
                       </button>
                     </>
                   )}
                   <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                    <h3 className="text-6xl font-bold text-white text-center px-4">
-                      {slide.artistName}
+                    <h3 className="text-4xl font-bold text-white text-center px-4
+               [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">                      {slide.artistName}
                     </h3>
                   </div>
 
@@ -230,12 +242,24 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
 
         </div>
       </div>
-      <div className="relative bottom-0 w-full text-3xl font-bold text-center text-gray-800 tracking-tight overflow-hidden">
-        <h1>
-          Track your favorite artists, explore past performances, and never miss
-          a show again.
+      <div className="w-full text-3xl font-bold text-center tracking-tight">
+        <h1 className="[&>span]:block">
+          <span>Track your favorite artists,</span>
+          <span>explore past performances,</span>
+          <span>and never miss a show again.</span>
+
         </h1>
       </div>
+      <div className="my-4 w-[250px] sm:w-[300px] bg-white rounded-xl shadow py-6 flex justify-center items-center">
+        <span className="cursor-pointer text-2xl font-bold mx-4 tracking-tight hover:text-gray-500 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out">
+          Sign up
+        </span>
+        <span className="cursor-pointer flex items-center justify-center h-12 w-32 rounded-full bg-red-600 text-white text-2xl border-[3px] border-transparent border-solid hover:border-zinc-800 transition-all duration-300 ease-in-out">
+          Login
+        </span>
+
+      </div>
+
     </>
   );
 }
