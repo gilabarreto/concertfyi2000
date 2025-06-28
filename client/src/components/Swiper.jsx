@@ -185,63 +185,59 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
           Live Music Lives Here.
         </h1>
       </div>
-      <div className="relative w-full h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
+      <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
 
-        <div className="relative w-full h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
+        {slides.map((slide, i) => {
+          const offset = i - active;
+          const depth = Math.abs(offset);
+          const image = getBestImage(slide.images) || slide.image || fallback;
+          const style = getSlideStyle(offset, depth, image, isSmallScreen);
 
-          {slides.map((slide, i) => {
-            const offset = i - active;
-            const depth = Math.abs(offset);
-            const image = getBestImage(slide.images) || slide.image || fallback;
-            const style = getSlideStyle(offset, depth, image, isSmallScreen);
+          return (
+            <div
+              key={slide.eventId}
+              onClick={() => handleSlideClick(slide)}
+              className="group absolute -translate-x-1/2 aspect-video rounded-xl overflow-hidden
+  transition-all duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0"
+              style={style}
+            >
+              <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition duration-300 border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20">
+                {offset === 0 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActive((a) => Math.max(a - 1, 0));
+                      }}
+                      aria-label="Previous"
+                      className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                    >
+                      {"{"}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActive((a) => Math.min(a + 1, slides.length - 1));
+                      }}
+                      aria-label="Next"
+                      className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                    >
 
-            return (
-              <div
-                key={slide.eventId}
-                onClick={() => handleSlideClick(slide)}
-                className="group absolute -translate-x-1/2 aspect-video rounded-xl overflow-hidden
-  border-4 border-transparent border-solid transition-all duration-300
-  border-zinc-800 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%]"
-                style={style}
-              >
-                <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex items-end p-6 transition duration-300 group-hover:bg-opacity-80 pointer-events-none">
-                  {offset === 0 && (
-                    <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActive((a) => Math.max(a - 1, 0));
-                        }}
-                        aria-label="Previous"
-                        className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
-                      >
-                        {"{"}
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActive((a) => Math.min(a + 1, slides.length - 1));
-                        }}
-                        aria-label="Next"
-                        className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
-                      >
-                        
-                        {"}"}
-                      </button>
-                    </>
-                  )}
-                  <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-                    <h3 className="text-4xl font-bold text-white text-center px-4
+                      {"}"}
+                    </button>
+                  </>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
+                  <h3 className="text-4xl font-bold text-white text-center px-4
                [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">                      {slide.artistName}
-                    </h3>
-                  </div>
-
+                  </h3>
                 </div>
-              </div>
-            );
-          })}
 
-        </div>
+              </div>
+            </div>
+          );
+        })}
+
       </div>
       <div className="w-full text-[22px] leading-[2rem] font-bold text-center tracking-tight">
         <h1 className="[&>span]:block">
