@@ -53,7 +53,7 @@ function Navbar({
           icon={faLocationDot}
           aria-hidden="true"
         />
-        <span className="hidden sm:block text-2xl font-medium tracking-tight">
+        <span className="hidden sm:block cursor-pointer text-2xl font-medium tracking-tight hover:text-gray-500 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out">
           {city || "Locating..."}
         </span>
       </div>

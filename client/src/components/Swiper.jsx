@@ -225,6 +225,7 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
                         aria-label="Next"
                         className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
                       >
+                        
                         {"}"}
                       </button>
                     </>

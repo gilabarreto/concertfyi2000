@@ -5,6 +5,8 @@ import ArtistPage from "./components/ArtistPage";
 import SearchPage from "./components/SearchPage";
 import Footer from "./components/Footer";
 import Swiper from "./components/Swiper";
+import './icons';
+
 
 function App() {
   const [setlist, setSetlist] = useState([]);

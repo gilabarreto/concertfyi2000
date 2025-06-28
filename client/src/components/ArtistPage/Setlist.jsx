@@ -1,6 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+
 
 export default function Setlist(props) {
   const songs = props.concert.sets.set[0]?.song || [];
@@ -8,13 +10,22 @@ export default function Setlist(props) {
 
   return (
     <>
-      <h2 className="text-4xl font-bold mb-4">Setlist</h2>
+      <div className="flex flex-1 justify-around mb-2">
+        <h2 className="flex-1 text-4xl font-bold mb-2">Setlist</h2>
+        <span className="flex">
+          <FontAwesomeIcon
+            icon={faCircleInfo}
+            className="cursor-pointer text-gray-500"
+            size="lg"
+          />
+        </span>
+      </div>
       <hr className="border-t border-gray-300 opacity-50 ml-6"></hr>
       <ol className="list-decimal list-inside pl-6">
         {songs.length === 0 ? (
-          <li className="py-2">
+          <span className="py-2">
             There are no songs in this setlist. Please come back later.
-          </li>
+          </span>
         ) : (
           songs.map((song, songIndex) => {
             const songName = song.name;

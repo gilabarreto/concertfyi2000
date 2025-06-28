@@ -59,7 +59,7 @@ export default function ArtistPage(props) {
           <Setlist concert={concert} />
         </div>
 
-        <div className="bg-black text-white rounded-xl p-6 shadow flex items-center justify-center">
+        <div className="bg-black text-white rounded-3xl p-2 shadow flex items-center justify-center">
           <Player
             concert={concert}
             ticketmaster={props.ticketmaster}
@@ -70,18 +70,18 @@ export default function ArtistPage(props) {
 
         <div>
           <div className="bg-white rounded-xl p-6 shadow">
-            <NextConcertList
-              ticketmaster={props.ticketmaster}
-              setlist={props.setlist}
-              concert={concert}
-            />
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow mt-6">
             <LastConcerts
               concert={concert}
               setlist={props.setlist}
               artistId={artistId}
+            />
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow mt-6">
+            <NextConcertList
+              ticketmaster={props.ticketmaster}
+              setlist={props.setlist}
+              concert={concert}
             />
           </div>
         </div>

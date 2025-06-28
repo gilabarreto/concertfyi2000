@@ -69,7 +69,7 @@ export default function ConcertInfo(props) {
           <span className="flex items-end">
             <FontAwesomeIcon
               icon="fa-solid fa-heart"
-              className="text-gray-500"
+              className="cursor-pointer text-gray-500"
               size="2x"
             />
           </span>

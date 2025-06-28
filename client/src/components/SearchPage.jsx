@@ -37,7 +37,7 @@ export default function SearchPage({
       alert("Erro ao adicionar favorito");
     }
   };
-  
+
 
   const formatDate = (date) =>
     date.toLocaleDateString("en-US", {
@@ -103,15 +103,16 @@ export default function SearchPage({
               key={artistId}
               className="
     relative w-full max-w-[500px] aspect-video rounded-xl overflow-hidden
-    border-4 border-transparent border-solid
+    border-4 border-solid
     transition-all duration-300
-    hover:border-zinc-800
+   border-zinc-800
     cursor-pointer
   "
               style={{ background: `url(${bestImageUrl}) center/cover` }}
               onClick={handleNavigate}
             >
               <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex flex-col justify-between p-6 hover:bg-opacity-80 transition duration-300">
+
                 <div className="flex justify-between items-center">
                   <h1 className="text-4xl font-bold text-white lg:text-4xl">
                     {artist}

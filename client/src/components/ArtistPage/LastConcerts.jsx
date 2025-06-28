@@ -25,9 +25,9 @@ export default function LastConcerts(props) {
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {totalConcerts === 0 ? (
-        <p className="py-2 ml-6">
-          There are no last concerts. Please check back later.
-        </p>
+        <span className="py-2 ml-6">
+          There are no recent concerts. Please check back later.
+        </span>
       ) : (
         <>
           <ol className="pl-6">

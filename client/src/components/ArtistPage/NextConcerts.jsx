@@ -35,7 +35,7 @@ export default function LastConcertList(props) {
 
       {totalConcerts === 0 ? (
         <p className="py-2 ml-6">
-          There are no last concerts. Please check back later.
+          There are no upcoming concerts. Please check back later.
         </p>
       ) : (
         <>
