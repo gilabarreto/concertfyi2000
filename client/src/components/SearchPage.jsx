@@ -99,13 +99,13 @@ export default function SearchPage({
             });
 
           return (
+                  <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] overflow-hidden">
+
             <div
               key={artistId}
               className="
     relative w-full max-w-[500px] aspect-video rounded-xl overflow-hidden
-    border-4 border-solid
-    transition-all duration-300
-   border-zinc-800
+    
     cursor-pointer
   "
               style={{ background: `url(${bestImageUrl}) center/cover` }}
@@ -160,6 +160,7 @@ export default function SearchPage({
                   )}
                 </div>
               </div>
+            </div>
             </div>
           );
         })}

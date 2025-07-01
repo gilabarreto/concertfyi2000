@@ -5,6 +5,7 @@ import ArtistPage from "./components/ArtistPage";
 import SearchPage from "./components/SearchPage";
 import Footer from "./components/Footer";
 import Swiper from "./components/Swiper";
+import About from "./components/About";
 import './icons';
 
 
@@ -78,6 +79,15 @@ function App() {
                 long={long}
                 token={token}
               />
+            }
+          />
+
+          <Route
+            path="/about"
+            element={
+              <>
+                <About />
+              </>
             }
           />
         </Routes>

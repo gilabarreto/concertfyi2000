@@ -29,6 +29,20 @@ body {
   padding: 0; /* Controle o espaçamento interno de todo o conteúdo */
 }
 
+ ::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/*
+html {
+  scrollbar-width: none;
+} */
+
+html {
+  overflow-y: scroll;
+}
+
 body {
   @apply text-zinc-800;
   font-family: "DM Sans", sans-serif; /* Definir fonte padrão */
