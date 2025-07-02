@@ -6,6 +6,7 @@ import SearchPage from "./components/SearchPage";
 import Footer from "./components/Footer";
 import Swiper from "./components/Swiper";
 import About from "./components/About";
+import Contact from "./components/Contact";
 import './icons';
 
 
@@ -87,6 +88,14 @@ function App() {
             element={
               <>
                 <About />
+              </>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <>
+                <Contact />
               </>
             }
           />
