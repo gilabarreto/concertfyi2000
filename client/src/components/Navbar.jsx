@@ -38,7 +38,7 @@ function Navbar({
           <span className="text-3xl font-medium tracking-tight items-center">
             {"{"}
           </span>
-          <span className="text-3xl tracking-tight font-bold text-red-600">
+          <span className="text-3xl tracking-tight font-semibold text-red-600">
             fyi
           </span>
           <span className="text-3xl font-medium tracking-tight items-center">

@@ -1,43 +1,14 @@
 import logo from "../icons/logo-small.png";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getTicketmasterSuggest, addFavourite } from "../api/api";
 import { getBestImage } from "../helpers/selectors";
 
 export default function SearchPage({
   setlist = [],
   ticketmaster = {},
-  favourites = [],
-  setFavourites,
 }) {
   const navigate = useNavigate();
   const { attractions = [], events = [] } = ticketmaster;
-
-  const handleFavourite = async (artistId, artist, artistImage) => {
-    try {
-      let imageToUse = artistImage;
-      if (!artistImage?.startsWith("http")) {
-        const res = await getTicketmasterSuggest(artist);
-        imageToUse =
-          res.data._embedded?.attractions?.[0]?.images?.[0]?.url || logo;
-      }
-      const response = await addFavourite(artistId, artist, imageToUse);
-      const { artist_id } = response.data.favourite;
-      setFavourites((prev) => [
-        ...prev,
-        {
-          artist_id,
-          artistimage: imageToUse,
-          artistid: artistId,
-          artistname: artist,
-        },
-      ]);
-    } catch (err) {
-      console.error("Erro ao adicionar favorito:", err);
-      alert("Erro ao adicionar favorito");
-    }
-  };
-
 
   const formatDate = (date) =>
     date.toLocaleDateString("en-US", {
@@ -81,10 +52,6 @@ export default function SearchPage({
           const rawImages = ticketmasterMap.images || [];
           const bestImageUrl = getBestImage(rawImages) || logo;
           const spotifyLink = ticketmasterMap.externalLinks?.spotify?.[0]?.url;
-          const isFavourite = favourites.some(
-            (fav) => fav.artistid === artistId
-          );
-
           const artistEvents = events
             .filter((e) =>
               e._embedded?.attractions?.some((a) => a.name === artist)
@@ -99,72 +66,68 @@ export default function SearchPage({
             });
 
           return (
-                  <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] overflow-hidden">
-
             <div
-              key={artistId}
-              className="
-    relative w-full max-w-[500px] aspect-video rounded-xl overflow-hidden
-    
-    cursor-pointer
-  "
-              style={{ background: `url(${bestImageUrl}) center/cover` }}
-              onClick={handleNavigate}
+              key={artistId + concertId}  // usando um valor mais único ainda
+              className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] overflow-hidden"
             >
-              <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex flex-col justify-between p-6 hover:bg-opacity-80 transition duration-300">
+              <div
+                className="relative w-full aspect-video rounded-xl overflow-hidden"
+                style={{ background: `url(${bestImageUrl}) center/cover` }}
+              >
+                <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex justify-between p-6 hover:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20">
+                  <div className="flex flex-col">
 
-                <div className="flex justify-between items-center">
-                  <h1 className="text-4xl font-bold text-white lg:text-4xl">
-                    {artist}
-                  </h1>
-                  <FontAwesomeIcon
-                    icon="heart"
-                    size="2x"
-                    className={`favourite-icon${isFavourite ? " active" : ""}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleFavourite(artistId, artist, bestImageUrl);
-                    }}
-                  />
-                </div>
-                <div>
-                  <div className="text-2xl text-gray-300 mt-2 ml-4">
-                    Next concert
+                    <h1 className="pb-6 text-3xl lg:text-5xl font-bold text-zinc-100  hover:text-zinc-800
+          hover:underline hover:underline-offset-8
+          hover:opacity-90
+          transition-all duration-900 ease-in cursor-pointer" onClick={handleNavigate}>
+                      {artist}
+                    </h1>
+                    <div className="flex flex-col ml-4">
+                      <span className="text-2xl lg:text-3xl text-zinc-800 font-semibold">
+                        Next concert
+                      </span>
+                      <span className="text-xl lg:text-2xl text-zinc-100">
+                        {localDate ? nextConcertDate(localDate) : "Unavailable"}
+                      </span>
+                      <span span className="text-2xl lg:text-3xl text-zinc-800 font-semibold pt-2">
+                        Last concert
+                      </span>
+                      <span className="text-xl lg:text-2xl text-zinc-100">
+                        {lastConcertDate(item.eventDate) || "Unavailable"}
+                      </span>
+                    </div>
+
                   </div>
-                  <div className="text-xl text-white ml-4">
-                    {localDate ? nextConcertDate(localDate) : "Unavailable"}
+                  <div className="flex flex-col justify-between">
+                    <FontAwesomeIcon
+                      icon="heart"
+                      size="2x"
+                      className="cursor-pointer"
+                    />
+                    {spotifyLink ? (
+                      <a
+                        href={spotifyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <FontAwesomeIcon
+                          icon={["fab", "spotify"]}
+                          size="3x"
+                          className="spotify-true"
+                        />
+                      </a>
+                    ) : (
+                      <FontAwesomeIcon icon={["fab", "spotify"]} size="3x" />
+                    )}
                   </div>
-                  <div className="text-2xl text-gray-300 mt-2 ml-4">
-                    Last concert
-                  </div>
-                  <div className="text-xl text-white ml-4">
-                    {lastConcertDate(item.eventDate) || "Unavailable"}
-                  </div>
-                </div>
-                <div className="flex justify-end">
-                  {spotifyLink ? (
-                    <a
-                      href={spotifyLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <FontAwesomeIcon
-                        icon={["fab", "spotify"]}
-                        size="3x"
-                        className="spotify-true"
-                      />
-                    </a>
-                  ) : (
-                    <FontAwesomeIcon icon={["fab", "spotify"]} size="3x" />
-                  )}
                 </div>
               </div>
-            </div>
             </div>
           );
         })}
       </div>
-    </div>
+    </div >
   );
 }
