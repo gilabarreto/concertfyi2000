@@ -1,4 +1,3 @@
-import logo from "../icons/logo-small.png";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getBestImage } from "../helpers/selectors";
@@ -7,6 +6,7 @@ export default function SearchPage({
   setlist = [],
   ticketmaster = {},
 }) {
+
   const navigate = useNavigate();
   const { attractions = [], events = [] } = ticketmaster;
 
@@ -50,7 +50,7 @@ export default function SearchPage({
           const ticketmasterMap =
             attractions.find((a) => a.name === artist) || {};
           const rawImages = ticketmasterMap.images || [];
-          const bestImageUrl = getBestImage(rawImages) || logo;
+          const bestImageUrl = getBestImage(rawImages);
           const spotifyLink = ticketmasterMap.externalLinks?.spotify?.[0]?.url;
           const artistEvents = events
             .filter((e) =>
@@ -68,38 +68,44 @@ export default function SearchPage({
           return (
             <div
               key={artistId + concertId}  // usando um valor mais único ainda
-              className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] overflow-hidden"
+              className="relative w-full overflow-hidden"
             >
+
               <div
                 className="relative w-full aspect-video rounded-xl overflow-hidden"
-                style={{ background: `url(${bestImageUrl}) center/cover` }}
+                style={bestImageUrl ? { background: `url(${bestImageUrl}) center/cover` } : {}}  // ← Modificado (condicional)
               >
-                <div className="absolute inset-0 bg-red-600 bg-opacity-0 flex justify-between p-6 hover:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20">
-                  <div className="flex flex-col">
+                <div className="py-8 absolute inset-0 bg-red-600 bg-opacity-0 flex justify-between items-center hover:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20 text-red-600  hover:text-zinc-100">
+                  <span className="text-8xl sm:text-[110px] text-zinc-800  font-medium pr-4">
+                    {"{"}
+                  </span>
 
-                    <h1 className="pb-6 text-3xl lg:text-5xl font-bold text-zinc-100  hover:text-zinc-800
+                  <div className="w-full flex flex-col justify-between ">
+                    <div className="flex flex-1 justify-between mb-2 ">
+                      <h1 className="pb-2 text-2xl lg:text-3xl font-bold hover:text-zinc-800
           hover:underline hover:underline-offset-8
           hover:opacity-90
           transition-all duration-900 ease-in cursor-pointer" onClick={handleNavigate}>
-                      {artist}
-                    </h1>
-                    <div className="flex flex-col ml-4">
-                      <span className="text-2xl lg:text-3xl text-zinc-800 font-semibold">
+                        {artist}
+                      </h1>
+                    </div>
+                    <div className="flex flex-col justify-between mb-2">
+                      <span className="text-xl lg:text-3xl font-semibold">
                         Next concert
                       </span>
-                      <span className="text-xl lg:text-2xl text-zinc-100">
+                      <span className="text-xl lg:text-2xl">
                         {localDate ? nextConcertDate(localDate) : "Unavailable"}
                       </span>
-                      <span span className="text-2xl lg:text-3xl text-zinc-800 font-semibold pt-2">
+                      <span span className="text-xl lg:text-3xl font-semibold pt-2">
                         Last concert
                       </span>
-                      <span className="text-xl lg:text-2xl text-zinc-100">
+                      <span className="text-xl lg:text-2xl">
                         {lastConcertDate(item.eventDate) || "Unavailable"}
                       </span>
                     </div>
-
                   </div>
-                  <div className="flex flex-col justify-between">
+
+                  <div className="flex flex-col justify-around h-full">
                     <FontAwesomeIcon
                       icon="heart"
                       size="2x"
@@ -121,6 +127,11 @@ export default function SearchPage({
                     ) : (
                       <FontAwesomeIcon icon={["fab", "spotify"]} size="3x" />
                     )}
+                  </div>
+                  <div>
+                    <span className="text-8xl sm:text-[110px] text-zinc-800  font-medium pl-4">
+                      {"}"}
+                    </span>
                   </div>
                 </div>
               </div>
