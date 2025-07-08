@@ -4,7 +4,7 @@ client/node_modules/
 server/node_modules/
 
 # === BUILD ARTIFACTS ===
-client/dist/
+#client/dist/
 
 # === ENVIRONMENT VARIABLES ===
 .env
