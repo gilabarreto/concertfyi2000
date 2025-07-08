@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "postinstall": "npm install --prefix client",
     "build": "npm run build --prefix client",
     "preview": "npm run preview --prefix client"
   },

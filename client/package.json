@@ -27,8 +27,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "postinstall": "npm install --prefix client",
-    "build": "npm run build --prefix client",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "eslintConfig": {
