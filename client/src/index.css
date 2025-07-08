@@ -21,31 +21,30 @@
 
 html,
 body {
-  margin: 0; /* Retira qualquer margem padrão */
-  padding: 0; /* Retira qualquer padding padrão */
+  margin: 0;
+  padding: 0;
 }
 
 .container {
-  padding: 0; /* Controle o espaçamento interno de todo o conteúdo */
+  padding: 0;
 }
 
- /* ::-webkit-scrollbar {
+ ::-webkit-scrollbar {
   width: 0px;
   background: transparent;
-} */
+}
 
-/*
 html {
   scrollbar-width: none;
-} */
+}
 
-/* html {
+html {
   overflow-y: scroll;
-} */
+}
 
 body {
   @apply text-zinc-800;
-  font-family: "DM Sans", sans-serif; /* Definir fonte padrão */
+  font-family: "DM Sans", sans-serif;
 }
 
 .spotify-player-container {

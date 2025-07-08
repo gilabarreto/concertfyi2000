@@ -63,11 +63,6 @@ router.get("/", authorization, async (req, res) => {
       res.json(sqlresults.rows);
     });
 
-  // res.json([ {
-  //   artistId: '9e8e7fd5-9d42-4474-bc39-bb4a3811e278',
-  //   artistName: 'Metallica Reloaded',
-  //   image: 'https://s1.ticketm.net/dam/a/6bf/4d98a9bf-2443-4152-8137-143cfa25a6bf_1853051_EVENT_DETAIL_PAGE_16_9.jpg'
-  // }]);
 });
 
 module.exports = router;

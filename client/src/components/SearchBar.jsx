@@ -19,21 +19,17 @@ export default function SearchBar(props) {
   const term = useDebounce(value, 700);
 
   const fetchData = useCallback(() => {
-    console.log("🔍 Buscando dados para:", value);
 
     Promise.all([getSetlist(value), getTicketmaster(value)])
       .then(([setlistResponse, ticketmasterResponse]) => {
         const setlists = setlistResponse.data.setlist || [];
         const ticketmasterData = ticketmasterResponse.data._embedded || {};
 
-        console.log("🎵 Setlist API response:", setlists);
-        console.log("🎫 Ticketmaster API response:", ticketmasterData);
-
         setSetlist(setlists);
         setTicketmaster(ticketmasterData);
       })
       .catch((err) => {
-        console.error("Erro ao buscar dados:", err);
+        console.error('Error:', err);
       });
   }, [value, setSetlist, setTicketmaster]);
 

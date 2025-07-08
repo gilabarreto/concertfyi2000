@@ -77,7 +77,7 @@ function Navbar({
           <Link
             key={link.path}
             to={link.path}
-            className="text-2xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline" // Melhoria 15: Efeito hover
+            className="text-2xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline"
             onClick={() => setValue("")}
           >
             {link.label}
@@ -93,7 +93,7 @@ function Navbar({
         <button
           onClick={toggleMenu}
           className="text-red-600 text-3xl focus:outline-none"
-          aria-expanded={isOpen} // Indica estado do menu
+          aria-expanded={isOpen}
           aria-label="Menu"
         >
           <span className="flex items-center">
@@ -119,8 +119,8 @@ function Navbar({
             <Link
               key={link.path}
               to={link.path}
-              onClick={closeMenu} // Melhoria 25: Fecha menu ao clicar
-              role="menuitem" // Melhoria 26: Item de menu ARIA
+              onClick={closeMenu}
+              role="menuitem"
               className="
           hover:text-red-700
           hover:underline hover:underline-offset-8

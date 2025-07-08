@@ -10,8 +10,6 @@ app.use(express.json());
 app.use(cors());
 
 // API routes
-app.use("/auth", require("./routes/jwtAuth"));
-app.use("/favourite", require("./routes/favourite"));
 app.use("/dashboard", require("./routes/dashboard"));
 
 // Serve React app (assuming React is in client/build)

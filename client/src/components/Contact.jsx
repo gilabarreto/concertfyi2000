@@ -30,14 +30,14 @@ export default function Contact() {
             });
 
             if (response.ok) {
-                alert('Mensagem enviada com sucesso!');
+                alert('Message sent successfully!');
                 setFormData({ name: '', email: '', message: '' });
             } else {
-                alert('Ocorreu um erro ao enviar a mensagem.');
+                alert('An error occurred while sending the message');
             }
         } catch (error) {
-            console.error('Erro:', error);
-            alert('Falha na conexão. Tente novamente mais tarde.');
+            console.error('Error:', error);
+            alert('Connection failed. Please try again later.');
         }
     };
 
@@ -52,7 +52,6 @@ export default function Contact() {
                 </div>
                 <div className="w-[350px] sm:w-[600px] bg-red-600 rounded-3xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-8">
                     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                        {/* Linha com Name e Email lado a lado */}
                         <div className="flex flex-col sm:flex-row gap-4">
                             <div className="flex-1">
                                 <label htmlFor="name" className="block text-zinc-100 font-medium mb-1">Name</label>
@@ -81,7 +80,6 @@ export default function Contact() {
                             </div>
                         </div>
 
-                        {/* Campo Message (mantém como estava) */}
                         <div>
                             <label htmlFor="message" className="block text-zinc-100 font-medium mb-1">Message</label>
                             <textarea
@@ -89,7 +87,6 @@ export default function Contact() {
                                 name="message"
                                 value={formData.message}
                                 onChange={handleChange}
-                                // rows="4"
                                 className="w-full p-2 rounded-md"
                                 required
                             ></textarea>

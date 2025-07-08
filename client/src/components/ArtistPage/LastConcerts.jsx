@@ -10,8 +10,6 @@ export default function LastConcerts(props) {
   const [page, setPage] = useState(0);
 
   const setlistEvents = getLastConcertsByArtist(props.setlist, props.artistId);
-  console.log("setlistEvents:", setlistEvents, "artistId:", props.artistId);
-  
   const totalConcerts = setlistEvents.length;
   const pageCount = Math.ceil(totalConcerts / pageSize);
 
