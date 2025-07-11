@@ -4,32 +4,13 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
+  base: '/', // Mantenha como '/' se for usar Render
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  server: {
-    port: 3000,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:4000',
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
-      },
-      '/setlist': {
-        target: 'https://api.setlist.fm',
-        changeOrigin: true,
-        secure: true,
-        rewrite: path => path.replace(/^\/setlist/, ''),
-      },
-      '/ticketmaster': {
-        target: 'https://app.ticketmaster.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: path => path.replace(/^\/ticketmaster/, ''),
-      }
-    },
+  build: {
+    outDir: 'dist', // Certifique-se de que está gerando na pasta 'dist'
   },
 })

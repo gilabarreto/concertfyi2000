@@ -1,0 +1,54 @@
+.
+├── README.md
+├── client
+│   ├── drawio
+│   │   ├── ERD1.drawio.svg
+│   │   ├── ERD2.drawio.svg
+│   │   └── index.drawio.svg
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   └── robots.txt
+│   ├── src
+│   │   ├── App.jsx
+│   │   ├── api
+│   │   ├── components
+│   │   ├── helpers
+│   │   ├── hooks
+│   │   ├── icons
+│   │   ├── icons.js
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── tailwind.config.js
+│   └── vite.config.js
+├── docs
+│   ├── user-stories.md
+│   ├── wireframe1.jpg
+│   └── wireframe2.jpg
+├── estrutura.txt
+├── package-lock.json
+├── package.json
+├── server
+│   ├── db
+│   │   ├── 01_users.sql
+│   │   ├── 02_artists.sql
+│   │   └── 03_favourites.sql
+│   ├── db.js
+│   ├── helpers.js
+│   ├── index.js
+│   ├── middleware
+│   │   ├── authorization.js
+│   │   └── validInfo.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── routes
+│   │   ├── dashboard.js
+│   │   ├── favourite.js
+│   │   └── jwtAuth.js
+│   └── utils
+│       └── jwtGenerator.js
+└── static.json
+
+16 directories, 36 files

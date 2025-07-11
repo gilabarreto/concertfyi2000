@@ -1,18 +1,16 @@
 {
   "headers": {
-    "/assets/*.css": {
-      "Content-Type": "text/css"
-    },
-    "/assets/*.js": {
-      "Content-Type": "application/javascript"
+    "/**": {
+      "Cache-Control": "no-cache"
     }
   },
-  
   "routes": [
     {
       "src": "/.*",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "no-cache"
+      }
     }
   ]
-
 }
