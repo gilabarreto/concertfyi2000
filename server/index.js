@@ -7,10 +7,12 @@ const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-  origin: "https://gilabarreto.github.io",
-  credentials: true,
-}));
+app.use(cors(
+//   {
+//   origin: "https://gilabarreto.github.io",
+//   credentials: true,
+// }
+));
 
 // Rotas proxy para APIs externas
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
