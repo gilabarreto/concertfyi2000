@@ -1,43 +1,40 @@
-import axios from "axios"
+import axios from "axios";
+
+const API_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onrender.com";
 
 const API = axios.create({
-  baseURL: "/api",
-})
+  baseURL: `${API_BASE}/api`,
+});
 
-API.interceptors.request.use(config => {
-  const token = localStorage.getItem("token")
+// Intercepta para enviar token, se houver
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
   if (token) {
-    config.headers.token = token
+    config.headers.token = token;
   }
-  return config
-})
+  return config;
+});
 
 export const getFavourites = () => API.get("/favourite")
 
 export const getSetlist = (artistName) =>
-  axios.get(`${import.meta.env.VITE_API_BASE}/api/setlist/search`, {
+  API.get("/setlist/search", {
     params: { artistName },
   });
 
-
+// 🎟 Ticketmaster
 export const getTicketmaster = (artistName) =>
-  axios.get(`${import.meta.env.VITE_API_BASE}/api/ticketmaster/suggest`, {
+  API.get("/ticketmaster/suggest", {
     params: { keyword: artistName },
   });
 
-
 export const getTicketmasterSuggest = (artist) =>
-  axios.get("/ticketmaster/discovery/v2/suggest", {
-    params: {
-      keyword: artist,
-      segmentId: "KZFzniwnSyZfZ7v7nJ",
-      sort: "name,asc",
-      apikey: import.meta.env.VITE_TICKETMASTER_KEY,
-    },
-  })
+  API.get("/ticketmaster/suggest", {
+    params: { keyword: artist },
+  });
 
 export const getLocalEvents = (lat, long) =>
-  axios.get(`${import.meta.env.VITE_API_BASE}/api/ticketmaster/events`, {
+  API.get("/ticketmaster/events", {
     params: { lat, long },
   });
 
