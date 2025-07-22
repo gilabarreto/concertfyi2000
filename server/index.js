@@ -11,8 +11,6 @@ app.use(cors({ origin: "https://gilabarreto.github.io" }));
 
 // Rotas internas
 app.use("/api/dashboard", require("./routes/dashboard"));
-app.use("/api/auth", require("./routes/auth")); // se tiver
-app.use("/api/favourite", require("./routes/favourite")); // se tiver
 
 // Rotas proxy para APIs externas
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
