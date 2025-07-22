@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const API_BASE = "https://concertfyi2000.onrender.com";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onrender.com";
 
 const API = axios.create({
-  baseURL: `${API_BASE}`,
+  baseURL: `${API_BASE}/api`,
 });
 
 // Intercepta para enviar token, se houver
