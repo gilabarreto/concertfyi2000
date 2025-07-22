@@ -12,9 +12,6 @@ app.use(cors({
   credentials: true,
 }));
 
-// Rotas internas
-app.use("/api/dashboard", require("./routes/dashboard"));
-
 // Rotas proxy para APIs externas
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
 app.use("/api/setlist", require("./routes/setlist"));
