@@ -1,22 +1,22 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
+require("dotenv").config();
 
 const app = express();
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "https://gilabarreto.github.io" }));
 
-// API routes
-app.use("/dashboard", require("./routes/dashboard"));
+// Rotas internas
+app.use("/api/dashboard", require("./routes/dashboard"));
+app.use("/api/auth", require("./routes/auth")); // se tiver
+app.use("/api/favourite", require("./routes/favourite")); // se tiver
 
-// Serve React app (assuming React is in client/build)
-app.use(express.static(path.join(__dirname, "../client/build")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
-});
+// Rotas proxy para APIs externas
+app.use("/api/ticketmaster", require("./routes/ticketmaster"));
+app.use("/api/setlist", require("./routes/setlist"));
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
