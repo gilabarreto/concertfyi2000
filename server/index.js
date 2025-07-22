@@ -7,7 +7,10 @@ const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(express.json());
-app.use(cors({ origin: "https://gilabarreto.github.io" }));
+app.use(cors({
+  origin: "https://gilabarreto.github.io",
+  credentials: true,
+}));
 
 // Rotas internas
 app.use("/api/dashboard", require("./routes/dashboard"));
