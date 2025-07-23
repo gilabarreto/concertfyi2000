@@ -6,11 +6,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const allowedOrigins = [
   "https://gilabarreto.github.io",
-  "https://concertfyi.com",  // GitHub Pages
-  "http://localhost:3000",          // Frontend local
+  "https://concertfyi.com",
+  "http://localhost:3000",
 ];
 
-// Middleware
 app.use(express.json());
 app.use(cors({
   origin: allowedOrigins,
@@ -18,7 +17,6 @@ app.use(cors({
 }));
 
 
-// Rotas proxy para APIs externas
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
 app.use("/api/setlist", require("./routes/setlist"));
 

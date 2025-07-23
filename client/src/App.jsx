@@ -15,9 +15,7 @@ function App() {
   const [ticketmaster, setTicketmaster] = useState([]);
   const [lat, setLat] = useState(null);
   const [long, setLong] = useState(null);
-  const [token, setToken] = useState("");
   const [value, setValue] = useState("");
-  const [favourites, setFavourites] = useState([]);
   const [city, setCity] = useState("");
 
   return (
@@ -40,8 +38,6 @@ function App() {
             element={
               value ? (
                 <SearchPage
-                  favourites={favourites}
-                  setFavourites={setFavourites}
                   setlist={setlist}
                   ticketmaster={ticketmaster}
                 />
@@ -60,8 +56,6 @@ function App() {
             element={
               <>
                 <SearchPage
-                  favourites={favourites}
-                  setFavourites={setFavourites}
                   setlist={setlist}
                   ticketmaster={ticketmaster}
                 />
@@ -77,7 +71,6 @@ function App() {
                 ticketmaster={ticketmaster}
                 lat={lat}
                 long={long}
-                token={token}
               />
             }
           />

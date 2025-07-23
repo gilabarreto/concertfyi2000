@@ -22,8 +22,6 @@ A web platform for music lovers to explore live concerts and setlists by artist,
 
 - Backend: Node.js, Express.js
 
-- Database: PostgreSQL
+- APIs: Setlist.fm, Ticketmaster, Google Maps, Nominatim
 
-- APIs: Setlist.fm, Ticketmaster
-
-- Hosting: Render
+- Hosting: Github Pages + Render

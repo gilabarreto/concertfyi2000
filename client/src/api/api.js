@@ -6,7 +6,6 @@ const API = axios.create({
   baseURL: `${API_BASE}/api`,
 });
 
-// Intercepta para enviar token, se houver
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -20,7 +19,6 @@ export const getSetlist = (artistName) =>
     params: { artistName },
   });
 
-// 🎟 Ticketmaster
 export const getTicketmaster = (artistName) =>
   API.get("/ticketmaster/suggest", {
     params: { keyword: artistName },
