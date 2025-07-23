@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build": "cd client && npm install && npm run build",
+    "postinstall": "cd server && npm install"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
