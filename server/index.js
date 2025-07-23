@@ -4,15 +4,16 @@ require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const allowedOrigins = [
+  "https://gilabarreto.github.io",  // GitHub Pages
+  "http://localhost:3000",          // Frontend local
+];
 
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://gilabarreto.github.io"
-  ],
-  credentials: true
+  origin: allowedOrigins,
+  credentials: true,
 }));
 
 
