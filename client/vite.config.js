@@ -5,9 +5,6 @@ import path from 'path'
 export default defineConfig({
   base: '/concertfyi2000/',
   plugins: [react()],
-  define: {
-    'import.meta.env.VITE_API_BASE': JSON.stringify('https://concertfyi2000.onrender.com')
-  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -36,3 +33,5 @@ export default defineConfig({
     },
   },
 })
+
+console.log('Base URL:', import.meta.env.VITE_API_BASE);
