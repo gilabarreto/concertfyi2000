@@ -6,7 +6,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build": "cd client && npm install && npm run build",
-    "postinstall": "npm install --prefix server"
+    "postinstall": ""
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
