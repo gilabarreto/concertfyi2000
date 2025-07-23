@@ -21,7 +21,7 @@ function App() {
   const [city, setCity] = useState("");
 
   return (
-    <Router basename="/concertfyi2000/">
+    <Router basename="/">
       <Navbar
         setValue={setValue}
         value={value}

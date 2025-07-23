@@ -5,7 +5,8 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 const allowedOrigins = [
-  "https://gilabarreto.github.io",  // GitHub Pages
+  "https://gilabarreto.github.io",
+  "https://concertfyi.com",  // GitHub Pages
   "http://localhost:3000",          // Frontend local
 ];
 
