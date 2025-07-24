@@ -9,7 +9,6 @@ import About from "./components/About";
 import Contact from "./components/Contact";
 import './icons';
 
-
 function App() {
   const [setlist, setSetlist] = useState([]);
   const [ticketmaster, setTicketmaster] = useState([]);
@@ -31,7 +30,7 @@ function App() {
         long={long}
         city={city}
       />
-      <main className="pt-16 pb-16 min-h-screen w-full box-border flex">
+      <main className="pt-16 pb-16 min-h-screen w-full flex">
         <Routes>
           <Route
             path="/"
@@ -50,19 +49,15 @@ function App() {
               )
             }
           />
-
           <Route
             path="/search"
             element={
-              <>
-                <SearchPage
-                  setlist={setlist}
-                  ticketmaster={ticketmaster}
-                />
-              </>
+              <SearchPage
+                setlist={setlist}
+                ticketmaster={ticketmaster}
+              />
             }
           />
-
           <Route
             path="artists/:artistId/concerts/:concertId"
             element={
@@ -74,23 +69,8 @@ function App() {
               />
             }
           />
-
-          <Route
-            path="/about"
-            element={
-              <>
-                <About />
-              </>
-            }
-          />
-          <Route
-            path="/contact"
-            element={
-              <>
-                <Contact />
-              </>
-            }
-          />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
       <Footer />
