@@ -9,26 +9,22 @@ import LastConcerts from "./ArtistPage/LastConcerts";
 
 export default function ArtistPage(props) {
   const navigate = useNavigate();
-
   const [spotifyArtist, setSpotifyArtist] = useState([]);
+  const { concertId, artistId } = useParams();
 
-  let { concertId, artistId } = useParams();
-
-  if (props.setlist.length === 0 || props.ticketmaster === undefined) {
-    return null;
-  }
+  if (!props.setlist.length || !props.ticketmaster) return null;
 
   const concert = props.setlist.find((result) => result.id === concertId);
 
   useEffect(() => {
-    if (!concert) {
-      navigate("/");
-    }
+    if (!concert) navigate("/");
   }, [concert, navigate]);
 
   if (!concert) {
     return (
-      <div className="p-8 text-center text-gray-400">Loading concert info…</div>
+      <div className="p-8 text-center text-gray-400">
+        Loading concert info…
+      </div>
     );
   }
 
@@ -50,7 +46,7 @@ export default function ArtistPage(props) {
         </div>
 
         <div className="bg-gray-100 rounded-xl shadow flex-1 h-64 lg:h-auto">
-          {props.ticketmaster ? <Map concert={concert} /> : null}
+          {props.ticketmaster && <Map concert={concert} />}
         </div>
       </div>
 
