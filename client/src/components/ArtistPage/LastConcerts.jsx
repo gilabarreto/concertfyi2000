@@ -23,7 +23,7 @@ export default function LastConcerts(props) {
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {totalConcerts === 0 ? (
-        <span className="py-2 ml-6">
+        <span className="py-2 ml-6 text-gray-500">
           There are no recent concerts. Please check back later.
         </span>
       ) : (
@@ -37,6 +37,7 @@ export default function LastConcerts(props) {
                 month: "long",
                 day: "numeric",
               });
+
               const city = concert.venue.city?.name || "";
               const country = concert.venue.city?.country.code || "";
 
@@ -48,9 +49,7 @@ export default function LastConcerts(props) {
                   <span
                     className="cursor-pointer flex items-center space-x-2"
                     onClick={() =>
-                      navigate(
-                        `/artists/${props.artistId}/concerts/${concert.id}`
-                      )
+                      navigate(`/artists/${props.artistId}/concerts/${concert.id}`)
                     }
                   >
                     <span>{dateLabel}</span>
@@ -58,13 +57,13 @@ export default function LastConcerts(props) {
                       ({city}, {country})
                     </span>
                   </span>
+
                   <FontAwesomeIcon
                     icon={faRotateLeft}
                     className="cursor-pointer text-red-600 hover:text-red-800"
+                    title="Go to concert"
                     onClick={() =>
-                      navigate(
-                        `/artists/${props.artistId}/concerts/${concert.id}`
-                      )
+                      navigate(`/artists/${props.artistId}/concerts/${concert.id}`)
                     }
                   />
                 </li>
@@ -80,6 +79,7 @@ export default function LastConcerts(props) {
             >
               &lt; Prev
             </button>
+
             {Array.from({ length: pageCount }).map((_, i) => (
               <button
                 key={i}
@@ -93,6 +93,7 @@ export default function LastConcerts(props) {
                 {i + 1}
               </button>
             ))}
+
             <button
               className="px-2 py-1 rounded disabled:opacity-50"
               onClick={() => setPage((p) => p + 1)}
