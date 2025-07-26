@@ -2,8 +2,7 @@ import SpotifyPlayer from "react-spotify-player";
 
 export default function Player(props) {
   const spotify = props.ticketmaster.attractions
-    ? props.ticketmaster.attractions[0]?.externalLinks?.spotify?.[0]?.url ||
-      null
+    ? props.ticketmaster.attractions[0]?.externalLinks?.spotify?.[0]?.url || null
     : null;
 
   const size = {
@@ -22,7 +21,7 @@ export default function Player(props) {
   }
 
   return (
-    <div className="spotify-player-container">
+    <div className="spotify-player-container w-full h-full">
       <SpotifyPlayer uri={spotify} size={size} view={view} theme={theme} />
     </div>
   );
