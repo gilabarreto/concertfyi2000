@@ -12,15 +12,21 @@ router.get("/search", async (req, res) => {
         "x-api-key": process.env.SETLISTFM_API_KEY,
         "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)",
       },
-      params: { artistName, p: 1 },
+      params: {
+        artistName,
+        p: 1,
+      },
     });
 
     res.json(response.data);
   } catch (error) {
     console.error("Axios error:", error.message);
+
     res
       .status(error.response?.status || 500)
-      .json({ error: error.response?.data?.message || "Setlist.fm fetch failed" });
+      .json({
+        error: error.response?.data?.message || "Setlist.fm fetch failed",
+      });
   }
 });
 
