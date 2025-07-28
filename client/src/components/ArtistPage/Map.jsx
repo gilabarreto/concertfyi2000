@@ -1,7 +1,6 @@
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 
 export default function Map({ concert }) {
-  // Safely grab coords or bail out
   const coords = concert?.venue?.city?.coords;
   if (!coords) return null;
 
@@ -18,10 +17,7 @@ export default function Map({ concert }) {
   }
 
   return (
-    <ArtistMap
-      latitude={coords.lat}
-      longitude={coords.long}
-    />
+    <ArtistMap latitude={coords.lat} longitude={coords.long} />
   );
 }
 
