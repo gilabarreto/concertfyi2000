@@ -9,20 +9,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
+
+      - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          
-      - name: Install dependencies
+
+      # Instala as dependências do client
+      - name: Install client dependencies
         run: npm install
-        
-      - name: Build
+        working-directory: ./client
+
+      # Build do projeto Vite
+      - name: Build client
         run: npm run build
-        
+        working-directory: ./client
+        env:
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE}}  # Se necessário
+
+      # Deploy para GitHub Pages
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./client/dist  # Onde o Vite gera os arquivos estáticos
+          cname: concertfyi.com      # Para manter seu domínio customizado
