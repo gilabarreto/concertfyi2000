@@ -9,6 +9,7 @@ router.get("/suggest", async (req, res) => {
 
   try {
     const url = `${TM_BASE}/suggest`;
+
     const response = await axios.get(url, {
       params: {
         apikey: process.env.TICKETMASTER_API_KEY,
@@ -24,9 +25,12 @@ router.get("/suggest", async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error("Ticketmaster suggest error:", error.message);
+
     res
       .status(error.response?.status || 500)
-      .json({ error: error.response?.data || "Ticketmaster suggest fetch failed" });
+      .json({
+        error: error.response?.data || "Ticketmaster suggest fetch failed",
+      });
   }
 });
 
@@ -35,6 +39,7 @@ router.get("/events", async (req, res) => {
 
   try {
     const url = `${TM_BASE}/events.json`;
+
     const response = await axios.get(url, {
       params: {
         apikey: process.env.TICKETMASTER_API_KEY,
@@ -52,9 +57,12 @@ router.get("/events", async (req, res) => {
     res.json(response.data);
   } catch (error) {
     console.error("Ticketmaster events error:", error.message);
+
     res
       .status(error.response?.status || 500)
-      .json({ error: error.response?.data || "Ticketmaster events fetch failed" });
+      .json({
+        error: error.response?.data || "Ticketmaster events fetch failed",
+      });
   }
 });
 
