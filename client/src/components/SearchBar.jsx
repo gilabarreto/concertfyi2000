@@ -1,7 +1,7 @@
-import { useEffect, useCallback, useState } from "react";
-import useDebounce from "../hooks/useDebounce";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSetlist, getTicketmaster } from "../api/api";
+import useDebounce from "../hooks/useDebounce";
+import { useSetlistSearch, useTicketmasterSearch } from "../api/queries";
 
 export default function SearchBar(props) {
   const { value, setValue, setSetlist, setTicketmaster } = props;
@@ -9,39 +9,28 @@ export default function SearchBar(props) {
   const { artistId } = useParams();
   const [placeholder, setPlaceholder] = useState("Search your favorite artist");
 
+  const term = useDebounce(value, 700);
+
+  // Usando React Query para as chamadas de API
+  const { data: setlistData } = useSetlistSearch(term);
+  const { data: ticketmasterData } = useTicketmasterSearch(term);
+
+  // Atualiza os estados quando os dados chegarem
+  useEffect(() => {
+    if (setlistData) {
+      setSetlist(setlistData.setlist || []);
+    }
+    if (ticketmasterData) {
+      setTicketmaster(ticketmasterData._embedded || {});
+    }
+  }, [setlistData, ticketmasterData, setSetlist, setTicketmaster]);
+
   const handleChange = (event) => {
     if (artistId) {
       navigate("/search");
     }
     setValue(event.target.value);
   };
-
-  const term = useDebounce(value, 700);
-
-  const fetchData = useCallback(() => {
-
-    Promise.all([getSetlist(value), getTicketmaster(value)])
-      .then(([setlistResponse, ticketmasterResponse]) => {
-        const setlists = setlistResponse.data.setlist || [];
-        const ticketmasterData = ticketmasterResponse.data._embedded || {};
-
-        setSetlist(setlists);
-        setTicketmaster(ticketmasterData);
-      })
-      .catch((err) => {
-        console.error('Error:', err);
-      });
-  }, [value, setSetlist, setTicketmaster]);
-
-  useEffect(() => {
-    if (!term || term.length === 0) return;
-    fetchData();
-  
-    // redireciona automaticamente para /search
-    if (location.pathname !== "/search") {
-      navigate("/search");
-    }
-  }, [term, fetchData]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -75,12 +64,12 @@ export default function SearchBar(props) {
         placeholder={placeholder}
         className="
         flex h-10  max-w-xs px-4 rounded-full
-        bg-red-600 placeholder-white text-white
-        ring-0
-        focus:outline-none
-        focus:ring-2
-        focus:ring-black lg:w-96
-      "
+          bg-red-600 placeholder-white text-white
+          ring-0
+          focus:outline-none
+          focus:ring-2
+          focus:ring-black lg:w-96
+        "
       />
       
     </form>
