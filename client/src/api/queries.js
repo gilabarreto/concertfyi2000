@@ -35,3 +35,38 @@ export const useTicketmasterSearch = (artistName) => {
     enabled: !!artistName,
   });
 };
+
+export const useArtistData = (artistName) => {
+  return useQuery({
+    queryKey: ['artist-data', artistName],
+    queryFn: async () => {
+      try {
+        const [setlistRes, ticketmasterRes] = await Promise.all([
+          getSetlist(artistName).catch(err => {
+            console.error("Erro no setlist:", err);
+            console.log(`Iniciando busca por: ${artistName}`);
+            return { data: { setlist: [] } };
+          }),
+          getTicketmaster(artistName).catch(err => {
+            console.error("Erro no ticketmaster:", err);
+            return { data: { _embedded: {} } };
+          }),
+        ]);
+        
+        console.log("Dados recebidos - Setlist:", setlistRes?.data);
+        console.log("Dados recebidos - Ticketmaster:", ticketmasterRes?.data);
+
+        return {
+          setlist: setlistRes?.data?.setlist || [],
+          ticketmaster: ticketmasterRes?.data?._embedded || {},
+        };
+      } catch (error) {
+        console.error("Erro geral na query:", error);
+        throw error; // Rejeita a promise para ser capturada no handleSlideClick
+      }
+    },
+    enabled: !!artistName,
+    staleTime: 10 * 60 * 1000,
+    retry: 2, // Tentar novamente 2 vezes em caso de erro
+  });
+};
