@@ -8,6 +8,7 @@ client/dist/
 
 # === ENVIRONMENT VARIABLES ===
 .env
+.env.production
 .env.*.local
 
 # === LOG FILES ===

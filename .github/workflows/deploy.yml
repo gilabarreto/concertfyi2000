@@ -31,6 +31,8 @@ jobs:
         working-directory: ./client
         env:
           VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
+          VITE_GOOGLE_MAPS_KEY: ${{ secrets.VITE_GOOGLE_MAPS_KEY }}
+          VITE_FORMSPREE_ID: ${{ secrets.VITE_FORMSPREE_ID }}
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
