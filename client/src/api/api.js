@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onrend
 
 const API = axios.create({
   baseURL: `${API_BASE}/api`,
-  timeout: 10000, // 10 segundos de timeout
+  timeout: 10000,
 });
 
 API.interceptors.request.use((config) => {
@@ -15,25 +15,21 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Adicionando interceptador para erros
 API.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      // Erros 4xx/5xx
       return Promise.reject({
         message: error.response.data?.message || "Request failed",
         status: error.response.status,
         data: error.response.data,
       });
     } else if (error.request) {
-      // Request foi feita mas não houve resposta
       return Promise.reject({
         message: "No response received",
         isOffline: true,
       });
     } else {
-      // Erro ao configurar a request
       return Promise.reject({
         message: error.message,
       });

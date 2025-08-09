@@ -1,4 +1,3 @@
-// src/hooks/useLocalConcerts.js
 import { useQuery } from "@tanstack/react-query";
 import { getLocalEvents } from "../api/api";
 

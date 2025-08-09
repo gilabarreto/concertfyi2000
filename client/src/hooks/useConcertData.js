@@ -1,4 +1,3 @@
-// hooks/useConcertData.js
 import { useQuery } from '@tanstack/react-query';
 import { getSetlist, getTicketmaster } from '../api/api';
 

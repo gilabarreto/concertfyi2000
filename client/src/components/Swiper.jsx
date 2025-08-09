@@ -52,14 +52,13 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
   
   const { data: localEventsData } = useLocalEvents(coords.lat, coords.long);
   const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
-    enabled: false, // Desativa a busca automática
+    enabled: false,
   });
   
   const fallback = "/client/src/icons/logo.png";
   
   useEffect(() => {
     if (selectedArtist) {
-      console.log(`Selected artist: ${selectedArtist.artistName}`);
       setIsLoading(true);
       handleSlideClick(selectedArtist)
     }
@@ -78,18 +77,14 @@ export default function Swiper({ setSetlist, setTicketmaster, setCity }) {
       { enableHighAccuracy: true }
     );
   }, []);
-  
+
   useEffect(() => {
     if (artistData) {
       const { setlist, ticketmaster } = artistData;
       setSetlist(setlist);
       setTicketmaster(ticketmaster);
-      console.log("Artist data updated:", artistData);
-      console.log("Setlist:", setlist);
-      console.log("Ticketmaster:", ticketmaster);
     }
   }, [artistData, setSetlist, setTicketmaster]);
-
 
   useEffect(() => {
     if (localEventsData) {

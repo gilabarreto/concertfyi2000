@@ -3,10 +3,10 @@ import { getTicketmasterSuggest, getSetlist, getLocalEvents, getTicketmaster } f
 
 export const useTicketmasterSuggest = (artistName) => {
   return useQuery({
-    queryKey: ['ticketmaster-suggest', artistName], // Chave única para o cache
+    queryKey: ['ticketmaster-suggest', artistName],
     queryFn: () => getTicketmasterSuggest(artistName).then(res => res.data),
-    enabled: !!artistName, // Só executa quando artistName existe
-    staleTime: 10 * 60 * 1000, // 10 minutos para esta query específica
+    enabled: !!artistName,
+    staleTime: 10 * 60 * 1000,
   });
 };
 
@@ -24,7 +24,7 @@ export const useLocalEvents = (lat, long) => {
     queryKey: ['local-events', lat, long],
     queryFn: () => getLocalEvents(lat, long).then(res => res.data),
     enabled: !!lat && !!long,
-    staleTime: 5 * 60 * 1000, // 5 minutos para eventos locais
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -44,7 +44,6 @@ export const useArtistData = (artistName) => {
         const [setlistRes, ticketmasterRes] = await Promise.all([
           getSetlist(artistName).catch(err => {
             console.error("Erro no setlist:", err);
-            console.log(`Iniciando busca por: ${artistName}`);
             return { data: { setlist: [] } };
           }),
           getTicketmaster(artistName).catch(err => {
@@ -52,9 +51,6 @@ export const useArtistData = (artistName) => {
             return { data: { _embedded: {} } };
           }),
         ]);
-        
-        console.log("Dados recebidos - Setlist:", setlistRes?.data);
-        console.log("Dados recebidos - Ticketmaster:", ticketmasterRes?.data);
 
         return {
           setlist: setlistRes?.data?.setlist || [],
@@ -62,11 +58,11 @@ export const useArtistData = (artistName) => {
         };
       } catch (error) {
         console.error("Erro geral na query:", error);
-        throw error; // Rejeita a promise para ser capturada no handleSlideClick
+        throw error;
       }
     },
     enabled: !!artistName,
     staleTime: 10 * 60 * 1000,
-    retry: 2, // Tentar novamente 2 vezes em caso de erro
+    retry: 2,
   });
 };

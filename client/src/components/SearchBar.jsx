@@ -11,11 +11,9 @@ export default function SearchBar(props) {
 
   const term = useDebounce(value, 700);
 
-  // Usando React Query para as chamadas de API
   const { data: setlistData } = useSetlistSearch(term);
   const { data: ticketmasterData } = useTicketmasterSearch(term);
 
-  // Atualiza os estados quando os dados chegarem
   useEffect(() => {
     if (setlistData) {
       setSetlist(setlistData.setlist || []);
@@ -34,20 +32,17 @@ export default function SearchBar(props) {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 768) { // 768px é um breakpoint comum para mobile/tablet
+      if (window.innerWidth < 768) {
         setPlaceholder("Search");
       } else {
         setPlaceholder("Search your favorite artist");
       }
     };
 
-    // Verifica no carregamento inicial
     handleResize();
     
-    // Adiciona listener para redimensionamento
     window.addEventListener('resize', handleResize);
     
-    // Remove listener ao desmontar
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   
