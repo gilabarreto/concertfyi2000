@@ -12,7 +12,7 @@ function Navbar({
   setTicketmaster,
 }) {
 
-  const { city, isLoading: isGeoLoading } = useGeolocation();
+  const { city = 'Locating...', isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);
 

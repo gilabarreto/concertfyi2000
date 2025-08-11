@@ -46,8 +46,8 @@ export const useGeolocation = () => {
   }, [data]);
 
   return {
-    coords: data?.coords,
-    city: data?.city,
+    coords: data?.coords || { lat: 49.2827, long: -123.1207 }, // Fallback para São Paulo
+    city: data?.city || 'Vancouver',
     isLoading,
     error
   };

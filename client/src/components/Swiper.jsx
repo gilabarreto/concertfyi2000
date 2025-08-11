@@ -49,9 +49,10 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
   const navigate = useNavigate();
   const isSmallScreen = useIsSmallScreen();
 
-  const { coords } = useGeolocation();
-  const { data: localEventsData } = useLocalEvents(coords.lat, coords.long);
-  const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
+  const { coords = { lat: -23.5505, long: -46.6333 } } = useGeolocation();
+  const { data: localEventsData } = useLocalEvents(coords?.lat, coords?.long, {
+    enabled: !!coords
+  }); const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
     enabled: false,
   });
 
