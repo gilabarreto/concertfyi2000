@@ -3,16 +3,16 @@ import { useState } from "react";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { useGeolocation } from "../hooks/useGeolocation";
 
 function Navbar({
-  city,
   value,
   setValue,
   setSetlist,
   setTicketmaster,
-  setLat,
-  setLong
 }) {
+
+  const { city, isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,8 +53,8 @@ function Navbar({
           icon={faLocationDot}
           aria-hidden="true"
         />
-        <span className="hidden sm:block cursor-pointer text-2xl font-medium tracking-tight hover:text-gray-500 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out">
-          {city || "Locating..."}
+        <span className="hidden sm:block cursor-pointer text-2xl font-medium tracking-tight hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out">
+          {isGeoLoading ? 'Locating...' : city || 'Location unavailable'}
         </span>
       </div>
 
@@ -62,8 +62,6 @@ function Navbar({
         <SearchBar
           setSetlist={setSetlist}
           setTicketmaster={setTicketmaster}
-          setLat={setLat}
-          setLong={setLong}
           value={value}
           setValue={setValue}
         />
