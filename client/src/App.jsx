@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ArtistPage from "./components/ArtistPage";
-import SearchPage from "./components/SearchPage";
+import ArtistPage from "./pages/ArtistPage";
+import SearchPage from "./pages/SearchPage";
 import Footer from "./components/Footer";
 import Swiper from "./components/Swiper";
-import About from "./components/About";
-import Contact from "./components/Contact";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import Home from './pages/Home';
 import './icons';
 
 function App() {
@@ -41,7 +42,7 @@ function App() {
                   ticketmaster={ticketmaster}
                 />
               ) : (
-                <Swiper
+                <Home
                   setSetlist={setSetlist}
                   setTicketmaster={setTicketmaster}
                   setCity={setCity}

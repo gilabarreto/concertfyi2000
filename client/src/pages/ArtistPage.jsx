@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import ConcertInfo from "./ArtistPage/ConcertInfo";
-import Map from "./ArtistPage/Map";
-import Setlist from "./ArtistPage/Setlist";
-import Player from "./ArtistPage/Player";
-import NextConcertList from "./ArtistPage/NextConcerts";
-import LastConcerts from "./ArtistPage/LastConcerts";
+import ConcertInfo from "../components/ArtistPage/ConcertInfo";
+import Map from "../components/ArtistPage/Map";
+import Setlist from "../components/ArtistPage/Setlist";
+import Player from "../components/ArtistPage/Player";
+import NextConcertList from "../components/ArtistPage/NextConcerts";
+import LastConcerts from "../components/ArtistPage/LastConcerts";
 
 export default function ArtistPage(props) {
   const navigate = useNavigate();
