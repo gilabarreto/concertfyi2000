@@ -32,7 +32,6 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
 export default function Swiper({ setSetlist, setTicketmaster }) {
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
-  const [city, setCity] = useState();
   const [selectedArtist, setSelectedArtist] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -44,8 +43,6 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
   }); const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
     enabled: false,
   });
-
-  const fallback = "/client/src/icons/logo.png";
 
   useEffect(() => {
     if (selectedArtist) {
@@ -95,13 +92,6 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
     }
   }, [localEventsData]);
 
-  useEffect(() => {
-    if (city) {
-      setCity(city);
-    }
-  }, [city, setCity]);
-
-
   const handleSlideClick = async (slide) => {
     try {
       const response = await fetchArtistData();
@@ -138,7 +128,7 @@ export default function Swiper({ setSetlist, setTicketmaster }) {
   const Slide = ({ slide, index }) => {
     const offset = index - active;
     const depth = Math.abs(offset);
-    const image = getBestImage(slide.images) || slide.image || fallback;
+    const image = getBestImage(slide.images) || slide.image;
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
 
     return (
