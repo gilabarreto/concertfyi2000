@@ -25,10 +25,15 @@ export default function SearchBar() {
   }, [setlistData, ticketmasterData, setSetlist, setTicketmaster]);
 
   const handleChange = (event) => {
-    if (artistId) {
-      navigate("/search");
+    const value = event.target.value;
+    setSearchValue(value);
+
+    if (value.trim()) {
+      // Navega para search se houver texto e não estiver já na rota de artista
+      if (!artistId) {
+        navigate("/search");
+      }
     }
-    setSearchValue(event.target.value);
   };
 
   useEffect(() => {

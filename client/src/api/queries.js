@@ -33,6 +33,7 @@ export const useTicketmasterSearch = (artistName) => {
     queryKey: ['ticketmaster-search', artistName],
     queryFn: () => getTicketmaster(artistName).then(res => res.data),
     enabled: !!artistName,
+    staleTime: 0,
   });
 };
 

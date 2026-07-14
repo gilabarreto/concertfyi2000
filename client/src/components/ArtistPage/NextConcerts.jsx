@@ -3,7 +3,7 @@ import { ticketFinder } from "../../helpers/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
 
-export default function LastConcertList(props) {
+export default function NextConcerts(props) {
   const [page, setPage] = useState(0);
   const pageSize = 5;
 
@@ -20,6 +20,7 @@ export default function LastConcertList(props) {
             new Date(b.dates.start.localDate)
         )
     : [];
+
 
   const totalConcerts = ticketmasterEvents.length;
   const pageCount = Math.ceil(totalConcerts / pageSize);
