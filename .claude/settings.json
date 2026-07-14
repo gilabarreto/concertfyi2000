@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pkill -f \"npm run dev\")",
+      "Bash(curl -s http://localhost:3002)"
+    ]
+  }
+}

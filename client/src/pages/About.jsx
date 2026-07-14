@@ -1,8 +1,15 @@
 import Header from "../components/Header";
+import { SEOHead } from "../components/SEOHead";
 
 export default function About() {
     return (
-        <div className="w-full bg-red-600 flex flex-col items-center justify-between p-4">
+        <>
+            <SEOHead
+                title="About concertfyi"
+                description="Learn about concertfyi - your backstage pass to live music. Discover concert history, setlists, and upcoming shows."
+                url="/about"
+            />
+            <div className="w-full bg-red-600 flex flex-col items-center justify-between p-4">
             <Header />
 
             <div>
@@ -28,5 +35,6 @@ export default function About() {
                 </span>
             </div>
         </div>
+        </>
     );
 }

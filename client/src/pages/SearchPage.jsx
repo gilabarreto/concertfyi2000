@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { getBestImage } from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
+import { SEOHead } from "../components/SEOHead";
 
 export default function SearchPage() {
   const { setlist = [], ticketmaster = {} } = useContext(AppContext);
@@ -22,7 +23,13 @@ export default function SearchPage() {
   if (!uniqueSetlist.length) return null;
 
   return (
-    <div className="w-full mx-auto px-6 py-8">
+    <>
+      <SEOHead
+        title="Search Results - Artist Concerts & Setlists"
+        description="Browse concert setlists and event information for your favorite artists."
+        url="/search"
+      />
+      <div className="w-full mx-auto px-6 py-8">
       <h2 className="text-4xl font-bold mb-4">Search Results</h2>
       <hr className="border-t border-gray-300 opacity-50 mb-6" />
 
@@ -78,6 +85,7 @@ export default function SearchPage() {
           );
         })}
       </div>
-    </div>
+      </div>
+    </>
   );
 }

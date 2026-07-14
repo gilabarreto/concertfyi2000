@@ -7,6 +7,7 @@ import Player from "../components/ArtistPage/Player";
 import NextConcertList from "../components/ArtistPage/NextConcerts";
 import LastConcerts from "../components/ArtistPage/LastConcerts";
 import { AppContext } from "../context/AppContext";
+import { SEOHead } from "../components/SEOHead";
 
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {} } = useContext(AppContext);
@@ -34,9 +35,19 @@ export default function ArtistPage() {
     (a) => a.name === concert.artist.name
   );
   const artistImage = attraction?.images?.[0]?.url || "";
+  const artistName = concert.artist.name;
+  const concertDate = concert.eventDate;
+  const concertVenue = concert.venue?.name || 'Concert';
 
   return (
-    <div className="w-full mx-auto px-6 py-8 space-y-8">
+    <>
+      <SEOHead
+        title={`${artistName} - ${concertVenue} - ${concertDate}`}
+        description={`Setlist and details for ${artistName} at ${concertVenue} on ${concertDate}. Explore songs performed and concert information.`}
+        image={artistImage}
+        url={`/artists/${artistId}/concerts/${concertId}`}
+      />
+      <div className="w-full mx-auto px-6 py-8 space-y-8">
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
           <ConcertInfo
@@ -85,5 +96,6 @@ export default function ArtistPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

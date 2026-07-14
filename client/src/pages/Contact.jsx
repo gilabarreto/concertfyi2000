@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import Header from "../components/Header";
 import { useState } from "react";
+import { SEOHead } from "../components/SEOHead";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -45,7 +46,13 @@ export default function Contact() {
   };
 
   return (
-    <div className="w-full bg-red-600 flex flex-col items-center justify-between p-4">
+    <>
+      <SEOHead
+        title="Contact us"
+        description="Get in touch with the concertfyi team. Questions about artists, concerts, or suggestions?"
+        url="/contact"
+      />
+      <div className="w-full bg-red-600 flex flex-col items-center justify-between p-4">
       <Header />
 
       <div>
@@ -105,5 +112,6 @@ export default function Contact() {
         </form>
       </div>
     </div>
+    </>
   );
 }

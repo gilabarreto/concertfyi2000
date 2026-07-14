@@ -21,6 +21,7 @@
     "react-animate-height": "^3.0.5",
     "react-cookie": "^8.0.1",
     "react-dom": "^18.2.0",
+    "react-helmet-async": "^3.0.0",
     "react-icons": "^4.6.0",
     "react-router-dom": "^6.4.3",
     "react-social-icons": "^5.15.0",

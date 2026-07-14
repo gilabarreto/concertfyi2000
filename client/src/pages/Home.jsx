@@ -1,8 +1,15 @@
 import Swiper from '../components/Swiper';
+import { SEOHead } from '../components/SEOHead';
 
 const Home = () => {
     return (
-        <div className="w-full flex flex-col items-center justify-between min-h-full p-4">
+        <>
+            <SEOHead
+                title="Discover Live Music & Concerts"
+                description="Track your favorite artists, explore past performances, and never miss a concert again. Find setlists, venues, and ticket information."
+                url="/"
+            />
+            <div className="w-full flex flex-col items-center justify-between min-h-full p-4">
             <div className="flex flex-1 flex-col h-[120px] max-h-min justify-center text-3xl font-medium tracking-tight items-center pt-6">
                 <h1>
                     concert{"{"}
@@ -35,6 +42,7 @@ const Home = () => {
                 </span>
             </div>
         </div>
+        </>
     );
 };
 
