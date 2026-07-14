@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ConcertInfo from "../components/ArtistPage/ConcertInfo";
 import Map from "../components/ArtistPage/Map";
@@ -6,15 +6,17 @@ import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
 import NextConcertList from "../components/ArtistPage/NextConcerts";
 import LastConcerts from "../components/ArtistPage/LastConcerts";
+import { AppContext } from "../context/AppContext";
 
-export default function ArtistPage(props) {
+export default function ArtistPage() {
+  const { setlist = [], ticketmaster = {} } = useContext(AppContext);
   const navigate = useNavigate();
   const [spotifyArtist, setSpotifyArtist] = useState([]);
   const { concertId, artistId } = useParams();
 
-  if (!props.setlist.length || !props.ticketmaster) return null;
+  if (!setlist.length || !ticketmaster) return null;
 
-  const concert = props.setlist.find((result) => result.id === concertId);
+  const concert = setlist.find((result) => result.id === concertId);
 
   useEffect(() => {
     if (!concert) navigate("/");
@@ -28,7 +30,7 @@ export default function ArtistPage(props) {
     );
   }
 
-  const attraction = props.ticketmaster.attractions?.find(
+  const attraction = ticketmaster.attractions?.find(
     (a) => a.name === concert.artist.name
   );
   const artistImage = attraction?.images?.[0]?.url || "";
@@ -39,14 +41,14 @@ export default function ArtistPage(props) {
         <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
           <ConcertInfo
             concert={concert}
-            setlist={props.setlist}
-            ticketmaster={props.ticketmaster}
+            setlist={setlist}
+            ticketmaster={ticketmaster}
             artistImage={artistImage}
           />
         </div>
 
         <div className="bg-gray-100 rounded-xl shadow flex-1 h-64 lg:h-auto">
-          {props.ticketmaster && <Map concert={concert} />}
+          {ticketmaster && <Map concert={concert} />}
         </div>
       </div>
 
@@ -58,7 +60,7 @@ export default function ArtistPage(props) {
         <div className="bg-black text-white rounded-3xl p-2 shadow flex items-center justify-center">
           <Player
             concert={concert}
-            ticketmaster={props.ticketmaster}
+            ticketmaster={ticketmaster}
             spotifyArtist={spotifyArtist}
             setSpotifyArtist={setSpotifyArtist}
           />
@@ -68,15 +70,15 @@ export default function ArtistPage(props) {
           <div className="bg-white rounded-xl p-6 shadow">
             <LastConcerts
               concert={concert}
-              setlist={props.setlist}
+              setlist={setlist}
               artistId={artistId}
             />
           </div>
 
           <div className="bg-white rounded-xl p-6 shadow mt-6">
             <NextConcertList
-              ticketmaster={props.ticketmaster}
-              setlist={props.setlist}
+              ticketmaster={ticketmaster}
+              setlist={setlist}
               concert={concert}
             />
           </div>

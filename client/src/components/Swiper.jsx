@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
 import { getBestImage } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
+import { AppContext } from "../context/AppContext";
 
 const SPACING = 120;
 const SCALE_FACTOR_DESKTOP = 0.2;
@@ -29,7 +30,8 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
   };
 }
 
-export default function Swiper({ setSetlist, setTicketmaster }) {
+export default function Swiper() {
+  const { setSetlist, setTicketmaster } = useContext(AppContext);
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
   const [selectedArtist, setSelectedArtist] = useState(null);

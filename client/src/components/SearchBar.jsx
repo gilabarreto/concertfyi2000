@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce";
 import { useSetlistSearch, useTicketmasterSearch } from "../api/queries";
+import { AppContext } from "../context/AppContext";
 
-export default function SearchBar(props) {
-  const { value, setValue, setSetlist, setTicketmaster } = props;
+export default function SearchBar() {
+  const { searchValue, setSearchValue, setSetlist, setTicketmaster } = useContext(AppContext);
   const navigate = useNavigate();
   const { artistId } = useParams();
   const [placeholder, setPlaceholder] = useState("Search your favorite artist");
 
-  const term = useDebounce(value, 700);
+  const term = useDebounce(searchValue, 700);
 
   const { data: setlistData } = useSetlistSearch(term);
   const { data: ticketmasterData } = useTicketmasterSearch(term);
@@ -27,7 +28,7 @@ export default function SearchBar(props) {
     if (artistId) {
       navigate("/search");
     }
-    setValue(event.target.value);
+    setSearchValue(event.target.value);
   };
 
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function SearchBar(props) {
     >
       <input
         type="search"
-        value={value}
+        value={searchValue}
         onChange={handleChange}
         placeholder={placeholder}
         className="

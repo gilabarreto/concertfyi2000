@@ -1,9 +1,7 @@
-// src/pages/Home.jsx
 import Swiper from '../components/Swiper';
 
-const Home = ({ setSetlist, setTicketmaster }) => {
+const Home = () => {
     return (
-
         <div className="w-full flex flex-col items-center justify-between min-h-full p-4">
             <div className="flex flex-1 flex-col h-[120px] max-h-min justify-center text-3xl font-medium tracking-tight items-center pt-6">
                 <h1>
@@ -18,10 +16,7 @@ const Home = ({ setSetlist, setTicketmaster }) => {
                 </h1>
             </div>
 
-            <Swiper
-                setSetlist={setSetlist}
-                setTicketmaster={setTicketmaster}
-            />
+            <Swiper />
 
             <div className="w-full text-[22px] leading-[2rem] font-bold text-center tracking-tight">
                 <h1 className="[&>span]:block">

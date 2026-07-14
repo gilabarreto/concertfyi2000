@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
 import { getBestImage } from "../helpers/selectors";
+import { AppContext } from "../context/AppContext";
 
-export default function SearchPage({
-  setlist = [],
-  ticketmaster = {},
-}) {
+export default function SearchPage() {
+  const { setlist = [], ticketmaster = {} } = useContext(AppContext);
   const navigate = useNavigate();
   const { attractions = [], events = [] } = ticketmaster;
 

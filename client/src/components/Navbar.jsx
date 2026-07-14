@@ -1,17 +1,13 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { useGeolocation } from "../hooks/useGeolocation";
+import { AppContext } from "../context/AppContext";
 
-function Navbar({
-  value,
-  setValue,
-  setSetlist,
-  setTicketmaster,
-}) {
-
+function Navbar() {
+  const { searchValue, setSearchValue } = useContext(AppContext);
   const { city = 'Locating...', isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -31,7 +27,7 @@ function Navbar({
         <Link
           to="/"
           className="text-3xl font-medium tracking-tight items-center"
-          onClick={() => setValue("")}
+          onClick={() => setSearchValue("")}
           aria-label="Home"
         >
           <span className="hidden sm:inline">concert</span>
@@ -59,12 +55,7 @@ function Navbar({
       </div>
 
       <div className="flex">
-        <SearchBar
-          setSetlist={setSetlist}
-          setTicketmaster={setTicketmaster}
-          value={value}
-          setValue={setValue}
-        />
+        <SearchBar />
       </div>
 
       <div className="hidden sm:flex justify-center items-center gap-2">
@@ -76,7 +67,7 @@ function Navbar({
             key={link.path}
             to={link.path}
             className="text-2xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline"
-            onClick={() => setValue("")}
+            onClick={() => setSearchValue("")}
           >
             {link.label}
           </Link>

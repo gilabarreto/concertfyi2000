@@ -1,69 +1,36 @@
-import { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useAppState } from "./hooks/useAppState";
+import { AppContext } from "./context/AppContext";
 import Navbar from "./components/Navbar";
-import ArtistPage from "./pages/ArtistPage";
-import SearchPage from "./pages/SearchPage";
 import Footer from "./components/Footer";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Home from './pages/Home';
+import { routes } from "./config/routes";
 import './icons';
 
 function App() {
-  const [setlist, setSetlist] = useState([]);
-  const [ticketmaster, setTicketmaster] = useState([]);
-  const [value, setValue] = useState("");
+  const appState = useAppState();
+  const { searchValue } = appState;
 
   return (
-    <Router basename="/">
-      <Navbar
-        setValue={setValue}
-        value={value}
-        setSetlist={setSetlist}
-        setTicketmaster={setTicketmaster}
-      />
-      <main className="pt-16 pb-16 min-h-screen w-full flex">
-        <Routes>
-          <Route
-            path="/"
-            element={
-              value ? (
-                <SearchPage
-                  setlist={setlist}
-                  ticketmaster={ticketmaster}
+    <AppContext.Provider value={appState}>
+      <Router basename="/">
+        <Navbar />
+        <main className="pt-16 pb-16 min-h-screen w-full flex">
+          <Routes>
+            {routes.map((route) => {
+              const Component = route.element;
+              return (
+                <Route
+                  key={route.path}
+                  path={route.path}
+                  element={<Component />}
                 />
-              ) : (
-                <Home
-                  setSetlist={setSetlist}
-                  setTicketmaster={setTicketmaster}
-                />
-              )
-            }
-          />
-          <Route
-            path="/search"
-            element={
-              <SearchPage
-                setlist={setlist}
-                ticketmaster={ticketmaster}
-              />
-            }
-          />
-          <Route
-            path="artists/:artistId/concerts/:concertId"
-            element={
-              <ArtistPage
-                setlist={setlist}
-                ticketmaster={ticketmaster}
-              />
-            }
-          />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-        </Routes>
-      </main>
-      <Footer />
-    </Router>
+              );
+            })}
+          </Routes>
+        </main>
+        <Footer />
+      </Router>
+    </AppContext.Provider>
   );
 }
 
