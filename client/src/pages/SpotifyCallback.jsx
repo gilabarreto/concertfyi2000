@@ -1,74 +1,95 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getAccessTokenFromCode, saveAccessToken } from "../helpers/spotifyAuth";
 
 export default function SpotifyCallback() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
     const handleCallback = async () => {
       const code = searchParams.get("code");
       const errorParam = searchParams.get("error");
 
+      console.log("SpotifyCallback:", { code, errorParam });
+
       if (errorParam) {
-        setError("Authorization denied");
-        setLoading(false);
+        console.error("Spotify error:", errorParam);
+        setStatus("error");
         setTimeout(() => window.close(), 2000);
         return;
       }
 
       if (!code) {
-        setError("No authorization code received");
-        setLoading(false);
+        console.error("No code received");
+        setStatus("error");
         setTimeout(() => window.close(), 2000);
         return;
       }
 
       try {
+        console.log("Exchanging code for token...");
         const accessToken = await getAccessTokenFromCode(code);
+        console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
-        setLoading(false);
+        setStatus("success");
         setTimeout(() => window.close(), 1000);
       } catch (err) {
-        console.error("Token exchange failed:", err);
-        setError("Failed to authenticate");
-        setLoading(false);
+        console.error("Token exchange error:", err);
+        setStatus("error");
         setTimeout(() => window.close(), 2000);
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate]);
+  }, [searchParams]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
-      <div className="text-center">
-        {loading && (
-          <div className="space-y-4">
-            <div className="animate-spin">
-              <div className="h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full mx-auto"></div>
-            </div>
-            <p className="text-white text-lg">Connecting to Spotify...</p>
-          </div>
-        )}
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh",
+      background: "#191414",
+      color: "#fff",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+      flexDirection: "column",
+      gap: "20px"
+    }}>
+      {status === "loading" && (
+        <>
+          <div style={{
+            width: "40px",
+            height: "40px",
+            border: "4px solid #1DB954",
+            borderTopColor: "transparent",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite"
+          }} />
+          <p>Connecting to Spotify...</p>
+        </>
+      )}
 
-        {error && (
-          <div className="space-y-4">
-            <p className="text-red-600 text-lg">{error}</p>
-            <p className="text-gray-400 text-sm">This window will close automatically</p>
-          </div>
-        )}
+      {status === "success" && (
+        <>
+          <p style={{ fontSize: "32px" }}>✓</p>
+          <p>Connected! Closing...</p>
+        </>
+      )}
 
-        {!loading && !error && (
-          <div className="space-y-4">
-            <p className="text-green-600 text-lg">✓ Connected!</p>
-            <p className="text-gray-400 text-sm">This window will close automatically</p>
-          </div>
-        )}
-      </div>
+      {status === "error" && (
+        <>
+          <p style={{ fontSize: "24px", color: "#ff4444" }}>✗</p>
+          <p>Authentication failed</p>
+          <p style={{ fontSize: "12px", opacity: 0.7 }}>Closing...</p>
+        </>
+      )}
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
