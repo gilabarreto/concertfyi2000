@@ -3,6 +3,7 @@ import SearchPage from '../pages/SearchPage';
 import ArtistPage from '../pages/ArtistPage';
 import About from '../pages/About';
 import Contact from '../pages/Contact';
+import SpotifyCallback from '../pages/SpotifyCallback';
 
 export const routes = [
   {
@@ -25,5 +26,9 @@ export const routes = [
   {
     path: '/contact',
     element: Contact,
+  },
+  {
+    path: '/callback',
+    element: SpotifyCallback,
   },
 ];

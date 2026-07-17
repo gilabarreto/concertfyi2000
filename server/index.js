@@ -22,6 +22,7 @@ app.use(
 
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
 app.use("/api/setlist", require("./routes/setlist"));
+app.use("/api/spotify", require("./routes/spotify"));
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
