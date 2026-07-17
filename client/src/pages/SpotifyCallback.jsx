@@ -16,14 +16,14 @@ export default function SpotifyCallback() {
       if (errorParam) {
         console.error("Spotify error:", errorParam);
         setStatus("error");
-        setTimeout(() => window.close(), 2000);
+        // Don't close, let user see error
         return;
       }
 
       if (!code) {
         console.error("No code received");
         setStatus("error");
-        setTimeout(() => window.close(), 2000);
+        // Don't close, let user see error
         return;
       }
 
@@ -33,11 +33,11 @@ export default function SpotifyCallback() {
         console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
         setStatus("success");
-        setTimeout(() => window.close(), 1000);
+        setTimeout(() => window.close(), 2000);
       } catch (err) {
         console.error("Token exchange error:", err);
         setStatus("error");
-        setTimeout(() => window.close(), 2000);
+        // Don't close, let user see error and console
       }
     };
 
