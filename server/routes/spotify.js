@@ -35,13 +35,16 @@ router.post("/token", async (req, res) => {
       expires_in: response.data.expires_in,
     });
   } catch (error) {
-    console.error("Spotify token error:", {
+    console.error("Spotify token error details:", {
       message: error.message,
       status: error.response?.status,
-      data: error.response?.data,
+      statusText: error.response?.statusText,
+      data: JSON.stringify(error.response?.data),
+      requestData: { code: code?.slice(0, 10), redirectUri },
     });
     res.status(error.response?.status || 500).json({
       error: error.response?.data || "Failed to get Spotify token",
+      details: error.message,
     });
   }
 });
