@@ -4,10 +4,8 @@
     <meta charset="utf-8" />
     <title>Redirecting...</title>
     <script type="text/javascript">
-      // Redireciona para index.html mantendo o path e query completo
-      const path = window.location.pathname;
-      const search = window.location.search;
-      window.location.replace('/index.html?originalPath=' + encodeURIComponent(path) + search);
+      // Redireciona apenas mantendo o query string (ex: ?code=xxx)
+      window.location.replace('/' + window.location.search);
     </script>
   </head>
   <body></body>
