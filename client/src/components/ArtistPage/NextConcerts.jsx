@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ticketFinder } from "../../helpers/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
+import Pagination from "../Pagination";
 
 export default function NextConcerts(props) {
   const [page, setPage] = useState(0);
@@ -86,36 +87,12 @@ export default function NextConcerts(props) {
             })}
           </ol>
 
-          <div className="flex items-center justify-center space-x-2 mt-4">
-            <button
-              className="px-2 py-1 rounded disabled:opacity-50"
-              onClick={() => setPage((p) => p - 1)}
-              disabled={page === 0}
-            >
-              &lt; Prev
-            </button>
-
-            {Array.from({ length: pageCount }).map((_, i) => (
-              <button
-                key={i}
-                className={`px-2 py-1 rounded ${
-                  i === page
-                    ? "bg-red-600 text-white"
-                    : "bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => setPage(i)}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              className="px-2 py-1 rounded disabled:opacity-50"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={page === pageCount - 1}
-            >
-              Next &gt;
-            </button>
+          <div className="ml-6">
+            <Pagination
+              currentPage={page}
+              totalPages={pageCount}
+              onPageChange={setPage}
+            />
           </div>
         </>
       )}

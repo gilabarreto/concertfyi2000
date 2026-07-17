@@ -20,7 +20,8 @@ router.get("/search", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error("Axios error:", error.message);
+    console.error("Setlist.fm API error:", error.response?.status, error.message);
+    console.error("API Key status:", process.env.SETLISTFM_API_KEY ? "Set" : "Missing");
 
     res
       .status(error.response?.status || 500)
