@@ -4,21 +4,10 @@
     <meta charset="utf-8" />
     <title>Redirecting...</title>
     <script type="text/javascript">
-      var segmentCount = 0;
-      var l = window.location;
-      l.replace(
-        l.protocol +
-          '//' +
-          l.hostname +
-          (l.port ? ':' + l.port : '') +
-          '/index.html?p=/' +
-          l.pathname
-            .split('/')
-            .slice(1, 1 + segmentCount)
-            .join('/') +
-          '&q=' +
-          l.search
-      );
+      // Redireciona para index.html mantendo o path e query completo
+      const path = window.location.pathname;
+      const search = window.location.search;
+      window.location.replace('/index.html?originalPath=' + encodeURIComponent(path) + search);
     </script>
   </head>
   <body></body>
