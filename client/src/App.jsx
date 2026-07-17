@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
@@ -10,6 +10,16 @@ import './icons';
 function App() {
   const appState = useAppState();
   const { searchValue } = appState;
+
+  // Handle GitHub Pages 404.html redirect for OAuth callback
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get("code");
+  const originalPath = urlParams.get("originalPath");
+
+  if (code && originalPath === "/callback") {
+    // Redirect to /callback with code preserved
+    window.history.replaceState({}, document.title, "/callback" + window.location.search);
+  }
 
   return (
     <HelmetProvider>
