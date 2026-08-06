@@ -36,7 +36,7 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
   if (!playlistResponse.ok) throw new Error("Failed to create playlist");
   const playlist = await playlistResponse.json();
 
-  // Search and add songs to playlist (only exact matches)
+  // Search and add songs to playlist
   const uris = [];
   const skippedSongs = [];
 
@@ -44,8 +44,8 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
     try {
       const searchResponse = await fetch(
         `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-          `track:${song.name} artist:${artistName}`
-        )}&type=track&limit=5`,
+          `${artistName} ${song.name}`
+        )}&type=track&limit=10`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -54,21 +54,52 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
       if (searchResponse.ok) {
         const searchData = await searchResponse.json();
 
-        // Find exact match: song name matches and artist matches
-        const exactMatch = searchData.tracks.items.find(
-          (track) =>
-            track.name.toLowerCase() === song.name.toLowerCase() &&
+        if (searchData.tracks.items.length === 0) {
+          skippedSongs.push(song.name);
+          console.log(`Skipped (not found): ${song.name}`);
+          continue;
+        }
+
+        // Score tracks: prioritize artist match + name similarity
+        const scoredTracks = searchData.tracks.items.map((track) => {
+          let score = 0;
+
+          // Artist match is most important (50 points)
+          if (
             track.artists.some(
               (artist) =>
                 artist.name.toLowerCase() === artistName.toLowerCase()
             )
-        );
+          ) {
+            score += 50;
+          }
 
-        if (exactMatch) {
-          uris.push(exactMatch.uri);
+          // Exact name match (40 points)
+          if (track.name.toLowerCase() === song.name.toLowerCase()) {
+            score += 40;
+          }
+          // Partial name match (20 points)
+          else if (track.name.toLowerCase().includes(song.name.toLowerCase())) {
+            score += 20;
+          }
+
+          return { track, score };
+        });
+
+        // Get best match
+        const bestMatch = scoredTracks.sort((a, b) => b.score - a.score)[0];
+
+        // Only add if has decent score (artist match + some name match)
+        if (bestMatch.score >= 60) {
+          uris.push(bestMatch.track.uri);
+          console.log(
+            `Added: ${song.name} (match score: ${bestMatch.score})`
+          );
         } else {
           skippedSongs.push(song.name);
-          console.log(`Skipped (no exact match): ${song.name}`);
+          console.log(
+            `Skipped (low confidence): ${song.name} (score: ${bestMatch.score})`
+          );
         }
       }
     } catch (err) {

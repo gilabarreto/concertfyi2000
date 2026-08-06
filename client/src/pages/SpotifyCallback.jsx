@@ -16,14 +16,12 @@ export default function SpotifyCallback() {
       if (errorParam) {
         console.error("Spotify error:", errorParam);
         setStatus("error");
-        // Don't close, let user see error
         return;
       }
 
       if (!code) {
         console.error("No code received");
         setStatus("error");
-        // Don't close, let user see error
         return;
       }
 
@@ -32,18 +30,24 @@ export default function SpotifyCallback() {
         const accessToken = await getAccessTokenFromCode(code);
         console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
+
+        // Notify parent window that auth succeeded
+        if (window.opener) {
+          window.opener.postMessage({ type: "SPOTIFY_AUTH_SUCCESS", accessToken }, "*");
+        }
+
         setStatus("success");
-        setTimeout(() => window.close(), 2000);
+        setTimeout(() => window.close(), 1500);
       } catch (err) {
         console.error("Token exchange error:", err);
         setStatus("error");
-        // Don't close, let user see error and console
       }
     };
 
     handleCallback();
   }, [searchParams]);
 
+  // Minimal UI for popup
   return (
     <div style={{
       display: "flex",
@@ -54,7 +58,10 @@ export default function SpotifyCallback() {
       color: "#fff",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
       flexDirection: "column",
-      gap: "20px"
+      gap: "20px",
+      margin: 0,
+      padding: 0,
+      overflow: "hidden"
     }}>
       {status === "loading" && (
         <>
@@ -66,26 +73,27 @@ export default function SpotifyCallback() {
             borderRadius: "50%",
             animation: "spin 1s linear infinite"
           }} />
-          <p>Connecting to Spotify...</p>
+          <p style={{ margin: 0 }}>Connecting to Spotify...</p>
         </>
       )}
 
       {status === "success" && (
         <>
-          <p style={{ fontSize: "32px" }}>✓</p>
-          <p>Connected! Closing...</p>
+          <p style={{ fontSize: "32px", margin: 0 }}>✓</p>
+          <p style={{ margin: 0 }}>Connected!</p>
         </>
       )}
 
       {status === "error" && (
         <>
-          <p style={{ fontSize: "24px", color: "#ff4444" }}>✗</p>
-          <p>Authentication failed</p>
-          <p style={{ fontSize: "12px", opacity: 0.7 }}>Closing...</p>
+          <p style={{ fontSize: "24px", color: "#ff4444", margin: 0 }}>✗</p>
+          <p style={{ margin: 0 }}>Authentication failed</p>
         </>
       )}
 
       <style>{`
+        * { margin: 0; padding: 0; }
+        body { background: #191414; }
         @keyframes spin {
           to { transform: rotate(360deg); }
         }

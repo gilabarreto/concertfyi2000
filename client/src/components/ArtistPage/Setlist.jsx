@@ -23,6 +23,38 @@ export default function Setlist(props) {
   const tourName = concert.tour?.name || "";
   const concertDate = concert.eventDate || "";
 
+  // Listen for auth success from popup
+  useState(() => {
+    const handleMessage = async (event) => {
+      if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
+        console.log("Auth successful, creating playlist...");
+        await createPlaylist();
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const createPlaylist = async () => {
+    setCreatingPlaylist(true);
+    try {
+      const playlist = await createSpotifyPlaylist(
+        songs,
+        artistName,
+        tourName,
+        concertDate
+      );
+      console.log("Playlist created, opening...");
+      window.open(playlist.external_urls.spotify, "_blank");
+    } catch (err) {
+      console.error("Failed to create playlist:", err);
+      alert("Failed to create playlist. Please try again.");
+    } finally {
+      setCreatingPlaylist(false);
+    }
+  };
+
   const handleSpotifyPlaylist = async () => {
     if (creatingPlaylist) return;
 
@@ -41,23 +73,7 @@ export default function Setlist(props) {
       return;
     }
 
-    setCreatingPlaylist(true);
-    try {
-      const playlist = await createSpotifyPlaylist(
-        songs,
-        artistName,
-        tourName,
-        concertDate
-      );
-      // Open playlist in new tab and close popup
-      window.open(playlist.external_urls.spotify, "_blank");
-      window.close();
-    } catch (err) {
-      console.error("Failed to create playlist:", err);
-      alert("Failed to create playlist. Please try again.");
-    } finally {
-      setCreatingPlaylist(false);
-    }
+    await createPlaylist();
   };
 
   const handleExportSetlist = () => {
