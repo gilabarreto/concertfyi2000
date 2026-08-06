@@ -78,9 +78,14 @@ export default function Setlist(props) {
   };
 
   const handleSpotifyPlaylist = async () => {
-    if (creatingPlaylist) return;
+    console.log("handleSpotifyPlaylist called");
+    if (creatingPlaylist) {
+      console.log("Already creating playlist");
+      return;
+    }
 
     if (!isUserAuthenticated()) {
+      console.log("Not authenticated, showing modal");
       setShowSpotifyModal(true);
 
       // Store playlist data in localStorage (shared between popup and parent)
