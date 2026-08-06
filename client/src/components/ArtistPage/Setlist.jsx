@@ -46,7 +46,7 @@ export default function Setlist(props) {
             alert("Failed to create playlist. Please try again.");
           } finally {
             setCreatingPlaylist(false);
-            sessionStorage.removeItem("spotifyPlaylistData");
+            localStorage.removeItem("spotifyPlaylistData");
           }
         }
       }
@@ -79,8 +79,8 @@ export default function Setlist(props) {
     if (creatingPlaylist) return;
 
     if (!isUserAuthenticated()) {
-      // Store playlist data in sessionStorage before opening popup
-      sessionStorage.setItem("spotifyPlaylistData", JSON.stringify({
+      // Store playlist data in localStorage (shared between popup and parent)
+      localStorage.setItem("spotifyPlaylistData", JSON.stringify({
         songs,
         artistName,
         tourName,

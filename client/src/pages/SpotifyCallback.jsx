@@ -31,8 +31,8 @@ export default function SpotifyCallback() {
         console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
 
-        // Get songs from sessionStorage (were stored before opening popup)
-        const playlistData = JSON.parse(sessionStorage.getItem("spotifyPlaylistData") || "{}");
+        // Get songs from localStorage (shared between popup and parent window)
+        const playlistData = JSON.parse(localStorage.getItem("spotifyPlaylistData") || "{}");
 
         // Notify parent window that auth succeeded
         if (window.opener) {
