@@ -2,14 +2,19 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = `${window.location.origin}/callback`;
 const SCOPES = ["playlist-modify-public", "playlist-modify-private"];
 
+console.log("Spotify Config:", { REDIRECT_URI, CLIENT_ID: CLIENT_ID?.slice(0, 5) + "..." });
+
 export const getSpotifyAuthUrl = () => {
+  console.log("Building Spotify Auth URL with redirect_uri:", REDIRECT_URI);
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     response_type: "code",
     redirect_uri: REDIRECT_URI,
     scope: SCOPES.join(" "),
   });
-  return `https://accounts.spotify.com/authorize?${params}`;
+  const authUrl = `https://accounts.spotify.com/authorize?${params}`;
+  console.log("Auth URL:", authUrl.slice(0, 100) + "...");
+  return authUrl;
 };
 
 export const getAccessTokenFromCode = async (code) => {
