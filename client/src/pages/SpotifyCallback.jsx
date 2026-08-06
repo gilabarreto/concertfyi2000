@@ -56,21 +56,30 @@ export default function SpotifyCallback() {
 
   // Hide all site elements and show only popup content
   useEffect(() => {
-    // Hide navbar, footer, and other layout elements
+    // Hide navbar, footer, and main content area
     const navbar = document.querySelector("nav");
     const footer = document.querySelector("footer");
+    const header = document.querySelector("header");
+    const main = document.querySelector("main");
+
     if (navbar) navbar.style.display = "none";
     if (footer) footer.style.display = "none";
+    if (header) header.style.display = "none";
+    if (main) main.style.visibility = "hidden";
 
     // Clear body margin/padding for clean popup
     document.body.style.margin = "0";
     document.body.style.padding = "0";
     document.body.style.background = "#191414";
+    document.body.style.overflow = "hidden";
     document.documentElement.style.background = "#191414";
 
     return () => {
       if (navbar) navbar.style.display = "";
       if (footer) footer.style.display = "";
+      if (header) header.style.display = "";
+      if (main) main.style.visibility = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
