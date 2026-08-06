@@ -63,6 +63,8 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
         // Score tracks: prioritize artist match + name similarity
         const scoredTracks = searchData.tracks.items.map((track) => {
           let score = 0;
+          const trackNameLower = track.name.toLowerCase();
+          const songNameLower = song.name.toLowerCase();
 
           // Artist match is most important (50 points)
           if (
@@ -74,13 +76,21 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
             score += 50;
           }
 
-          // Exact name match (40 points)
-          if (track.name.toLowerCase() === song.name.toLowerCase()) {
-            score += 40;
-          }
-          // Partial name match (20 points)
-          else if (track.name.toLowerCase().includes(song.name.toLowerCase())) {
-            score += 20;
+          // Name matching (only if artist matched)
+          if (score >= 50) {
+            // Exact name match (40 points) - makes total 90
+            if (trackNameLower === songNameLower) {
+              score += 40;
+            }
+            // Partial name match - check if song name is contained in track name (25 points) - makes total 75
+            else if (trackNameLower.includes(songNameLower)) {
+              score += 25;
+            }
+            // Check if track name starts with song name (for variations like "Song - Version")
+            else if (trackNameLower.startsWith(songNameLower)) {
+              score += 25;
+            }
+            // If no name match, penalize (don't add points)
           }
 
           return { track, score };
@@ -89,8 +99,8 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
         // Get best match
         const bestMatch = scoredTracks.sort((a, b) => b.score - a.score)[0];
 
-        // Only add if has decent score (artist match is 50 points, so 50+ means artist matched)
-        if (bestMatch.score >= 50) {
+        // Only add if artist matched AND name has some similarity (70+ means artist + decent name match)
+        if (bestMatch.score >= 70) {
           uris.push(bestMatch.track.uri);
           console.log(
             `Added: ${song.name} (match score: ${bestMatch.score})`

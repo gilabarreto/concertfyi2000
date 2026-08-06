@@ -31,9 +31,16 @@ export default function SpotifyCallback() {
         console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
 
+        // Get songs from sessionStorage (were stored before opening popup)
+        const playlistData = JSON.parse(sessionStorage.getItem("spotifyPlaylistData") || "{}");
+
         // Notify parent window that auth succeeded
         if (window.opener) {
-          window.opener.postMessage({ type: "SPOTIFY_AUTH_SUCCESS", accessToken }, "*");
+          window.opener.postMessage({
+            type: "SPOTIFY_AUTH_SUCCESS",
+            accessToken,
+            playlistData
+          }, "*");
         }
 
         setStatus("success");
@@ -47,13 +54,34 @@ export default function SpotifyCallback() {
     handleCallback();
   }, [searchParams]);
 
-  // Minimal UI for popup
+  // Hide all site elements and show only popup content
+  useEffect(() => {
+    // Hide navbar, footer, and other layout elements
+    const navbar = document.querySelector("nav");
+    const footer = document.querySelector("footer");
+    if (navbar) navbar.style.display = "none";
+    if (footer) footer.style.display = "none";
+
+    // Clear body margin/padding for clean popup
+    document.body.style.margin = "0";
+    document.body.style.padding = "0";
+    document.body.style.background = "#191414";
+    document.documentElement.style.background = "#191414";
+
+    return () => {
+      if (navbar) navbar.style.display = "";
+      if (footer) footer.style.display = "";
+    };
+  }, []);
+
+  // Minimal UI for popup - centered
   return (
     <div style={{
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      height: "100vh",
+      minHeight: "100vh",
+      width: "100%",
       background: "#191414",
       color: "#fff",
       fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
@@ -73,27 +101,28 @@ export default function SpotifyCallback() {
             borderRadius: "50%",
             animation: "spin 1s linear infinite"
           }} />
-          <p style={{ margin: 0 }}>Connecting to Spotify...</p>
+          <p style={{ margin: 0, fontSize: "16px" }}>Connecting to Spotify...</p>
         </>
       )}
 
       {status === "success" && (
         <>
-          <p style={{ fontSize: "32px", margin: 0 }}>✓</p>
-          <p style={{ margin: 0 }}>Connected!</p>
+          <p style={{ fontSize: "48px", margin: 0 }}>✓</p>
+          <p style={{ margin: 0, fontSize: "16px" }}>Connected!</p>
         </>
       )}
 
       {status === "error" && (
         <>
-          <p style={{ fontSize: "24px", color: "#ff4444", margin: 0 }}>✗</p>
-          <p style={{ margin: 0 }}>Authentication failed</p>
+          <p style={{ fontSize: "48px", color: "#ff4444", margin: 0 }}>✗</p>
+          <p style={{ margin: 0, fontSize: "16px" }}>Authentication failed</p>
         </>
       )}
 
       <style>{`
-        * { margin: 0; padding: 0; }
-        body { background: #191414; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #191414 !important; }
+        html { background: #191414 !important; }
         @keyframes spin {
           to { transform: rotate(360deg); }
         }

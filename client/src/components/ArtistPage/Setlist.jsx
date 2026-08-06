@@ -28,7 +28,27 @@ export default function Setlist(props) {
     const handleMessage = async (event) => {
       if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
         console.log("Auth successful, creating playlist...");
-        await createPlaylist();
+        // If playlist data came from popup, use it
+        const playlistData = event.data.playlistData;
+        if (playlistData) {
+          setCreatingPlaylist(true);
+          try {
+            const playlist = await createSpotifyPlaylist(
+              playlistData.songs,
+              playlistData.artistName,
+              playlistData.tourName,
+              playlistData.concertDate
+            );
+            console.log("Playlist created, opening...");
+            window.open(playlist.external_urls.spotify, "_blank");
+          } catch (err) {
+            console.error("Failed to create playlist:", err);
+            alert("Failed to create playlist. Please try again.");
+          } finally {
+            setCreatingPlaylist(false);
+            sessionStorage.removeItem("spotifyPlaylistData");
+          }
+        }
       }
     };
 
@@ -59,6 +79,14 @@ export default function Setlist(props) {
     if (creatingPlaylist) return;
 
     if (!isUserAuthenticated()) {
+      // Store playlist data in sessionStorage before opening popup
+      sessionStorage.setItem("spotifyPlaylistData", JSON.stringify({
+        songs,
+        artistName,
+        tourName,
+        concertDate
+      }));
+
       const authUrl = getSpotifyAuthUrl();
       const width = 500;
       const height = 600;
