@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
@@ -24,7 +24,7 @@ export default function Setlist(props) {
   const concertDate = concert.eventDate || "";
 
   // Listen for auth success from popup
-  useState(() => {
+  useEffect(() => {
     const handleMessage = async (event) => {
       if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
         console.log("Auth successful, creating playlist...");

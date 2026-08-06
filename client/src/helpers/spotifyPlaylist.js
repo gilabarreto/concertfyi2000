@@ -89,8 +89,8 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
         // Get best match
         const bestMatch = scoredTracks.sort((a, b) => b.score - a.score)[0];
 
-        // Only add if has decent score (artist match + some name match)
-        if (bestMatch.score >= 60) {
+        // Only add if has decent score (artist match is 50 points, so 50+ means artist matched)
+        if (bestMatch.score >= 50) {
           uris.push(bestMatch.track.uri);
           console.log(
             `Added: ${song.name} (match score: ${bestMatch.score})`
