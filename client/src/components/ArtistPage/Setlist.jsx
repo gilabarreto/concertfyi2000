@@ -49,7 +49,9 @@ export default function Setlist(props) {
         tourName,
         concertDate
       );
+      // Open playlist in new tab and close popup
       window.open(playlist.external_urls.spotify, "_blank");
+      window.close();
     } catch (err) {
       console.error("Failed to create playlist:", err);
       alert("Failed to create playlist. Please try again.");

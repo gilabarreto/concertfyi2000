@@ -36,14 +36,16 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
   if (!playlistResponse.ok) throw new Error("Failed to create playlist");
   const playlist = await playlistResponse.json();
 
-  // Search and add songs to playlist
+  // Search and add songs to playlist (only exact matches)
   const uris = [];
+  const skippedSongs = [];
+
   for (const song of songs) {
     try {
       const searchResponse = await fetch(
         `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-          `${artistName} ${song.name}`
-        )}&type=track&limit=1`,
+          `track:${song.name} artist:${artistName}`
+        )}&type=track&limit=5`,
         {
           headers: { Authorization: `Bearer ${accessToken}` },
         }
@@ -51,12 +53,27 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
 
       if (searchResponse.ok) {
         const searchData = await searchResponse.json();
-        if (searchData.tracks.items.length > 0) {
-          uris.push(searchData.tracks.items[0].uri);
+
+        // Find exact match: song name matches and artist matches
+        const exactMatch = searchData.tracks.items.find(
+          (track) =>
+            track.name.toLowerCase() === song.name.toLowerCase() &&
+            track.artists.some(
+              (artist) =>
+                artist.name.toLowerCase() === artistName.toLowerCase()
+            )
+        );
+
+        if (exactMatch) {
+          uris.push(exactMatch.uri);
+        } else {
+          skippedSongs.push(song.name);
+          console.log(`Skipped (no exact match): ${song.name}`);
         }
       }
     } catch (err) {
       console.error(`Failed to search for ${song.name}:`, err);
+      skippedSongs.push(song.name);
     }
   }
 
@@ -80,6 +97,11 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
         throw new Error("Failed to add songs to playlist");
       }
     }
+  }
+
+  console.log(`Playlist created: ${uris.length}/${songs.length} songs added`);
+  if (skippedSongs.length > 0) {
+    console.log(`Skipped songs: ${skippedSongs.join(", ")}`);
   }
 
   return playlist;
