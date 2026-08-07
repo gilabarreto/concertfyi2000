@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAccessTokenFromCode, saveAccessToken } from "../helpers/spotifyAuth";
+import { createSpotifyPlaylist } from "../helpers/spotifyPlaylist";
 
 export default function SpotifyCallback() {
   const [searchParams] = useSearchParams();
@@ -31,20 +32,28 @@ export default function SpotifyCallback() {
         console.log("Token received:", !!accessToken);
         saveAccessToken(accessToken);
 
-        // Get songs from localStorage (shared between popup and parent window)
+        // Get playlist data from localStorage
         const playlistData = JSON.parse(localStorage.getItem("spotifyPlaylistData") || "{}");
 
-        // Notify parent window that auth succeeded
-        if (window.opener) {
-          window.opener.postMessage({
-            type: "SPOTIFY_AUTH_SUCCESS",
-            accessToken,
-            playlistData
-          }, "*");
+        if (playlistData.songs) {
+          console.log("Creating playlist...");
+          await createSpotifyPlaylist(
+            playlistData.songs,
+            playlistData.artistName,
+            playlistData.tourName,
+            playlistData.concertDate
+          );
+          localStorage.removeItem("spotifyPlaylistData");
         }
 
         setStatus("success");
-        setTimeout(() => window.close(), 1500);
+
+        // Redirect back to previous page or home after 2 seconds
+        setTimeout(() => {
+          const previousUrl = sessionStorage.getItem("previousUrl");
+          sessionStorage.removeItem("previousUrl");
+          window.location = previousUrl || "/";
+        }, 2000);
       } catch (err) {
         console.error("Token exchange error:", err);
         setStatus("error");
