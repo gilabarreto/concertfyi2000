@@ -101,37 +101,38 @@ export default function SpotifyCallback() {
     <div
       data-testid="spotify-callback"
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        background: "#191414",
-        color: "#fff",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
-        flexDirection: "column",
-        gap: "24px",
-        margin: 0,
-        padding: 0,
-        zIndex: 9999,
+        display: "flex !important",
+        alignItems: "center !important",
+        justifyContent: "center !important",
+        position: "fixed !important",
+        top: "0 !important",
+        left: "0 !important",
+        width: "100% !important",
+        height: "100% !important",
+        background: "#191414 !important",
+        color: "#ffffff !important",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important",
+        flexDirection: "column !important",
+        gap: "24px !important",
+        margin: "0 !important",
+        padding: "0 !important",
+        zIndex: "99999 !important",
+        inset: "0 !important",
       }}
     >
       {status === "loading" && (
         <>
           <div
             style={{
-              width: "50px",
-              height: "50px",
-              border: "4px solid #1DB954",
-              borderTopColor: "transparent",
-              borderRadius: "50%",
-              animation: "spin 1s linear infinite",
+              width: "50px !important",
+              height: "50px !important",
+              border: "4px solid #1DB954 !important",
+              borderTopColor: "transparent !important",
+              borderRadius: "50% !important",
+              animation: "spin 1s linear infinite !important",
             }}
           />
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
+          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
             Connecting to Spotify...
           </p>
         </>
@@ -141,18 +142,18 @@ export default function SpotifyCallback() {
         <>
           <div
             style={{
-              fontSize: "64px",
-              margin: 0,
-              animation: "fadeIn 0.5s ease-in",
-              color: "#1DB954",
+              fontSize: "64px !important",
+              margin: "0 !important",
+              animation: "fadeIn 0.5s ease-in !important",
+              color: "#1DB954 !important",
             }}
           >
             ✓
           </div>
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
+          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
             Connected!
           </p>
-          <p style={{ margin: 0, fontSize: "14px", color: "#cccccc" }}>
+          <p style={{ margin: "0 !important", fontSize: "14px !important", color: "#ffffff !important" }}>
             Creating your playlist...
           </p>
         </>
@@ -160,11 +161,11 @@ export default function SpotifyCallback() {
 
       {status === "error" && (
         <>
-          <p style={{ fontSize: "64px", color: "#ff4444", margin: 0 }}>✗</p>
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
+          <p style={{ fontSize: "64px !important", color: "#ff4444 !important", margin: "0 !important" }}>✗</p>
+          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
             Authentication failed
           </p>
-          <p style={{ margin: 0, fontSize: "14px", color: "#cccccc" }}>
+          <p style={{ margin: "0 !important", fontSize: "14px !important", color: "#ffffff !important" }}>
             Please try again
           </p>
         </>
