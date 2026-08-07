@@ -66,80 +66,81 @@ export default function SpotifyCallback() {
     };
   }, []);
 
-  // If in popup, render full-screen overlay. Otherwise render normally.
+  // Popup with modal-style design
   const popupContent = (
     <div
       data-testid="spotify-callback"
       style={{
-        display: "flex !important",
-        alignItems: "center !important",
-        justifyContent: "center !important",
-        position: "fixed !important",
-        top: "0 !important",
-        left: "0 !important",
-        width: "100% !important",
-        height: "100% !important",
-        background: "#191414 !important",
-        color: "#ffffff !important",
-        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif !important",
-        flexDirection: "column !important",
-        gap: "24px !important",
-        margin: "0 !important",
-        padding: "0 !important",
-        zIndex: "99999 !important",
-        inset: "0 !important",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        height: "100vh",
+        background: "rgba(0, 0, 0, 0.5)",
+        fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
       }}
     >
-      {status === "loading" && (
-        <>
-          <div
-            style={{
-              width: "50px !important",
-              height: "50px !important",
-              border: "4px solid #1DB954 !important",
-              borderTopColor: "transparent !important",
-              borderRadius: "50% !important",
-              animation: "spin 1s linear infinite !important",
-            }}
-          />
-          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
-            Connecting to Spotify...
-          </p>
-        </>
-      )}
+      <div
+        style={{
+          background: "white",
+          borderRadius: "8px",
+          padding: "40px",
+          textAlign: "center",
+          minWidth: "300px",
+        }}
+      >
+        {status === "loading" && (
+          <>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                border: "4px solid #1DB954",
+                borderTopColor: "transparent",
+                borderRadius: "50%",
+                animation: "spin 1s linear infinite",
+                margin: "0 auto 20px",
+              }}
+            />
+            <p style={{ margin: "0", fontSize: "16px", color: "#333" }}>
+              Connecting to Spotify...
+            </p>
+          </>
+        )}
 
-      {status === "success" && (
-        <>
-          <div
-            style={{
-              fontSize: "64px !important",
-              margin: "0 !important",
-              animation: "fadeIn 0.5s ease-in !important",
-              color: "#1DB954 !important",
-            }}
-          >
-            ✓
-          </div>
-          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
-            Connected!
-          </p>
-          <p style={{ margin: "0 !important", fontSize: "14px !important", color: "#ffffff !important" }}>
-            Creating your playlist...
-          </p>
-        </>
-      )}
+        {status === "success" && (
+          <>
+            <div
+              style={{
+                fontSize: "48px",
+                margin: "0 0 16px 0",
+                animation: "fadeIn 0.5s ease-in",
+                color: "#1DB954",
+              }}
+            >
+              ✓
+            </div>
+            <p style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+              Connected!
+            </p>
+            <p style={{ margin: "0", fontSize: "14px", color: "#666" }}>
+              Creating your playlist...
+            </p>
+          </>
+        )}
 
-      {status === "error" && (
-        <>
-          <p style={{ fontSize: "64px !important", color: "#ff4444 !important", margin: "0 !important" }}>✗</p>
-          <p style={{ margin: "0 !important", fontSize: "18px !important", fontWeight: "500 !important", color: "#ffffff !important" }}>
-            Authentication failed
-          </p>
-          <p style={{ margin: "0 !important", fontSize: "14px !important", color: "#ffffff !important" }}>
-            Please try again
-          </p>
-        </>
-      )}
+        {status === "error" && (
+          <>
+            <p style={{ fontSize: "48px", color: "#ff4444", margin: "0 0 16px 0" }}>✗</p>
+            <p style={{ margin: "0 0 8px 0", fontSize: "16px", fontWeight: "600", color: "#333" }}>
+              Authentication failed
+            </p>
+            <p style={{ margin: "0", fontSize: "14px", color: "#666" }}>
+              Please try again
+            </p>
+          </>
+        )}
+      </div>
 
       <style>{`
         * {
