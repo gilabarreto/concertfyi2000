@@ -84,8 +84,8 @@ export default function Setlist(props) {
     }));
 
     const authUrl = getSpotifyAuthUrl();
-    const width = 500;
-    const height = 600;
+    const width = 420;
+    const height = 320;
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 

@@ -66,7 +66,7 @@ export default function SpotifyCallback() {
     };
   }, []);
 
-  // Popup with modal-style design
+  // Popup as white box only
   const popupContent = (
     <div
       data-testid="spotify-callback"
@@ -76,17 +76,17 @@ export default function SpotifyCallback() {
         justifyContent: "center",
         width: "100%",
         height: "100vh",
-        background: "rgba(0, 0, 0, 0.5)",
+        background: "white",
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+        margin: 0,
+        padding: 0,
       }}
     >
       <div
         style={{
-          background: "white",
-          borderRadius: "8px",
-          padding: "40px",
           textAlign: "center",
-          minWidth: "300px",
+          width: "100%",
+          padding: "40px 30px",
         }}
       >
         {status === "loading" && (
