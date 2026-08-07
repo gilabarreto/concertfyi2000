@@ -20,12 +20,15 @@ function App() {
     window.history.replaceState({}, document.title, "/callback" + window.location.search);
   }
 
+  // Don't show navbar/footer in Spotify callback popup
+  const isSpotifyPopup = window.location.pathname === "/callback" && window.opener !== null;
+
   return (
     <HelmetProvider>
       <AppContext.Provider value={appState}>
         <Router basename="/">
-          <Navbar />
-          <main className="pt-16 pb-16 min-h-screen w-full flex">
+          {!isSpotifyPopup && <Navbar />}
+          <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-screen w-full flex"}>
             <Routes>
               {routes.map((route) => {
                 const Component = route.element;
@@ -39,7 +42,7 @@ function App() {
               })}
             </Routes>
           </main>
-          <Footer />
+          {!isSpotifyPopup && <Footer />}
         </Router>
       </AppContext.Provider>
     </HelmetProvider>

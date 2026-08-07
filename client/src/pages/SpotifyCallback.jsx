@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import ReactDOM from "react-dom";
 import { getAccessTokenFromCode, saveAccessToken } from "../helpers/spotifyAuth";
 
 export default function SpotifyCallback() {
@@ -55,35 +54,19 @@ export default function SpotifyCallback() {
     handleCallback();
   }, [searchParams]);
 
-  // Hide all site elements and show only popup content
+  // Style popup background
   useEffect(() => {
-    // Hide navbar, footer, and main content area
-    const navbar = document.querySelector("nav");
-    const footer = document.querySelector("footer");
-    const header = document.querySelector("header");
-    const main = document.querySelector("main");
-
-    if (navbar) navbar.style.display = "none";
-    if (footer) footer.style.display = "none";
-    if (header) header.style.display = "none";
-    if (main) main.style.display = "none";
-
-    // Clean body styling
+    document.body.style.background = "#191414";
     document.body.style.margin = "0";
     document.body.style.padding = "0";
-    document.body.style.background = "#191414";
     document.body.style.overflow = "hidden";
-    document.documentElement.style.background = "#191414";
 
     return () => {
-      if (navbar) navbar.style.display = "";
-      if (footer) footer.style.display = "";
-      if (header) header.style.display = "";
-      if (main) main.style.display = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
-  // Render directly to body using Portal to avoid being hidden by parent elements
+  // If in popup, render full-screen overlay. Otherwise render normally.
   const popupContent = (
     <div
       data-testid="spotify-callback"
@@ -190,5 +173,5 @@ export default function SpotifyCallback() {
     </div>
   );
 
-  return ReactDOM.createPortal(popupContent, document.body);
+  return popupContent;
 }
