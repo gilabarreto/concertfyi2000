@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import LyricsDropdown from "../LyricsDropdown";
-import { getSpotifyAuthUrl } from "../../helpers/spotifyAuth";
+import {
+  getSpotifyAuthUrl,
+} from "../../helpers/spotifyAuth";
+import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
 export default function Setlist(props) {
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
+  const [creatingPlaylist, setCreatingPlaylist] = useState(false);
 
   const concert = props.concert;
   const songs = concert.sets?.set[0]?.song || [];
@@ -16,19 +20,80 @@ export default function Setlist(props) {
   const tourName = concert.tour?.name || "";
   const concertDate = concert.eventDate || "";
 
+  // Listen for auth success from popup
+  useEffect(() => {
+    const handleMessage = async (event) => {
+      if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
+        console.log("Auth successful, creating playlist...");
+        // If playlist data came from popup, use it
+        const playlistData = event.data.playlistData;
+        if (playlistData) {
+          setCreatingPlaylist(true);
+          try {
+            const playlist = await createSpotifyPlaylist(
+              playlistData.songs,
+              playlistData.artistName,
+              playlistData.tourName,
+              playlistData.concertDate
+            );
+            console.log("Playlist created, opening...");
+            window.open(playlist.external_urls.spotify, "_blank");
+          } catch (err) {
+            console.error("Failed to create playlist:", err);
+            alert("Failed to create playlist. Please try again.");
+          } finally {
+            setCreatingPlaylist(false);
+            localStorage.removeItem("spotifyPlaylistData");
+          }
+        }
+      }
+    };
 
-  const handleSpotifyPlaylist = () => {
-    // Store playlist data and current URL for callback
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const createPlaylist = async () => {
+    setCreatingPlaylist(true);
+    try {
+      const playlist = await createSpotifyPlaylist(
+        songs,
+        artistName,
+        tourName,
+        concertDate
+      );
+      console.log("Playlist created, opening...");
+      window.open(playlist.external_urls.spotify, "_blank");
+    } catch (err) {
+      console.error("Failed to create playlist:", err);
+      alert("Failed to create playlist. Please try again.");
+    } finally {
+      setCreatingPlaylist(false);
+    }
+  };
+
+  const handleSpotifyPlaylist = async () => {
+    if (creatingPlaylist) return;
+
+    // Store playlist data in localStorage (shared between popup and parent)
     localStorage.setItem("spotifyPlaylistData", JSON.stringify({
       songs,
       artistName,
       tourName,
       concertDate
     }));
-    sessionStorage.setItem("previousUrl", window.location.href);
 
-    // Redirect to Spotify auth
-    window.location = getSpotifyAuthUrl();
+    const authUrl = getSpotifyAuthUrl();
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    window.open(
+      authUrl,
+      "spotify_auth",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
   };
 
   const handleExportSetlist = () => {
@@ -54,12 +119,14 @@ export default function Setlist(props) {
         <div className="flex items-center space-x-2">
           <button
             onClick={handleSpotifyPlaylist}
-            className="p-1 hover:text-red-800"
+            disabled={creatingPlaylist}
+            className="p-1 hover:text-red-800 disabled:opacity-50"
             title="Create Spotify Playlist"
           >
             <FontAwesomeIcon
               icon={faMusic}
               className="text-red-600"
+              spin={creatingPlaylist}
             />
           </button>
           <button
