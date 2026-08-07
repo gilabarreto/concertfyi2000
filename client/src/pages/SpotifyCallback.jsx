@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import ReactDOM from "react-dom";
 import { getAccessTokenFromCode, saveAccessToken } from "../helpers/spotifyAuth";
 
 export default function SpotifyCallback() {
@@ -56,20 +57,6 @@ export default function SpotifyCallback() {
 
   // Hide all site elements and show only popup content
   useEffect(() => {
-    // Hide all site layout elements aggressively
-    const navbar = document.querySelector("nav");
-    const footer = document.querySelector("footer");
-    const header = document.querySelector("header");
-    const main = document.querySelector("main");
-
-    // Hide by setting display to none
-    if (navbar) navbar.style.display = "none";
-    if (footer) footer.style.display = "none";
-    if (header) header.style.display = "none";
-    if (main) {
-      main.style.display = "none";
-    }
-
     // Clean body styling
     document.body.style.margin = "0";
     document.body.style.padding = "0";
@@ -77,27 +64,13 @@ export default function SpotifyCallback() {
     document.body.style.overflow = "hidden";
     document.documentElement.style.background = "#191414";
 
-    // Hide all fixed/absolute positioned elements that might be footers
-    const allElements = document.querySelectorAll("*");
-    allElements.forEach((el) => {
-      const style = window.getComputedStyle(el);
-      if ((style.position === "fixed" || style.position === "absolute") &&
-          el.offsetHeight < 100 &&
-          el !== document.querySelector("[data-testid='spotify-callback']")) {
-        el.style.display = "none";
-      }
-    });
-
     return () => {
-      if (navbar) navbar.style.display = "";
-      if (footer) footer.style.display = "";
-      if (header) header.style.display = "";
-      if (main) main.style.display = "";
+      document.body.style.overflow = "";
     };
   }, []);
 
-  // Minimal UI for popup - centered, clean design
-  return (
+  // Render directly to body using Portal to avoid being hidden by parent elements
+  const popupContent = (
     <div
       data-testid="spotify-callback"
       style={{
@@ -202,4 +175,6 @@ export default function SpotifyCallback() {
       `}</style>
     </div>
   );
+
+  return ReactDOM.createPortal(popupContent, document.body);
 }
