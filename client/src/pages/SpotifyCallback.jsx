@@ -131,7 +131,7 @@ export default function SpotifyCallback() {
               animation: "spin 1s linear infinite",
             }}
           />
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500" }}>
+          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
             Connecting to Spotify...
           </p>
         </>
@@ -144,14 +144,15 @@ export default function SpotifyCallback() {
               fontSize: "64px",
               margin: 0,
               animation: "fadeIn 0.5s ease-in",
+              color: "#1DB954",
             }}
           >
             ✓
           </div>
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500" }}>
+          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
             Connected!
           </p>
-          <p style={{ margin: 0, fontSize: "14px", color: "#b3b3b3" }}>
+          <p style={{ margin: 0, fontSize: "14px", color: "#cccccc" }}>
             Creating your playlist...
           </p>
         </>
@@ -160,10 +161,10 @@ export default function SpotifyCallback() {
       {status === "error" && (
         <>
           <p style={{ fontSize: "64px", color: "#ff4444", margin: 0 }}>✗</p>
-          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500" }}>
+          <p style={{ margin: 0, fontSize: "18px", fontWeight: "500", color: "#ffffff" }}>
             Authentication failed
           </p>
-          <p style={{ margin: 0, fontSize: "14px", color: "#b3b3b3" }}>
+          <p style={{ margin: 0, fontSize: "14px", color: "#cccccc" }}>
             Please try again
           </p>
         </>
