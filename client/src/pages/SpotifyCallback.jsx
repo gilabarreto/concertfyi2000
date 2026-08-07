@@ -85,39 +85,57 @@ export default function SpotifyCallback() {
 
   // Minimal UI for popup - centered
   return (
-    <>
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "100vh",
+      width: "100%",
+      background: "#191414",
+      color: "#fff",
+      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
+      flexDirection: "column",
+      gap: "20px",
+      margin: 0,
+      padding: 0,
+      overflow: "hidden"
+    }}>
       {status === "loading" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <p className="text-lg font-semibold text-gray-800">Connecting to Spotify...</p>
-          </div>
-        </div>
+        <>
+          <div style={{
+            width: "40px",
+            height: "40px",
+            border: "4px solid #1DB954",
+            borderTopColor: "transparent",
+            borderRadius: "50%",
+            animation: "spin 1s linear infinite"
+          }} />
+          <p style={{ margin: 0, fontSize: "16px" }}>Connecting to Spotify...</p>
+        </>
       )}
 
       {status === "success" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg">
-            <p>✓ Connected!</p>
-          </div>
-        </div>
+        <>
+          <p style={{ fontSize: "48px", margin: 0 }}>✓</p>
+          <p style={{ margin: 0, fontSize: "16px" }}>Connected!</p>
+        </>
       )}
 
       {status === "error" && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg">
-            <p>Authentication failed</p>
-          </div>
-        </div>
+        <>
+          <p style={{ fontSize: "48px", color: "#ff4444", margin: 0 }}>✗</p>
+          <p style={{ margin: 0, fontSize: "16px" }}>Authentication failed</p>
+        </>
       )}
 
       <style>{`
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: #191414 !important; }
         html { background: #191414 !important; }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
       `}</style>
-    </>
+    </div>
   );
 }

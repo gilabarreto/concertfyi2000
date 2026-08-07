@@ -6,9 +6,6 @@ import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import LyricsDropdown from "../LyricsDropdown";
 import {
   getSpotifyAuthUrl,
-  isUserAuthenticated,
-  saveAccessToken,
-  getAccessTokenFromCode,
 } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
@@ -78,39 +75,29 @@ export default function Setlist(props) {
   };
 
   const handleSpotifyPlaylist = async () => {
-    console.log("handleSpotifyPlaylist called");
-    if (creatingPlaylist) {
-      console.log("Already creating playlist");
-      return;
-    }
+    if (creatingPlaylist) return;
 
-    if (!isUserAuthenticated()) {
-      console.log("Not authenticated, showing modal");
-      setShowSpotifyModal(true);
+    setShowSpotifyModal(true);
 
-      // Store playlist data in localStorage (shared between popup and parent)
-      localStorage.setItem("spotifyPlaylistData", JSON.stringify({
-        songs,
-        artistName,
-        tourName,
-        concertDate
-      }));
+    // Store playlist data in localStorage (shared between popup and parent)
+    localStorage.setItem("spotifyPlaylistData", JSON.stringify({
+      songs,
+      artistName,
+      tourName,
+      concertDate
+    }));
 
-      const authUrl = getSpotifyAuthUrl();
-      const width = 500;
-      const height = 600;
-      const left = window.screenX + (window.outerWidth - width) / 2;
-      const top = window.screenY + (window.outerHeight - height) / 2;
+    const authUrl = getSpotifyAuthUrl();
+    const width = 500;
+    const height = 600;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
 
-      window.open(
-        authUrl,
-        "spotify_auth",
-        `width=${width},height=${height},left=${left},top=${top}`
-      );
-      return;
-    }
-
-    await createPlaylist();
+    window.open(
+      authUrl,
+      "spotify_auth",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
   };
 
   const handleExportSetlist = () => {
