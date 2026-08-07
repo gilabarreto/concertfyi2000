@@ -13,7 +13,6 @@ export default function Setlist(props) {
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
-  const [showSpotifyModal, setShowSpotifyModal] = useState(false);
 
   const concert = props.concert;
   const songs = concert.sets?.set[0]?.song || [];
@@ -44,7 +43,6 @@ export default function Setlist(props) {
             alert("Failed to create playlist. Please try again.");
           } finally {
             setCreatingPlaylist(false);
-            setShowSpotifyModal(false);
             localStorage.removeItem("spotifyPlaylistData");
           }
         }
@@ -76,8 +74,6 @@ export default function Setlist(props) {
 
   const handleSpotifyPlaylist = async () => {
     if (creatingPlaylist) return;
-
-    setShowSpotifyModal(true);
 
     // Store playlist data in localStorage (shared between popup and parent)
     localStorage.setItem("spotifyPlaylistData", JSON.stringify({
@@ -118,18 +114,6 @@ export default function Setlist(props) {
 
   return (
     <>
-      {showSpotifyModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-lg shadow-lg text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-10 h-10 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
-            </div>
-            <p className="text-lg font-semibold text-gray-800">Connecting to Spotify...</p>
-            <p className="text-sm text-gray-500 mt-2">A window has opened for authorization</p>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-1 justify-between items-center mb-2">
         <h2 className="text-4xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
