@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMusic, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import LyricsDropdown from "../LyricsDropdown";
 import {
   getSpotifyAuthUrl,
@@ -113,22 +114,11 @@ export default function Setlist(props) {
   const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
 
   return (
-    <>
+    <><>
       <div className="flex flex-1 justify-between items-center mb-2">
         <h2 className="text-4xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
-          <button
-            onClick={handleSpotifyPlaylist}
-            disabled={creatingPlaylist}
-            className="p-1 hover:text-red-800 disabled:opacity-50"
-            title="Create Spotify Playlist"
-          >
-            <FontAwesomeIcon
-              icon={faMusic}
-              className="text-red-600"
-              spin={creatingPlaylist}
-            />
-          </button>
+
           <button
             onClick={handleExportSetlist}
             className="p-1 hover:text-red-800"
@@ -165,28 +155,23 @@ export default function Setlist(props) {
                         <FontAwesomeIcon
                           icon={faMusic}
                           className="text-red-600 hover:text-red-800"
-                          title="Spotify"
-                        />
+                          title="Spotify" />
                       </a>
                       <a href={youtubeUrl} target="_blank" rel="noreferrer">
                         <FontAwesomeIcon
                           icon={faCirclePlay}
                           className="text-red-600 hover:text-red-800"
-                          title="YouTube"
-                        />
+                          title="YouTube" />
                       </a>
                       <button
-                        onClick={() =>
-                          setExpandedLyrics(
-                            expandedLyrics === songIndex ? null : songIndex
-                          )
-                        }
+                        onClick={() => setExpandedLyrics(
+                          expandedLyrics === songIndex ? null : songIndex
+                        )}
                       >
                         <FontAwesomeIcon
                           icon={faFileLines}
                           className="text-red-600 hover:text-red-800"
-                          title="Lyrics"
-                        />
+                          title="Lyrics" />
                       </button>
                     </span>
                   </li>
@@ -195,8 +180,7 @@ export default function Setlist(props) {
                     <div className="pl-6 mb-2">
                       <LyricsDropdown
                         songName={song.name}
-                        artistName={artistName}
-                      />
+                        artistName={artistName} />
                     </div>
                   )}
                 </div>
@@ -227,6 +211,22 @@ export default function Setlist(props) {
           )}
         </>
       )}
+    </>
+      <div className="flex justify-center mt-4">
+
+        <button
+          onClick={handleSpotifyPlaylist}
+          disabled={creatingPlaylist}
+          className="p-1 hover:text-red-800 disabled:opacity-50"
+          title="Create Spotify Playlist"
+        >
+          <FontAwesomeIcon
+            icon={faSpotify}
+            className="text-red-600"
+            spin={creatingPlaylist} />
+          Create Spotify Playlist
+        </button>
+      </div>
     </>
   );
 }
