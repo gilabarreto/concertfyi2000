@@ -66,7 +66,7 @@ export default function ConcertInfo(props) {
           <h2 className="text-2xl font-bold">{artist}</h2>
           <FontAwesomeIcon
             icon="fa-solid fa-heart"
-            className="cursor-pointer text-gray-500"
+            className="text-2xl cursor-pointer text-gray-500"
             size="2x"
           />
         </div>
@@ -110,7 +110,7 @@ export default function ConcertInfo(props) {
           <hr className="border-t border-gray-300 opacity-50" />
         </ol>
 
-        <span className="flex justify-center mt-4 space-x-4">
+        <span className="flex text-sm justify-center mt-4 space-x-4">
           {ticketmaster.attractions?.[0]?.externalLinks?.youtube && (
             <a
               href={ticketmaster.attractions[0].externalLinks.youtube[0].url}

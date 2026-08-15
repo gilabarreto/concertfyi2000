@@ -103,7 +103,7 @@ function Navbar() {
     </nav>
 
       {isOpen && (
-        <div className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-4 text-xl font-bold text-red-600 animate-fade-in-down " role="menu">
+        <div className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down " role="menu">
           {navLinks.map((link) => (
             <Link
               key={link.path}

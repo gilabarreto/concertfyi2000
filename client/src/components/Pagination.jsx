@@ -1,32 +1,24 @@
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const getVisiblePages = () => {
-    if (totalPages <= 5) {
+    // Se tiver 4 ou menos páginas, mostra todas
+    if (totalPages <= 4) {
       return Array.from({ length: totalPages }, (_, i) => i);
     }
 
-    // Perto do início: primeiras 3 + últimas 2
-    if (currentPage <= 2) {
-      return [0, 1, 2, totalPages - 2, totalPages - 1];
-    }
-
-    // Perto do final: primeiras 2 + últimas 3
-    if (currentPage >= totalPages - 3) {
-      return [0, 1, totalPages - 3, totalPages - 2, totalPages - 1];
-    }
-
-    // No meio: 5 contíguos (atual +/- 2)
-    return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
+    // Se tiver mais de 4: mostra 1 2 3 ... última
+    return [0, 1, 2, totalPages - 1];
   };
 
   const visiblePages = getVisiblePages();
 
   // Detecta gap entre números (onde mostrar elipsis)
+  // Só mostra elipsis se houver gap entre dois números
   const gapIndex = visiblePages.findIndex((page, idx) =>
     idx < visiblePages.length - 1 && visiblePages[idx + 1] - page > 1
   );
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-4">
+    <div className="flex items-center justify-center space-x-2 mt-4 text-sm">
       <button
         className="px-2 py-1 rounded disabled:opacity-50"
         onClick={() => onPageChange(currentPage - 1)}
