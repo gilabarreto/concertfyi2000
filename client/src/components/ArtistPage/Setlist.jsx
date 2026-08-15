@@ -132,7 +132,7 @@ export default function Setlist(props) {
 
       {songs.length === 0 ? (
         <span className="py-2 ml-6 block text-gray-500">
-          There are no songs in this setlist. Please come back later.
+          No songs in this setlist. Check back later.
         </span>
       ) : (
         <>

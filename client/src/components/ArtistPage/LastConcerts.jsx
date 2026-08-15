@@ -25,7 +25,7 @@ export default function LastConcerts(props) {
 
       {totalConcerts === 0 ? (
         <span className="py-2 ml-6 text-gray-500">
-          There are no recent concerts. Please check back later.
+          No recent concerts. Check back later.
         </span>
       ) : (
         <>

@@ -37,7 +37,7 @@ export default function NextConcerts(props) {
 
       {totalConcerts === 0 ? (
         <p className="py-2 ml-6 text-gray-500">
-          There are no upcoming concerts. Please check back later.
+          No upcoming concerts. Check back later.
         </p>
       ) : (
         <>
