@@ -1,21 +1,32 @@
 export default function Pagination({ currentPage, totalPages, onPageChange }) {
+  const MAX_VISIBLE = 5;
+
   const getVisiblePages = () => {
-    // Se tiver 4 ou menos páginas, mostra todas
-    if (totalPages <= 4) {
+    if (totalPages <= MAX_VISIBLE) {
       return Array.from({ length: totalPages }, (_, i) => i);
     }
 
-    // Se tiver mais de 4: mostra 1 2 3 ... última
-    return [0, 1, 2, totalPages - 1];
+    // Se tem mais de 5 páginas, mostra 5 páginas ao redor da atual
+    const half = Math.floor(MAX_VISIBLE / 2);
+    let start = currentPage - half;
+    let end = currentPage + half;
+
+    // Ajusta se chegou no início
+    if (start < 0) {
+      start = 0;
+      end = MAX_VISIBLE - 1;
+    }
+
+    // Ajusta se chegou no fim
+    if (end >= totalPages) {
+      end = totalPages - 1;
+      start = end - MAX_VISIBLE + 1;
+    }
+
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   };
 
   const visiblePages = getVisiblePages();
-
-  // Detecta gap entre números (onde mostrar elipsis)
-  // Só mostra elipsis se houver gap entre dois números
-  const gapIndex = visiblePages.findIndex((page, idx) =>
-    idx < visiblePages.length - 1 && visiblePages[idx + 1] - page > 1
-  );
 
   return (
     <div className="flex items-center justify-center space-x-2 mt-4 text-sm">
@@ -27,23 +38,18 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
         &lt; Prev
       </button>
 
-      {visiblePages.map((pageNum, idx) => (
-        <>
-          <button
-            key={pageNum}
-            className={`px-2 py-1 rounded ${
-              pageNum === currentPage
-                ? "bg-red-600 text-white"
-                : "bg-gray-200 text-gray-700"
-            }`}
-            onClick={() => onPageChange(pageNum)}
-          >
-            {pageNum + 1}
-          </button>
-          {gapIndex === idx && (
-            <span key={`ellipsis-${idx}`} className="px-2 text-gray-500">...</span>
-          )}
-        </>
+      {visiblePages.map((pageNum) => (
+        <button
+          key={pageNum}
+          className={`px-2 py-1 rounded ${
+            pageNum === currentPage
+              ? "bg-red-600 text-white"
+              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+          }`}
+          onClick={() => onPageChange(pageNum)}
+        >
+          {pageNum + 1}
+        </button>
       ))}
 
       <button
