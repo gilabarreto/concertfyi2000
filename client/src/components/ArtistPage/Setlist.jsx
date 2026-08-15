@@ -114,11 +114,17 @@ export default function Setlist(props) {
   const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
 
   return (
-    <><>
+    <>
       <div className="flex flex-1 justify-between items-center mb-2">
         <h2 className="text-4xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
-
+          <button
+            onClick={handleSpotifyPlaylist}
+            className="p-1 hover:text-red-800"
+            title="Create Spotify Playlist"
+          >
+            <FontAwesomeIcon icon={faSpotify} className="text-red-600" />
+          </button>
           <button
             onClick={handleExportSetlist}
             className="p-1 hover:text-red-800"
@@ -211,22 +217,6 @@ export default function Setlist(props) {
           )}
         </>
       )}
-    </>
-      <div className="flex justify-center mt-4">
-
-        <button
-          onClick={handleSpotifyPlaylist}
-          disabled={creatingPlaylist}
-          className="p-1 hover:text-red-800 disabled:opacity-50"
-          title="Create Spotify Playlist"
-        >
-          <FontAwesomeIcon
-            icon={faSpotify}
-            className="text-red-600"
-            spin={creatingPlaylist} />
-          Create Spotify Playlist
-        </button>
-      </div>
     </>
   );
 }
