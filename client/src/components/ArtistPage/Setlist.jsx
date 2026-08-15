@@ -213,7 +213,7 @@ export default function Setlist(props) {
             <button
               onClick={handleSpotifyPlaylist}
               disabled={creatingPlaylist}
-              className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2"
+              className="px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2"
               title="Create Spotify Playlist"
             >
               <FontAwesomeIcon icon={faSpotify} />
