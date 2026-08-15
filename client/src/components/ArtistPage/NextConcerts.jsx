@@ -32,7 +32,7 @@ export default function NextConcerts(props) {
 
   return (
     <>
-      <h2 className="text-4xl font-bold mb-4">Next Concerts</h2>
+      <h2 className="text-3xl font-bold mb-4">Next Concerts</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {totalConcerts === 0 ? (

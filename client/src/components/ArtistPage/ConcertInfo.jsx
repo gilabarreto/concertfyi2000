@@ -56,14 +56,14 @@ export default function ConcertInfo(props) {
           <img
             src={bestImageUrl}
             alt={`${artist} portrait`}
-            className="object-cover w-full h-full sm:max-w-[300px] sm:h-auto rounded-md"
+            className="object-cover w-full h-full sm:max-w-[400px] sm:h-auto rounded-md"
           />
         )}
       </div>
 
       <div className="flex-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-4xl font-bold">{artist}</h2>
+          <h2 className="text-2xl font-bold">{artist}</h2>
           <FontAwesomeIcon
             icon="fa-solid fa-heart"
             className="cursor-pointer text-gray-500"

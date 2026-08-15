@@ -52,18 +52,18 @@ export default function Contact() {
         description="Get in touch with the concertfyi team. Questions about artists, concerts, or suggestions?"
         url="/contact"
       />
-      <div className="w-full bg-red-600 flex flex-col items-center justify-between p-4">
+      <div className="w-full bg-red-600 flex flex-col items-center justify-between p-6">
       <Header />
 
       <div>
         <FontAwesomeIcon
           icon={faEnvelope}
-          className="text-[150px] sm:text-[250px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium"
+          className="text-[180px] sm:text-[270px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium"
         />
       </div>
-                <div className="w-[350px] sm:w-[600px] bg-red-600 rounded-3xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-8">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+                <div className="w-[350px] sm:w-[600px] bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-4 sm:p-6">
+        <form onSubmit={handleSubmit} className="flex flex-col text-sm gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
                                 <label htmlFor="name" className="block text-zinc-100 font-medium mb-1">Name</label>
               <input
@@ -72,7 +72,7 @@ export default function Contact() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                                    className="w-full p-2 rounded-md"
+                                    className="w-full p-1 rounded-md"
                 required
               />
             </div>
@@ -85,7 +85,7 @@ export default function Contact() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                                    className="w-full p-2 rounded-md"
+                                    className="w-full p-1 rounded-md"
                 required
               />
             </div>
@@ -98,14 +98,14 @@ export default function Contact() {
               name="message"
               value={formData.message}
               onChange={handleChange}
-                                className="w-full p-2 rounded-md"
+                                className="w-full p-1 rounded-md"
               required
             ></textarea>
           </div>
 
           <button
             type="submit"
-            className="bg-white text-red-600 font-bold py-2 px-4 rounded-md hover:bg-gray-100 transition mt-2"
+            className="bg-white text-red-600 font-bold py-1 px-3 rounded-md hover:bg-gray-100 transition mt-2"
           >
             Send Message
           </button>

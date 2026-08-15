@@ -47,7 +47,7 @@ export default function ArtistPage() {
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
-      <div className="w-full mx-auto px-6 py-8 space-y-8">
+      <div className="w-full mx-auto p-4 space-y-4">
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
           <ConcertInfo

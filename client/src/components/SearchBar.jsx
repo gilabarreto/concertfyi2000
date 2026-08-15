@@ -64,7 +64,7 @@ export default function SearchBar() {
         onChange={handleChange}
         placeholder={placeholder}
         className="
-        flex h-10  max-w-xs px-4 rounded-full
+        flex h-8 w-26 px-4 rounded-full text-sm
           bg-red-600 placeholder-white text-white
           ring-0
           focus:outline-none

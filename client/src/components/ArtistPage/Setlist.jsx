@@ -116,7 +116,7 @@ export default function Setlist(props) {
   return (
     <>
       <div className="flex flex-1 justify-between items-center mb-2">
-        <h2 className="text-4xl font-bold">Setlist</h2>
+        <h2 className="text-3xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
           <button
             onClick={handleExportSetlist}
@@ -191,7 +191,7 @@ export default function Setlist(props) {
             <div className="flex justify-center mt-4">
               <button
                 onClick={() => setShowAllSongs(true)}
-                className="px-4 py-2 text-sm font-semibold text-red-600 hover:text-red-800"
+                className="px-4 py-2 text-md font-semibold text-red-600 hover:text-red-800"
               >
                 Show all {songs.length} songs
               </button>
@@ -202,7 +202,7 @@ export default function Setlist(props) {
             <div className="flex justify-center mt-4">
               <button
                 onClick={() => setShowAllSongs(false)}
-                className="px-4 py-2 text-sm font-semibold text-gray-600 hover:text-gray-800"
+                className="px-4 py-2 text-md font-semibold text-gray-600 hover:text-gray-800"
               >
                 Show less
               </button>
