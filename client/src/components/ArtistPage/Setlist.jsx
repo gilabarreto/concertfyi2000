@@ -119,13 +119,6 @@ export default function Setlist(props) {
         <h2 className="text-4xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
           <button
-            onClick={handleSpotifyPlaylist}
-            className="p-1 hover:text-red-800"
-            title="Create Spotify Playlist"
-          >
-            <FontAwesomeIcon icon={faSpotify} className="text-red-600" />
-          </button>
-          <button
             onClick={handleExportSetlist}
             className="p-1 hover:text-red-800"
             title="Export Setlist"
@@ -215,6 +208,18 @@ export default function Setlist(props) {
               </button>
             </div>
           )}
+
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={handleSpotifyPlaylist}
+              disabled={creatingPlaylist}
+              className="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2"
+              title="Create Spotify Playlist"
+            >
+              <FontAwesomeIcon icon={faSpotify} />
+              Create Spotify Playlist
+            </button>
+          </div>
         </>
       )}
     </>
