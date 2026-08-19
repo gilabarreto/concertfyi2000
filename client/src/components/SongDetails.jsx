@@ -97,25 +97,14 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Embed */}
       {trackUri ? (
-        <>
-          {/* Mobile version - wide=false */}
-          <div className="block md:hidden">
-            <Spotify
-              link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-              width="100%"
-              wide={false}
-            />
-          </div>
-
-          {/* Desktop version - wide=true */}
-          <div className="hidden md:block">
-            <Spotify
-              link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-              width="100%"
-              wide={true}
-            />
-          </div>
-        </>
+        <div className="overflow-hidden rounded">
+          <Spotify
+            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
+            width="100%"
+            height={100}
+            wide={true}
+          />
+        </div>
       ) : playerLoading ? (
         <p className="text-sm text-gray-500">Loading Spotify track...</p>
       ) : null}
