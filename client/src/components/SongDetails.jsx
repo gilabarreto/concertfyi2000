@@ -45,18 +45,16 @@ export default function SongDetails({ songName, artistName }) {
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Embed */}
+      {/* Spotify Link Button */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">🎵 Spotify</h3>
-        <iframe
-          src={`https://open.spotify.com/embed/search/${spotifyQuery}`}
-          width="100%"
-          height="200"
-          frameBorder="0"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          className="rounded"
-        />
+        <a
+          href={`https://open.spotify.com/search/${spotifyQuery}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded transition-colors"
+        >
+          🎵 Listen on Spotify
+        </a>
       </div>
 
       {/* Lyrics Section */}
