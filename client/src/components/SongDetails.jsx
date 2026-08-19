@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import SpotifyWebPlayer from "react-spotify-web-playback";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showFullLyrics, setShowFullLyrics] = useState(false);
+  const [trackUri, setTrackUri] = useState("");
+  const [playerLoading, setPlayerLoading] = useState(false);
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -34,28 +37,78 @@ export default function SongDetails({ songName, artistName }) {
     fetchLyrics();
   }, [songName, artistName]);
 
+  useEffect(() => {
+    const fetchTrackUri = async () => {
+      setPlayerLoading(true);
+      try {
+        const token = localStorage.getItem("spotify_access_token");
+        if (!token) {
+          console.log("No Spotify token available");
+          return;
+        }
+
+        const query = encodeURIComponent(`${artistName} ${songName}`);
+        const response = await fetch(
+          `https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        if (!response.ok) throw new Error("Failed to search track");
+
+        const data = await response.json();
+        if (data.tracks?.items?.[0]?.uri) {
+          setTrackUri(data.tracks.items[0].uri);
+        }
+      } catch (err) {
+        console.error("Error fetching track URI:", err);
+      } finally {
+        setPlayerLoading(false);
+      }
+    };
+
+    fetchTrackUri();
+  }, [songName, artistName]);
+
   // Split lyrics into lines for preview
   const lyricsLines = lyrics.split("\n");
   const previewLines = lyricsLines.slice(0, 3).join("\n");
   const hasMoreLyrics = lyricsLines.length > 3;
 
-  // Create search queries
-  const spotifyQuery = encodeURIComponent(`${artistName} ${songName}`);
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
+  const token = localStorage.getItem("spotify_access_token");
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Link Button */}
-      <div>
-        <a
-          href={`https://open.spotify.com/search/${spotifyQuery}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded transition-colors"
-        >
-          🎵 Listen on Spotify
-        </a>
-      </div>
+      {/* Spotify Web Player */}
+      {trackUri && token && (
+        <div className="rounded overflow-hidden border border-gray-300">
+          <SpotifyWebPlayer
+            token={token}
+            uris={[trackUri]}
+            play={false}
+            showPlayName
+            magnolia
+            styles={{
+              activeColor: "#1DB954",
+              bgColor: "#191414",
+              color: "#fff",
+              height: 200,
+              sliderColor: "#1DB954",
+              sliderHandleColor: "#fff",
+              trackArtistColor: "#ccc",
+              trackNameColor: "#fff",
+            }}
+          />
+        </div>
+      )}
+      {playerLoading && (
+        <p className="text-sm text-gray-500">Loading player...</p>
+      )}
+      {!token && (
+        <p className="text-sm text-gray-500">Sign in with Spotify to play music</p>
+      )}
 
       {/* Lyrics Section */}
       <div>
