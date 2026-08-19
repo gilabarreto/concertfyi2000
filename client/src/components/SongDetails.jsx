@@ -88,8 +88,8 @@ export default function SongDetails({ songName, artistName }) {
 
   // Split lyrics into lines for preview
   const lyricsLines = lyrics.split("\n");
-  const previewLines = lyricsLines.slice(0, 3).join("\n");
-  const hasMoreLyrics = lyricsLines.length > 3;
+  const previewLines = lyricsLines.slice(0, 5).join("\n");
+  const hasMoreLyrics = lyricsLines.length > 5;
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
@@ -100,7 +100,7 @@ export default function SongDetails({ songName, artistName }) {
         <div className="overflow-hidden rounded m-0 sm:m-2">
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-            wide={true}
+            wide={false}
           />
         </div>
       ) : playerLoading ? (
@@ -114,7 +114,17 @@ export default function SongDetails({ songName, artistName }) {
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
-            <pre className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto">
+            <pre
+              className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
+              style={{
+                maskImage: showFullLyrics
+                  ? 'none'
+                  : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+                WebkitMaskImage: showFullLyrics
+                  ? 'none'
+                  : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+              }}
+            >
               {showFullLyrics ? lyrics : previewLines}
             </pre>
             {hasMoreLyrics && (
