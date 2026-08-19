@@ -19,15 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: 'npm'
-          cache-dependency-path: 'client/package-lock.json'
 
       - name: Install client dependencies
-        run: npm install --verbose
+        run: npm install
         working-directory: ./client
 
       - name: Build client
-        run: npm run build -- --logLevel=debug
+        run: npm run build 2>&1
         working-directory: ./client
         env:
           VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
