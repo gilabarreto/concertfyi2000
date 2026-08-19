@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SpotifyPlayer from "react-spotify-player";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
@@ -39,23 +40,25 @@ export default function SongDetails({ songName, artistName }) {
   const previewLines = lyricsLines.slice(0, 3).join("\n");
   const hasMoreLyrics = lyricsLines.length > 3;
 
-  // Create search queries
-  const spotifyQuery = encodeURIComponent(`${artistName} ${songName}`);
+  // Create search query for YouTube
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
+  const spotifySearchUri = `spotify:search:${encodeURIComponent(`${artistName} ${songName}`)}`;
+
+  const spotifyPlayerSize = {
+    width: "100%",
+    height: "200px",
+  };
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Link */}
-      <div className="flex items-center justify-between p-3 bg-white rounded border border-gray-300">
-        <span className="text-sm font-semibold text-gray-700">🎵 Listen on Spotify</span>
-        <a
-          href={`https://open.spotify.com/search/${spotifyQuery}`}
-          target="_blank"
-          rel="noreferrer"
-          className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600"
-        >
-          Open
-        </a>
+      {/* Spotify Player */}
+      <div className="rounded overflow-hidden border border-gray-300">
+        <SpotifyPlayer
+          uri={spotifySearchUri}
+          size={spotifyPlayerSize}
+          view="list"
+          theme="black"
+        />
       </div>
 
       {/* Lyrics Section */}
@@ -65,7 +68,7 @@ export default function SongDetails({ songName, artistName }) {
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
-            <pre className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2">
+            <pre className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 max-h-32 overflow-y-auto">
               {showFullLyrics ? lyrics : previewLines}
             </pre>
             {hasMoreLyrics && (
@@ -83,15 +86,16 @@ export default function SongDetails({ songName, artistName }) {
       {/* YouTube Video */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
-        <a
-          href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
-          target="_blank"
-          rel="noreferrer"
-          className="block p-3 bg-white rounded border border-gray-300 text-center hover:bg-gray-50"
-        >
-          <div className="text-sm text-gray-600">Search on YouTube</div>
-          <div className="text-xs text-gray-500 mt-1">{artistName} - {songName}</div>
-        </a>
+        <iframe
+          width="100%"
+          height="200"
+          src={`https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`}
+          title={`${artistName} - ${songName}`}
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="rounded"
+        />
       </div>
     </div>
   );
