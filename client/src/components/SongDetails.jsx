@@ -97,10 +97,12 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Embed */}
       {trackUri ? (
-        <Spotify
-          link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-          wide={false}
-        />
+        <div className="overflow-hidden rounded">
+          <Spotify
+            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
+            wide={true}
+          />
+        </div>
       ) : playerLoading ? (
         <p className="text-sm text-gray-500">Loading Spotify track...</p>
       ) : null}
