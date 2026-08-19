@@ -127,6 +127,8 @@ export default function SongDetails({ songName, artistName }) {
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
+  console.log("SongDetails - trackUri:", trackUri, "hasToken:", hasToken);
+
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed or Connect Button */}
