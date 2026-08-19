@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-// import SpotifyWebPlayer from "react-spotify-web-playback";
+import { Spotify } from "react-spotify-embed";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
@@ -77,22 +77,17 @@ export default function SongDetails({ songName, artistName }) {
   const hasMoreLyrics = lyricsLines.length > 3;
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
-  const token = typeof window !== "undefined" ? localStorage.getItem("spotify_access_token") : null;
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Web Player */}
-      {trackUri && token ? (
-        <div className="rounded overflow-hidden border border-gray-300 bg-black p-4">
-          <p className="text-sm text-gray-400">Spotify player loading...</p>
+      {/* Spotify Embed */}
+      {trackUri ? (
+        <div className="rounded overflow-hidden border border-gray-300">
+          <Spotify link={trackUri} />
         </div>
+      ) : playerLoading ? (
+        <p className="text-sm text-gray-500">Loading Spotify track...</p>
       ) : null}
-      {playerLoading && (
-        <p className="text-sm text-gray-500">Loading player...</p>
-      )}
-      {!token && (
-        <p className="text-sm text-gray-500">Sign in with Spotify to play music</p>
-      )}
 
       {/* Lyrics Section */}
       <div>
