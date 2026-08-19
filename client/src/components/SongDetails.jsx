@@ -83,7 +83,12 @@ export default function SongDetails({ songName, artistName }) {
       {/* Spotify Embed */}
       {trackUri ? (
         <div className="rounded overflow-hidden border border-gray-300">
-          <Spotify link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`} />
+          <Spotify
+            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
+            width="100%"
+            height={80}
+            wide={true}
+          />
         </div>
       ) : playerLoading ? (
         <p className="text-sm text-gray-500">Loading Spotify track...</p>
@@ -114,16 +119,14 @@ export default function SongDetails({ songName, artistName }) {
       {/* YouTube Video */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
-        <iframe
-          width="100%"
-          height="200"
-          src={`https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`}
-          title={`${artistName} - ${songName}`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="rounded"
-        />
+        <a
+          href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded transition-colors"
+        >
+          🔍 Watch on YouTube
+        </a>
       </div>
     </div>
   );
