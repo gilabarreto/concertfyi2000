@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import SpotifyWebPlayer from "react-spotify-web-playback";
+// import SpotifyWebPlayer from "react-spotify-web-playback";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
@@ -83,26 +83,10 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Web Player */}
       {trackUri && token ? (
-        <div className="rounded overflow-hidden border border-gray-300">
-          <SpotifyWebPlayer
-            token={token}
-            uris={[trackUri]}
-            play={false}
-            showPlayName
-            magnolia
-            styles={{
-              activeColor: "#1DB954",
-              bgColor: "#191414",
-              color: "#fff",
-              height: 200,
-              sliderColor: "#1DB954",
-              sliderHandleColor: "#fff",
-              trackArtistColor: "#ccc",
-              trackNameColor: "#fff",
-            }}
-          />
+        <div className="rounded overflow-hidden border border-gray-300 bg-black p-4">
+          <p className="text-sm text-gray-400">Spotify player loading...</p>
         </div>
-      )}
+      ) : null}
       {playerLoading && (
         <p className="text-sm text-gray-500">Loading player...</p>
       )}
