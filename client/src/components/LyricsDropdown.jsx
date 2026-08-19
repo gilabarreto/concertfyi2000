@@ -9,40 +9,6 @@ export default function LyricsDropdown({ songName, artistName }) {
   const [error, setError] = useState("");
   const [fetched, setFetched] = useState(false);
 
-  const fetchLyricsFromOVH = async () => {
-    const response = await fetch(
-      `https://api.lyrics.ovh/v1/${encodeURIComponent(artistName)}/${encodeURIComponent(songName)}`
-    );
-    if (!response.ok) throw new Error("Not found");
-    const data = await response.json();
-    return data.lyrics;
-  };
-
-  const fetchLyricsFromChartLyrics = async () => {
-    const response = await fetch(
-      `https://api.chartlyrics.com/apiv1/searchLyrics?artist=${encodeURIComponent(artistName)}&song=${encodeURIComponent(songName)}`
-    );
-    if (!response.ok) throw new Error("Not found");
-    const data = await response.json();
-
-    if (!data.Result || data.Result.length === 0) {
-      throw new Error("No results");
-    }
-
-    // Pega o primeiro resultado
-    const lyricId = data.Result[0].LyricId;
-    const lyricUrl = data.Result[0].LyricUrl;
-
-    // Busca as letras completas
-    const lyricResponse = await fetch(
-      `https://www.chartlyrics.com/api/lyrics/${lyricId}`
-    );
-    const lyricData = await lyricResponse.json();
-
-    if (!lyricData.Lyric) throw new Error("No lyrics content");
-    return lyricData.Lyric;
-  };
-
   const fetchLyrics = async () => {
     if (fetched) {
       setIsOpen(!isOpen);
@@ -54,28 +20,20 @@ export default function LyricsDropdown({ songName, artistName }) {
     setLyrics("");
 
     try {
-      // Tenta lyrics.ovh primeiro (mais rápido)
-      try {
-        const lyricsText = await fetchLyricsFromOVH();
-        setLyrics(lyricsText || "No lyrics found");
-        setFetched(true);
-        setIsOpen(true);
-        return;
-      } catch (err1) {
-        console.log("lyrics.ovh failed, trying ChartLyrics...");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE}/api/lyrics?artist=${encodeURIComponent(artistName)}&song=${encodeURIComponent(songName)}`
+      );
 
-        // Se falhar, tenta ChartLyrics
-        try {
-          const lyricsText = await fetchLyricsFromChartLyrics();
-          setLyrics(lyricsText || "No lyrics found");
-          setFetched(true);
-          setIsOpen(true);
-          return;
-        } catch (err2) {
-          throw new Error("Lyrics not available");
-        }
+      if (!response.ok) {
+        throw new Error("Lyrics not found");
       }
+
+      const data = await response.json();
+      setLyrics(data.lyrics || "No lyrics found");
+      setFetched(true);
+      setIsOpen(true);
     } catch (err) {
+      console.error("Error fetching lyrics:", err);
       setError("Could not load lyrics");
       setFetched(true);
       setIsOpen(true);
