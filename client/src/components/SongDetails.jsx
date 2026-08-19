@@ -93,6 +93,8 @@ export default function SongDetails({ songName, artistName }) {
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
+  console.log("isMobile:", isMobile);
+
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Embed */}
