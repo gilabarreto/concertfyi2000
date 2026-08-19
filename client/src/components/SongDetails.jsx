@@ -39,22 +39,23 @@ export default function SongDetails({ songName, artistName }) {
   const previewLines = lyricsLines.slice(0, 3).join("\n");
   const hasMoreLyrics = lyricsLines.length > 3;
 
-  // Create search query for YouTube
+  // Create search queries
+  const spotifyQuery = encodeURIComponent(`${artistName} ${songName}`);
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Player */}
-      <div className="flex justify-center">
-        <iframe
-          src={`https://open.spotify.com/embed/search/uri?utm_source=generator&q=${encodeURIComponent(`${artistName} ${songName}`)}`}
-          width="100%"
-          height="200"
-          frameBorder="0"
-          allowFullScreen=""
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          className="rounded"
-        />
+      {/* Spotify Link */}
+      <div className="flex items-center justify-between p-3 bg-white rounded border border-gray-300">
+        <span className="text-sm font-semibold text-gray-700">🎵 Listen on Spotify</span>
+        <a
+          href={`https://open.spotify.com/search/${spotifyQuery}`}
+          target="_blank"
+          rel="noreferrer"
+          className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600"
+        >
+          Open
+        </a>
       </div>
 
       {/* Lyrics Section */}
@@ -81,17 +82,16 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* YouTube Video */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Music Video</h3>
-        <iframe
-          width="100%"
-          height="200"
-          src={`https://www.youtube.com/embed?listType=search&list=${youtubeQuery}`}
-          title={`${artistName} - ${songName}`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="rounded"
-        />
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
+        <a
+          href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block p-3 bg-white rounded border border-gray-300 text-center hover:bg-gray-50"
+        >
+          <div className="text-sm text-gray-600">Search on YouTube</div>
+          <div className="text-xs text-gray-500 mt-1">{artistName} - {songName}</div>
+        </a>
       </div>
     </div>
   );
