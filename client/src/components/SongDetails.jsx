@@ -8,10 +8,17 @@ export default function SongDetails({ songName, artistName }) {
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth < 768 : false
+  );
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      if (typeof window !== "undefined") {
+        setIsMobile(window.innerWidth < 768);
+      }
+    };
+
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
