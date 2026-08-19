@@ -94,7 +94,7 @@ export default function SongDetails({ songName, artistName }) {
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
   return (
-    <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
+    <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed */}
       {trackUri ? (
         <div className="overflow-hidden rounded">
@@ -115,7 +115,7 @@ export default function SongDetails({ songName, artistName }) {
         {lyrics && !loading && (
           <>
             <pre
-              className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
+              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
               style={{
                 maskImage: showFullLyrics
                   ? 'none'
@@ -130,7 +130,7 @@ export default function SongDetails({ songName, artistName }) {
             {hasMoreLyrics && (
               <button
                 onClick={() => setShowFullLyrics(!showFullLyrics)}
-                className="text-xs text-red-600 hover:text-red-800 font-semibold"
+                className="text-sm text-red-600 hover:text-red-800 font-semibold"
               >
                 {showFullLyrics ? "Show Less" : "View More"}
               </button>
