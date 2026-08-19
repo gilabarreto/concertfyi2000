@@ -77,12 +77,12 @@ export default function SongDetails({ songName, artistName }) {
   const hasMoreLyrics = lyricsLines.length > 3;
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
-  const token = localStorage.getItem("spotify_access_token");
+  const token = typeof window !== "undefined" ? localStorage.getItem("spotify_access_token") : null;
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Web Player */}
-      {trackUri && token && (
+      {trackUri && token ? (
         <div className="rounded overflow-hidden border border-gray-300">
           <SpotifyWebPlayer
             token={token}
