@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import SpotifyPlayer from "react-spotify-player";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
@@ -40,24 +39,23 @@ export default function SongDetails({ songName, artistName }) {
   const previewLines = lyricsLines.slice(0, 3).join("\n");
   const hasMoreLyrics = lyricsLines.length > 3;
 
-  // Create search query for YouTube
+  // Create search queries
+  const spotifyQuery = encodeURIComponent(`${artistName} ${songName}`);
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
-  const spotifySearchUri = `spotify:search:${encodeURIComponent(`${artistName} ${songName}`)}`;
-
-  const spotifyPlayerSize = {
-    width: "100%",
-    height: "200px",
-  };
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
-      {/* Spotify Player */}
-      <div className="rounded overflow-hidden border border-gray-300">
-        <SpotifyPlayer
-          uri={spotifySearchUri}
-          size={spotifyPlayerSize}
-          view="list"
-          theme="black"
+      {/* Spotify Embed */}
+      <div>
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">🎵 Spotify</h3>
+        <iframe
+          src={`https://open.spotify.com/embed/search/${spotifyQuery}`}
+          width="100%"
+          height="200"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          className="rounded"
         />
       </div>
 
