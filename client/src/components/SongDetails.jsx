@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { Spotify } from "react-spotify-embed";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpotify } from "@fortawesome/free-brands-svg-icons";
+import { getSpotifyAuthUrl } from "../helpers/spotifyAuth";
 
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
@@ -11,6 +14,7 @@ export default function SongDetails({ songName, artistName }) {
   const [isMobile, setIsMobile] = useState(
     typeof window !== "undefined" ? window.innerWidth < 768 : false
   );
+  const [hasToken, setHasToken] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -23,6 +27,36 @@ export default function SongDetails({ songName, artistName }) {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("spotify_access_token");
+    setHasToken(!!token);
+  }, []);
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
+        setHasToken(true);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
+  const handleConnectSpotify = () => {
+    const authUrl = getSpotifyAuthUrl();
+    const width = 420;
+    const height = 320;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+
+    window.open(
+      authUrl,
+      "spotify_auth",
+      `width=${width},height=${height},left=${left},top=${top}`
+    );
+  };
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -95,21 +129,30 @@ export default function SongDetails({ songName, artistName }) {
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
-      {/* Spotify Embed */}
-      {trackUri ? (
+      {/* Spotify Embed or Connect Button */}
+      {trackUri && hasToken ? (
         <div className="overflow-hidden rounded">
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
             wide={true}
           />
         </div>
+      ) : !hasToken ? (
+        <button
+          onClick={handleConnectSpotify}
+          className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
+          title="Connect to Spotify"
+        >
+          <FontAwesomeIcon icon={faSpotify} />
+          Connect to Listen
+        </button>
       ) : playerLoading ? (
         <p className="text-sm text-gray-500">Loading Spotify track...</p>
       ) : null}
 
       {/* Lyrics Section */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Lyrics</h3>
+        <h3 className="text-base font-semibold text-gray-700 mb-2">Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
