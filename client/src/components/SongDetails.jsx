@@ -97,7 +97,7 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4">
       {/* Spotify Embed */}
       {trackUri ? (
-        <div className="overflow-hidden rounded sm:p-2">
+        <div className="overflow-hidden rounded m-0 sm:m-2">
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
             wide={true}
@@ -108,7 +108,7 @@ export default function SongDetails({ songName, artistName }) {
       ) : null}
 
       {/* Lyrics Section */}
-      <div className="p-2">
+      <div className="m-2">
         <h3 className="text-sm font-semibold text-gray-700 mb-2">Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
@@ -130,7 +130,7 @@ export default function SongDetails({ songName, artistName }) {
       </div>
 
       {/* YouTube Video */}
-      <div className="p-2">
+      <div className="m-2">
         <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
         <a
           href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
