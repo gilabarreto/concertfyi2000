@@ -24,10 +24,12 @@ export default function Setlist(props) {
   useEffect(() => {
     const handleMessage = async (event) => {
       if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
-        console.log("Auth successful, creating playlist...");
-        // If playlist data came from popup, use it
-        const playlistData = event.data.playlistData;
-        if (playlistData) {
+        console.log("Auth successful, checking for playlist data...");
+        // Only create playlist if we have stored playlist data
+        const storedData = localStorage.getItem("spotifyPlaylistData");
+        if (storedData) {
+          console.log("Creating playlist...");
+          const playlistData = JSON.parse(storedData);
           setCreatingPlaylist(true);
           try {
             const playlist = await createSpotifyPlaylist(
