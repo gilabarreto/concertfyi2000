@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMusic, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
-import { faFileLines } from "@fortawesome/free-regular-svg-icons";
+import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
-import LyricsDropdown from "../LyricsDropdown";
+import SongDetails from "../SongDetails";
 import {
   getSpotifyAuthUrl,
 } from "../../helpers/spotifyAuth";
@@ -138,49 +137,31 @@ export default function Setlist(props) {
         <>
           <ol className="list-decimal list-inside pl-6">
             {displaySongs.map((song, songIndex) => {
-              const query = encodeURIComponent(`${artistName} ${song.name}`);
-              const spotifyUrl = `https://open.spotify.com/search/${query}`;
-              const youtubeUrl = `https://www.youtube.com/results?search_query=${query}`;
-
               return (
                 <div key={songIndex}>
-                  <li className="flex items-center justify-between border-b border-gray-300/50 py-1">
-                    <span className="flex items-center space-x-2">
+                  <li className="flex items-center justify-between border-b border-gray-300/50 py-2">
+                    <span className="flex items-center space-x-2 flex-1">
                       <span>{song.name}</span>
                     </span>
 
-                    <span className="flex items-center space-x-3">
-                      <a href={spotifyUrl} target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon
-                          icon={faMusic}
-                          className="text-red-600 hover:text-red-800"
-                          title="Spotify" />
-                      </a>
-                      <a href={youtubeUrl} target="_blank" rel="noreferrer">
-                        <FontAwesomeIcon
-                          icon={faCirclePlay}
-                          className="text-red-600 hover:text-red-800"
-                          title="YouTube" />
-                      </a>
-                      <button
-                        onClick={() => setExpandedLyrics(
-                          expandedLyrics === songIndex ? null : songIndex
-                        )}
-                      >
-                        <FontAwesomeIcon
-                          icon={faFileLines}
-                          className="text-red-600 hover:text-red-800"
-                          title="Lyrics" />
-                      </button>
-                    </span>
+                    <button
+                      onClick={() => setExpandedLyrics(
+                        expandedLyrics === songIndex ? null : songIndex
+                      )}
+                      className="p-1 hover:text-red-800 ml-2"
+                    >
+                      <FontAwesomeIcon
+                        icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
+                        className="text-red-600"
+                      />
+                    </button>
                   </li>
 
                   {expandedLyrics === songIndex && (
-                    <div className="pl-6 mb-2">
-                      <LyricsDropdown
-                        songName={song.name}
-                        artistName={artistName} />
-                    </div>
+                    <SongDetails
+                      songName={song.name}
+                      artistName={artistName}
+                    />
                   )}
                 </div>
               );
