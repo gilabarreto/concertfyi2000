@@ -97,7 +97,7 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Embed */}
       {trackUri ? (
-        <div>
+        <div key={`spotify-${isMobile}`}>
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
             width="100%"
