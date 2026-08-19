@@ -100,7 +100,7 @@ export default function SongDetails({ songName, artistName }) {
         <div className="overflow-hidden rounded">
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-            width="100%"
+            width="110%"
             height={100}
             wide={true}
           />
