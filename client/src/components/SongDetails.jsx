@@ -8,6 +8,14 @@ export default function SongDetails({ songName, artistName }) {
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchLyrics = async () => {
@@ -82,12 +90,12 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-4 space-y-4">
       {/* Spotify Embed */}
       {trackUri ? (
-        <div className="rounded overflow-hidden border border-gray-300">
+        <div>
           <Spotify
             link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
             width="100%"
-            height={80}
-            wide={true}
+            height={isMobile ? 60 : 80}
+            wide={!isMobile}
           />
         </div>
       ) : playerLoading ? (
