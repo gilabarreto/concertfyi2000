@@ -114,7 +114,7 @@ export default function SongDetails({ songName, artistName }) {
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
-            <pre className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 max-h-32 overflow-y-auto">
+            <pre className="text-xs leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto">
               {showFullLyrics ? lyrics : previewLines}
             </pre>
             {hasMoreLyrics && (
