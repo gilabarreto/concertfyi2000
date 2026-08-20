@@ -184,13 +184,13 @@ export default function SongDetails({ songName, artistName }) {
             icon={faFileLines}
             className="text-sm text-red-600 hover:text-red-800"
             title="Lyrics"
-          />Lyrics</h3>
+          /> Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
             <pre
-              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
+              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
               style={{
                 maskImage: showFullLyrics
                   ? 'none'
@@ -203,12 +203,14 @@ export default function SongDetails({ songName, artistName }) {
               {showFullLyrics ? lyrics : previewLines}
             </pre>
             {hasMoreLyrics && (
-              <button
-                onClick={toggleLyrics}
-                className="text-sm text-red-600 hover:text-red-800 font-semibold"
-              >
-                {showFullLyrics ? "Show Less" : "View More"}
-              </button>
+              <div className="flex justify-center">
+                <button
+                  onClick={toggleLyrics}
+                  className="text-sm text-red-600 hover:text-red-800 font-semibold"
+                >
+                  {showFullLyrics ? "Show Less" : "View More"}
+                </button>
+              </div>
             )}
           </>
         )}
