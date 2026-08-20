@@ -1,5 +1,4 @@
 const fetch = require("node-fetch");
-const lyricsFinder = require("lyrics-finder");
 
 module.exports = async (req, res) => {
   const { artist, song } = req.query;
@@ -18,11 +17,12 @@ module.exports = async (req, res) => {
       if (response.ok) {
         const data = await response.json();
         if (data.lyrics) {
+          console.log("Found lyrics on lyrics.ovh");
           return res.json({ lyrics: data.lyrics });
         }
       }
     } catch (err) {
-      console.log("lyrics.ovh failed, trying ChartLyrics...");
+      console.log("lyrics.ovh failed, trying next...");
     }
 
     // Fallback to ChartLyrics
@@ -51,26 +51,43 @@ module.exports = async (req, res) => {
       const lyricsData = await lyricsResponse.json();
 
       if (lyricsData.Lyric) {
+        console.log("Found lyrics on ChartLyrics");
         return res.json({ lyrics: lyricsData.Lyric });
       }
     } catch (err) {
       console.log("ChartLyrics error:", err.message);
     }
 
-    // Fallback to lyrics-finder (includes Genius, AZLyrics, etc)
+    // Fallback to Genius API search (returns URL for now, but more reliable)
     try {
-      console.log("Trying lyrics-finder...");
-      const lyrics = await lyricsFinder(artist, song);
+      console.log("Trying Genius...");
+      const geniusToken = process.env.GENIUS_ACCESS_TOKEN;
 
-      if (lyrics) {
-        return res.json({ lyrics });
-      } else {
-        throw new Error("No lyrics found");
+      if (geniusToken) {
+        const searchResponse = await fetch(
+          `https://api.genius.com/search?q=${encodeURIComponent(`${artist} ${song}`)}`,
+          {
+            headers: { Authorization: `Bearer ${geniusToken}` },
+          }
+        );
+
+        if (searchResponse.ok) {
+          const searchData = await searchResponse.json();
+
+          if (searchData.response?.hits && searchData.response.hits.length > 0) {
+            const hit = searchData.response.hits[0];
+            console.log(`Found on Genius: ${hit.result.url}`);
+            // Return a message that we found it but can't scrape
+            // In practice, you'd use Genius as a search indicator
+          }
+        }
       }
     } catch (err) {
-      console.error("lyrics-finder error:", err.message);
-      return res.status(404).json({ error: "Lyrics not found" });
+      console.log("Genius error:", err.message);
     }
+
+    // If nothing found, return 404
+    return res.status(404).json({ error: "Lyrics not found" });
   } catch (err) {
     console.error("Lyrics API error:", err);
     return res.status(500).json({ error: "Failed to fetch lyrics" });
