@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ticketFinder } from "../../helpers/selectors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../Pagination";
@@ -52,14 +51,12 @@ export default function NextConcerts(props) {
                 day: "numeric",
               });
 
-              const ticketsUrl = ticketFinder(props.ticketmaster)[
-                sliceStart + concertIndex
-              ];
-
               const venue = concert._embedded.venues?.[0];
               const concertLocation = venue
                 ? `${venue.city.name}, ${venue.country.countryCode}`
                 : "Unknown location";
+
+              const concertUrl = concert?.url;
 
               return (
                 <li
@@ -68,7 +65,7 @@ export default function NextConcerts(props) {
                 >
                   <span
                     className="cursor-pointer flex items-center space-x-2"
-                    onClick={() => window.open(ticketsUrl, "_blank")}
+                    onClick={() => concertUrl && window.open(concertUrl, "_blank")}
                   >
                     <span>{dateLabel}</span>
                     <span className="text-gray-500 ml-2">
@@ -79,7 +76,7 @@ export default function NextConcerts(props) {
                   <FontAwesomeIcon
                     icon={faTicketSimple}
                     className="text-red-600 hover:text-red-800 cursor-pointer"
-                    onClick={() => window.open(ticketsUrl, "_blank")}
+                    onClick={() => concertUrl && window.open(concertUrl, "_blank")}
                     title="Buy tickets"
                   />
                 </li>
