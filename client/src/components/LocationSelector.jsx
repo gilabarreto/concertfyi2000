@@ -35,21 +35,10 @@ export default function LocationSelector({ city, isLoading }) {
     setSearching(true);
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(query)}&format=json&limit=10&countrycodes=BR,US,AR,MX,CL,CO,PE,ES,PT`
+        `${import.meta.env.VITE_API_BASE}/api/locations?query=${encodeURIComponent(query)}`
       );
       const data = await response.json();
-
-      const formatted = data
-        .map((item) => ({
-          city: item.address?.city || item.address?.town || item.name,
-          country: item.address?.country || "Unknown",
-          lat: parseFloat(item.lat),
-          lon: parseFloat(item.lon),
-        }))
-        .filter((item, idx, arr) => arr.findIndex((a) => a.city === item.city && a.country === item.country) === idx)
-        .slice(0, 5);
-
-      setSuggestions(formatted);
+      setSuggestions(data.locations || []);
     } catch (err) {
       console.error("Error searching cities:", err);
       setSuggestions([]);
