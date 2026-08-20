@@ -13,6 +13,7 @@ export default function Setlist(props) {
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   const concert = props.concert;
   const songs = concert.sets?.set[0]?.song || [];
@@ -98,19 +99,6 @@ export default function Setlist(props) {
     );
   };
 
-  const handleExportSetlist = () => {
-    const setlistText = songs
-      .map((song, idx) => `${idx + 1}. ${song.name}`)
-      .join("\n");
-
-    const fullText = `${artistName} - ${venueName}\n${concertDate}\n\n${setlistText}`;
-    const blob = new Blob([fullText], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${artistName}_${concertDate}_setlist.txt`;
-    a.click();
-  };
 
   const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
 
@@ -120,9 +108,9 @@ export default function Setlist(props) {
         <h2 className="text-3xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
           <button
-            onClick={handleExportSetlist}
+            onClick={() => setShowDisclaimer(true)}
             className="p-1 hover:text-red-800"
-            title="Export Setlist"
+            title="Disclaimer"
           >
             <FontAwesomeIcon icon={faCircleInfo} className="text-gray-500" />
           </button>
@@ -213,6 +201,32 @@ export default function Setlist(props) {
             </button>
           </div>
         </>
+      )}
+
+      {showDisclaimer && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-8 max-w-md">
+            <h3 className="text-xl font-bold mb-4">Disclaimer</h3>
+            <div className="text-sm text-gray-700 space-y-3 mb-6">
+              <p>
+                ConcertFYI uses information from third-party sources. We don't own or control all of the content displayed here.
+              </p>
+              <p>
+                Found something missing or incorrect?{" "}
+                <a href="/contact" className="text-red-600 hover:text-red-800 font-semibold">
+                  Please contact us
+                </a>{" "}
+                and let us know.
+              </p>
+            </div>
+            <button
+              onClick={() => setShowDisclaimer(false)}
+              className="w-full px-4 py-2 bg-red-600 hover:bg-red-800 text-white font-semibold rounded transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
