@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import cities from "../data/cities.json";
 
@@ -32,7 +32,7 @@ export default function LocationSelector({ city, isLoading }) {
   const dropdownRef = useRef(null);
 
   const displayName = selectedLocation
-    ? `${selectedLocation.city}, ${selectedLocation.country}`
+    ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
     : city;
 
   useEffect(() => {
@@ -75,11 +75,6 @@ export default function LocationSelector({ city, isLoading }) {
     setSuggestions([]);
   };
 
-  const handleClearLocation = (e) => {
-    e.stopPropagation();
-    updateLocation(null);
-  };
-
   return (
     <div className="relative" ref={dropdownRef}>
       <button
@@ -97,15 +92,6 @@ export default function LocationSelector({ city, isLoading }) {
         </span>
       </button>
 
-      {selectedLocation && (
-        <button
-          onClick={handleClearLocation}
-          className="absolute right-0 top-0 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-0"
-          title="Clear location"
-        >
-          <FontAwesomeIcon icon={faXmark} />
-        </button>
-      )}
 
       {showDropdown && (
         <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
