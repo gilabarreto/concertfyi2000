@@ -8,8 +8,28 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Try lyrics.ovh first
+    // Try LRCLib first
     try {
+      console.log("Trying LRCLib...");
+      const lrclibResponse = await fetch(
+        `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&song_name=${encodeURIComponent(song)}`
+      );
+
+      if (lrclibResponse.ok) {
+        const lrclibData = await lrclibResponse.json();
+
+        if (lrclibData.lyrics) {
+          console.log("Found lyrics on LRCLib");
+          return res.json({ lyrics: lrclibData.lyrics });
+        }
+      }
+    } catch (err) {
+      console.log("LRCLib failed, trying next...");
+    }
+
+    // Fallback to lyrics.ovh
+    try {
+      console.log("Trying lyrics.ovh...");
       const response = await fetch(
         `https://api.lyrics.ovh/v1/${encodeURIComponent(artist)}/${encodeURIComponent(song)}`
       );
@@ -27,6 +47,7 @@ module.exports = async (req, res) => {
 
     // Fallback to ChartLyrics
     try {
+      console.log("Trying ChartLyrics...");
       const searchResponse = await fetch(
         `https://api.chartlyrics.com/apiv1/searchLyrics?artist=${encodeURIComponent(artist)}&song=${encodeURIComponent(song)}`
       );
@@ -56,25 +77,6 @@ module.exports = async (req, res) => {
       }
     } catch (err) {
       console.log("ChartLyrics error:", err.message);
-    }
-
-    // Fallback to LRCLib API
-    try {
-      console.log("Trying LRCLib...");
-      const lrclibResponse = await fetch(
-        `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&song_name=${encodeURIComponent(song)}`
-      );
-
-      if (lrclibResponse.ok) {
-        const lrclibData = await lrclibResponse.json();
-
-        if (lrclibData.lyrics) {
-          console.log("Found lyrics on LRCLib");
-          return res.json({ lyrics: lrclibData.lyrics });
-        }
-      }
-    } catch (err) {
-      console.log("LRCLib error:", err.message);
     }
 
     // If nothing found, return 404
