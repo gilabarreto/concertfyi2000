@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Spotify } from "react-spotify-embed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
+import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
+import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 import { getSpotifyAuthUrl } from "../helpers/spotifyAuth";
 
 export default function SongDetails({ songName, artistName }) {
@@ -140,8 +142,6 @@ export default function SongDetails({ songName, artistName }) {
   const previewLines = lyricsLines.slice(0, 5).join("\n");
   const hasMoreLyrics = lyricsLines.length > 5;
 
-  const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
-
   const toggleLyrics = () => {
     setShowFullLyrics(!showFullLyrics);
     if (showFullLyrics) {
@@ -178,13 +178,18 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
-        <h3 className="text-base font-semibold text-gray-700 mb-2">Lyrics</h3>
+        <h3 className="text-base font-semibold text-gray-700 mb-2">
+          <FontAwesomeIcon
+            icon={faFileLines}
+            className="text-red-600 hover:text-red-800"
+            title="Lyrics"
+          /> Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
             <pre
-              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
+              className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
               style={{
                 maskImage: showFullLyrics
                   ? 'none'
@@ -199,7 +204,7 @@ export default function SongDetails({ songName, artistName }) {
             {hasMoreLyrics && (
               <button
                 onClick={toggleLyrics}
-                className="text-sm text-red-600 hover:text-red-800 font-semibold"
+                className="text-base text-red-600 hover:text-red-800 font-semibold"
               >
                 {showFullLyrics ? "Show Less" : "View More"}
               </button>
@@ -209,31 +214,28 @@ export default function SongDetails({ songName, artistName }) {
       </div>
 
       {/* YouTube Video */}
-      <div>
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
-        {videoId ? (
-          <div className="rounded overflow-hidden">
+      {videoId && (
+        <div>
+          <h3 className="text-base font-semibold text-gray-700 mb-2">
+            <FontAwesomeIcon
+              icon={faCirclePlay}
+              className="text-red-600 hover:text-red-800"
+              title="YouTube"
+            /> Music Video</h3>
+          <div className="rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
-              height="280"
+              height="100%"
               src={`https://www.youtube.com/embed/${videoId}`}
               title={`${artistName} - ${songName}`}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+              style={{ display: "block" }}
             />
           </div>
-        ) : (
-          <a
-            href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded transition-colors"
-          >
-            🔍 Watch on YouTube
-          </a>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
