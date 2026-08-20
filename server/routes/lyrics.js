@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const lyricsFinder = require("lyrics-finder");
 
 module.exports = async (req, res) => {
   const { artist, song } = req.query;
@@ -16,7 +17,9 @@ module.exports = async (req, res) => {
 
       if (response.ok) {
         const data = await response.json();
-        return res.json({ lyrics: data.lyrics || "No lyrics found" });
+        if (data.lyrics) {
+          return res.json({ lyrics: data.lyrics });
+        }
       }
     } catch (err) {
       console.log("lyrics.ovh failed, trying ChartLyrics...");
@@ -47,13 +50,25 @@ module.exports = async (req, res) => {
 
       const lyricsData = await lyricsResponse.json();
 
-      if (!lyricsData.Lyric) {
-        throw new Error("No lyrics content");
+      if (lyricsData.Lyric) {
+        return res.json({ lyrics: lyricsData.Lyric });
       }
-
-      return res.json({ lyrics: lyricsData.Lyric });
     } catch (err) {
-      console.error("ChartLyrics error:", err.message);
+      console.log("ChartLyrics error:", err.message);
+    }
+
+    // Fallback to lyrics-finder (includes Genius, AZLyrics, etc)
+    try {
+      console.log("Trying lyrics-finder...");
+      const lyrics = await lyricsFinder(artist, song);
+
+      if (lyrics) {
+        return res.json({ lyrics });
+      } else {
+        throw new Error("No lyrics found");
+      }
+    } catch (err) {
+      console.error("lyrics-finder error:", err.message);
       return res.status(404).json({ error: "Lyrics not found" });
     }
   } catch (err) {
