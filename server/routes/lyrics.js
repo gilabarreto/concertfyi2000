@@ -58,64 +58,23 @@ module.exports = async (req, res) => {
       console.log("ChartLyrics error:", err.message);
     }
 
-    // Fallback to Genius API search with scraping
+    // Fallback to LRCLib API
     try {
-      console.log("Trying Genius...");
-      const geniusToken = process.env.GENIUS_ACCESS_TOKEN;
+      console.log("Trying LRCLib...");
+      const lrclibResponse = await fetch(
+        `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&song_name=${encodeURIComponent(song)}`
+      );
 
-      if (geniusToken) {
-        const searchResponse = await fetch(
-          `https://api.genius.com/search?q=${encodeURIComponent(`${artist} ${song}`)}`,
-          {
-            headers: { Authorization: `Bearer ${geniusToken}` },
-          }
-        );
+      if (lrclibResponse.ok) {
+        const lrclibData = await lrclibResponse.json();
 
-        if (searchResponse.ok) {
-          const searchData = await searchResponse.json();
-
-          if (searchData.response?.hits && searchData.response.hits.length > 0) {
-            const hit = searchData.response.hits[0];
-            const lyricsUrl = hit.result.url;
-            console.log(`Found on Genius: ${lyricsUrl}`);
-
-            // Scrape lyrics from the Genius page
-            try {
-              const pageResponse = await fetch(lyricsUrl);
-              const pageHtml = await pageResponse.text();
-
-              // Extract lyrics using regex - look for <div data-lyrics-container="true">
-              const lyricsMatch = pageHtml.match(
-                /<div[^>]*data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g
-              );
-
-              if (lyricsMatch && lyricsMatch.length > 0) {
-                // Clean HTML tags and decode entities
-                let lyrics = lyricsMatch.join("\n");
-                lyrics = lyrics
-                  .replace(/<div[^>]*data-lyrics-container="true"[^>]*>/g, "")
-                  .replace(/<\/div>/g, "")
-                  .replace(/<br\s*\/?>/g, "\n")
-                  .replace(/<[^>]+>/g, "")
-                  .replace(/&quot;/g, '"')
-                  .replace(/&amp;/g, "&")
-                  .replace(/&lt;/g, "<")
-                  .replace(/&gt;/g, ">")
-                  .trim();
-
-                if (lyrics.length > 50) {
-                  console.log("Found lyrics on Genius via scraping");
-                  return res.json({ lyrics });
-                }
-              }
-            } catch (scrapeErr) {
-              console.log("Genius scraping failed:", scrapeErr.message);
-            }
-          }
+        if (lrclibData.lyrics) {
+          console.log("Found lyrics on LRCLib");
+          return res.json({ lyrics: lrclibData.lyrics });
         }
       }
     } catch (err) {
-      console.log("Genius error:", err.message);
+      console.log("LRCLib error:", err.message);
     }
 
     // If nothing found, return 404
