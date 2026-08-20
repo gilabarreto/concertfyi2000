@@ -89,7 +89,14 @@ export default function SongDetails({ songName, artistName }) {
           }
         );
 
-        if (!response.ok) throw new Error("Failed to search track");
+        if (!response.ok) {
+          if (response.status === 401) {
+            console.log("Token expired, resetting...");
+            setHasToken(false);
+            localStorage.removeItem("spotify_access_token");
+          }
+          throw new Error("Failed to search track");
+        }
 
         const data = await response.json();
         if (data.tracks?.items?.[0]?.uri) {
@@ -111,11 +118,6 @@ export default function SongDetails({ songName, artistName }) {
   const hasMoreLyrics = lyricsLines.length > 5;
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
-
-  console.log("SongDetails - trackUri:", trackUri, "hasToken:", hasToken);
-  if (trackUri && hasToken) console.log("Showing player");
-  else if (!hasToken) console.log("Showing Connect button");
-  else console.log("Showing loading");
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
