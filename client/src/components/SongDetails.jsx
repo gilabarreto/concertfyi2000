@@ -118,7 +118,7 @@ export default function SongDetails({ songName, artistName }) {
 
   const toggleLyrics = () => {
     setShowFullLyrics(!showFullLyrics);
-    if (!showFullLyrics) {
+    if (showFullLyrics) {
       setTimeout(() => lyricsRef.current?.scrollIntoView({ behavior: "smooth" }), 0);
     }
   };
