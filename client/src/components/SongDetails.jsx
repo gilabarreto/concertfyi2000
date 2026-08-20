@@ -232,7 +232,7 @@ export default function SongDetails({ songName, artistName }) {
         {lyrics && !loading && (
             <>
               <pre
-                className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
+                className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
                 style={{
                   maskImage: showFullLyrics
                     ? 'none'
@@ -248,7 +248,7 @@ export default function SongDetails({ songName, artistName }) {
                 <div className="flex justify-center">
                   <button
                     onClick={toggleLyrics}
-                    className="text-sm text-red-600 hover:text-red-800 font-semibold"
+                    className="text-base text-red-600 hover:text-red-800 font-semibold"
                   >
                     {showFullLyrics ? "Show Less" : "View More"}
                   </button>

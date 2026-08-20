@@ -109,7 +109,12 @@ export default function Swiper() {
         return;
       }
 
+      console.log(`Slide date: "${slide.date}"`);
+      console.log("Setlist dates:", setlist.map((s) => `"${s.eventDate}"`));
+
       const match = setlist.find((item) => item.eventDate === slide.date);
+      console.log("Match found:", match ? "YES" : "NO");
+
       const targetId = match?.id || setlist[0]?.id;
       const correctArtistId = setlist[0]?.artist?.mbid || slide.artistId;
 
