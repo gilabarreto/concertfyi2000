@@ -178,13 +178,13 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
-        <FontAwesomeIcon
-          icon={faFileLines}
-          className="text-sm text-red-600 hover:text-red-800"
-          title="Lyrics"
-        />
+
         <h3 className="text-base font-semibold text-gray-700 mb-2">
-          Lyrics</h3>
+          <FontAwesomeIcon
+            icon={faFileLines}
+            className="text-sm text-red-600 hover:text-red-800"
+            title="Lyrics"
+          />Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
@@ -217,13 +217,13 @@ export default function SongDetails({ songName, artistName }) {
       {/* YouTube Video */}
       {videoId && (
         <div>
-          <FontAwesomeIcon
+
+          <h3 className="text-base font-semibold text-gray-700 mb-2">
+            <FontAwesomeIcon
               icon={faCirclePlay}
               className="text-sm text-red-600 hover:text-red-800"
               title="YouTube"
-            />
-          <h3 className="text-base font-semibold text-gray-700 mb-2">
-             Music Video</h3>
+            /> Music Video</h3>
           <div className="rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
