@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Spotify } from "react-spotify-embed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
@@ -13,6 +13,7 @@ export default function SongDetails({ songName, artistName }) {
   const [playerLoading, setPlayerLoading] = useState(false);
   const [hasToken, setHasToken] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const lyricsRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("spotify_access_token");
@@ -115,6 +116,13 @@ export default function SongDetails({ songName, artistName }) {
 
   const youtubeQuery = encodeURIComponent(`${artistName} ${songName}`);
 
+  const toggleLyrics = () => {
+    setShowFullLyrics(!showFullLyrics);
+    if (!showFullLyrics) {
+      setTimeout(() => lyricsRef.current?.scrollIntoView({ behavior: "smooth" }), 0);
+    }
+  };
+
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed or Connect Button */}
@@ -143,7 +151,7 @@ export default function SongDetails({ songName, artistName }) {
       )}
 
       {/* Lyrics Section */}
-      <div>
+      <div ref={lyricsRef}>
         <h3 className="text-base font-semibold text-gray-700 mb-2">Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
@@ -164,7 +172,7 @@ export default function SongDetails({ songName, artistName }) {
             </pre>
             {hasMoreLyrics && (
               <button
-                onClick={() => setShowFullLyrics(!showFullLyrics)}
+                onClick={toggleLyrics}
                 className="text-sm text-red-600 hover:text-red-800 font-semibold"
               >
                 {showFullLyrics ? "Show Less" : "View More"}
