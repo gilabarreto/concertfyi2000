@@ -6,7 +6,9 @@ const fetchCity = async (lat, long) => {
     `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`
   );
   const data = await response.json();
-  return data.address.city || data.address.town || data.address.village || 'Unknown';
+  const city = data.address.city || data.address.town || data.address.village || 'Unknown';
+  const country = data.address.country || 'Unknown';
+  return { city, country };
 };
 
 export const useGeolocation = () => {
@@ -20,14 +22,15 @@ export const useGeolocation = () => {
         });
       });
       
-      const city = await fetchCity(position.coords.latitude, position.coords.longitude);
-      
+      const { city, country } = await fetchCity(position.coords.latitude, position.coords.longitude);
+
       return {
         coords: {
           lat: position.coords.latitude,
           long: position.coords.longitude
         },
-        city
+        city,
+        country
       };
     },
     staleTime: 1000 * 60 * 30, // 30 minutos
@@ -46,8 +49,9 @@ export const useGeolocation = () => {
   }, [data]);
 
   return {
-    coords: data?.coords || { lat: 49.2827, long: -123.1207 }, // Fallback para São Paulo
+    coords: data?.coords || { lat: 49.2827, long: -123.1207 },
     city: data?.city || 'Vancouver',
+    country: data?.country || 'Canada',
     isLoading,
     error
   };

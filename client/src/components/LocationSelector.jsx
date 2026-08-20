@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faLocationDot, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import cities from "../data/cities.json";
 
@@ -24,7 +24,7 @@ function fuzzyScore(query, text) {
   return qIdx === q.length ? score : 0;
 }
 
-export default function LocationSelector({ city, isLoading }) {
+export default function LocationSelector({ city, country, isLoading }) {
   const { selectedLocation, updateLocation } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -33,7 +33,7 @@ export default function LocationSelector({ city, isLoading }) {
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
-    : city;
+    : city ? `${city}, ${country}` : city;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -95,14 +95,28 @@ export default function LocationSelector({ city, isLoading }) {
 
       {showDropdown && (
         <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
-          <input
-            type="text"
-            placeholder="Type city name (e.g., São Paulo, NYC, London)..."
-            value={searchInput}
-            onChange={handleSearch}
-            className="w-full px-4 py-3 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
-            autoFocus
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search location..."
+              value={searchInput}
+              onChange={handleSearch}
+              className="w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
+              autoFocus
+            />
+            {searchInput && (
+              <button
+                onClick={() => {
+                  setSearchInput("");
+                  setSuggestions([]);
+                }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
+                title="Clear search"
+              >
+                <FontAwesomeIcon icon={faXmark} size="sm" />
+              </button>
+            )}
+          </div>
 
           {suggestions.length === 0 && searchInput && (
             <div className="px-4 py-3 text-center text-gray-500 text-sm">

@@ -9,7 +9,7 @@ import { AppContext } from "../context/AppContext";
 
 function Navbar() {
   const { searchValue, setSearchValue } = useContext(AppContext);
-  const { city = 'Locating...', isLoading: isGeoLoading } = useGeolocation();
+  const { city = 'Locating...', country = 'Unknown', isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -44,7 +44,7 @@ function Navbar() {
         </Link>
       </div>
 
-      <LocationSelector city={city} isLoading={isGeoLoading} />
+      <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
 
       <div className="flex">
         <SearchBar />
