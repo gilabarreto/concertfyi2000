@@ -61,7 +61,6 @@ export default function SongDetails({ songName, artistName }) {
         const data = await response.json();
         setLyrics(data.lyrics || "No lyrics found");
       } catch (err) {
-        console.error("Error fetching lyrics:", err);
         setError("Could not load lyrics");
       } finally {
         setLoading(false);
@@ -76,10 +75,7 @@ export default function SongDetails({ songName, artistName }) {
       setPlayerLoading(true);
       try {
         const token = localStorage.getItem("spotify_access_token");
-        if (!token) {
-          console.log("No Spotify token available");
-          return;
-        }
+        if (!token) return;
 
         const query = encodeURIComponent(`${artistName} ${songName}`);
         const response = await fetch(
@@ -91,7 +87,6 @@ export default function SongDetails({ songName, artistName }) {
 
         if (!response.ok) {
           if (response.status === 401) {
-            console.log("Token expired, resetting...");
             setHasToken(false);
             localStorage.removeItem("spotify_access_token");
           }
@@ -103,7 +98,7 @@ export default function SongDetails({ songName, artistName }) {
           setTrackUri(data.tracks.items[0].uri);
         }
       } catch (err) {
-        console.error("Error fetching track URI:", err);
+        // Track URI fetch failed
       } finally {
         setPlayerLoading(false);
       }
@@ -112,7 +107,6 @@ export default function SongDetails({ songName, artistName }) {
     fetchTrackUri();
   }, [songName, artistName, hasToken]);
 
-  // Split lyrics into lines for preview
   const lyricsLines = lyrics.split("\n");
   const previewLines = lyricsLines.slice(0, 5).join("\n");
   const hasMoreLyrics = lyricsLines.length > 5;
