@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
 import SearchBar from "./SearchBar";
+import LocationSelector from "./LocationSelector";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser, faLocationDot } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
 
@@ -43,16 +44,7 @@ function Navbar() {
         </Link>
       </div>
 
-      <div className="flex justify-center items-center">
-        <FontAwesomeIcon
-          className="text-xl tracking-tight font-bold text-red-600 px-1"
-          icon={faLocationDot}
-          aria-hidden="true"
-        />
-        <span className="hidden sm:block cursor-pointer text-xl font-medium tracking-tight hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out">
-          {isGeoLoading ? 'Locating...' : city || 'Location unavailable'}
-        </span>
-      </div>
+      <LocationSelector city={city} isLoading={isGeoLoading} />
 
       <div className="flex">
         <SearchBar />

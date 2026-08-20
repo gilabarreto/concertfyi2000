@@ -31,7 +31,7 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
 }
 
 export default function Swiper() {
-  const { setSetlist, setTicketmaster } = useContext(AppContext);
+  const { setSetlist, setTicketmaster, selectedLocation } = useContext(AppContext);
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
   const [selectedArtist, setSelectedArtist] = useState(null);
@@ -40,9 +40,16 @@ export default function Swiper() {
   const isSmallScreen = useIsSmallScreen();
 
   const { coords = { lat: -23.5505, long: -46.6333 } } = useGeolocation();
-  const { data: localEventsData } = useLocalEvents(coords?.lat, coords?.long, {
-    enabled: !!coords
-  }); const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
+
+  const effectiveCoords = selectedLocation
+    ? { lat: selectedLocation.lat, long: selectedLocation.lon }
+    : coords;
+
+  const { data: localEventsData } = useLocalEvents(effectiveCoords?.lat, effectiveCoords?.long, {
+    enabled: !!effectiveCoords
+  });
+
+  const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
     enabled: false,
   });
 
