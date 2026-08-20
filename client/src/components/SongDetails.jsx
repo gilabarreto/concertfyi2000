@@ -9,7 +9,6 @@ import { getSpotifyAuthUrl } from "../helpers/spotifyAuth";
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
@@ -53,7 +52,6 @@ export default function SongDetails({ songName, artistName }) {
   useEffect(() => {
     const fetchLyrics = async () => {
       setLoading(true);
-      setError("");
       setLyrics("");
 
       try {
@@ -66,9 +64,9 @@ export default function SongDetails({ songName, artistName }) {
         }
 
         const data = await response.json();
-        setLyrics(data.lyrics || "No lyrics found");
+        setLyrics(data.lyrics || "");
       } catch (err) {
-        setError("Could not load lyrics");
+        // Silently fail - don't show error if lyrics not found
       } finally {
         setLoading(false);
       }
@@ -220,44 +218,44 @@ export default function SongDetails({ songName, artistName }) {
       )}
 
       {/* Lyrics Section */}
-      <div ref={lyricsRef}>
-
-        <h3 className="text-base font-semibold text-gray-700 mb-2">
-          <FontAwesomeIcon
-            icon={faFileLines}
-            className="text-sm text-red-600 hover:text-red-800"
-            title="Lyrics"
-          /> Lyrics</h3>
-        {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
-        {error && <p className="text-sm text-red-600 italic">{error}</p>}
-        {lyrics && !loading && (
-          <>
-            <pre
-              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
-              style={{
-                maskImage: showFullLyrics
-                  ? 'none'
-                  : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
-                WebkitMaskImage: showFullLyrics
-                  ? 'none'
-                  : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
-              }}
-            >
-              {showFullLyrics ? lyrics : previewLines}
-            </pre>
-            {hasMoreLyrics && (
-              <div className="flex justify-center">
-                <button
-                  onClick={toggleLyrics}
-                  className="text-sm text-red-600 hover:text-red-800 font-semibold"
-                >
-                  {showFullLyrics ? "Show Less" : "View More"}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      {(loading || lyrics) && (
+        <div ref={lyricsRef}>
+          <h3 className="text-base font-semibold text-gray-700 mb-2">
+            <FontAwesomeIcon
+              icon={faFileLines}
+              className="text-sm text-red-600 hover:text-red-800"
+              title="Lyrics"
+            /> Lyrics</h3>
+          {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
+          {lyrics && !loading && (
+            <>
+              <pre
+                className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
+                style={{
+                  maskImage: showFullLyrics
+                    ? 'none'
+                    : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+                  WebkitMaskImage: showFullLyrics
+                    ? 'none'
+                    : 'linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)',
+                }}
+              >
+                {showFullLyrics ? lyrics : previewLines}
+              </pre>
+              {hasMoreLyrics && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={toggleLyrics}
+                    className="text-sm text-red-600 hover:text-red-800 font-semibold"
+                  >
+                    {showFullLyrics ? "Show Less" : "View More"}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {/* YouTube Video */}
       {videoId && (
