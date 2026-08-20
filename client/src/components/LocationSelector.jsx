@@ -82,9 +82,10 @@ export default function LocationSelector({ city, isLoading }) {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <div
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out"
+      <button
         onClick={() => setShowDropdown(!showDropdown)}
+        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none p-0"
+        title="Change location"
       >
         <FontAwesomeIcon
           className="text-xl tracking-tight font-bold text-red-600 px-1"
@@ -94,12 +95,12 @@ export default function LocationSelector({ city, isLoading }) {
         <span className="hidden sm:block text-xl font-medium tracking-tight">
           {isLoading ? "Locating..." : displayName || "Location unavailable"}
         </span>
-      </div>
+      </button>
 
       {selectedLocation && (
         <button
           onClick={handleClearLocation}
-          className="absolute right-0 top-0 text-gray-400 hover:text-red-600 transition-colors"
+          className="absolute right-0 top-0 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-0"
           title="Clear location"
         >
           <FontAwesomeIcon icon={faXmark} />
