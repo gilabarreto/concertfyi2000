@@ -2,13 +2,33 @@ import { useState, useContext, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
+import cities from "../data/cities.json";
+
+// Simple fuzzy search scoring
+function fuzzyScore(query, text) {
+  const q = query.toLowerCase();
+  const t = text.toLowerCase();
+
+  if (t.startsWith(q)) return 100;
+  if (t.includes(q)) return 50;
+
+  let score = 0;
+  let qIdx = 0;
+  for (let i = 0; i < t.length && qIdx < q.length; i++) {
+    if (t[i] === q[qIdx]) {
+      score += 10;
+      qIdx++;
+    }
+  }
+
+  return qIdx === q.length ? score : 0;
+}
 
 export default function LocationSelector({ city, isLoading }) {
   const { selectedLocation, updateLocation } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
-  const [searching, setSearching] = useState(false);
   const dropdownRef = useRef(null);
 
   const displayName = selectedLocation
@@ -26,31 +46,26 @@ export default function LocationSelector({ city, isLoading }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const searchCities = async (query) => {
-    if (query.length < 2) {
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchInput(value);
+
+    if (value.length === 0) {
       setSuggestions([]);
       return;
     }
 
-    setSearching(true);
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE}/api/locations?query=${encodeURIComponent(query)}`
-      );
-      const data = await response.json();
-      setSuggestions(data.locations || []);
-    } catch (err) {
-      console.error("Error searching cities:", err);
-      setSuggestions([]);
-    } finally {
-      setSearching(false);
-    }
-  };
+    const filtered = cities
+      .map((c) => ({
+        ...c,
+        score: Math.max(fuzzyScore(value, c.city), fuzzyScore(value, c.country)),
+      }))
+      .filter((c) => c.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map(({ score, ...c }) => c);
 
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-    searchCities(value);
+    setSuggestions(filtered);
   };
 
   const handleSelectLocation = (location) => {
@@ -92,37 +107,31 @@ export default function LocationSelector({ city, isLoading }) {
       )}
 
       {showDropdown && (
-        <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[250px]">
+        <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
           <input
             type="text"
-            placeholder="Search city..."
+            placeholder="Type city name (e.g., São Paulo, NYC, London)..."
             value={searchInput}
             onChange={handleSearch}
-            className="w-full px-4 py-2 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600"
+            className="w-full px-4 py-3 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
             autoFocus
           />
 
-          {searching && (
-            <div className="px-4 py-2 text-center text-gray-500 text-sm">
-              Searching...
-            </div>
-          )}
-
-          {!searching && suggestions.length === 0 && searchInput && (
-            <div className="px-4 py-2 text-center text-gray-500 text-sm">
+          {suggestions.length === 0 && searchInput && (
+            <div className="px-4 py-3 text-center text-gray-500 text-sm">
               No cities found
             </div>
           )}
 
-          {!searching && suggestions.length > 0 && (
-            <ul className="max-h-64 overflow-y-auto">
+          {suggestions.length > 0 && (
+            <ul className="max-h-72 overflow-y-auto">
               {suggestions.map((loc, idx) => (
                 <li
-                  key={idx}
+                  key={`${loc.city}-${loc.country}-${idx}`}
                   onClick={() => handleSelectLocation(loc)}
-                  className="px-4 py-2 hover:bg-red-50 cursor-pointer text-sm border-b border-gray-200 last:border-0"
+                  className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-100 last:border-0 transition-colors"
                 >
-                  <div className="font-medium text-gray-800">
+                  <div className="font-medium text-gray-800 text-sm">
                     {loc.city}
                   </div>
                   <div className="text-gray-500 text-xs">{loc.country}</div>
