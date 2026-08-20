@@ -178,18 +178,19 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
+        <FontAwesomeIcon
+          icon={faFileLines}
+          className="text-sm text-red-600 hover:text-red-800"
+          title="Lyrics"
+        />
         <h3 className="text-base font-semibold text-gray-700 mb-2">
-          <FontAwesomeIcon
-            icon={faFileLines}
-            className="text-red-600 hover:text-red-800"
-            title="Lyrics"
-          /> Lyrics</h3>
+          Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
         {error && <p className="text-sm text-red-600 italic">{error}</p>}
         {lyrics && !loading && (
           <>
             <pre
-              className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
+              className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto"
               style={{
                 maskImage: showFullLyrics
                   ? 'none'
@@ -204,7 +205,7 @@ export default function SongDetails({ songName, artistName }) {
             {hasMoreLyrics && (
               <button
                 onClick={toggleLyrics}
-                className="text-base text-red-600 hover:text-red-800 font-semibold"
+                className="text-sm text-red-600 hover:text-red-800 font-semibold"
               >
                 {showFullLyrics ? "Show Less" : "View More"}
               </button>
@@ -216,19 +217,19 @@ export default function SongDetails({ songName, artistName }) {
       {/* YouTube Video */}
       {videoId && (
         <div>
-          <h3 className="text-base font-semibold text-gray-700 mb-2">
-            <FontAwesomeIcon
+          <FontAwesomeIcon
               icon={faCirclePlay}
-              className="text-red-600 hover:text-red-800"
+              className="text-sm text-red-600 hover:text-red-800"
               title="YouTube"
-            /> Music Video</h3>
+            />
+          <h3 className="text-base font-semibold text-gray-700 mb-2">
+             Music Video</h3>
           <div className="rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
               height="100%"
               src={`https://www.youtube.com/embed/${videoId}`}
               title={`${artistName} - ${songName}`}
-              frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
               style={{ display: "block" }}
