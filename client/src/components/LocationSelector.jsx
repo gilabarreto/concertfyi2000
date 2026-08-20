@@ -109,9 +109,11 @@ export default function LocationSelector({ city, country, isLoading }) {
                 onClick={() => {
                   setSearchInput("");
                   setSuggestions([]);
+                  updateLocation(null);
+                  setShowDropdown(false);
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
-                title="Clear search"
+                title="Reset to original location"
               >
                 <FontAwesomeIcon icon={faXmark} size="sm" />
               </button>
