@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
       console.log("ChartLyrics error:", err.message);
     }
 
-    // Fallback to Genius API search (returns URL for now, but more reliable)
+    // Fallback to Genius API search with scraping
     try {
       console.log("Trying Genius...");
       const geniusToken = process.env.GENIUS_ACCESS_TOKEN;
@@ -76,9 +76,41 @@ module.exports = async (req, res) => {
 
           if (searchData.response?.hits && searchData.response.hits.length > 0) {
             const hit = searchData.response.hits[0];
-            console.log(`Found on Genius: ${hit.result.url}`);
-            // Return a message that we found it but can't scrape
-            // In practice, you'd use Genius as a search indicator
+            const lyricsUrl = hit.result.url;
+            console.log(`Found on Genius: ${lyricsUrl}`);
+
+            // Scrape lyrics from the Genius page
+            try {
+              const pageResponse = await fetch(lyricsUrl);
+              const pageHtml = await pageResponse.text();
+
+              // Extract lyrics using regex - look for <div data-lyrics-container="true">
+              const lyricsMatch = pageHtml.match(
+                /<div[^>]*data-lyrics-container="true"[^>]*>([\s\S]*?)<\/div>/g
+              );
+
+              if (lyricsMatch && lyricsMatch.length > 0) {
+                // Clean HTML tags and decode entities
+                let lyrics = lyricsMatch.join("\n");
+                lyrics = lyrics
+                  .replace(/<div[^>]*data-lyrics-container="true"[^>]*>/g, "")
+                  .replace(/<\/div>/g, "")
+                  .replace(/<br\s*\/?>/g, "\n")
+                  .replace(/<[^>]+>/g, "")
+                  .replace(/&quot;/g, '"')
+                  .replace(/&amp;/g, "&")
+                  .replace(/&lt;/g, "<")
+                  .replace(/&gt;/g, ">")
+                  .trim();
+
+                if (lyrics.length > 50) {
+                  console.log("Found lyrics on Genius via scraping");
+                  return res.json({ lyrics });
+                }
+              }
+            } catch (scrapeErr) {
+              console.log("Genius scraping failed:", scrapeErr.message);
+            }
           }
         }
       }

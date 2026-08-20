@@ -9,6 +9,7 @@ import { getSpotifyAuthUrl } from "../helpers/spotifyAuth";
 export default function SongDetails({ songName, artistName }) {
   const [lyrics, setLyrics] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
@@ -52,6 +53,7 @@ export default function SongDetails({ songName, artistName }) {
   useEffect(() => {
     const fetchLyrics = async () => {
       setLoading(true);
+      setError("");
       setLyrics("");
 
       try {
@@ -66,7 +68,7 @@ export default function SongDetails({ songName, artistName }) {
         const data = await response.json();
         setLyrics(data.lyrics || "");
       } catch (err) {
-        // Silently fail - don't show error if lyrics not found
+        setError("Could not load lyrics");
       } finally {
         setLoading(false);
       }
@@ -218,16 +220,16 @@ export default function SongDetails({ songName, artistName }) {
       )}
 
       {/* Lyrics Section */}
-      {(loading || lyrics) && (
-        <div ref={lyricsRef}>
-          <h3 className="text-base font-semibold text-gray-700 mb-2">
-            <FontAwesomeIcon
-              icon={faFileLines}
-              className="text-sm text-red-600 hover:text-red-800"
-              title="Lyrics"
-            /> Lyrics</h3>
-          {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
-          {lyrics && !loading && (
+      <div ref={lyricsRef}>
+        <h3 className="text-base font-semibold text-gray-700 mb-2">
+          <FontAwesomeIcon
+            icon={faFileLines}
+            className="text-sm text-red-600 hover:text-red-800"
+            title="Lyrics"
+          /> Lyrics</h3>
+        {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
+        {error && <p className="text-sm text-red-600 italic">{error}</p>}
+        {lyrics && !loading && (
             <>
               <pre
                 className="text-sm leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
@@ -254,8 +256,7 @@ export default function SongDetails({ songName, artistName }) {
               )}
             </>
           )}
-        </div>
-      )}
+      </div>
 
       {/* YouTube Video */}
       {videoId && (
