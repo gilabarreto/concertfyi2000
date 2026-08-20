@@ -4,6 +4,32 @@ import { faLocationDot, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import cities from "../data/cities.json";
 
+// Country to code mapping for geolocation display
+const countryCodeMap = {
+  "Brazil": "BR",
+  "Canada": "CAN",
+  "United States": "US",
+  "Mexico": "MX",
+  "Argentina": "AR",
+  "Chile": "CL",
+  "Colombia": "CO",
+  "Peru": "PE",
+  "Venezuela": "VE",
+  "Spain": "ES",
+  "Portugal": "PT",
+  "United Kingdom": "GB",
+  "France": "FR",
+  "Germany": "DE",
+  "Netherlands": "NL",
+  "Italy": "IT",
+  "Austria": "AT",
+  "Czech Republic": "CZ",
+  "Poland": "PL",
+  "Australia": "AU",
+  "Japan": "JP",
+  "South Korea": "KR"
+};
+
 // Simple fuzzy search scoring
 function fuzzyScore(query, text) {
   const q = query.toLowerCase();
@@ -33,7 +59,7 @@ export default function LocationSelector({ city, country, isLoading }) {
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
-    : city ? `${city}, ${country}` : city;
+    : city ? `${city}, ${countryCodeMap[country] || country}` : city;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -109,16 +135,28 @@ export default function LocationSelector({ city, country, isLoading }) {
                 onClick={() => {
                   setSearchInput("");
                   setSuggestions([]);
-                  updateLocation(null);
-                  setShowDropdown(false);
                 }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
-                title="Reset to original location"
+                title="Clear search"
               >
                 <FontAwesomeIcon icon={faXmark} size="sm" />
               </button>
             )}
           </div>
+
+          {selectedLocation && (
+            <button
+              onClick={() => {
+                updateLocation(null);
+                setSearchInput("");
+                setSuggestions([]);
+                setShowDropdown(false);
+              }}
+              className="w-full px-4 py-2 text-center text-sm text-red-600 hover:bg-red-50 border-b border-gray-200 transition-colors bg-none border-none"
+            >
+              Reset to Original Location
+            </button>
+          )}
 
           {suggestions.length === 0 && searchInput && (
             <div className="px-4 py-3 text-center text-gray-500 text-sm">
