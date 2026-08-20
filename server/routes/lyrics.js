@@ -10,21 +10,28 @@ module.exports = async (req, res) => {
   try {
     // Try LRCLib first
     try {
-      console.log("Trying LRCLib...");
+      console.log(`Trying LRCLib for: "${artist}" - "${song}"`);
       const lrclibResponse = await fetch(
-        `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&song_name=${encodeURIComponent(song)}`
+        `https://lrclib.net/api/get?artist_name=${encodeURIComponent(artist)}&track_name=${encodeURIComponent(song)}`
       );
+
+      console.log(`LRCLib response status: ${lrclibResponse.status}`);
 
       if (lrclibResponse.ok) {
         const lrclibData = await lrclibResponse.json();
+        console.log(`LRCLib data:`, JSON.stringify(lrclibData).substring(0, 200));
 
-        if (lrclibData.lyrics) {
+        if (lrclibData && (lrclibData.lyrics || lrclibData.plainLyrics)) {
           console.log("Found lyrics on LRCLib");
-          return res.json({ lyrics: lrclibData.lyrics });
+          return res.json({ lyrics: lrclibData.lyrics || lrclibData.plainLyrics });
+        } else {
+          console.log("LRCLib returned data but no lyrics field");
         }
+      } else {
+        console.log(`LRCLib returned status ${lrclibResponse.status}`);
       }
     } catch (err) {
-      console.log("LRCLib failed, trying next...");
+      console.error("LRCLib error:", err.message);
     }
 
     // Fallback to lyrics.ovh
