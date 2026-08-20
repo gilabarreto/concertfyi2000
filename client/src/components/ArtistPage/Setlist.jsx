@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +11,7 @@ import {
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
 export default function Setlist(props) {
+  const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
@@ -213,9 +215,15 @@ export default function Setlist(props) {
               </p>
               <p>
                 Found something missing or incorrect?{" "}
-                <a href="/contact" className="text-red-600 hover:text-red-800 font-semibold">
+                <button
+                  onClick={() => {
+                    setShowDisclaimer(false);
+                    navigate("/contact");
+                  }}
+                  className="text-red-600 hover:text-red-800 font-semibold cursor-pointer bg-none border-none p-0"
+                >
                   Please contact us
-                </a>{" "}
+                </button>{" "}
                 and let us know.
               </p>
             </div>
