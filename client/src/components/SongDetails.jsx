@@ -13,6 +13,8 @@ export default function SongDetails({ songName, artistName }) {
   const [playerLoading, setPlayerLoading] = useState(false);
   const [hasToken, setHasToken] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [videoId, setVideoId] = useState("");
+  const [videoLoading, setVideoLoading] = useState(false);
   const lyricsRef = useRef(null);
 
   useEffect(() => {
@@ -71,6 +73,30 @@ export default function SongDetails({ songName, artistName }) {
     };
 
     fetchLyrics();
+  }, [songName, artistName]);
+
+  useEffect(() => {
+    const fetchYoutubeVideo = async () => {
+      setVideoLoading(true);
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE}/api/youtube?artist=${encodeURIComponent(artistName)}&song=${encodeURIComponent(songName)}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Video not found");
+        }
+
+        const data = await response.json();
+        setVideoId(data.videoId || "");
+      } catch (err) {
+        // Video fetch failed, will fall back to link
+      } finally {
+        setVideoLoading(false);
+      }
+    };
+
+    fetchYoutubeVideo();
   }, [songName, artistName]);
 
   useEffect(() => {
@@ -185,14 +211,28 @@ export default function SongDetails({ songName, artistName }) {
       {/* YouTube Video */}
       <div>
         <h3 className="text-sm font-semibold text-gray-700 mb-2">📺 Music Video</h3>
-        <a
-          href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded transition-colors"
-        >
-          🔍 Watch on YouTube
-        </a>
+        {videoId ? (
+          <div className="rounded overflow-hidden">
+            <iframe
+              width="100%"
+              height="280"
+              src={`https://www.youtube.com/embed/${videoId}`}
+              title={`${artistName} - ${songName}`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ) : (
+          <a
+            href={`https://www.youtube.com/results?search_query=${youtubeQuery}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded transition-colors"
+          >
+            🔍 Watch on YouTube
+          </a>
+        )}
       </div>
     </div>
   );
