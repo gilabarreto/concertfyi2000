@@ -12,10 +12,12 @@ export default function SongDetails({ songName, artistName }) {
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
   const [hasToken, setHasToken] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("spotify_access_token");
     setHasToken(!!token);
+    setIsInitialized(true);
   }, []);
 
   useEffect(() => {
@@ -116,25 +118,29 @@ export default function SongDetails({ songName, artistName }) {
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed or Connect Button */}
-      {trackUri && hasToken ? (
-        <div className="overflow-hidden rounded">
-          <Spotify
-            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-            wide={true}
-          />
-        </div>
-      ) : !hasToken ? (
-        <button
-          onClick={handleConnectSpotify}
-          className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
-          title="Connect to Spotify"
-        >
-          <FontAwesomeIcon icon={faSpotify} />
-          Connect to Listen
-        </button>
-      ) : playerLoading ? (
-        <p className="text-sm text-gray-500">Loading Spotify track...</p>
-      ) : null}
+      {isInitialized && (
+        <>
+          {trackUri && hasToken ? (
+            <div className="overflow-hidden rounded">
+              <Spotify
+                link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
+                wide={true}
+              />
+            </div>
+          ) : !hasToken ? (
+            <button
+              onClick={handleConnectSpotify}
+              className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
+              title="Connect to Spotify"
+            >
+              <FontAwesomeIcon icon={faSpotify} />
+              Connect to Listen
+            </button>
+          ) : playerLoading ? (
+            <p className="text-sm text-gray-500">Loading Spotify track...</p>
+          ) : null}
+        </>
+      )}
 
       {/* Lyrics Section */}
       <div>
