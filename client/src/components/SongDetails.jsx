@@ -11,22 +11,7 @@ export default function SongDetails({ songName, artistName }) {
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [trackUri, setTrackUri] = useState("");
   const [playerLoading, setPlayerLoading] = useState(false);
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth < 768 : false
-  );
   const [hasToken, setHasToken] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      if (typeof window !== "undefined") {
-        setIsMobile(window.innerWidth < 768);
-      }
-    };
-
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("spotify_access_token");
@@ -118,7 +103,7 @@ export default function SongDetails({ songName, artistName }) {
     };
 
     fetchTrackUri();
-  }, [songName, artistName]);
+  }, [songName, artistName, hasToken]);
 
   // Split lyrics into lines for preview
   const lyricsLines = lyrics.split("\n");
