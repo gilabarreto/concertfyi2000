@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-
 module.exports = async (req, res) => {
   const { query } = req.query;
 
@@ -8,12 +6,15 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(query)}&format=json&limit=10&countrycodes=BR,US,AR,MX,CL,CO,PE,ES,PT`
-    );
+    const url = `https://nominatim.openstreetmap.org/search?city=${encodeURIComponent(query)}&format=json&limit=10&countrycodes=BR,US,AR,MX,CL,CO,PE,ES,PT`;
+
+    const response = await fetch(url, {
+      headers: { "User-Agent": "ConcertFYI/1.0" }
+    });
 
     if (!response.ok) {
-      throw new Error(`Nominatim error: ${response.status}`);
+      console.error(`Nominatim error: ${response.status}`);
+      return res.status(404).json({ locations: [] });
     }
 
     const data = await response.json();
@@ -35,7 +36,7 @@ module.exports = async (req, res) => {
 
     return res.json({ locations: formatted });
   } catch (err) {
-    console.error("Locations API error:", err);
+    console.error("Locations API error:", err.message);
     return res.status(500).json({ error: "Failed to search locations" });
   }
 };
