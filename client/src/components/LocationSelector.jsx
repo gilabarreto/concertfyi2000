@@ -105,8 +105,11 @@ export default function LocationSelector({ city, country, isLoading }) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        onTouchEnd={() => setShowDropdown(!showDropdown)}
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none p-2 active:opacity-70"
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          setShowDropdown(!showDropdown);
+        }}
+        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none p-1 active:opacity-70"
         title="Change location"
       >
         <FontAwesomeIcon
