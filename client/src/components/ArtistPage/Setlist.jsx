@@ -111,7 +111,8 @@ export default function Setlist(props) {
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowDisclaimer(true)}
-            className="p-1 hover:text-red-800"
+            onTouchEnd={() => setShowDisclaimer(true)}
+            className="p-2 hover:text-red-800 active:opacity-70 transition-opacity"
             title="Disclaimer"
           >
             <FontAwesomeIcon icon={faCircleInfo} className="text-gray-500" />
