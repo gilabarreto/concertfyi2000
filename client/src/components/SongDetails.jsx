@@ -110,7 +110,7 @@ export default function SongDetails({ songName, artistName }) {
 
         const query = encodeURIComponent(`${artistName} ${songName}`);
         const response = await fetch(
-          `https://api.spotify.com/v1/search?q=${query}&type=track&limit=1`,
+          `https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -125,8 +125,51 @@ export default function SongDetails({ songName, artistName }) {
         }
 
         const data = await response.json();
-        if (data.tracks?.items?.[0]?.uri) {
-          setTrackUri(data.tracks.items[0].uri);
+        if (data.tracks?.items?.length === 0) {
+          return;
+        }
+
+        // Score tracks: prioritize artist match + name similarity
+        const scoredTracks = data.tracks.items.map((track) => {
+          let score = 0;
+          const trackNameLower = track.name.toLowerCase();
+          const songNameLower = songName.toLowerCase();
+
+          // Artist match is most important (50 points)
+          if (
+            track.artists.some(
+              (artist) =>
+                artist.name.toLowerCase() === artistName.toLowerCase()
+            )
+          ) {
+            score += 50;
+          }
+
+          // Name matching (only if artist matched)
+          if (score >= 50) {
+            // Exact name match (40 points)
+            if (trackNameLower === songNameLower) {
+              score += 40;
+            }
+            // Partial name match (25 points)
+            else if (trackNameLower.includes(songNameLower)) {
+              score += 25;
+            }
+            // Track name starts with song name (25 points)
+            else if (trackNameLower.startsWith(songNameLower)) {
+              score += 25;
+            }
+          }
+
+          return { track, score };
+        });
+
+        // Get best match
+        const bestMatch = scoredTracks.sort((a, b) => b.score - a.score)[0];
+
+        // Only add if score >= 70 (artist + decent name match)
+        if (bestMatch.score >= 70) {
+          setTrackUri(bestMatch.track.uri);
         }
       } catch (err) {
         // Track URI fetch failed
