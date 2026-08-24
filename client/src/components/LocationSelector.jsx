@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLocationDot, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import cities from "../data/cities.json";
 
@@ -109,17 +109,17 @@ export default function LocationSelector({ city, country, isLoading }) {
           e.preventDefault();
           setShowDropdown(!showDropdown);
         }}
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:underline hover:underline-offset-8 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none active:opacity-70"
+        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none active:opacity-70"
         title="Change location"
       >
-        <FontAwesomeIcon
-          className="text-xl tracking-tight font-bold text-red-600 px-1"
-          icon={faLocationDot}
-          aria-hidden="true"
-        />
-        <span className="hidden sm:block text-xl font-medium tracking-tight">
+        <span className="text-lg font-medium tracking-tight">
           {isLoading ? "Locating..." : displayName || "Location unavailable"}
         </span>
+        <FontAwesomeIcon
+          className="text-sm"
+          icon={showDropdown ? faChevronUp : faChevronDown}
+          aria-hidden="true"
+        />
       </button>
 
 
