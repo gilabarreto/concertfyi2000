@@ -23,79 +23,87 @@ function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 w-full h-16 bg-white shadow z-20">      <nav className="flex w-full justify-items-center justify-center items-center px-6 py-4 h-16 font-sans flex-wrap gap-2">
-      <div>
-        <Link
-          to="/"
-          className="text-2xl font-medium tracking-tight items-center"
-          onClick={() => setSearchValue("")}
-          aria-label="Home"
-        >
-          <span className="hidden sm:inline">concert</span>
-          <span className="text-2xl font-medium tracking-tight items-center">
+    <header className="fixed top-0 left-0 w-full bg-white shadow z-20">
+      <nav className="flex w-full justify-items-center justify-center items-center px-6 py-4 h-16 font-sans flex-wrap gap-2">
+        <div>
+          <Link
+            to="/"
+            className="text-xl sm:text-2xl font-medium tracking-tight items-center"
+            onClick={() => setSearchValue("")}
+            aria-label="Home"
+          >
+            <span className="sm:inline">concert</span>
+            <span className="text-xl sm:text-2xl font-medium tracking-tight items-center">
+              {"{"}
+            </span>
+            <span className="text-xl sm:text-2xl tracking-tight font-semibold text-red-600">
+              fyi
+            </span>
+            <span className="text-xl sm:text-2xl font-medium tracking-tight items-center">
+              {"}"}
+            </span>
+          </Link>
+        </div>
+
+        <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
+
+        <div className="hidden sm:flex">
+          <SearchBar />
+        </div>
+
+        <div className="hidden sm:flex justify-center items-center gap-2">
+          <span className="text-xl font-medium tracking-tight items-center">
             {"{"}
           </span>
-          <span className="text-2xl tracking-tight font-semibold text-red-600">
-            fyi
-          </span>
-          <span className="text-2xl font-medium tracking-tight items-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className="text-xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline"
+              onClick={() => setSearchValue("")}
+            >
+              {link.label}
+            </Link>
+          ))}
+          <span className="text-xl font-medium tracking-tight items-center">
             {"}"}
           </span>
-        </Link>
-      </div>
+        </div>
 
-      <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
+        <div className="sm:hidden flex items-center z-30">
+          <button
+            onClick={toggleMenu}
+            className="text-red-600 text-xl focus:outline-none"
+            aria-expanded={isOpen}
+            aria-label="Menu"
+          >
+            <span className="flex items-center">
+              <span className="text-black mr-2">{"{"}</span>
+              <span className="inline-block w-4 text-center">
+                {isOpen ? "×" : "☰"}
+              </span>
+              <span className="text-black ml-2">{"}"}</span>
+            </span>
+          </button>
 
-      <div className="flex">
+
+        </div>
+        <button aria-label="User profile" className="flex">
+          <FontAwesomeIcon
+            icon={faUser}
+            className="text-lg cursor-pointer filter brightness-0"
+          />
+        </button>
+      </nav>
+
+
+      {/* SearchBar for mobile - full width on new line */}
+      <div className="sm:hidden w-full px-6 pb-3 border-b border-gray-200">
         <SearchBar />
       </div>
 
-      <div className="hidden sm:flex justify-center items-center gap-2">
-        <span className="text-xl font-medium tracking-tight items-center">
-          {"{"}
-        </span>
-        {navLinks.map((link) => (
-          <Link
-            key={link.path}
-            to={link.path}
-            className="text-xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline"
-            onClick={() => setSearchValue("")}
-          >
-            {link.label}
-          </Link>
-        ))}
-        <span className="text-xl font-medium tracking-tight items-center">
-          {"}"}
-        </span>
-
-      </div>
-
-      <div className="sm:hidden flex items-center z-30">
-        <button
-          onClick={toggleMenu}
-          className="text-red-600 text-xl focus:outline-none"
-          aria-expanded={isOpen}
-          aria-label="Menu"
-        >
-          <span className="flex items-center">
-            <span className="text-black mr-2">{"{"}</span>
-            <span className="inline-block w-4 text-center">
-              {isOpen ? "×" : "☰"}
-            </span>              <span className="text-black ml-2">{"}"}</span>
-          </span>
-        </button>
-      </div>
-
-      <button aria-label="User profile" className="flex">
-        <FontAwesomeIcon
-          icon={faUser}
-          className="text-lg cursor-pointer filter brightness-0"
-        />
-      </button>
-    </nav>
-
       {isOpen && (
-        <div className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down " role="menu">
+        <div className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down" role="menu">
           {navLinks.map((link) => (
             <Link
               key={link.path}

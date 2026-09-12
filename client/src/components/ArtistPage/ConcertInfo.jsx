@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
-import { getBestImage } from "../../helpers/selectors";
-import { getLastConcertsByArtist } from "../../helpers/selectors";
+import { getBestImage, getLastConcertsByArtist } from "../../helpers/selectors";
 
 export default function ConcertInfo(props) {
   const { concert, setlist, ticketmaster, artistImage } = props;
