@@ -173,13 +173,18 @@ export default function LocationSelector({ city, country, isLoading }) {
               {suggestions.map((loc, idx) => (
                 <li
                   key={`${loc.city}-${loc.country}-${idx}`}
-                  onClick={() => handleSelectLocation(loc)}
-                  className="px-4 py-3 hover:bg-red-50 cursor-pointer border-b border-gray-100 last:border-0 transition-colors"
+                  className="border-b border-gray-100 last:border-0"
                 >
-                  <div className="font-medium text-gray-800 text-sm">
-                    {loc.city}
-                  </div>
-                  <div className="text-gray-500 text-xs">{loc.country}</div>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectLocation(loc)}
+                    className="w-full px-4 py-3 text-left hover:bg-red-50 cursor-pointer transition-colors focus-visible:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-600"
+                  >
+                    <span className="block font-medium text-gray-800 text-sm">
+                      {loc.city}
+                    </span>
+                    <span className="block text-gray-500 text-xs">{loc.country}</span>
+                  </button>
                 </li>
               ))}
             </ul>
