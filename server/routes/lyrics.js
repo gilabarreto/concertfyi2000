@@ -1,5 +1,3 @@
-const fetch = require("node-fetch");
-
 module.exports = async (req, res) => {
   const { artist, song } = req.query;
 
