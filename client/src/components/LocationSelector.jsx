@@ -56,6 +56,7 @@ export default function LocationSelector({ city, country, isLoading }) {
   const [searchInput, setSearchInput] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const dropdownRef = useRef(null);
+  const toggleRef = useRef(null);
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
@@ -94,6 +95,24 @@ export default function LocationSelector({ city, country, isLoading }) {
     setSuggestions(filtered);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setShowDropdown(false);
+      toggleRef.current?.focus();
+      return;
+    }
+    if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+
+    // arrows move focus between the search input and the suggestion buttons
+    const items = [...dropdownRef.current.querySelectorAll("input, li button")];
+    const i = items.indexOf(document.activeElement);
+    const next = items[Math.min(Math.max(i + (e.key === "ArrowDown" ? 1 : -1), 0), items.length - 1)];
+    if (next) {
+      e.preventDefault();
+      next.focus();
+    }
+  };
+
   const handleSelectLocation = (location) => {
     updateLocation(location);
     setShowDropdown(false);
@@ -102,8 +121,10 @@ export default function LocationSelector({ city, country, isLoading }) {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown}>
       <button
+        ref={toggleRef}
+        aria-expanded={showDropdown}
         onClick={() => setShowDropdown(!showDropdown)}
         onTouchEnd={(e) => {
           e.preventDefault();
