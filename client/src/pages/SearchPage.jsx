@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { getBestImage } from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
@@ -6,7 +6,6 @@ import { SEOHead } from "../components/SEOHead";
 
 export default function SearchPage() {
   const { setlist = [], ticketmaster = {} } = useContext(AppContext);
-  const navigate = useNavigate();
   const { attractions = [], events = [] } = ticketmaster;
 
   const uniqueSetlist = Array.from(
@@ -42,31 +41,27 @@ export default function SearchPage() {
           const rawImages = ticketmasterMap.images || [];
           const bestImageUrl = getBestImage(rawImages);
 
-          const handleNavigate = () =>
-            navigate(`/artists/${artistId}/concerts/${concertId}`, {
-              state: { artistImage: rawImages },
-            });
-
           return (
             <div
               key={artistId + concertId}
               className="relative w-full overflow-hidden"
             >
-              <div
-                className="relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer"
-                onClick={handleNavigate}
+              <Link
+                to={`/artists/${artistId}/concerts/${concertId}`}
+                state={{ artistImage: rawImages }}
+                className="group block relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer"
                 style={bestImageUrl ? { background: `url(${bestImageUrl}) center/cover` } : {}}
               >
                 <div
                   className={`
                     w-full py-8 absolute inset-0 bg-red-600 bg-opacity-0 flex items-center justify-center
-                    hover:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden
-                    border-4 border-solid border-transparent hover:border-zinc-800 pointer-events-auto z-10
-                    text-red-600 hover:text-zinc-100
-                    ${bestImageUrl ? 'opacity-0 hover:opacity-100' : 'opacity-100'}
+                    hover:bg-opacity-80 group-focus-visible:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden
+                    border-4 border-solid border-transparent hover:border-zinc-800 group-focus-visible:border-zinc-800 pointer-events-auto z-10
+                    text-red-600 hover:text-zinc-100 group-focus-visible:text-zinc-100
+                    ${bestImageUrl ? 'opacity-0 hover:opacity-100 group-focus-visible:opacity-100' : 'opacity-100'}
                   `}
                 >
-                  <span className="text-8xl sm:text-[110px] text-zinc-800 font-medium pr-4 -z-20">
+                  <span aria-hidden="true" className="text-8xl sm:text-[110px] text-zinc-800 font-medium pr-4 -z-20">
                     {"{"}
                   </span>
 
@@ -76,11 +71,11 @@ export default function SearchPage() {
                     </h1>
                   </div>
 
-                  <span className="text-8xl sm:text-[110px] text-zinc-800 font-medium pl-4">
+                  <span aria-hidden="true" className="text-8xl sm:text-[110px] text-zinc-800 font-medium pl-4">
                     {"}"}
                   </span>
                 </div>
-              </div>
+              </Link>
             </div>
           );
         })}
