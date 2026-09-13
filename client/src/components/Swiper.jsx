@@ -180,7 +180,18 @@ export default function Swiper() {
           )}
           <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
             <h3 className="text-4xl font-bold text-white text-center px-4 [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">
-              {slide.artistName}
+              {/* keyboard/screen-reader entry point; mouse clicks pass through (pointer-events-none) to the slide */}
+              <button
+                type="button"
+                tabIndex={offset === 0 ? 0 : -1}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedArtist(slide);
+                }}
+                className="rounded-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-white"
+              >
+                {slide.artistName}
+              </button>
             </h3>
           </div>
         </div>
