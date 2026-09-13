@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
+import { useSetlistById, useArtistData } from "../api/queries";
 import ConcertInfo from "../components/ArtistPage/ConcertInfo";
 import Map from "../components/ArtistPage/Map";
 import Setlist from "../components/ArtistPage/Setlist";
@@ -10,22 +11,37 @@ import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
 export default function ArtistPage() {
-  const { setlist = [], ticketmaster = {} } = useContext(AppContext);
-  const navigate = useNavigate();
+  const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const [spotifyArtist, setSpotifyArtist] = useState([]);
   const { concertId, artistId } = useParams();
 
-  if (!setlist.length || !ticketmaster) return null;
-
   const concert = setlist.find((result) => result.id === concertId);
 
+  // Opened directly (new tab, refresh, shared link): context is empty, so load by URL
+  const { data: urlConcert, isError } = useSetlistById(concert ? null : concertId);
+  const { data: artistData } = useArtistData(urlConcert?.artist?.name);
+
   useEffect(() => {
-    if (!concert) navigate("/");
-  }, [concert, navigate]);
+    if (!urlConcert || !artistData) return;
+    const list = artistData.setlist;
+    setSetlist(list.some((s) => s.id === urlConcert.id) ? list : [urlConcert, ...list]);
+    setTicketmaster(artistData.ticketmaster);
+  }, [urlConcert, artistData, setSetlist, setTicketmaster]);
+
+  if (isError) {
+    return (
+      <div className="p-8 w-full text-center text-gray-500">
+        Concert not found.{" "}
+        <Link to="/" className="text-red-600 underline">
+          Back to home
+        </Link>
+      </div>
+    );
+  }
 
   if (!concert) {
     return (
-      <div className="p-8 text-center text-gray-400">
+      <div className="p-8 w-full text-center text-gray-400">
         Loading concert info…
       </div>
     );

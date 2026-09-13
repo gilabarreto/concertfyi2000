@@ -42,6 +42,8 @@ export const getSetlist = (artistName) =>
     params: { artistName },
   });
 
+export const getSetlistById = (id) => API.get(`/setlist/${encodeURIComponent(id)}`);
+
 export const getTicketmaster = (artistName) =>
   API.get("/ticketmaster/suggest", {
     params: { keyword: artistName },

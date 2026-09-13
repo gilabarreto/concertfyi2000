@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
@@ -16,17 +15,6 @@ export default function ConcertInfo(props) {
   const bestImageUrl = getBestImage(imagesArray);
 
   const lastConcerts = getLastConcertsByArtist(setlist, artistId);
-
-  useEffect(() => {
-    if (!lastConcerts.length) return;
-    const latestId = String(lastConcerts[0].id);
-    if (String(concertId) !== latestId) {
-      navigate(`/artists/${artistId}/concerts/${latestId}`, {
-        replace: true,
-        state: { artistImage },
-      });
-    }
-  }, []);
 
   const idx = lastConcerts.findIndex((c) => String(c.id) === String(concertId));
   const lastConcertId = lastConcerts[idx + 1]?.id;

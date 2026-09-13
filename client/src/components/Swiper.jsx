@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
-import { getBestImage } from "../helpers/selectors";
+import { getBestImage, getLastConcertsByArtist } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
@@ -116,14 +116,8 @@ export default function Swiper() {
         return;
       }
 
-      console.log(`Slide date: "${slide.date}"`);
-      console.log("Setlist dates:", setlist.map((s) => `"${s.eventDate}"`));
-
-      const match = setlist.find((item) => item.eventDate === slide.date);
-      console.log("Match found:", match ? "YES" : "NO");
-
-      const targetId = match?.id || setlist[0]?.id;
       const correctArtistId = setlist[0]?.artist?.mbid || slide.artistId;
+      const targetId = getLastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
 
       setSetlist(setlist);
       setTicketmaster(ticketmaster);

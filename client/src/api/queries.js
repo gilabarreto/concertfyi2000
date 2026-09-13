@@ -1,5 +1,15 @@
 import { useQuery } from '@tanstack/react-query';
-import { getTicketmasterSuggest, getSetlist, getLocalEvents, getTicketmaster } from './api';
+import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster } from './api';
+
+export const useSetlistById = (id) => {
+  return useQuery({
+    queryKey: ['setlist', id],
+    queryFn: () => getSetlistById(id).then(res => res.data),
+    enabled: !!id,
+    staleTime: 10 * 60 * 1000,
+    retry: false,
+  });
+};
 
 export const useTicketmasterSuggest = (artistName) => {
   return useQuery({
