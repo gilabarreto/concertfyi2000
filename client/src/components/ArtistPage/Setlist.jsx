@@ -136,24 +136,28 @@ export default function Setlist(props) {
           <ol className="list-decimal list-inside pl-6">
             {displaySongs.map((song, songIndex) => {
               return (
-                <div key={songIndex}>
-                  <li className="flex items-center justify-between border-b border-gray-300/50 py-2">
+                <li key={songIndex} className="flex flex-col">
+                  <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
                     <span className="flex items-center space-x-2 flex-1">
                       <span>{song.name}</span>
                     </span>
 
                     <button
+                      type="button"
                       onClick={() => setExpandedLyrics(
                         expandedLyrics === songIndex ? null : songIndex
                       )}
+                      aria-label={`Details for ${song.name}`}
+                      aria-expanded={expandedLyrics === songIndex}
                       className="p-1 hover:text-red-800 ml-2"
                     >
                       <FontAwesomeIcon
                         icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
                         className="text-red-600"
+                        aria-hidden="true"
                       />
                     </button>
-                  </li>
+                  </div>
 
                   {expandedLyrics === songIndex && (
                     <SongDetails
@@ -161,7 +165,7 @@ export default function Setlist(props) {
                       artistName={artistName}
                     />
                   )}
-                </div>
+                </li>
               );
             })}
           </ol>
