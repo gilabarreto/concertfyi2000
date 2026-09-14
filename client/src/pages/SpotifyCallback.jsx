@@ -75,7 +75,7 @@ export default function SpotifyCallback() {
         alignItems: "center",
         justifyContent: "center",
         width: "100%",
-        height: "100vh",
+        height: "100dvh",
         background: "white",
         fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif",
         margin: 0,
