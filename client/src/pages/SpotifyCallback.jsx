@@ -114,7 +114,7 @@ export default function SpotifyCallback() {
               style={{
                 fontSize: "48px",
                 margin: "0 0 16px 0",
-                animation: "fadeIn 0.5s ease-in",
+                animation: "fadeIn 0.2s ease-out",
                 color: "#1DB954",
               }}
             >

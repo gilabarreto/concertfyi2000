@@ -93,7 +93,7 @@ export default function LocationSelector({ city, country, isLoading }) {
           e.preventDefault();
           setShowDropdown(!showDropdown);
         }}
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:opacity-90 transition-all duration-300 ease-in-out bg-none border-none active:opacity-70"
+        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:opacity-90 transition bg-none border-none active:opacity-70"
         title="Change location"
       >
         <span className="text-lg font-medium tracking-tight">

@@ -55,7 +55,7 @@ export default function SearchPage() {
                 <div
                   className={`
                     w-full py-8 absolute inset-0 bg-red-600 bg-opacity-0 flex items-center justify-center
-                    hover:bg-opacity-80 group-focus-visible:bg-opacity-80 transition duration-300 aspect-video rounded-xl overflow-hidden
+                    hover:bg-opacity-80 group-focus-visible:bg-opacity-80 transition aspect-video rounded-xl overflow-hidden
                     border-4 border-solid border-transparent hover:border-zinc-800 group-focus-visible:border-zinc-800 pointer-events-auto z-10
                     text-red-600 hover:text-zinc-100 group-focus-visible:text-zinc-100
                     ${bestImageUrl ? 'opacity-0 hover:opacity-100 group-focus-visible:opacity-100' : 'opacity-100'}

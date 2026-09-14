@@ -59,7 +59,7 @@ function Navbar() {
             <Link
               key={link.path}
               to={link.path}
-              className="text-xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition-all duration-300 ease-in-out hidden sm:inline"
+              className="text-xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition hidden sm:inline"
               onClick={() => setSearchValue("")}
             >
               {link.label}
@@ -114,7 +114,7 @@ function Navbar() {
           hover:text-red-700
           hover:underline hover:underline-offset-8
           hover:opacity-90
-          transition-all duration-300 ease-in-out
+          transition
         "
             >
               {link.label}
