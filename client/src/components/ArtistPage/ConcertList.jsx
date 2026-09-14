@@ -8,14 +8,13 @@ const PAGE_SIZE = 5;
 const dateLabel = (date) =>
   date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
+// items carry a dateObj; linkOf returns an app path, or an http URL for an outside link
 export default function ConcertList({
   title,
   empty,
   items,
-  dateOf,
   locationOf,
   linkOf,
-  external,
   icon,
   iconTitle,
 }) {
@@ -38,7 +37,7 @@ export default function ConcertList({
               const row = (
                 <>
                   <span className="flex items-center space-x-2">
-                    <span>{dateLabel(dateOf(concert))}</span>
+                    <span>{dateLabel(concert.dateObj)}</span>
                     <span className="text-gray-500 ml-2">({locationOf(concert)})</span>
                   </span>
                   <FontAwesomeIcon icon={icon} className="text-red-600" title={iconTitle} />
@@ -52,7 +51,7 @@ export default function ConcertList({
                 <li key={concert.id} className="border-b border-gray-300/50">
                   {!link ? (
                     <div className={className}>{row}</div>
-                  ) : external ? (
+                  ) : link.startsWith("http") ? (
                     <a className={className} href={link} target="_blank" rel="noopener noreferrer">
                       {row}
                     </a>

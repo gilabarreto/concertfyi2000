@@ -17,13 +17,11 @@ export default function NextConcerts(props) {
       title="Next Concerts"
       empty="No upcoming concerts. Check back later."
       items={events}
-      dateOf={(concert) => concert.dateObj}
       locationOf={(concert) => {
         const venue = concert._embedded.venues?.[0];
         return venue ? `${venue.city.name}, ${venue.country.countryCode}` : "Unknown location";
       }}
       linkOf={(concert) => concert.url}
-      external
       icon={faTicketSimple}
       iconTitle="Buy tickets"
     />

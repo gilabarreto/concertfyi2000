@@ -8,7 +8,6 @@ export default function LastConcerts(props) {
       title="Last Concerts"
       empty="No recent concerts. Check back later."
       items={getLastConcertsByArtist(props.setlist, props.artistId)}
-      dateOf={(concert) => concert.dateObj}
       locationOf={(concert) =>
         `${concert.venue.city?.name || ""}, ${concert.venue.city?.country.code || ""}`
       }
