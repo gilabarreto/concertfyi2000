@@ -1,5 +1,40 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster, searchCities } from './api';
+import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster, searchCities, getLyrics, getYoutubeVideo } from './api';
+import { findTrackUri } from '../helpers/spotifyPlaylist';
+import { clearAccessToken } from '../helpers/spotifyAuth';
+
+// Song details don't change: cache for the session instead of the 1s global gcTime,
+// so reopening a song is instant (and saves YouTube API quota). "Not found" is a normal answer, no retry.
+const songCache = { staleTime: Infinity, gcTime: 30 * 60 * 1000, retry: false };
+
+export const useLyrics = (artist, song) => {
+  return useQuery({
+    queryKey: ['lyrics', artist, song],
+    queryFn: () => getLyrics(artist, song).then(res => res.data.lyrics || ""),
+    ...songCache,
+  });
+};
+
+export const useYoutubeVideo = (artist, song) => {
+  return useQuery({
+    queryKey: ['youtube', artist, song],
+    queryFn: () => getYoutubeVideo(artist, song).then(res => res.data.videoId || ""),
+    ...songCache,
+  });
+};
+
+export const useSpotifyTrack = (artist, song, token) => {
+  return useQuery({
+    queryKey: ['spotify-track', artist, song, token],
+    queryFn: () =>
+      findTrackUri(token, artist, song).catch((err) => {
+        if (err.status === 401) clearAccessToken(); // expired token
+        throw err;
+      }),
+    enabled: !!token,
+    ...songCache,
+  });
+};
 
 export const useCitySearch = (query) => {
   return useQuery({

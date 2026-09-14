@@ -54,6 +54,10 @@ export const getTicketmasterSuggest = (artist) =>
     params: { keyword: artist },
   });
 
+export const getLyrics = (artist, song) => API.get("/lyrics", { params: { artist, song } });
+
+export const getYoutubeVideo = (artist, song) => API.get("/youtube", { params: { artist, song } });
+
 // Photon (OpenStreetMap) city autocomplete: public, no key, CORS-enabled
 export const searchCities = (q) =>
   axios.get("https://photon.komoot.io/api/", {

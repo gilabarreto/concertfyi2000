@@ -4,31 +4,25 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
-import { getSpotifyAuthUrl } from "../helpers/spotifyAuth";
+import { getSpotifyAuthUrl, getStoredAccessToken } from "../helpers/spotifyAuth";
+import { useLyrics, useYoutubeVideo, useSpotifyTrack } from "../api/queries";
 
 export default function SongDetails({ songName, artistName }) {
-  const [lyrics, setLyrics] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showFullLyrics, setShowFullLyrics] = useState(false);
-  const [trackUri, setTrackUri] = useState("");
-  const [playerLoading, setPlayerLoading] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [videoId, setVideoId] = useState("");
-  const [videoLoading, setVideoLoading] = useState(false);
+  const [token, setToken] = useState(getStoredAccessToken);
   const lyricsRef = useRef(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem("spotify_access_token");
-    setHasToken(!!token);
-    setIsInitialized(true);
-  }, []);
+  const { data: lyrics = "", isLoading: loading, isError: lyricsError } = useLyrics(artistName, songName);
+  const { data: videoId } = useYoutubeVideo(artistName, songName);
+  const { data: trackUri, isLoading: playerLoading, error: trackError } = useSpotifyTrack(artistName, songName, token);
+
+  // an expired token (401) is cleared by the query; show "Connect" again
+  const hasToken = !!token && trackError?.status !== 401;
 
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
-        setHasToken(true);
+      if (event.data?.type === "SPOTIFY_AUTH_SUCCESS") {
+        setToken(event.data.accessToken);
       }
     };
 
@@ -50,137 +44,6 @@ export default function SongDetails({ songName, artistName }) {
     );
   };
 
-  useEffect(() => {
-    const fetchLyrics = async () => {
-      setLoading(true);
-      setError("");
-      setLyrics("");
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE}/api/lyrics?artist=${encodeURIComponent(artistName)}&song=${encodeURIComponent(songName)}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Lyrics not found");
-        }
-
-        const data = await response.json();
-        setLyrics(data.lyrics || "");
-      } catch (err) {
-        setError("Could not load lyrics");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLyrics();
-  }, [songName, artistName]);
-
-  useEffect(() => {
-    const fetchYoutubeVideo = async () => {
-      setVideoLoading(true);
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_API_BASE}/api/youtube?artist=${encodeURIComponent(artistName)}&song=${encodeURIComponent(songName)}`
-        );
-
-        if (!response.ok) {
-          throw new Error("Video not found");
-        }
-
-        const data = await response.json();
-        setVideoId(data.videoId || "");
-      } catch (err) {
-        // Video fetch failed, will fall back to link
-      } finally {
-        setVideoLoading(false);
-      }
-    };
-
-    fetchYoutubeVideo();
-  }, [songName, artistName]);
-
-  useEffect(() => {
-    const fetchTrackUri = async () => {
-      setPlayerLoading(true);
-      try {
-        const token = localStorage.getItem("spotify_access_token");
-        if (!token) return;
-
-        const query = encodeURIComponent(`${artistName} ${songName}`);
-        const response = await fetch(
-          `https://api.spotify.com/v1/search?q=${query}&type=track&limit=10`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            setHasToken(false);
-            localStorage.removeItem("spotify_access_token");
-          }
-          throw new Error("Failed to search track");
-        }
-
-        const data = await response.json();
-        if (data.tracks?.items?.length === 0) {
-          return;
-        }
-
-        // Score tracks: prioritize artist match + name similarity
-        const scoredTracks = data.tracks.items.map((track) => {
-          let score = 0;
-          const trackNameLower = track.name.toLowerCase();
-          const songNameLower = songName.toLowerCase();
-
-          // Artist match is most important (50 points)
-          if (
-            track.artists.some(
-              (artist) =>
-                artist.name.toLowerCase() === artistName.toLowerCase()
-            )
-          ) {
-            score += 50;
-          }
-
-          // Name matching (only if artist matched)
-          if (score >= 50) {
-            // Exact name match (40 points)
-            if (trackNameLower === songNameLower) {
-              score += 40;
-            }
-            // Partial name match (25 points)
-            else if (trackNameLower.includes(songNameLower)) {
-              score += 25;
-            }
-            // Track name starts with song name (25 points)
-            else if (trackNameLower.startsWith(songNameLower)) {
-              score += 25;
-            }
-          }
-
-          return { track, score };
-        });
-
-        // Get best match
-        const bestMatch = scoredTracks.sort((a, b) => b.score - a.score)[0];
-
-        // Only add if score >= 70 (artist + decent name match)
-        if (bestMatch.score >= 70) {
-          setTrackUri(bestMatch.track.uri);
-        }
-      } catch (err) {
-        // Track URI fetch failed
-      } finally {
-        setPlayerLoading(false);
-      }
-    };
-
-    fetchTrackUri();
-  }, [songName, artistName, hasToken]);
-
   const lyricsLines = lyrics.split("\n");
   const previewLines = lyricsLines.slice(0, 5).join("\n");
   const hasMoreLyrics = lyricsLines.length > 5;
@@ -195,29 +58,25 @@ export default function SongDetails({ songName, artistName }) {
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed or Connect Button */}
-      {isInitialized && (
-        <>
-          {trackUri && hasToken ? (
-            <div className="overflow-hidden rounded">
-              <Spotify
-                link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-                wide={true}
-              />
-            </div>
-          ) : !hasToken ? (
-            <button
-              onClick={handleConnectSpotify}
-              className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
-              title="Connect to Spotify"
-            >
-              <FontAwesomeIcon icon={faSpotify} />
-              Connect to Listen
-            </button>
-          ) : playerLoading ? (
-            <p className="text-sm text-gray-500">Loading Spotify track...</p>
-          ) : null}
-        </>
-      )}
+      {trackUri && hasToken ? (
+        <div className="overflow-hidden rounded">
+          <Spotify
+            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
+            wide={true}
+          />
+        </div>
+      ) : !hasToken ? (
+        <button
+          onClick={handleConnectSpotify}
+          className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
+          title="Connect to Spotify"
+        >
+          <FontAwesomeIcon icon={faSpotify} />
+          Connect to Listen
+        </button>
+      ) : playerLoading ? (
+        <p className="text-sm text-gray-500">Loading Spotify track...</p>
+      ) : null}
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
@@ -228,7 +87,7 @@ export default function SongDetails({ songName, artistName }) {
             title="Lyrics"
           /> Lyrics</h3>
         {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
-        {error && <p className="text-sm text-red-600 italic">{error}</p>}
+        {lyricsError && <p className="text-sm text-red-600 italic">Could not load lyrics</p>}
         {lyrics && !loading && (
             <>
               <pre
