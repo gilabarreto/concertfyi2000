@@ -48,18 +48,14 @@ export default function Swiper() {
     ? { lat: selectedLocation.lat, long: selectedLocation.lon }
     : coords;
 
-  const { data: localEventsData } = useLocalEvents(effectiveCoords?.lat, effectiveCoords?.long, {
-    enabled: !!effectiveCoords
-  });
+  const { data: localEventsData } = useLocalEvents(effectiveCoords?.lat, effectiveCoords?.long);
 
   // Ticketmaster has no events near this city (e.g. Tokyo, Buenos Aires)
   const noEvents =
     localEventsData &&
     !localEventsData._embedded?.events?.some((ev) => ev._embedded?.attractions?.[0]?.name);
 
-  const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
-    enabled: false,
-  });
+  const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName);
 
   useEffect(() => {
     if (selectedArtist) {

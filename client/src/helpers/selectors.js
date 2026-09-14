@@ -1,18 +1,15 @@
 export function getLastConcertsByArtist(setlist = [], artistId) {
 
-  const sortedSetlist = setlist
+  const now = new Date();
+
+  return setlist
     .filter(item => item.artist.mbid === artistId)
-    .filter(item => {
-      const [d, m, y] = item.eventDate.split("-");
-      return new Date(y, m - 1, d) <= new Date();
-    })
     .map(item => {
       const [d, m, y] = item.eventDate.split("-");
       return { ...item, dateObj: new Date(y, m - 1, d) };
     })
-    .sort((a, b) => a.dateObj - b.dateObj).slice().reverse()
-
-    return sortedSetlist;
+    .filter(item => item.dateObj <= now)
+    .sort((a, b) => b.dateObj - a.dateObj);
 }
 
 export function getBestImage(images = []) {
