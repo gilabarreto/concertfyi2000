@@ -1,4 +1,4 @@
-const axios = require("axios");
+const { request } = require("../http");
 
 const getYoutubeVideoId = async (req, res) => {
   const { artist, song } = req.query;
@@ -13,10 +13,9 @@ const getYoutubeVideoId = async (req, res) => {
       return res.status(500).json({ error: "YouTube API key not configured" });
     }
 
-    const query = `${artist} ${song} official video`;
-    const response = await axios.get("https://www.googleapis.com/youtube/v3/search", {
+    const data = await request("https://www.googleapis.com/youtube/v3/search", {
       params: {
-        q: query,
+        q: `${artist} ${song} official video`,
         part: "snippet",
         type: "video",
         maxResults: 1,
@@ -24,7 +23,7 @@ const getYoutubeVideoId = async (req, res) => {
       },
     });
 
-    const videoId = response.data.items?.[0]?.id?.videoId;
+    const videoId = data.items?.[0]?.id?.videoId;
     if (!videoId) {
       return res.status(404).json({ error: "Video not found" });
     }

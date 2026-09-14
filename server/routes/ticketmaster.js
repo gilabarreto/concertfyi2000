@@ -1,53 +1,48 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
+const { request } = require("../http");
 
 const TM_BASE = "https://app.ticketmaster.com/discovery/v2";
+const USER_AGENT = "concertfyi2000/1.0.0 (gilabarreto@gmail.com)";
+const headers = { "User-Agent": USER_AGENT };
 
 router.get("/suggest", async (req, res) => {
   const { keyword } = req.query;
 
   try {
     // Primeiro, busca com /suggest para pegar as atrações
-    const suggestUrl = `${TM_BASE}/suggest`;
-    const suggestResponse = await axios.get(suggestUrl, {
+    const suggestData = await request(`${TM_BASE}/suggest`, {
       params: {
         apikey: process.env.TICKETMASTER_API_KEY,
         keyword,
         segmentId: "KZFzniwnSyZfZ7v7nJ",
       },
-      headers: {
-        "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)",
-      },
+      headers,
     });
 
     // Se encontrou alguma atração, busca seus eventos com paginação
-    const attractions = suggestResponse.data._embedded?.attractions || [];
+    const attractions = suggestData._embedded?.attractions || [];
 
     if (attractions.length > 0) {
       const attractionId = attractions[0].id;
-      const eventsUrl = `${TM_BASE}/events.json`;
+      const pageSize = 20;
 
       let allEvents = [];
-      let page = 0;
-      const pageSize = 20;
 
       // Busca múltiplas páginas (máximo 5 páginas = 100 eventos)
       for (let i = 0; i < 5; i++) {
         try {
-          const eventsResponse = await axios.get(eventsUrl, {
+          const eventsData = await request(`${TM_BASE}/events.json`, {
             params: {
               apikey: process.env.TICKETMASTER_API_KEY,
               attractionId,
               size: pageSize,
               page: i,
             },
-            headers: {
-              "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)",
-            },
+            headers,
           });
 
-          const events = eventsResponse.data._embedded?.events || [];
+          const events = eventsData._embedded?.events || [];
           if (events.length === 0) break;
 
           allEvents = allEvents.concat(events);
@@ -59,7 +54,7 @@ router.get("/suggest", async (req, res) => {
       res.json({
         _embedded: {
           events: allEvents,
-          attractions: suggestResponse.data._embedded?.attractions || [],
+          attractions,
         },
       });
     } else {
@@ -70,9 +65,9 @@ router.get("/suggest", async (req, res) => {
     console.error("Ticketmaster suggest error:", error.message);
 
     res
-      .status(error.response?.status || 500)
+      .status(error.status || 500)
       .json({
-        error: error.response?.data || "Ticketmaster suggest fetch failed",
+        error: error.data || "Ticketmaster suggest fetch failed",
       });
   }
 });
@@ -81,9 +76,7 @@ router.get("/events", async (req, res) => {
   const { lat, long } = req.query;
 
   try {
-    const url = `${TM_BASE}/events.json`;
-
-    const response = await axios.get(url, {
+    const data = await request(`${TM_BASE}/events.json`, {
       params: {
         apikey: process.env.TICKETMASTER_API_KEY,
         latlong: `${lat},${long}`,
@@ -93,19 +86,17 @@ router.get("/events", async (req, res) => {
         classificationName: "Music",
         size: 50,
       },
-      headers: {
-        "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)",
-      },
+      headers,
     });
 
-    res.json(response.data);
+    res.json(data);
   } catch (error) {
     console.error("Ticketmaster events error:", error.message);
 
     res
-      .status(error.response?.status || 500)
+      .status(error.status || 500)
       .json({
-        error: error.response?.data || "Ticketmaster events fetch failed",
+        error: error.data || "Ticketmaster events fetch failed",
       });
   }
 });
