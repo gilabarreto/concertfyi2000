@@ -28,7 +28,7 @@ function App() {
       <AppContext.Provider value={appState}>
         <Router basename="/">
           {!isSpotifyPopup && <Navbar />}
-          <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-[100dvh] w-full flex"}>
+          <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-dvh w-full flex"}>
             <Routes>
               {routes.map((route) => {
                 const Component = route.element;
