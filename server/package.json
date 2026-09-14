@@ -4,16 +4,13 @@
   "private": true,
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js",
-    "build": "cd client && npm install && npm run build",
-    "postinstall": ""
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "axios": "^1.11.0",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
-    "express": "^4.21.2",
-    "pg": "^8.8.0"
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
