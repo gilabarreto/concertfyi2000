@@ -5,6 +5,7 @@ import { getBestImage, getLastConcertsByArtist } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
+import LocationSelector from "./LocationSelector";
 
 const SPACING = 120;
 const SCALE_FACTOR_DESKTOP = 0.2;
@@ -39,7 +40,7 @@ export default function Swiper() {
   const navigate = useNavigate();
   const isSmallScreen = useIsSmallScreen();
 
-  const { coords = { lat: -23.5505, long: -46.6333 } } = useGeolocation();
+  const { coords = { lat: -23.5505, long: -46.6333 }, city, country, isLoading: isGeoLoading } = useGeolocation();
 
   const effectiveCoords = selectedLocation
     ? { lat: selectedLocation.lat, long: selectedLocation.lon }
@@ -48,6 +49,11 @@ export default function Swiper() {
   const { data: localEventsData } = useLocalEvents(effectiveCoords?.lat, effectiveCoords?.long, {
     enabled: !!effectiveCoords
   });
+
+  // Ticketmaster has no events near this city (e.g. Tokyo, Buenos Aires)
+  const noEvents =
+    localEventsData &&
+    !localEventsData._embedded?.events?.some((ev) => ev._embedded?.attractions?.[0]?.name);
 
   const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName, {
     enabled: false,
@@ -203,11 +209,19 @@ export default function Swiper() {
         </div>
       )}
 
-      <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
-        {slides.map((slide, i) => (
-          <Slide key={slide.eventId} slide={slide} index={i} />
-        ))}
-      </div>
+      {noEvents ? (
+        <div className="w-full h-[250px] sm:h-[380px] flex flex-col items-center justify-center gap-2 text-center">
+          <p className="text-lg text-zinc-800 text-pretty">No concerts found near</p>
+          <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
+          <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
+        </div>
+      ) : (
+        <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
+          {slides.map((slide, i) => (
+            <Slide key={slide.eventId} slide={slide} index={i} />
+          ))}
+        </div>
+      )}
 
     </>
   );

@@ -96,7 +96,7 @@ export default function LocationSelector({ city, country, isLoading }) {
         title="Change location"
       >
         <span className="text-lg font-medium tracking-tight">
-          {isLoading ? "Locating..." : displayName || "Location unavailable"}
+          {isLoading && !selectedLocation ? "Locating..." : displayName || "Location unavailable"}
         </span>
         <FontAwesomeIcon
           className="text-sm"
