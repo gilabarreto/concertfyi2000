@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
 import { getBestImage, getLastConcertsByArtist } from "../helpers/selectors";
@@ -39,6 +39,8 @@ export default function Swiper() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const isSmallScreen = useIsSmallScreen();
+  const carouselRef = useRef(null);
+  const refocusNav = useRef(null);
 
   const { coords = { lat: -23.5505, long: -46.6333 }, city, country, isLoading: isGeoLoading } = useGeolocation();
 
@@ -139,7 +141,24 @@ export default function Swiper() {
     }
   };
 
-  const Slide = ({ slide, index }) => {
+  // Prev/Next live inside the centered slide, so after moving, focus the same control in the new center
+  const go = (e, step) => {
+    e.stopPropagation();
+    const next = Math.min(Math.max(active + step, 0), slides.length - 1);
+    if (next === active) return;
+    refocusNav.current = document.activeElement === e.currentTarget ? e.currentTarget.dataset.nav : null;
+    setActive(next);
+  };
+
+  useEffect(() => {
+    if (!refocusNav.current) return;
+    carouselRef.current?.querySelector(`[data-nav="${refocusNav.current}"]`)?.focus();
+    refocusNav.current = null;
+  }, [active]);
+
+  // plain render function, not a component: a component declared inside Swiper would remount
+  // every slide on each render, which killed the slide transition
+  const renderSlide = (slide, index) => {
     const offset = index - active;
     const depth = Math.abs(offset);
     const image = getBestImage(slide.images) || slide.image;
@@ -157,20 +176,16 @@ export default function Swiper() {
           {offset === 0 && (
             <>
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActive((a) => Math.max(a - 1, 0));
-                }}
+                onClick={(e) => go(e, -1)}
+                data-nav="prev"
                 aria-label="Previous"
                 className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
               >
                 {"{"}
               </button>
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActive((a) => Math.min(a + 1, slides.length - 1));
-                }}
+                onClick={(e) => go(e, 1)}
+                data-nav="next"
                 aria-label="Next"
                 className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
               >
@@ -216,10 +231,8 @@ export default function Swiper() {
           <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
         </div>
       ) : (
-        <div className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
-          {slides.map((slide, i) => (
-            <Slide key={slide.eventId} slide={slide} index={i} />
-          ))}
+        <div ref={carouselRef} className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
+          {slides.map(renderSlide)}
         </div>
       )}
 
