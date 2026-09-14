@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
@@ -15,7 +15,7 @@ export default function Setlist(props) {
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const disclaimerRef = useRef(null);
 
   const concert = props.concert;
   const songs = concert.sets?.set[0]?.song || [];
@@ -110,15 +110,17 @@ export default function Setlist(props) {
         <h2 className="text-3xl font-bold">Setlist</h2>
         <div className="flex items-center space-x-2">
           <button
-            onClick={() => setShowDisclaimer(true)}
+            onClick={() => disclaimerRef.current.showModal()}
             onTouchEnd={(e) => {
               e.preventDefault();
-              setShowDisclaimer(true);
+              disclaimerRef.current.showModal();
             }}
             className="p-1 hover:text-red-800 active:opacity-70 transition-opacity"
             title="Disclaimer"
+            aria-label="Disclaimer"
+            aria-haspopup="dialog"
           >
-            <FontAwesomeIcon icon={faCircleInfo} className="text-gray-500" />
+            <FontAwesomeIcon icon={faCircleInfo} className="text-gray-500" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -209,37 +211,38 @@ export default function Setlist(props) {
         </>
       )}
 
-      {showDisclaimer && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-8 max-w-md">
-            <h3 className="text-xl font-bold mb-4">Disclaimer</h3>
-            <div className="text-sm text-gray-700 space-y-3 mb-6">
-              <p>
-                ConcertFYI uses information from third-party sources. We don't own or control all of the content displayed here.
-              </p>
-              <p>
-                Found something missing or incorrect?{" "}
-                <button
-                  onClick={() => {
-                    setShowDisclaimer(false);
-                    navigate("/contact");
-                  }}
-                  className="text-red-600 hover:text-red-800 font-semibold cursor-pointer bg-none border-none p-0"
-                >
-                  Please contact us
-                </button>{" "}
-                and let us know.
-              </p>
-            </div>
+      {/* native modal: focus trap, Esc to close and focus return come from the browser */}
+      <dialog
+        ref={disclaimerRef}
+        aria-labelledby="disclaimer-title"
+        className="bg-white rounded-lg p-8 w-[calc(100%-2rem)] max-w-md backdrop:bg-black/50"
+      >
+        <h3 id="disclaimer-title" className="text-xl font-bold mb-4">Disclaimer</h3>
+        <div className="text-sm text-gray-700 space-y-3 mb-6">
+          <p>
+            ConcertFYI uses information from third-party sources. We don't own or control all of the content displayed here.
+          </p>
+          <p>
+            Found something missing or incorrect?{" "}
             <button
-              onClick={() => setShowDisclaimer(false)}
-              className="w-full px-4 py-2 bg-red-600 hover:bg-red-800 text-white font-semibold rounded transition-colors"
+              onClick={() => {
+                disclaimerRef.current.close();
+                navigate("/contact");
+              }}
+              className="text-red-600 hover:text-red-800 font-semibold cursor-pointer bg-none border-none p-0"
             >
-              Close
-            </button>
-          </div>
+              Please contact us
+            </button>{" "}
+            and let us know.
+          </p>
         </div>
-      )}
+        <button
+          onClick={() => disclaimerRef.current.close()}
+          className="w-full px-4 py-2 bg-red-600 hover:bg-red-800 text-white font-semibold rounded transition-colors"
+        >
+          Close
+        </button>
+      </dialog>
     </>
   );
 }
