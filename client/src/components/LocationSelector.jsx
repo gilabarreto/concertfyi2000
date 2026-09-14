@@ -37,6 +37,7 @@ export default function LocationSelector({ city, country, isLoading }) {
   const [searchInput, setSearchInput] = useState("");
   const dropdownRef = useRef(null);
   const toggleRef = useRef(null);
+  const inputRef = useRef(null);
 
   const query = searchInput.trim();
   const term = useDebounce(query, 300);
@@ -110,6 +111,7 @@ export default function LocationSelector({ city, country, isLoading }) {
         <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
           <div className="relative">
             <input
+              ref={inputRef}
               type="text"
               placeholder="Search location..."
               value={searchInput}
@@ -119,11 +121,16 @@ export default function LocationSelector({ city, country, isLoading }) {
             />
             {searchInput && (
               <button
-                onClick={() => setSearchInput("")}
+                type="button"
+                onClick={() => {
+                  setSearchInput("");
+                  inputRef.current?.focus();
+                }}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
                 title="Clear search"
+                aria-label="Clear search"
               >
-                <FontAwesomeIcon icon={faXmark} size="sm" />
+                <FontAwesomeIcon icon={faXmark} size="sm" aria-hidden="true" />
               </button>
             )}
           </div>
