@@ -1,23 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import path from 'path'
 
 export default defineConfig({
-  base: '/',
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'src'),
-    },
-  },
-  optimizeDeps: {
-    include: ['@tanstack/react-query'],
-  },
-  build: {
-    rollupOptions: {
-      external: [],
-    },
-  },
   server: {
     port: 3000,
     proxy: {
@@ -26,18 +11,6 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, ''),
       },
-      '/setlist': {
-        target: 'https://api.setlist.fm',
-        changeOrigin: true,
-        secure: true,
-        rewrite: path => path.replace(/^\/setlist/, ''),
-      },
-      '/ticketmaster': {
-        target: 'https://app.ticketmaster.com',
-        changeOrigin: true,
-        secure: true,
-        rewrite: path => path.replace(/^\/ticketmaster/, ''),
-      }
     },
   },
 })
