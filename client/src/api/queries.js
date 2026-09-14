@@ -1,5 +1,26 @@
-import { useQuery } from '@tanstack/react-query';
-import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster } from './api';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster, searchCities } from './api';
+
+export const useCitySearch = (query) => {
+  return useQuery({
+    queryKey: ['city-search', query],
+    queryFn: () =>
+      searchCities(query).then((res) =>
+        res.data.features.map(({ properties: p, geometry }) => ({
+          id: `${p.osm_type}${p.osm_id}`,
+          city: p.name,
+          state: p.state,
+          country: p.country,
+          countryCode: p.countrycode,
+          lat: geometry.coordinates[1],
+          lon: geometry.coordinates[0],
+        }))
+      ),
+    enabled: query.length >= 2,
+    staleTime: 24 * 60 * 60 * 1000,
+    placeholderData: keepPreviousData,
+  });
+};
 
 export const useSetlistById = (id) => {
   return useQuery({

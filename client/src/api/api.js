@@ -54,6 +54,13 @@ export const getTicketmasterSuggest = (artist) =>
     params: { keyword: artist },
   });
 
+// Photon (OpenStreetMap) city autocomplete: public, no key, CORS-enabled
+export const searchCities = (q) =>
+  axios.get("https://photon.komoot.io/api/", {
+    params: { q, limit: 8, lang: "en", layer: "city" },
+    timeout: 10000,
+  });
+
 export const getLocalEvents = (lat, long) =>
   API.get("/ticketmaster/events", {
     params: { lat, long },

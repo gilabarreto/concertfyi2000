@@ -2,7 +2,8 @@ import { useState, useContext, useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
-import cities from "../data/cities.json";
+import { useCitySearch } from "../api/queries";
+import useDebounce from "../hooks/useDebounce";
 
 // Country to code mapping for geolocation display
 const countryCodeMap = {
@@ -30,33 +31,17 @@ const countryCodeMap = {
   "South Korea": "KR"
 };
 
-// Simple fuzzy search scoring
-function fuzzyScore(query, text) {
-  const q = query.toLowerCase();
-  const t = text.toLowerCase();
-
-  if (t.startsWith(q)) return 100;
-  if (t.includes(q)) return 50;
-
-  let score = 0;
-  let qIdx = 0;
-  for (let i = 0; i < t.length && qIdx < q.length; i++) {
-    if (t[i] === q[qIdx]) {
-      score += 10;
-      qIdx++;
-    }
-  }
-
-  return qIdx === q.length ? score : 0;
-}
-
 export default function LocationSelector({ city, country, isLoading }) {
   const { selectedLocation, updateLocation } = useContext(AppContext);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchInput, setSearchInput] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
   const dropdownRef = useRef(null);
   const toggleRef = useRef(null);
+
+  const query = searchInput.trim();
+  const term = useDebounce(query, 300);
+  const { data: suggestions = [], isFetching, isError } = useCitySearch(term);
+  const showResults = query.length >= 2;
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
@@ -72,28 +57,6 @@ export default function LocationSelector({ city, country, isLoading }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setSearchInput(value);
-
-    if (value.length === 0) {
-      setSuggestions([]);
-      return;
-    }
-
-    const filtered = cities
-      .map((c) => ({
-        ...c,
-        score: Math.max(fuzzyScore(value, c.city), fuzzyScore(value, c.country)),
-      }))
-      .filter((c) => c.score > 0)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, 8)
-      .map(({ score, ...c }) => c);
-
-    setSuggestions(filtered);
-  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Escape") {
@@ -117,7 +80,6 @@ export default function LocationSelector({ city, country, isLoading }) {
     updateLocation(location);
     setShowDropdown(false);
     setSearchInput("");
-    setSuggestions([]);
   };
 
   return (
@@ -151,16 +113,13 @@ export default function LocationSelector({ city, country, isLoading }) {
               type="text"
               placeholder="Search location..."
               value={searchInput}
-              onChange={handleSearch}
+              onChange={(e) => setSearchInput(e.target.value)}
               className="w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
               autoFocus
             />
             {searchInput && (
               <button
-                onClick={() => {
-                  setSearchInput("");
-                  setSuggestions([]);
-                }}
+                onClick={() => setSearchInput("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
                 title="Clear search"
               >
@@ -174,7 +133,6 @@ export default function LocationSelector({ city, country, isLoading }) {
               onClick={() => {
                 updateLocation(null);
                 setSearchInput("");
-                setSuggestions([]);
                 setShowDropdown(false);
               }}
               className="w-full px-4 py-2 text-center text-sm text-red-600 hover:bg-red-50 border-b border-gray-200 transition-colors bg-none border-none"
@@ -183,17 +141,21 @@ export default function LocationSelector({ city, country, isLoading }) {
             </button>
           )}
 
-          {suggestions.length === 0 && searchInput && (
+          {showResults && (isError || suggestions.length === 0) && (
             <div className="px-4 py-3 text-center text-gray-500 text-sm">
-              No cities found
+              {isError
+                ? "Couldn't search cities. Try again."
+                : isFetching || term !== query
+                  ? "Searching…"
+                  : "No cities found"}
             </div>
           )}
 
-          {suggestions.length > 0 && (
+          {showResults && !isError && suggestions.length > 0 && (
             <ul className="max-h-72 overflow-y-auto">
-              {suggestions.map((loc, idx) => (
+              {suggestions.map((loc) => (
                 <li
-                  key={`${loc.city}-${loc.country}-${idx}`}
+                  key={loc.id}
                   className="border-b border-gray-100 last:border-0"
                 >
                   <button
@@ -204,7 +166,9 @@ export default function LocationSelector({ city, country, isLoading }) {
                     <span className="block font-medium text-gray-800 text-sm">
                       {loc.city}
                     </span>
-                    <span className="block text-gray-500 text-xs">{loc.country}</span>
+                    <span className="block text-gray-500 text-xs">
+                      {[loc.state, loc.country].filter(Boolean).join(", ")}
+                    </span>
                   </button>
                 </li>
               ))}
