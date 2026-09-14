@@ -1,5 +1,5 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { getTicketmasterSuggest, getSetlist, getSetlistById, getLocalEvents, getTicketmaster, searchCities, getLyrics, getYoutubeVideo } from './api';
+import { getSetlist, getSetlistById, getLocalEvents, getTicketmaster, searchCities, getLyrics, getYoutubeVideo } from './api';
 import { findTrackUri } from '../helpers/spotifyPlaylist';
 import { clearAccessToken } from '../helpers/spotifyAuth';
 
@@ -64,15 +64,6 @@ export const useSetlistById = (id) => {
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
     retry: false,
-  });
-};
-
-export const useTicketmasterSuggest = (artistName) => {
-  return useQuery({
-    queryKey: ['ticketmaster-suggest', artistName],
-    queryFn: () => getTicketmasterSuggest(artistName).then(res => res.data),
-    enabled: !!artistName,
-    staleTime: 10 * 60 * 1000,
   });
 };
 

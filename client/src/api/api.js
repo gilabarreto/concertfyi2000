@@ -7,34 +7,18 @@ const API = axios.create({
   timeout: 10000,
 });
 
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.token = token;
-  }
-  return config;
-});
-
 API.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response) {
-      return Promise.reject({
-        message: error.response.data?.message || "Request failed",
-        status: error.response.status,
-        data: error.response.data,
-      });
-    } else if (error.request) {
-      return Promise.reject({
-        message: "No response received",
-        isOffline: true,
-      });
-    } else {
-      return Promise.reject({
-        message: error.message,
-      });
-    }
-  }
+  (error) =>
+    Promise.reject(
+      error.response
+        ? {
+            message: error.response.data?.message || "Request failed",
+            status: error.response.status,
+            data: error.response.data,
+          }
+        : { message: error.message || "No response received" }
+    )
 );
 
 export const getSetlist = (artistName) =>
@@ -47,11 +31,6 @@ export const getSetlistById = (id) => API.get(`/setlist/${encodeURIComponent(id)
 export const getTicketmaster = (artistName) =>
   API.get("/ticketmaster/suggest", {
     params: { keyword: artistName },
-  });
-
-export const getTicketmasterSuggest = (artist) =>
-  API.get("/ticketmaster/suggest", {
-    params: { keyword: artist },
   });
 
 export const getLyrics = (artist, song) => API.get("/lyrics", { params: { artist, song } });
