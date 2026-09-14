@@ -3,8 +3,7 @@ const router = express.Router();
 const { request } = require("../http");
 
 const TM_BASE = "https://app.ticketmaster.com/discovery/v2";
-const USER_AGENT = "concertfyi2000/1.0.0 (gilabarreto@gmail.com)";
-const headers = { "User-Agent": USER_AGENT };
+const headers = { "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)" };
 
 router.get("/suggest", async (req, res) => {
   const { keyword } = req.query;

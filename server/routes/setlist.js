@@ -2,18 +2,19 @@ const express = require("express");
 const router = express.Router();
 const { request } = require("../http");
 
-const headers = () => ({
+// index.js loads dotenv before requiring the routes, so env is set by now
+const headers = {
   Accept: "application/json",
   "x-api-key": process.env.SETLISTFM_API_KEY,
   "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)",
-});
+};
 
 router.get("/search", async (req, res) => {
   const { artistName } = req.query;
 
   try {
     const data = await request("https://api.setlist.fm/rest/1.0/search/setlists", {
-      headers: headers(),
+      headers,
       params: {
         artistName,
         p: 1,
@@ -38,7 +39,7 @@ router.get("/:id", async (req, res) => {
   try {
     const data = await request(
       `https://api.setlist.fm/rest/1.0/setlist/${encodeURIComponent(req.params.id)}`,
-      { headers: headers() }
+      { headers }
     );
     res.json(data);
   } catch (error) {

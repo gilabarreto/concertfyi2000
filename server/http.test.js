@@ -19,10 +19,10 @@ test("returns parsed json on success", async () => {
   assert.deepStrictEqual(await request("https://x.test"), { hello: "world" });
 });
 
-test("drops empty params so they are not sent as 'undefined'", async () => {
+test("drops absent params, keeps empty strings like axios did", async () => {
   stub(200, {});
   await request("https://x.test", { params: { keep: "1", a: undefined, b: null, c: "" } });
-  assert.strictEqual(stub.calledWith.url, "https://x.test?keep=1");
+  assert.strictEqual(stub.calledWith.url, "https://x.test?keep=1&c=");
 });
 
 test("throws with status and body on a failed response", async () => {
