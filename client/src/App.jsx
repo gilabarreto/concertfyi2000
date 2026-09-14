@@ -1,10 +1,15 @@
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import { routes } from "./config/routes";
+import Home from "./pages/Home";
+import SearchPage from "./pages/SearchPage";
+import ArtistPage from "./pages/ArtistPage";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
+import SpotifyCallback from "./pages/SpotifyCallback";
 import './icons';
 
 function App() {
@@ -30,16 +35,12 @@ function App() {
           {!isSpotifyPopup && <Navbar />}
           <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-dvh w-full flex"}>
             <Routes>
-              {routes.map((route) => {
-                const Component = route.element;
-                return (
-                  <Route
-                    key={route.path}
-                    path={route.path}
-                    element={<Component />}
-                  />
-                );
-              })}
+              <Route path="/" element={<Home />} />
+              <Route path="/search" element={<SearchPage />} />
+              <Route path="/artists/:artistId/concerts/:concertId" element={<ArtistPage />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/callback" element={<SpotifyCallback />} />
             </Routes>
           </main>
           {!isSpotifyPopup && <Footer />}
