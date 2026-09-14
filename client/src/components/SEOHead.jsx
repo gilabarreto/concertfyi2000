@@ -13,11 +13,11 @@ export function SEOHead({ title, description, image, url }) {
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={metaDescription} />
-      <meta name="og:title" content={fullTitle} />
-      <meta name="og:description" content={metaDescription} />
-      <meta name="og:image" content={metaImage} />
-      <meta name="og:url" content={metaUrl} />
-      <meta name="og:type" content="website" />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={metaDescription} />
+      <meta property="og:image" content={metaImage} />
+      <meta property="og:url" content={metaUrl} />
+      <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
