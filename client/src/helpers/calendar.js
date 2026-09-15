@@ -12,24 +12,17 @@ const addDays = (localDate, days) => {
   return date.toISOString().slice(0, 10);
 };
 
-const SHOW_HOURS = 3;
-
 // The pieces all three targets need, or null when the date is missing and the entry
-// would land on the wrong day. dateTime carries the exact UTC start; without it the
-// show can only be an all-day entry.
+// would land on the wrong day. Every entry is all day: the doors time is a promise the
+// event rarely keeps, and a whole-day block is what the day actually costs.
 function details(event, artistName) {
-  const start = event?.dates?.start;
-  const localDate = start?.localDate;
+  const localDate = event?.dates?.start?.localDate;
   if (!localDate) return null;
 
   const venue = event._embedded?.venues?.[0];
 
   return {
     localDate,
-    startsAt: start.dateTime ? new Date(start.dateTime) : null,
-    endsAt: start.dateTime
-      ? new Date(Date.parse(start.dateTime) + SHOW_HOURS * 3600000)
-      : null,
     endDate: addDays(localDate, 1),
     title: venue?.name ? `${artistName} at ${venue.name}` : artistName,
     place: [
@@ -49,9 +42,7 @@ export function googleCalendarUrl(event, artistName) {
   if (!show) return null;
 
   // Google reads the end of an all-day range as exclusive
-  const dates = show.startsAt
-    ? `${utcStamp(show.startsAt)}/${utcStamp(show.endsAt)}`
-    : `${dayStamp(show.localDate)}/${dayStamp(show.endDate)}`;
+  const dates = `${dayStamp(show.localDate)}/${dayStamp(show.endDate)}`;
 
   const params = new URLSearchParams({ action: "TEMPLATE", text: show.title, dates });
   if (show.place) params.set("location", show.place);
@@ -68,11 +59,11 @@ export function outlookCalendarUrl(event, artistName) {
     path: "/calendar/action/compose",
     rru: "addevent",
     subject: show.title,
-    startdt: show.startsAt ? show.startsAt.toISOString() : show.localDate,
-    enddt: show.endsAt ? show.endsAt.toISOString() : show.endDate,
+    startdt: show.localDate,
+    enddt: show.endDate,
+    allday: "true",
   });
 
-  if (!show.startsAt) params.set("allday", "true");
   if (show.place) params.set("location", show.place);
   if (show.url) params.set("body", show.url);
 
@@ -97,18 +88,6 @@ export function concertIcs(event, artistName, { now = new Date() } = {}) {
   const show = details(event, artistName);
   if (!show) return null;
 
-  const [dtstart, dtend] = show.startsAt
-    ? [`DTSTART:${utcStamp(show.startsAt)}`, `DTEND:${utcStamp(show.endsAt)}`]
-    : [
-        `DTSTART;VALUE=DATE:${dayStamp(show.localDate)}`,
-        `DTEND;VALUE=DATE:${dayStamp(show.endDate)}`,
-      ];
-
-  // The second alarm has to land on the show day itself. A timed show starts in the
-  // evening, so twelve hours earlier is that morning; an all-day entry starts at
-  // midnight, so the trigger runs forward to 9am instead.
-  const sameDay = show.startsAt ? "-PT12H" : "PT9H";
-
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -117,13 +96,14 @@ export function concertIcs(event, artistName, { now = new Date() } = {}) {
     "BEGIN:VEVENT",
     `UID:${show.id}@concertfyi.com`,
     `DTSTAMP:${utcStamp(now)}`,
-    dtstart,
-    dtend,
+    `DTSTART;VALUE=DATE:${dayStamp(show.localDate)}`,
+    `DTEND;VALUE=DATE:${dayStamp(show.endDate)}`,
     `SUMMARY:${escape(show.title)}`,
     show.place && `LOCATION:${escape(show.place)}`,
     show.url && `URL:${escape(show.url)}`,
     ...alarm("-P1D", `${artistName} plays tomorrow`),
-    ...alarm(sameDay, `${artistName} plays tonight`),
+    // an all-day entry starts at midnight, so the day-of alarm runs forward to 9am
+    ...alarm("PT9H", `${artistName} plays tonight`),
     "END:VEVENT",
     "END:VCALENDAR",
   ]

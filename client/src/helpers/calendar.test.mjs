@@ -27,22 +27,26 @@ const event = (start) => ({
 
 const paramsOf = (url) => new URL(url).searchParams;
 
-test("a timed show spans the evening in UTC", () => {
-  const params = paramsOf(
-    googleCalendarUrl(event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }), "Nekrogoblikon")
-  );
+test("the show takes the whole day, ending the next one", () => {
+  // Google reads the end of an all-day range as exclusive, so a one-night show
+  // has to end on the 3rd to sit on the 2nd
+  const params = paramsOf(googleCalendarUrl(event({ localDate: "2026-10-02" }), "Nekrogoblikon"));
 
-  assert.equal(params.get("dates"), "20261003T020000Z/20261003T050000Z");
+  assert.equal(params.get("dates"), "20261002/20261003");
   assert.equal(params.get("text"), "Nekrogoblikon at Ace of Spades");
   assert.equal(params.get("location"), "Ace of Spades, Sacramento, CA");
   assert.equal(params.get("action"), "TEMPLATE");
 });
 
-test("a show with no time is all day, ending the next day", () => {
-  // Google reads the end of an all-day range as exclusive, so a one-night show
-  // has to end on the 3rd to sit on the 2nd
-  const params = paramsOf(googleCalendarUrl(event({ localDate: "2026-10-02" }), "Nekrogoblikon"));
+test("a start time does not turn the entry back into a timed block", () => {
+  const params = paramsOf(
+    googleCalendarUrl(
+      event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
+      "Nekrogoblikon"
+    )
+  );
 
+  // the UTC time sits on the 3rd, so honouring it would move the show off its day
   assert.equal(params.get("dates"), "20261002/20261003");
 });
 
@@ -60,50 +64,27 @@ test("no date means no link rather than an entry on the wrong day", () => {
   }
 });
 
-test("outlook gets the same show as an ISO range", () => {
-  const params = paramsOf(
-    outlookCalendarUrl(
-      event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
-      "Nekrogoblikon"
-    )
-  );
-
-  assert.equal(params.get("startdt"), "2026-10-03T02:00:00.000Z");
-  assert.equal(params.get("enddt"), "2026-10-03T05:00:00.000Z");
-  assert.equal(params.get("subject"), "Nekrogoblikon at Ace of Spades");
-  assert.equal(params.get("rru"), "addevent");
-  assert.equal(params.get("allday"), null, "a timed show is not all day");
-});
-
-test("an outlook show with no time is flagged all day", () => {
+test("outlook gets the same day, flagged all day", () => {
   const params = paramsOf(outlookCalendarUrl(event({ localDate: "2026-10-02" }), "Nekrogoblikon"));
 
-  assert.equal(params.get("allday"), "true");
   assert.equal(params.get("startdt"), "2026-10-02");
   assert.equal(params.get("enddt"), "2026-10-03");
+  assert.equal(params.get("allday"), "true");
+  assert.equal(params.get("subject"), "Nekrogoblikon at Ace of Spades");
+  assert.equal(params.get("rru"), "addevent");
 });
 
-test("the ics carries the show and both alarms", () => {
-  const ics = concertIcs(
-    event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
-    "Nekrogoblikon",
-    { now }
-  );
-
-  assert.match(ics, /^DTSTART:20261003T020000Z$/m);
-  assert.match(ics, /^DTEND:20261003T050000Z$/m);
-  assert.match(ics, /^UID:G5vYZbMN2qDpw@concertfyi\.com$/m);
-  assert.match(ics, /^SUMMARY:Nekrogoblikon at Ace of Spades$/m);
-  assert.match(ics, /^TRIGGER:-P1D$/m);
-  assert.match(ics, /^TRIGGER:-PT12H$/m);
-  assert.ok(ics.endsWith("END:VCALENDAR"));
-});
-
-test("an all-day ics alarms the morning of the show instead", () => {
+test("the ics carries the show as a date, with both alarms", () => {
   const ics = concertIcs(event({ localDate: "2026-10-02" }), "Nekrogoblikon", { now });
 
   assert.match(ics, /^DTSTART;VALUE=DATE:20261002$/m);
+  assert.match(ics, /^DTEND;VALUE=DATE:20261003$/m);
+  assert.match(ics, /^UID:G5vYZbMN2qDpw@concertfyi\.com$/m);
+  assert.match(ics, /^SUMMARY:Nekrogoblikon at Ace of Spades$/m);
+  assert.match(ics, /^TRIGGER:-P1D$/m);
+  // midnight start, so the day-of alarm counts forward instead of back
   assert.match(ics, /^TRIGGER:PT9H$/m);
+  assert.ok(ics.endsWith("END:VCALENDAR"));
 });
 
 test("a comma in the venue is escaped, not left to split the line", () => {
