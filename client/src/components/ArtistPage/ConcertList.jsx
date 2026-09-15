@@ -6,8 +6,10 @@ import Pagination from "../Pagination";
 
 const PAGE_SIZE = 5;
 
+// en-GB is the locale that shortens September to "Sept" (en-US stops at "Sep"); the
+// other eleven months are identical, and the month-day-year order stays ours.
 const dateLabel = (date) =>
-  date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
 
 // items carry a dateObj; linkOf returns an app path, or an http URL for an outside link.
 // expand turns the row into a disclosure instead of a link, like Setlist does.
