@@ -1,12 +1,14 @@
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 
 export default function Map({ concert }) {
-  const coords = concert?.venue?.city?.coords;
-  if (!coords) return null;
-
+  // O hook vem antes do guard: um concert sem coords seguido de um com coords
+  // mudaria a quantidade de hooks entre renders e derruba o componente.
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY,
   });
+
+  const coords = concert?.venue?.city?.coords;
+  if (!coords) return null;
 
   if (!isLoaded) {
     return (
