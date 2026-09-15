@@ -3,6 +3,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
 import Navbar from "./components/Navbar";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import SearchPage from "./pages/SearchPage";
@@ -32,14 +33,17 @@ function App() {
         <Router basename="/">
           {!isSpotifyPopup && <Navbar />}
           <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-dvh w-full flex"}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<SearchPage />} />
-              <Route path="/artists/:artistId/concerts/:concertId" element={<ArtistPage />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/callback" element={<SpotifyCallback />} />
-            </Routes>
+            {/* Só as rotas: um erro de página não leva Navbar e Footer junto. */}
+            <ErrorBoundary>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/artists/:artistId/concerts/:concertId" element={<ArtistPage />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="/callback" element={<SpotifyCallback />} />
+              </Routes>
+            </ErrorBoundary>
           </main>
           {!isSpotifyPopup && <Footer />}
         </Router>
