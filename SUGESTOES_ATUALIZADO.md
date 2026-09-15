@@ -345,7 +345,8 @@ constants/
 `client/package.json` tem um bloco `eslintConfig` (`react-app`, `react-app/jest`) que sobrou do
 Create React App, mas o ESLint não está instalado e o Vite não o executa. Ou seja: o projeto
 *parece* ter lint e não tem. Escolher um dos dois:
-- [ ] Remover o `eslintConfig` morto (1 linha, resolve a confusão)
+- [x] Remover o `eslintConfig` morto — feito em 2026-09-15 (`f4edd3f`), junto com o `browserslist`
+      que o Vite ignora e os devDeps `gh-pages`/`concurrently` que nenhum script usa
 - [ ] Ou instalar ESLint de verdade + `eslint-plugin-react-hooks` — este pegaria erros reais de
       dependência de `useEffect`, que hoje ninguém verifica
 
@@ -365,4 +366,5 @@ projeto não o conhece.
 2. **SEO**: Vamos migrar para Next.js ou fazer pre-render estático?
 3. **Design System**: Criar Storybook com componentes reutilizáveis?
 4. **Testing**: Começar com testes unitários ou E2E?
-5. **Lint**: matar o `eslintConfig` morto ou instalar ESLint pra valer?
+5. **Lint**: o `eslintConfig` morto já foi removido; falta decidir se entra ESLint de verdade
+   (com `eslint-plugin-react-hooks`) antes do item de CI.
