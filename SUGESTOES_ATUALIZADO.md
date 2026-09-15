@@ -259,7 +259,7 @@ constants/
 
 7. **Calendar View**
    - Ver próximos eventos em calendário
-   - Integração com Google Calendar
+   - ✅ Integração com Google Calendar (botão por show em `ConcertReminder.jsx`)
 
 8. **API Pública** (Monetização futura)
    - Permitir devs integrarem ConcertFYI
@@ -282,7 +282,7 @@ constants/
 - [ ] **Storybook** para componentes
 - [ ] JSDoc para funções
 - [ ] README com setup e deploy
-- [ ] CLAUDE.md com context do projeto (✅ Já feito via memory)
+- [x] CLAUDE.md com contexto do projeto (arquivo no repo desde 2026-09-15)
 
 ### DevOps
 - [ ] **CI/CD** no GitHub Actions (lint, test, build, deploy)
@@ -314,7 +314,7 @@ constants/
 | Dark mode | ❌ Não implementado | Tailwind suporta, falta UI toggle |
 | Favoritar shows | ❌ Não implementado | localStorage ready |
 | Analytics | ❌ Não implementado | Recomendado implementar |
-| Testing | ❌ Não implementado | Recomendado adicionar |
+| Testing | ⚠️ Mínimo | `node --test` cobre `server/http.js` e `helpers/calendar.js`; sem testes de componente |
 | TypeScript | ❌ Não implementado | Pode ser gradual |
 
 ---
@@ -339,9 +339,30 @@ constants/
 
 ---
 
+## 🆕 Adicionado em 2026-09-15
+
+### 1. Não existe lint configurado
+`client/package.json` tem um bloco `eslintConfig` (`react-app`, `react-app/jest`) que sobrou do
+Create React App, mas o ESLint não está instalado e o Vite não o executa. Ou seja: o projeto
+*parece* ter lint e não tem. Escolher um dos dois:
+- [ ] Remover o `eslintConfig` morto (1 linha, resolve a confusão)
+- [ ] Ou instalar ESLint de verdade + `eslint-plugin-react-hooks` — este pegaria erros reais de
+      dependência de `useEffect`, que hoje ninguém verifica
+
+Decidir antes do item "CI/CD (lint, test, build)" mais acima, que depende disto.
+
+### 2. Preferências de workflow só existem na memória global
+O fluxo "uma correção por vez, commit + push no `main` a cada item, usuário testa antes do próximo"
+vive na memória pessoal do Claude, não no repo. Qualquer outra pessoa (ou máquina) que abrir o
+projeto não o conhece.
+- [ ] Mover para o `CLAUDE.md` se a regra vale para o projeto, não só para o Victor
+
+---
+
 ## 📞 Próximas Conversas
 
 1. **Quando**: Qual é a proposta de valor do ConcertFYI que o diferencia de Bandsintown?
 2. **SEO**: Vamos migrar para Next.js ou fazer pre-render estático?
 3. **Design System**: Criar Storybook com componentes reutilizáveis?
 4. **Testing**: Começar com testes unitários ou E2E?
+5. **Lint**: matar o `eslintConfig` morto ou instalar ESLint pra valer?
