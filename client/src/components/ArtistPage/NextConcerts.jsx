@@ -1,4 +1,3 @@
-import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 
@@ -23,7 +22,6 @@ export default function NextConcerts(props) {
         return venue ? `${venue.city.name}, ${venue.country.countryCode}` : "Unknown location";
       }}
       linkOf={(concert) => concert.url}
-      icon={faTicketSimple}
       iconTitle="Where to buy"
       expand={(concert) => (
         <TicketOptions event={concert} artistName={props.concert.artist.name} />

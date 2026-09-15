@@ -24,6 +24,11 @@ const sellers = [
     },
   },
   {
+    name: "SeatGeek",
+    domain: "seatgeek.com",
+    url: (event, artist, city) => `https://seatgeek.com/search?search=${term(artist, city)}`,
+  },
+  {
     name: "StubHub",
     domain: "stubhub.com",
     url: (event, artist) => `https://www.stubhub.com/secure/search?q=${term(artist)}`,
@@ -33,11 +38,6 @@ const sellers = [
     domain: "vividseats.com",
     url: (event, artist) => `https://www.vividseats.com/search?searchTerm=${term(artist)}`,
   },
-  {
-    name: "SeatGeek",
-    domain: "seatgeek.com",
-    url: (event, artist, city) => `https://seatgeek.com/search?search=${term(artist, city)}`,
-  },
 ];
 
 export default function TicketOptions({ event, artistName }) {
@@ -45,7 +45,7 @@ export default function TicketOptions({ event, artistName }) {
 
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 sm:p-4">
-      <h3 className="text-base font-semibold text-gray-700 mb-3 text-center">
+      <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
         <FontAwesomeIcon icon={faTicketSimple} className="text-sm text-red-600" aria-hidden="true" />{" "}
         Where to buy
       </h3>

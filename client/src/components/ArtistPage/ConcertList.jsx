@@ -45,9 +45,9 @@ export default function ConcertList({
             {currentPage.map((concert) => {
               const open = openId === concert.id;
               const label = (
-                <span className="flex items-center space-x-2">
+                <span className="flex items-center">
                   <span>{dateLabel(concert.dateObj)}</span>
-                  <span className="text-gray-500 ml-2">({locationOf(concert)})</span>
+                  <span className="text-gray-500 ml-2">- {locationOf(concert)}</span>
                 </span>
               );
               const className =
@@ -65,14 +65,11 @@ export default function ConcertList({
                       title={iconTitle}
                     >
                       {label}
-                      <span className="flex items-center space-x-2 pl-2">
-                        <FontAwesomeIcon icon={icon} className="text-red-600" aria-hidden="true" />
-                        <FontAwesomeIcon
-                          icon={open ? faChevronUp : faChevronDown}
-                          className="text-red-600"
-                          aria-hidden="true"
-                        />
-                      </span>
+                      <FontAwesomeIcon
+                        icon={open ? faChevronUp : faChevronDown}
+                        className="text-red-600 pl-2"
+                        aria-hidden="true"
+                      />
                     </button>
                     {open && expand(concert)}
                   </li>
