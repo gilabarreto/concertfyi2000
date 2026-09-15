@@ -58,10 +58,10 @@ export default function ConcertInfo(props) {
           />
         </div>
 
-        <ol className="pl-6">
-          <hr className="border-t border-gray-300 opacity-50" />
+        <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
-          <h2 className="artist-page-button-aligner">
+        <ol className="pl-6">
+          <li className="border-b border-gray-300/50 py-2">
             Concert date:&ensp;
             {lastConcertId && (
               <FontAwesomeIcon
@@ -86,15 +86,12 @@ export default function ConcertInfo(props) {
                 }
               />
             )}
-          </h2>
-
-          <hr className="border-t border-gray-300 opacity-50" />
-          <h2 className="tour">Tour:&ensp;{tour}</h2>
-          <hr className="border-t border-gray-300 opacity-50" />
-          <h2>Venue:&ensp;{venue}</h2>
-          <hr className="border-t border-gray-300 opacity-50" />
-          <h2>Location:&ensp;{city}, {country}</h2>
-          <hr className="border-t border-gray-300 opacity-50" />
+          </li>
+          <li className="border-b border-gray-300/50 py-2">Tour:&ensp;{tour}</li>
+          <li className="border-b border-gray-300/50 py-2">Venue:&ensp;{venue}</li>
+          <li className="border-b border-gray-300/50 py-2">
+            Location:&ensp;{city}, {country}
+          </li>
         </ol>
 
         <span className="flex text-sm justify-center mt-4 space-x-4">

@@ -34,7 +34,7 @@ export default function ConcertList({
 
   return (
     <>
-      <h2 className="text-3xl font-bold mb-4">{title}</h2>
+      <h2 className="text-3xl font-bold mb-2">{title}</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {items.length === 0 ? (
@@ -51,7 +51,7 @@ export default function ConcertList({
                 </span>
               );
               const className =
-                "flex w-full items-center justify-between py-1 hover:text-red-800";
+                "flex w-full items-center justify-between py-2 hover:text-red-800";
               const link = linkOf(concert);
 
               if (expand) {

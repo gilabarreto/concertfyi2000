@@ -10,11 +10,12 @@ export default function VendorTiles({ icon, title, vendors }) {
         <FontAwesomeIcon icon={icon} className="text-sm text-red-600" aria-hidden="true" /> {title}
       </h3>
 
-      <ul className="flex flex-wrap justify-center gap-x-2 gap-y-1 sm:gap-x-4">
+      {/* no wrapping: the tiles shrink so all three hotels stay on one row on a phone */}
+      <ul className="flex justify-center gap-x-2 sm:gap-x-4">
         {vendors.map((vendor) => (
-          <li key={vendor.name}>
+          <li key={vendor.name} className="min-w-0 flex-1 max-w-28">
             <a
-              className="flex flex-col items-center gap-1 rounded px-3 py-2 w-24 hover:text-red-800 hover:bg-gray-100 sm:w-28"
+              className="flex flex-col items-center gap-1 rounded px-1 py-2 hover:text-red-800 hover:bg-gray-100 sm:px-3"
               href={vendor.href}
               target="_blank"
               rel="noopener noreferrer"
@@ -32,7 +33,9 @@ export default function VendorTiles({ icon, title, vendors }) {
               />
               <span className="text-sm text-center">{vendor.name}</span>
               {/* every tile keeps a line here, so the row stays level */}
-              <span className="text-sm font-semibold">{vendor.price || "Check price"}</span>
+              <span className="text-sm font-semibold text-center">
+                {vendor.price || "Check price"}
+              </span>
             </a>
           </li>
         ))}
