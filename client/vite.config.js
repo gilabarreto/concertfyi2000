@@ -6,10 +6,10 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      // the server mounts its routes under /api too, so the path passes through as-is
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true,
-        rewrite: path => path.replace(/^\/api/, ''),
       },
     },
   },

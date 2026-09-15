@@ -1,6 +1,10 @@
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onrender.com";
+// dev keeps the base relative so the Vite proxy forwards /api to the local server;
+// the build has no proxy, so it needs the absolute host.
+export const API_BASE =
+  import.meta.env.VITE_API_BASE ||
+  (import.meta.env.DEV ? "" : "https://concertfyi2000.onrender.com");
 
 const API = axios.create({
   baseURL: `${API_BASE}/api`,
