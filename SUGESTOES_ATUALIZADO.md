@@ -136,20 +136,9 @@ const SearchPage = React.lazy(() => import('./pages/SearchPage'));
 
 #### ⏳ Ainda a fazer:
 
-**1. Extrair Componentes Reutilizáveis**
-```
-- ArtistCard.jsx (em SearchPage)
-  Props: {artist, image, onSelect}
-
-- SongItem.jsx (em Setlist)
-  Props: {song, concertId, onLyricsClick}
-
-- Logo.jsx (usado em Header, Navbar)
-  Props: {size, variant}
-
-- EmptyState.jsx (mensagens "sem resultados")
-  Props: {icon, title, description, action}
-```
+**1. Extrair Componentes Reutilizáveis** — **descartado**, ver tabela no fim do documento.
+`ErrorBoundary.jsx` entrou em 2026-09-15 porque tinha um problema real atrás; extrair
+`ArtistCard`, `SongItem`, `Logo` e `EmptyState` seria abstração com um uso só.
 
 **2. Hooks Customizados Adicionais**
 ```jsx
@@ -163,32 +152,11 @@ const { concerts, loading, error } = useConcertData(artistId);
 const [saved, setSaved] = useLocalStorage('saved_concerts', []);
 ```
 
-**3. Organização de Pastas**
-```
-components/
-├── common/              # Reutilizáveis (Button, Card, Modal)
-├── layout/              # Layout (Navbar, Footer, Sidebar)
-├── search/              # Busca (SearchBar, SearchPage)
-├── artist/              # Página do artista
-├── home/                # Home (Swiper, LocationSelector)
-└── modals/              # Modais (Disclaimer, etc)
-
-services/
-├── api.js               # Funções de fetch centralizadas
-├── concert.js           # Concert service
-├── artist.js            # Artist service
-└── lyrics.js            # Lyrics service
-
-utils/
-├── format.js            # Formatação (datas, preços)
-├── validation.js        # Validação de input
-└── helpers.js           # Funções helper
-
-constants/
-├── urls.js              # URLs de APIs, domínios
-├── messages.js          # Mensagens de erro/sucesso
-└── config.js            # Configurações
-```
+**3. Organização de Pastas** — **descartado**, ver tabela no fim do documento.
+A estrutura atual (`components/`, `components/ArtistPage/`, `pages/`, `hooks/`, `helpers/`, `api/`)
+acha tudo em 3.3k linhas. A proposta antiga criava `common/`, `layout/`, `services/`, `utils/` e
+`constants/` — vinte e poucos arquivos movidos, todo `import` do repositório reescrito, zero
+mudança de comportamento.
 
 ---
 
@@ -270,31 +238,30 @@ constants/
 ## 📋 Checklist de Qualidade
 
 ### Testing
-- [ ] Testes unitários com **Vitest** (componentes, utils)
-- [ ] Testes de integração com **Cypress** ou **Playwright** (user flows)
-- [ ] Coverage mínimo de 80%
+- [x] Testes de unidade em `node:test`, sem framework — 17 passando
+- [ ] Testes de componente: só quando houver um bug de render que os de unidade não pegariam
+- Coverage como meta percentual: **descartado**, ver tabela no fim do documento
 
 ### Type Safety
-- [ ] Migrar para **TypeScript** (gradualmente)
-- Começar com `components/` → `pages/` → `hooks/`
+- TypeScript: **descartado**, ver tabela no fim do documento
 
 ### Documentation
-- [ ] **Storybook** para componentes
-- [ ] JSDoc para funções
+- [x] CLAUDE.md com contexto do projeto (no repo desde 2026-09-15)
+- [x] CONSTRAINTS.md com a régua de qualidade (2026-09-15)
 - [ ] README com setup e deploy
-- [x] CLAUDE.md com contexto do projeto (arquivo no repo desde 2026-09-15)
+- Storybook: **descartado**, ver tabela no fim do documento
 
 ### DevOps
-- [ ] **CI/CD** no GitHub Actions (lint, test, build, deploy)
-- [ ] **Sentry** para error tracking
-- [ ] **GitHub Pages** deploy automático
-- [ ] **Render** deploy automático
+- [x] **CI/CD** no GitHub Actions — lint e teste antes do build (2026-09-15)
+- [x] **GitHub Pages** deploy automático
+- [x] **Render** deploy automático
+- [ ] **Sentry** para error tracking — depois do Error Boundary, que já entrou
 
 ### Monitoring
-- [ ] **Google Analytics** para eventos de usuário
 - [ ] **Sentry** para erros de produção
-- [ ] **LogRocket** para debugging de sessões
+- [ ] **Google Analytics** para eventos de usuário
 - [ ] **Lighthouse** CI para performance
+- LogRocket: **descartado**, ver tabela no fim do documento
 
 ---
 
@@ -330,15 +297,14 @@ constants/
 3. Core Web Vitals otimizados
 
 ### Mês 2: Qualidade & Confiabilidade
-1. Error handling robusto
-2. Testes E2E com Cypress
-3. Analytics (Google Analytics + Sentry)
+1. ~~Error handling robusto~~ — feito em 2026-09-15 (Error Boundary + CI + CONSTRAINTS.md)
+2. Sentry para ver os erros que o Error Boundary engole hoje no console
+3. Testes E2E: só depois do Sentry mostrar onde quebra de verdade
 
 ### Mês 3: Diferencial & Growth
 1. Validar diferencial competitivo
 2. Favoritar/Salvar shows
 3. Social sharing
-4. Começar TypeScript migration
 
 ---
 
@@ -371,6 +337,13 @@ A régua ficou no `CONSTRAINTS.md` (`8777a9a`), com `npm run check` e `npm run c
 O que a skill levantou e não foi resolvido no mesmo dia está abaixo.
 
 ### 🔴 Pendente com o Victor (fora do repositório)
+
+> Esta é a lista canônica do que só você pode fazer. Tudo que eu esbarrar e não puder resolver
+> sozinho entra aqui, não no chat.
+
+- [ ] **`gh auth login`.** O GitHub CLI foi instalado em 2026-09-15 (`~/.local/bin/gh`, v2.101.0),
+      mas o login é interativo. Rode `! gh auth login` numa sessão. Sem isso eu não consigo
+      conferir se um run do Actions passou — foi exatamente o que faltou no dia do commit do CI.
 
 - [ ] **Restringir a `VITE_GOOGLE_MAPS_KEY` por referrer** no console do Google Cloud.
       A chave está no bundle — isso é normal e inevitável para chave de browser. O que não é
@@ -413,16 +386,17 @@ de escala que o projeto não tem, e custa semanas que não mudam nada para o usu
 | Cobertura mínima de 80% | Com 2 arquivos de teste, a meta se cumpre escrevendo teste fácil onde não importa. A regra útil está no `CONSTRAINTS.md`: não deletar teste para passar. |
 | LogRocket, Service Worker, offline mode | Resolvem problemas que ninguém reportou. |
 
-Se você discordar de qualquer linha desta tabela, ela volta para a fila — o veto é seu.
+**Aprovada pelo Victor em 2026-09-15.** As recomendações contrárias que existiam no corpo deste
+documento foram removidas na mesma data, para o arquivo parar de dizer duas coisas. Reverter
+qualquer linha continua sendo decisão dele — a tabela é o registro, não uma lápide.
 
 ---
 
 ## 📞 Próximas Conversas
 
-1. **Quando**: Qual é a proposta de valor do ConcertFYI que o diferencia de Bandsintown?
-2. **SEO**: Vamos migrar para Next.js ou fazer pre-render estático?
-3. **Design System**: Criar Storybook com componentes reutilizáveis?
-4. **Testing**: Começar com testes unitários ou E2E?
-5. **Descartes**: você concorda com a tabela "Descartado" acima? TypeScript, Storybook e
-   reorganização de pastas estão recomendados neste documento e eu os vetei — vale fechar a
-   divergência em vez de deixá-la nas duas seções.
+1. **Diferencial**: qual é a proposta de valor do ConcertFYI que o separa do Bandsintown? É a
+   pergunta que decide as outras — sem ela, SEO e features novas são chute caro.
+2. **SEO**: Next.js ou pre-render estático? Semanas de trabalho, e só vale se tráfego orgânico for
+   a meta real. Depende da resposta 1.
+3. **Sentry**: o Error Boundary hoje manda o erro para o `console` do usuário, onde ninguém lê.
+   Sentry é o próximo passo natural — ~20 linhas e uma conta grátis.

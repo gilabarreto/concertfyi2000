@@ -118,6 +118,11 @@ Where the two collide on a concrete decision, say so and let the owner pick inst
 following one. A spec or a test that ponytail would skip is not waste here; an interface with one
 implementation still is.
 
+**Commit messages are in English.** The owner-facing docs (`SUGESTOES_ATUALIZADO.md`,
+`DOSSIE_TECNICO_ATUALIZADO.md`, `CONSTRAINTS.md`) stay in Portuguese, and so does the conversation.
+Commits from 2026-09-15 are in Portuguese; leave them, rewriting history over a language isn't worth
+the risk.
+
 **Close out every skill run.** A skill ends by resolving what it found. Anything left over goes into
 `SUGESTOES_ATUALIZADO.md` with its reason — resolved (with the commit hash), waiting on the owner,
 or dropped. A finding that became neither a commit nor a line in that file was lost. Dropping an
