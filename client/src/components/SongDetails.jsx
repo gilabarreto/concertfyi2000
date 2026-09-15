@@ -80,7 +80,7 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
-        <h3 className="text-base font-semibold text-gray-700 mb-2">
+        <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
           <FontAwesomeIcon
             icon={faFileLines}
             className="text-sm text-red-600 hover:text-red-800"
