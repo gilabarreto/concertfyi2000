@@ -48,7 +48,6 @@ export default function SearchPage() {
             >
               <Link
                 to={`/artists/${artistId}/concerts/${concertId}`}
-                state={{ artistImage: rawImages }}
                 className="group block relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer"
                 style={bestImageUrl ? { background: `url(${bestImageUrl}) center/cover` } : {}}
               >

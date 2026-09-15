@@ -1,16 +1,7 @@
-import SpotifyPlayer from "react-spotify-player";
-
-export default function Player(props) {
-  const spotify = props.ticketmaster.attractions
-    ? props.ticketmaster.attractions[0]?.externalLinks?.spotify?.[0]?.url || null
-    : null;
-
-  const size = {
-    width: "100%",
-    height: "100%",
-  };
-  const view = "list";
-  const theme = "black";
+// Spotify's own embed is an iframe; the wrapper packages that used to be here added a
+// dependency for the same markup. The artist link only needs "/embed" spliced into it.
+export default function Player({ ticketmaster }) {
+  const spotify = ticketmaster.attractions?.[0]?.externalLinks?.spotify?.[0]?.url;
 
   if (!spotify) {
     return (
@@ -21,8 +12,11 @@ export default function Player(props) {
   }
 
   return (
-    <div className="spotify-player-container w-full h-full">
-      <SpotifyPlayer uri={spotify} size={size} view={view} theme={theme} />
-    </div>
+    <iframe
+      className="w-full h-[500px] lg:h-full rounded-2xl"
+      src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
+      title="Artist on Spotify"
+      allow="encrypted-media; clipboard-write"
+    />
   );
 }

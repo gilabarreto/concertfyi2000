@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { Spotify } from "react-spotify-embed";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
@@ -59,12 +58,13 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
       {/* Spotify Embed or Connect Button */}
       {trackUri && hasToken ? (
-        <div className="overflow-hidden rounded">
-          <Spotify
-            link={`https://open.spotify.com/track/${trackUri.split(':')[2]}`}
-            wide={true}
-          />
-        </div>
+        <iframe
+          className="w-full rounded"
+          height="80"
+          src={`https://open.spotify.com/embed/track/${trackUri.split(":")[2]}`}
+          title={`${songName} on Spotify`}
+          allow="encrypted-media; clipboard-write"
+        />
       ) : !hasToken ? (
         <button
           onClick={handleConnectSpotify}

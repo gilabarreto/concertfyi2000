@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ConcertInfo from "../components/ArtistPage/ConcertInfo";
@@ -12,7 +12,6 @@ import { SEOHead } from "../components/SEOHead";
 
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
-  const [spotifyArtist, setSpotifyArtist] = useState([]);
   const { concertId, artistId } = useParams();
 
   const concert = setlist.find((result) => result.id === concertId);
@@ -66,16 +65,11 @@ export default function ArtistPage() {
       <div className="w-full mx-auto p-4 space-y-4">
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
-          <ConcertInfo
-            concert={concert}
-            setlist={setlist}
-            ticketmaster={ticketmaster}
-            artistImage={artistImage}
-          />
+          <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
         </div>
 
         <div className="bg-gray-100 rounded-xl shadow flex-1 h-64 lg:h-auto">
-          {ticketmaster && <Map concert={concert} />}
+          <Map concert={concert} />
         </div>
       </div>
 
@@ -85,12 +79,7 @@ export default function ArtistPage() {
         </div>
 
         <div className="bg-black text-white rounded-3xl p-2 shadow flex items-center justify-center">
-          <Player
-            concert={concert}
-            ticketmaster={ticketmaster}
-            spotifyArtist={spotifyArtist}
-            setSpotifyArtist={setSpotifyArtist}
-          />
+          <Player ticketmaster={ticketmaster} />
         </div>
 
         <div>

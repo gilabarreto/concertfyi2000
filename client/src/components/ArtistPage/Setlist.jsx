@@ -29,11 +29,9 @@ export default function Setlist(props) {
   useEffect(() => {
     const handleMessage = async (event) => {
       if (event.data.type === "SPOTIFY_AUTH_SUCCESS") {
-        console.log("Auth successful, checking for playlist data...");
         // Only create playlist if we have stored playlist data
         const storedData = localStorage.getItem("spotifyPlaylistData");
         if (storedData) {
-          console.log("Creating playlist...");
           const playlistData = JSON.parse(storedData);
           setCreatingPlaylist(true);
           try {
@@ -43,7 +41,6 @@ export default function Setlist(props) {
               playlistData.tourName,
               playlistData.concertDate
             );
-            console.log("Playlist created, opening...");
             window.open(playlist.external_urls.spotify, "_blank");
           } catch (err) {
             console.error("Failed to create playlist:", err);
@@ -59,25 +56,6 @@ export default function Setlist(props) {
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
   }, []);
-
-  const createPlaylist = async () => {
-    setCreatingPlaylist(true);
-    try {
-      const playlist = await createSpotifyPlaylist(
-        songs,
-        artistName,
-        tourName,
-        concertDate
-      );
-      console.log("Playlist created, opening...");
-      window.open(playlist.external_urls.spotify, "_blank");
-    } catch (err) {
-      console.error("Failed to create playlist:", err);
-      alert("Failed to create playlist. Please try again.");
-    } finally {
-      setCreatingPlaylist(false);
-    }
-  };
 
   const handleSpotifyPlaylist = async () => {
     if (creatingPlaylist) return;
@@ -175,24 +153,13 @@ export default function Setlist(props) {
             })}
           </ol>
 
-          {songs.length > 5 && !showAllSongs && (
+          {songs.length > 5 && (
             <div className="flex justify-center mt-4">
               <button
-                onClick={() => setShowAllSongs(true)}
+                onClick={() => setShowAllSongs(!showAllSongs)}
                 className="px-4 py-2 text-md font-semibold text-red-600 hover:text-red-800"
               >
-                Show all {songs.length} songs
-              </button>
-            </div>
-          )}
-
-          {showAllSongs && songs.length > 5 && (
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setShowAllSongs(false)}
-                className="px-4 py-2 text-md font-semibold text-gray-600 hover:text-gray-800"
-              >
-                Show less
+                {showAllSongs ? "Show less" : `Show all ${songs.length} songs`}
               </button>
             </div>
           )}

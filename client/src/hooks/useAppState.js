@@ -1,19 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export function useAppState() {
   const [searchValue, setSearchValue] = useState('');
   const [setlist, setSetlist] = useState([]);
   const [ticketmaster, setTicketmaster] = useState({});
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [isLocationLoading, setIsLocationLoading] = useState(true);
-
-  useEffect(() => {
-    const saved = localStorage.getItem("selectedLocation");
-    if (saved) {
-      setSelectedLocation(JSON.parse(saved));
-    }
-    setIsLocationLoading(false);
-  }, []);
+  // read once, on the first render, instead of an effect that re-renders with the value
+  const [selectedLocation, setSelectedLocation] = useState(() =>
+    JSON.parse(localStorage.getItem("selectedLocation") || "null")
+  );
 
   const updateLocation = (location) => {
     setSelectedLocation(location);
@@ -29,6 +23,5 @@ export function useAppState() {
     setTicketmaster,
     selectedLocation,
     updateLocation,
-    isLocationLoading,
   };
 }

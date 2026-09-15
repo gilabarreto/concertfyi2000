@@ -21,41 +21,18 @@
   }
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  padding: 0;
-}
-
- ::-webkit-scrollbar {
+/* the scrollbar is hidden but the gutter stays, so pages don't shift when it appears */
+::-webkit-scrollbar {
   width: 0px;
   background: transparent;
 }
 
 html {
   scrollbar-width: none;
-}
-
-html {
   overflow-y: scroll;
 }
 
 body {
   @apply text-zinc-800;
   font-family: "DM Sans", sans-serif;
-}
-
-.spotify-player-container {
-  width: 100%;
-  height: 100%;
-}
-
-@media (max-width: 1023px) {
-  .spotify-player-container {
-    height: 500px;
-  }
 }

@@ -1,18 +1,22 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { getBestImage, getLastConcertsByArtist } from "../../helpers/selectors";
 
+const SOCIALS = [
+  { key: "youtube", icon: faYoutube, label: "YouTube" },
+  { key: "instagram", icon: faInstagram, label: "Instagram" },
+  { key: "twitter", icon: faTwitter, label: "Twitter" },
+];
+
 export default function ConcertInfo(props) {
-  const { concert, setlist, ticketmaster, artistImage } = props;
+  const { concert, setlist, ticketmaster } = props;
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
 
-  const imagesArray = Array.isArray(artistImage)
-    ? artistImage
-    : ticketmaster.attractions?.[0]?.images || [];
-
-  const bestImageUrl = getBestImage(imagesArray);
+  const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
+  const links = ticketmaster.attractions?.[0]?.externalLinks || {};
 
   const lastConcerts = getLastConcertsByArtist(setlist, artistId);
 
@@ -52,7 +56,7 @@ export default function ConcertInfo(props) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">{artist}</h2>
           <FontAwesomeIcon
-            icon="fa-solid fa-heart"
+            icon={faHeart}
             className="text-2xl cursor-pointer text-gray-500"
             size="2x"
           />
@@ -67,11 +71,7 @@ export default function ConcertInfo(props) {
               <FontAwesomeIcon
                 icon={faBackward}
                 className="text-xs text-red-600 cursor-pointer mr-2"
-                onClick={() =>
-                  navigate(`/artists/${artistId}/concerts/${lastConcertId}`, {
-                    state: { artistImage },
-                  })
-                }
+                onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
               />
             )}
             {concertDate()}&ensp;
@@ -79,11 +79,7 @@ export default function ConcertInfo(props) {
               <FontAwesomeIcon
                 icon={faForward}
                 className="text-xs text-red-600 cursor-pointer"
-                onClick={() =>
-                  navigate(`/artists/${artistId}/concerts/${nextConcertId}`, {
-                    state: { artistImage },
-                  })
-                }
+                onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
               />
             )}
           </li>
@@ -95,35 +91,18 @@ export default function ConcertInfo(props) {
         </ol>
 
         <span className="flex text-sm justify-center mt-4 space-x-4">
-          {ticketmaster.attractions?.[0]?.externalLinks?.youtube && (
-            <a
-              href={ticketmaster.attractions[0].externalLinks.youtube[0].url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="YouTube"
-            >
-              <FontAwesomeIcon icon="fa-brands fa-youtube" className="text-gray-500" size="2x" />
-            </a>
-          )}
-          {ticketmaster.attractions?.[0]?.externalLinks?.instagram && (
-            <a
-              href={ticketmaster.attractions[0].externalLinks.instagram[0].url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-            >
-              <FontAwesomeIcon icon="fa-brands fa-instagram" className="text-gray-500" size="2x" />
-            </a>
-          )}
-          {ticketmaster.attractions?.[0]?.externalLinks?.twitter && (
-            <a
-              href={ticketmaster.attractions[0].externalLinks.twitter[0].url}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Twitter"
-            >
-              <FontAwesomeIcon icon="fa-brands fa-twitter" className="text-gray-500" size="2x" />
-            </a>
+          {SOCIALS.map(({ key, icon, label }) =>
+            links[key] ? (
+              <a
+                key={key}
+                href={links[key][0].url}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+              >
+                <FontAwesomeIcon icon={icon} className="text-gray-500" size="2x" />
+              </a>
+            ) : null
           )}
         </span>
       </div>

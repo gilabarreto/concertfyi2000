@@ -5,12 +5,6 @@ const { request } = require("../http");
 router.post("/token", async (req, res) => {
   const { code, redirectUri } = req.body;
 
-  console.log("Spotify token exchange:", {
-    code: code?.slice(0, 10) + "...",
-    redirectUri,
-    clientId: process.env.SPOTIFY_CLIENT_ID?.slice(0, 5) + "...",
-  });
-
   try {
     const data = await request("https://accounts.spotify.com/api/token", {
       method: "POST",
@@ -24,19 +18,13 @@ router.post("/token", async (req, res) => {
       }),
     });
 
-    console.log("Spotify token received successfully");
     res.json({
       access_token: data.access_token,
       refresh_token: data.refresh_token,
       expires_in: data.expires_in,
     });
   } catch (error) {
-    console.error("Spotify token error details:", {
-      message: error.message,
-      status: error.status,
-      data: JSON.stringify(error.data),
-      requestData: { code: code?.slice(0, 10), redirectUri },
-    });
+    console.error("Spotify token error:", error.message);
     res.status(error.status || 500).json({
       error: error.data || "Failed to get Spotify token",
       details: error.message,

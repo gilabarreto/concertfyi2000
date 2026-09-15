@@ -126,9 +126,7 @@ export default function Swiper() {
       setSetlist(setlist);
       setTicketmaster(ticketmaster);
 
-      navigate(`/artists/${correctArtistId}/concerts/${targetId}`, {
-        state: { artistImage: slide.image },
-      });
+      navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
     } catch (err) {
       console.error("Error handling slide click:", err);
       alert(`Error loading data for ${slide.artistName}. Please try again.`);
@@ -157,7 +155,7 @@ export default function Swiper() {
   const renderSlide = (slide, index) => {
     const offset = index - active;
     const depth = Math.abs(offset);
-    const image = getBestImage(slide.images) || slide.image;
+    const image = getBestImage(slide.images);
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
 
     return (

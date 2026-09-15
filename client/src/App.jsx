@@ -10,11 +10,9 @@ import ArtistPage from "./pages/ArtistPage";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import SpotifyCallback from "./pages/SpotifyCallback";
-import './icons';
 
 function App() {
   const appState = useAppState();
-  const { searchValue } = appState;
 
   // Handle GitHub Pages 404.html redirect for Spotify OAuth callback
   const urlParams = new URLSearchParams(window.location.search);
