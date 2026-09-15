@@ -1,5 +1,6 @@
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
 import ConcertList from "./ConcertList";
+import TicketOptions from "./TicketOptions";
 
 export default function NextConcerts(props) {
   const events = (props.ticketmaster.events || [])
@@ -23,7 +24,10 @@ export default function NextConcerts(props) {
       }}
       linkOf={(concert) => concert.url}
       icon={faTicketSimple}
-      iconTitle="Buy tickets"
+      iconTitle="Where to buy"
+      expand={(concert) => (
+        <TicketOptions event={concert} artistName={props.concert.artist.name} />
+      )}
     />
   );
 }
