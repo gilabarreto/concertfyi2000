@@ -4,5 +4,17 @@
       "Bash(pkill -f \"npm run dev\")",
       "Bash(curl -s http://localhost:3002)"
     ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '{\"hookSpecificOutput\":{\"hookEventName\":\"SessionStart\",\"additionalContext\":\"Antes de comecar: pergunte ao usuario se ele quer seguir com os itens em aberto de SUGESTOES_ATUALIZADO.md. Leia o arquivo e ofereca os proximos itens nao marcados ([ ]), por prioridade. Se ele pedir outra coisa, siga o pedido dele.\"}}'"
+          }
+        ]
+      }
+    ]
   }
 }
