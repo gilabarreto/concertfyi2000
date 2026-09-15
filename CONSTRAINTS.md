@@ -25,8 +25,8 @@ Falhou, o trabalho não sai daqui.
 | O quê | Hoje | Regra | Por quê este número |
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
-| Testes | 12 passam, 0 falham | **0 falhas** | São poucos e cobrem só `server/http.js` e `helpers/calendar.js`. Justamente por serem poucos, nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 12 testes, apagar um é apagar 8% da cobertura que existe. |
+| Testes | 17 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `helpers/calendar.js` e `helpers/selectors.js` — este último é a costura entre as duas APIs. São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 17 testes, apagar um é apagar 6% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 
 Comandos exatos:

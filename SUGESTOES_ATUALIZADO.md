@@ -309,7 +309,7 @@ constants/
 | Spotify player | ✅ Implementado | Embed do player |
 | YouTube | ✅ Implementado | Videos ao vivo |
 | SEO/Meta tags | ⚠️ Parcial | Helmet implementado, mas SPA não é indexável |
-| Error handling | ⚠️ Básico | Funciona, poderia ser robusto |
+| Error handling | ✅ Bom | Error Boundary nas rotas; falta logging externo (Sentry) |
 | Mobile UX | ✅ Bom | Melhorias recentes em touch events |
 | Dark mode | ❌ Não implementado | Tailwind suporta, falta UI toggle |
 | Favoritar shows | ❌ Não implementado | localStorage ready |
@@ -384,18 +384,19 @@ O que a skill levantou e não foi resolvido no mesmo dia está abaixo.
 > chaves embutidas. O proxy Express corrigiu isso, mas os bundles antigos continuam no histórico
 > da `gh-pages` e são públicos. Apagar a branch não resolve — só rotacionar resolve.
 
-### 🟠 Próximo na fila
+### 🟠 Fila — tudo o que estava aqui foi feito em 2026-09-15
 
 - [x] **Rodar o piso no CI** — feito em 2026-09-15. O `deploy.yml` roda lint e teste antes do
       build; falhou, o deploy não acontece. Ficou de fora a varredura de segredo, que continua
       dependendo do `npm run check` local (motivo na tabela de exceções do `CONSTRAINTS.md`).
-- [ ] **Error Boundary.** Qualquer exceção de render hoje apaga o site para o usuário. ~20 linhas.
-      É o item "Error Handling Robusto" mais acima, reduzido ao que importa primeiro.
-- [ ] **Code splitting por rota.** O bundle é um chunk único de 516,53 kB (154,77 kB gzip). É o
-      item de Performance mais acima, agora com número medido. Quando entrar, o teto de 550 kB no
-      `CONSTRAINTS.md` precisa ser reescrito.
-- [ ] **2 ou 3 testes no client**, no `selectors.js` e no join Setlist.fm × Ticketmaster por nome
-      de artista — a costura frágil do app, descrita no `CLAUDE.md`. Sem perseguir cobertura.
+- [x] **Error Boundary** — feito (`5965839`). Envolve só as `Routes`, então Navbar e Footer
+      sobrevivem ao erro e dá para navegar para fora da página quebrada.
+- [x] **Code splitting por rota** — feito (`a6e787e`). Entrada de 517,34 kB para 356,10 kB (−31%),
+      gzip de 154,99 kB para 116,45 kB (−25%). `ArtistPage` virou um chunk de 155 kB que só desce
+      quando alguém abre um show. Teto do `CONSTRAINTS.md` desceu junto, para 380 kB.
+- [x] **Testes na costura entre as duas APIs** — feito (`9ff818b`). 12 para 17 testes.
+      `getNextConcertsByArtist` saiu do `NextConcerts.jsx` para o `selectors.js` para poder ser
+      testada, ao lado da irmã que cuida do passado.
 
 ### ⚪ Descartado — opinião do Claude, sujeita a veto
 
