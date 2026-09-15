@@ -18,7 +18,9 @@ export default function Setlist(props) {
   const disclaimerRef = useRef(null);
 
   const concert = props.concert;
-  const songs = concert.sets?.set[0]?.song || [];
+  // every set in order, encore included: set[0] alone dropped the songs after the break,
+  // so the numbering has to run across all of them to be the order played
+  const songs = concert.sets?.set?.flatMap((set) => set.song || []) || [];
   const artistName = concert.artist.name;
   const tourName = concert.tour?.name || "";
   const concertDate = concert.eventDate || "";
@@ -133,12 +135,15 @@ export default function Setlist(props) {
         </span>
       ) : (
         <>
-          <ol className="list-decimal list-inside pl-6">
+          <ol className="pl-6">
             {displaySongs.map((song, songIndex) => {
               return (
                 <li key={songIndex} className="flex flex-col">
                   <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
-                    <span className="flex items-center space-x-2 flex-1">
+                    {/* the li is a flex container, which swallows the list marker, so the
+                        position gets its own cell */}
+                    <span className="flex flex-1 items-center gap-2">
+                      <span className="tabular-nums text-gray-500">{songIndex + 1}.</span>
                       <span>{song.name}</span>
                     </span>
 
