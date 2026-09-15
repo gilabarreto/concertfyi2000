@@ -10,9 +10,10 @@ const money = (amount, currency) =>
     maximumFractionDigits: 0,
   }).format(amount);
 
-// Ticketmaster is the only one with a real event URL, and the only one that could
-// carry a price. The resale searches differ: SeatGeek narrows to the single show
-// when the city is in the query, StubHub and Vivid Seats come back empty with it.
+// Only sellers that land on the show itself. Ticketmaster gives us the event URL,
+// and SeatGeek's search redirects to the single match when the city is in the query.
+// StubHub and Vivid Seats need their own event id to deep link, so they dropped out
+// rather than promise a show and open a search page.
 const sellers = [
   {
     name: "Ticketmaster",
@@ -28,16 +29,6 @@ const sellers = [
     domain: "seatgeek.com",
     url: (event, artist, city) => `https://seatgeek.com/search?search=${term(artist, city)}`,
   },
-  {
-    name: "StubHub",
-    domain: "stubhub.com",
-    url: (event, artist) => `https://www.stubhub.com/secure/search?q=${term(artist)}`,
-  },
-  {
-    name: "Vivid Seats",
-    domain: "vividseats.com",
-    url: (event, artist) => `https://www.vividseats.com/search?searchTerm=${term(artist)}`,
-  },
 ];
 
 export default function TicketOptions({ event, artistName }) {
@@ -50,7 +41,7 @@ export default function TicketOptions({ event, artistName }) {
         Where to buy
       </h3>
 
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-2">
         {sellers.map((seller) => {
           const price = seller.price?.(event);
 
