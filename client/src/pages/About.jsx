@@ -20,9 +20,9 @@ export default function About() {
                     {"}"}
             </div>
 
-            <div className="[&>span]:block w-[350px] sm:w-[450px] text-justify text-zinc-100 font-medium tracking-tight bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-6 flex justify-center items-center">
+            <div className="[&>span]:block w-[350px] sm:w-[450px] text-justify text-white font-medium tracking-tight bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-6 flex justify-center items-center">
                 <span>
-                    <span className="text-base sm:text-lg text-zinc-800 font-semibold">
+                    <span className="text-base sm:text-lg font-semibold">
                         Concertfyi
                     </span>{" "}
                     is your backstage pass to your favorite artist’s world. From past

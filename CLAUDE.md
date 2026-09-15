@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Two independent npm projects, no workspace root. Always `cd client` or `cd server` first.
 
 ```bash
-# client (Vite dev server on :3000, proxies /api to localhost:4000)
+# client (Vite dev server on :3000, proxies /api to localhost:4000 — run the server too)
 cd client && npm run dev
 cd client && npm run build       # vite build + copies dist/index.html to 404.html for GH Pages SPA routing
 
@@ -94,3 +94,18 @@ Auth code flow across a popup: `Setlist.jsx` stashes the songs in localStorage, 
 `getSpotifyAuthUrl()`, the popup lands on `/callback` (`SpotifyCallback.jsx`), exchanges the code
 through the server, and `postMessage`s `SPOTIFY_AUTH_SUCCESS` back to the opener, which then creates
 the playlist. State crosses the window boundary through localStorage, not props.
+
+## Which process governs what
+
+Two sets of instructions are active at once and pull in opposite directions: ponytail (stop at the
+first rung that works, no unrequested abstractions) and the agent-skills workflows (spec first, TDD,
+a written quality bar). The split, agreed with the owner:
+
+- **Planning, review, testing, constraints** — the agent-skills workflows lead. This is where the
+  project is genuinely uncovered: no lint, no CI, and the client has no tests at all.
+- **Implementation** — ponytail leads. This is a ~3.5k-line app with two API calls and no database;
+  scaffolding for a scale it will not reach is the failure mode it exists to prevent.
+
+Where the two collide on a concrete decision, say so and let the owner pick instead of silently
+following one. A spec or a test that ponytail would skip is not waste here; an interface with one
+implementation still is.

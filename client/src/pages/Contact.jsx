@@ -65,7 +65,7 @@ export default function Contact() {
         <form onSubmit={handleSubmit} className="flex flex-col text-sm gap-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1">
-                                <label htmlFor="name" className="block text-zinc-100 font-medium mb-1">Name</label>
+                                <label htmlFor="name" className="block text-white font-medium mb-1">Name</label>
               <input
                 type="text"
                 id="name"
@@ -78,7 +78,7 @@ export default function Contact() {
             </div>
 
             <div className="flex-1">
-                                <label htmlFor="email" className="block text-zinc-100 font-medium mb-1">Email</label>
+                                <label htmlFor="email" className="block text-white font-medium mb-1">Email</label>
               <input
                 type="email"
                 id="email"
@@ -92,7 +92,7 @@ export default function Contact() {
           </div>
 
           <div>
-                            <label htmlFor="message" className="block text-zinc-100 font-medium mb-1">Message</label>
+                            <label htmlFor="message" className="block text-white font-medium mb-1">Message</label>
             <textarea
               id="message"
               name="message"
