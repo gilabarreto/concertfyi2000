@@ -18,9 +18,17 @@ const addDays = (localDate, days) => {
 
 const SHOW_HOURS = 3;
 
+const alarm = (trigger, description) => [
+  "BEGIN:VALARM",
+  `TRIGGER:${trigger}`,
+  "ACTION:DISPLAY",
+  `DESCRIPTION:${escape(description)}`,
+  "END:VALARM",
+];
+
 // event is a Ticketmaster event; returns an .ics string, or null when the date is
 // missing and a calendar entry would land on the wrong day.
-export function concertIcs(event, artistName, { alarmDays = 1, now = new Date() } = {}) {
+export function concertIcs(event, artistName, { now = new Date() } = {}) {
   const start = event?.dates?.start;
   const localDate = start?.localDate;
   if (!localDate) return null;
@@ -47,6 +55,11 @@ export function concertIcs(event, artistName, { alarmDays = 1, now = new Date() 
 
   const summary = place ? `${artistName} at ${venue.name}` : artistName;
 
+  // The second alarm has to land on the show day itself. A timed show starts in the
+  // evening, so twelve hours earlier is that morning; an all-day entry starts at
+  // midnight, so the trigger runs forward to 9am instead.
+  const sameDay = start.dateTime ? "-PT12H" : "PT9H";
+
   return [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -60,11 +73,8 @@ export function concertIcs(event, artistName, { alarmDays = 1, now = new Date() 
     `SUMMARY:${escape(summary)}`,
     place && `LOCATION:${escape(place)}`,
     event.url && `URL:${escape(event.url)}`,
-    "BEGIN:VALARM",
-    `TRIGGER:-P${alarmDays}D`,
-    "ACTION:DISPLAY",
-    `DESCRIPTION:${escape(`${artistName} plays tomorrow`)}`,
-    "END:VALARM",
+    ...alarm("-P1D", `${artistName} plays tomorrow`),
+    ...alarm(sameDay, `${artistName} plays tonight`),
     "END:VEVENT",
     "END:VCALENDAR",
   ]

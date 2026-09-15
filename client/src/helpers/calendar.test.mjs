@@ -31,8 +31,18 @@ test("a timed show becomes a UTC entry that ends the same night", () => {
   assert.match(ics, /^DTEND:20261003T050000Z$/m);
   assert.match(ics, /^UID:G5vYZbMN2qDpw@concertfyi\.com$/m);
   assert.match(ics, /^SUMMARY:Nekrogoblikon at Ace of Spades$/m);
-  assert.match(ics, /^TRIGGER:-P1D$/m);
   assert.ok(ics.endsWith("END:VCALENDAR"));
+});
+
+test("a timed show alarms the day before and that same morning", () => {
+  const ics = concertIcs(
+    event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
+    "Nekrogoblikon",
+    { now }
+  );
+
+  // a 2am UTC start is an evening show; twelve hours earlier is the day of it
+  assert.deepEqual(ics.match(/^TRIGGER:.+$/gm), ["TRIGGER:-P1D", "TRIGGER:-PT12H"]);
 });
 
 test("a show with no time is all day and ends the next day", () => {
@@ -40,6 +50,8 @@ test("a show with no time is all day and ends the next day", () => {
 
   assert.match(ics, /^DTSTART;VALUE=DATE:20261002$/m);
   assert.match(ics, /^DTEND;VALUE=DATE:20261003$/m);
+  // an all-day entry starts at midnight, so the day-of alarm runs forward, not back
+  assert.deepEqual(ics.match(/^TRIGGER:.+$/gm), ["TRIGGER:-P1D", "TRIGGER:PT9H"]);
 });
 
 test("commas and semicolons in a venue name stay escaped", () => {
