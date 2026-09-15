@@ -23,12 +23,13 @@ export default function TicketOptions({ event, artistName }) {
       name: "Ticketmaster",
       domain: "ticketmaster.com",
       href: event.url,
-      price: range ? `from ${money(range.min, range.currency)}` : null,
+      subtitle: range ? `from ${money(range.min, range.currency)}` : "Check price",
     },
     {
       name: "SeatGeek",
       domain: "seatgeek.com",
       href: `https://seatgeek.com/search?search=${term(artistName, city)}`,
+      subtitle: "Check price",
     },
   ];
 

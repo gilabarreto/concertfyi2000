@@ -4,6 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // heading, then one logo tile per vendor. Logos come from Google's favicon service,
 // which hands back 32, 48 or 64px marks, so object-contain keeps them square.
 export default function VendorTiles({ icon, title, vendors }) {
+  // one vendor with a second line means every tile reserves one, so the row stays level
+  const hasSubtitle = vendors.some((vendor) => vendor.subtitle);
+
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 sm:p-4">
       <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
@@ -17,7 +20,8 @@ export default function VendorTiles({ icon, title, vendors }) {
             <a
               className="flex flex-col items-center gap-1 rounded px-1 py-2 hover:text-red-800 hover:bg-gray-100 sm:px-3"
               href={vendor.href}
-              target="_blank"
+              download={vendor.download}
+              target={vendor.download ? undefined : "_blank"}
               rel="noopener noreferrer"
             >
               <img
@@ -32,10 +36,11 @@ export default function VendorTiles({ icon, title, vendors }) {
                 }}
               />
               <span className="text-sm text-center">{vendor.name}</span>
-              {/* every tile keeps a line here, so the row stays level */}
-              <span className="text-sm font-semibold text-center">
-                {vendor.price || "Check price"}
-              </span>
+              {hasSubtitle && (
+                <span className="text-sm font-semibold text-center">
+                  {vendor.subtitle || " "}
+                </span>
+              )}
             </a>
           </li>
         ))}

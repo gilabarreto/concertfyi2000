@@ -1,22 +1,34 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarPlus } from "@fortawesome/free-solid-svg-icons";
-import { googleCalendarUrl } from "../../helpers/calendar";
+import VendorTiles from "./VendorTiles";
+import { googleCalendarUrl, outlookCalendarUrl, concertIcsUrl } from "../../helpers/calendar";
 
+// Apple publishes no template URL, so its tile hands over the .ics file — the same
+// file any other calendar app imports, which is why it names it on the second line.
 export default function ConcertReminder({ event, artistName }) {
-  const href = googleCalendarUrl(event, artistName);
-  if (!href) return null;
+  const google = googleCalendarUrl(event, artistName);
 
-  return (
-    <div className="bg-gray-50 border-b border-gray-300/50 p-2 sm:p-4 flex justify-center">
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center gap-2 transition-colors"
-      >
-        <FontAwesomeIcon icon={faCalendarPlus} aria-hidden="true" />
-        Add to Google Calendar
-      </a>
-    </div>
-  );
+  // no date: every one of these would land on the wrong day
+  if (!google) return null;
+
+  const vendors = [
+    {
+      name: "Google Calendar",
+      domain: "calendar.google.com",
+      href: google,
+    },
+    {
+      name: "Apple Calendar",
+      domain: "apple.com",
+      href: concertIcsUrl(event, artistName),
+      download: `${artistName} concert.ics`,
+      subtitle: ".ics file",
+    },
+    {
+      name: "Outlook",
+      domain: "outlook.com",
+      href: outlookCalendarUrl(event, artistName),
+    },
+  ];
+
+  return <VendorTiles icon={faCalendarPlus} title="Add to calendar" vendors={vendors} />;
 }

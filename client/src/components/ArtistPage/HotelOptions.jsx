@@ -30,16 +30,19 @@ export default function HotelOptions({ event }) {
       name: "Booking.com",
       domain: "booking.com",
       href: `https://www.booking.com/searchresults.html?ss=${dest}&checkin=${checkin}&checkout=${checkout}`,
+      subtitle: "Check price",
     },
     {
       name: "Expedia",
       domain: "expedia.com",
       href: `https://www.expedia.com/Hotel-Search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
+      subtitle: "Check price",
     },
     {
       name: "Vrbo",
       domain: "vrbo.com",
       href: `https://www.vrbo.com/search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
+      subtitle: "Check price",
     },
   ];
 
