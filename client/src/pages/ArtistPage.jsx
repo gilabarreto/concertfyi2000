@@ -94,7 +94,7 @@ export default function ArtistPage() {
         </div>
 
         <div>
-          <div className="bg-white rounded-xl p-6 shadow">
+          <div className="bg-white rounded-xl p-6 shadow space-y-2">
             <LastConcerts
               concert={concert}
               setlist={setlist}
@@ -102,7 +102,7 @@ export default function ArtistPage() {
             />
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow mt-6">
+          <div className="bg-white rounded-xl p-6 shadow mt-6 space-y-2">
             <NextConcertList
               ticketmaster={ticketmaster}
               setlist={setlist}
