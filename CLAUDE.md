@@ -117,3 +117,8 @@ a written quality bar). The split, agreed with the owner:
 Where the two collide on a concrete decision, say so and let the owner pick instead of silently
 following one. A spec or a test that ponytail would skip is not waste here; an interface with one
 implementation still is.
+
+**Close out every skill run.** A skill ends by resolving what it found. Anything left over goes into
+`SUGESTOES_ATUALIZADO.md` with its reason — resolved (with the commit hash), waiting on the owner,
+or dropped. A finding that became neither a commit nor a line in that file was lost. Dropping an
+item is an opinion, so mark it as one; the owner can veto it.

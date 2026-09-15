@@ -315,7 +315,10 @@ constants/
 | Favoritar shows | ❌ Não implementado | localStorage ready |
 | Analytics | ❌ Não implementado | Recomendado implementar |
 | Testing | ⚠️ Mínimo | `node --test` cobre `server/http.js` e `helpers/calendar.js`; sem testes de componente |
-| TypeScript | ❌ Não implementado | Pode ser gradual |
+| Lint | ✅ Implementado | ESLint 10 no client, `npm run lint`, 0 achados |
+| Régua de qualidade | ✅ Implementado | `CONSTRAINTS.md` + `npm run check` (2,5s) |
+| Portão no CI | ❌ Não implementado | `deploy.yml` publica sem rodar nada |
+| TypeScript | ⚪ Descartado | Ver tabela "Descartado"; decisão reversível |
 
 ---
 
@@ -347,10 +350,12 @@ Create React App, mas o ESLint não está instalado e o Vite não o executa. Ou 
 *parece* ter lint e não tem. Escolher um dos dois:
 - [x] Remover o `eslintConfig` morto — feito em 2026-09-15 (`f4edd3f`), junto com o `browserslist`
       que o Vite ignora e os devDeps `gh-pages`/`concurrently` que nenhum script usa
-- [ ] Ou instalar ESLint de verdade + `eslint-plugin-react-hooks` — este pegaria erros reais de
-      dependência de `useEffect`, que hoje ninguém verifica
+- [x] Ou instalar ESLint de verdade + `eslint-plugin-react-hooks` — feito em 2026-09-15 (`4335a06`).
+      Achou 4 problemas, todos corrigidos: `useLoadScript` chamado depois de um `return` no
+      `Map.jsx` (`32e939e`, bug latente de ordem de hooks), duas variáveis mortas (`4a89702`) e
+      uma dependência faltando no `Swiper` (`a93153f`)
 
-Decidir antes do item "CI/CD (lint, test, build)" mais acima, que depende disto.
+Este era o bloqueador do item "CI/CD (lint, test, build)" mais acima. Está destravado.
 
 ### 2. Preferências de workflow só existem na memória global
 O fluxo "uma correção por vez, commit + push no `main` a cada item, usuário testa antes do próximo"
@@ -360,11 +365,63 @@ projeto não o conhece.
 
 ---
 
+## 🆕 Saldo do `/agent-skills:constraints` — 2026-09-15
+
+A régua ficou no `CONSTRAINTS.md` (`8777a9a`), com `npm run check` e `npm run check:full` na raiz.
+O que a skill levantou e não foi resolvido no mesmo dia está abaixo.
+
+### 🔴 Pendente com o Victor (fora do repositório)
+
+- [ ] **Restringir a `VITE_GOOGLE_MAPS_KEY` por referrer** no console do Google Cloud.
+      A chave está no bundle — isso é normal e inevitável para chave de browser. O que não é
+      normal é ela aceitar requisição de qualquer origem. Sem a restrição, qualquer um consome
+      sua cota e sua fatura. Cinco minutos. Vence em 2026-10-15.
+- [ ] **Rotacionar a `SETLISTFM_API_KEY`.** Vazou num bundle publicado na `gh-pages` em julho de
+      2025, junto com a do Ticketmaster. A do Ticketmaster foi rotacionada em 2026-09-15; esta não,
+      porque não há self-service no portal do setlist.fm. Abrir chamado. Vence em 2026-10-15.
+
+> Contexto: até julho de 2025 o client chamava Setlist.fm e Ticketmaster direto do browser com as
+> chaves embutidas. O proxy Express corrigiu isso, mas os bundles antigos continuam no histórico
+> da `gh-pages` e são públicos. Apagar a branch não resolve — só rotacionar resolve.
+
+### 🟠 Próximo na fila
+
+- [ ] **Rodar `npm run check` no CI.** Hoje o `deploy.yml` builda e publica a cada push sem rodar
+      lint nem teste: um push vermelho vai ao ar igual. Enquanto isso não existir, o
+      `CONSTRAINTS.md` depende de alguém lembrar de rodar na mão.
+- [ ] **Error Boundary.** Qualquer exceção de render hoje apaga o site para o usuário. ~20 linhas.
+      É o item "Error Handling Robusto" mais acima, reduzido ao que importa primeiro.
+- [ ] **Code splitting por rota.** O bundle é um chunk único de 516,53 kB (154,77 kB gzip). É o
+      item de Performance mais acima, agora com número medido. Quando entrar, o teto de 550 kB no
+      `CONSTRAINTS.md` precisa ser reescrito.
+- [ ] **2 ou 3 testes no client**, no `selectors.js` e no join Setlist.fm × Ticketmaster por nome
+      de artista — a costura frágil do app, descrita no `CLAUDE.md`. Sem perseguir cobertura.
+
+### ⚪ Descartado — opinião do Claude, sujeita a veto
+
+Estes itens estão recomendados mais acima neste mesmo documento. Discordo deles, pelo critério do
+`CLAUDE.md`: são 3.310 linhas de JS/JSX, dois fetches e nenhum banco. Cada um resolve um problema
+de escala que o projeto não tem, e custa semanas que não mudam nada para o usuário.
+
+| Item | Por que não |
+|---|---|
+| Migrar para TypeScript | O custo é proporcional ao tamanho do código; o ganho, à quantidade de gente mexendo nele. Aqui é uma pessoa. O `eslint-plugin-react-hooks` já pega a classe de bug que mais aparece. |
+| Storybook | Existe para times que compartilham componentes entre produtos. Há um produto. |
+| Reorganizar pastas (`common/`, `layout/`, `services/`, `constants/`) | Move arquivo de lugar sem mudar comportamento, e quebra todo `import` do repositório. A estrutura atual acha tudo. |
+| Extrair `ArtistCard`, `EmptyState`, `Logo`, `SongItem` | Abstração com uma implementação. `ConcertList.jsx` já é o caso onde extrair valeu — porque tinha dois usos reais. |
+| Cobertura mínima de 80% | Com 2 arquivos de teste, a meta se cumpre escrevendo teste fácil onde não importa. A regra útil está no `CONSTRAINTS.md`: não deletar teste para passar. |
+| LogRocket, Service Worker, offline mode | Resolvem problemas que ninguém reportou. |
+
+Se você discordar de qualquer linha desta tabela, ela volta para a fila — o veto é seu.
+
+---
+
 ## 📞 Próximas Conversas
 
 1. **Quando**: Qual é a proposta de valor do ConcertFYI que o diferencia de Bandsintown?
 2. **SEO**: Vamos migrar para Next.js ou fazer pre-render estático?
 3. **Design System**: Criar Storybook com componentes reutilizáveis?
 4. **Testing**: Começar com testes unitários ou E2E?
-5. **Lint**: o `eslintConfig` morto já foi removido; falta decidir se entra ESLint de verdade
-   (com `eslint-plugin-react-hooks`) antes do item de CI.
+5. **Descartes**: você concorda com a tabela "Descartado" acima? TypeScript, Storybook e
+   reorganização de pastas estão recomendados neste documento e eu os vetei — vale fechar a
+   divergência em vez de deixá-la nas duas seções.
