@@ -57,12 +57,42 @@ export default function Swiper() {
 
   const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName);
 
+  // O clique só guarda o slide; o fetch mora aqui porque é a troca de
+  // selectedArtist que muda a queryKey de useArtistData.
   useEffect(() => {
-    if (selectedArtist) {
-      setIsLoading(true);
-      handleSlideClick(selectedArtist)
-    }
-  }, [selectedArtist]);
+    if (!selectedArtist) return;
+
+    setIsLoading(true);
+    (async () => {
+      try {
+        const response = await fetchArtistData();
+
+        if (!response.data) {
+          throw new Error("No data received");
+        }
+
+        const { setlist = [], ticketmaster = {} } = response.data;
+
+        if (!setlist.length) {
+          alert(`No setlist data found for ${selectedArtist.artistName}`);
+          return;
+        }
+
+        const correctArtistId = setlist[0]?.artist?.mbid || selectedArtist.artistId;
+        const targetId = getLastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
+
+        setSetlist(setlist);
+        setTicketmaster(ticketmaster);
+
+        navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
+      } catch (err) {
+        console.error("Error handling slide click:", err);
+        alert(`Error loading data for ${selectedArtist.artistName}. Please try again.`);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster]);
 
   useEffect(() => {
     if (artistData) {
@@ -104,36 +134,6 @@ export default function Swiper() {
       setActive(Math.floor(list.length / 2));
     }
   }, [localEventsData]);
-
-  const handleSlideClick = async (slide) => {
-    try {
-      const response = await fetchArtistData();
-
-      if (!response.data) {
-        throw new Error("No data received");
-      }
-
-      const { setlist = [], ticketmaster = {} } = response.data;
-
-      if (!setlist.length) {
-        alert(`No setlist data found for ${slide.artistName}`);
-        return;
-      }
-
-      const correctArtistId = setlist[0]?.artist?.mbid || slide.artistId;
-      const targetId = getLastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
-
-      setSetlist(setlist);
-      setTicketmaster(ticketmaster);
-
-      navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
-    } catch (err) {
-      console.error("Error handling slide click:", err);
-      alert(`Error loading data for ${slide.artistName}. Please try again.`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Prev/Next live inside the centered slide, so after moving, focus the same control in the new center
   const go = (e, step) => {
