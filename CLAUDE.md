@@ -18,7 +18,15 @@ cd server && npm start
 # tests — node:test, no framework, no runner config, run from the repo root
 node --test                      # both test files, ~0.1s
 node --test server/http.test.js  # a single file
+
+# the quality gate — root package.json is scripts only, NOT a workspace
+npm run check                    # gitleaks (staged) + client lint + tests, ~2.5s
+npm run check:full               # check + client build, ~5s
 ```
+
+Read `CONSTRAINTS.md` before changing code, and make your change pass it. Never weaken a limit,
+delete a test, or add a suppression to get a change through — if a limit is wrong, change it in its
+own commit with the reason.
 
 Deploy is automatic: push to `main` builds the client and publishes `client/dist` to the `gh-pages`
 branch (`concertfyi.com`). The server is hosted separately on Render; nothing in this repo deploys it.
