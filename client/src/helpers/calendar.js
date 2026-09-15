@@ -1,11 +1,6 @@
-// Built in the browser so no email or phone number is ever stored: the reminder
-// comes from the visitor's own calendar app via the alarm on the entry.
-
-// RFC 5545 gives backslash, semicolon and comma special meaning inside a value
-const escape = (text) =>
-  String(text)
-    .replace(/[\\;,]/g, (char) => `\\${char}`)
-    .replace(/\r?\n/g, "\\n");
+// Google's template URL opens the event pre-filled in the visitor's own calendar,
+// so nothing is stored here and no OAuth is needed. The trade against a .ics file is
+// the reminder: Google applies the account default instead of an alarm we set.
 
 const utcStamp = (date) => date.toISOString().replace(/[-:]|\.\d{3}/g, "");
 const dayStamp = (localDate) => localDate.replace(/-/g, "");
@@ -18,17 +13,9 @@ const addDays = (localDate, days) => {
 
 const SHOW_HOURS = 3;
 
-const alarm = (trigger, description) => [
-  "BEGIN:VALARM",
-  `TRIGGER:${trigger}`,
-  "ACTION:DISPLAY",
-  `DESCRIPTION:${escape(description)}`,
-  "END:VALARM",
-];
-
-// event is a Ticketmaster event; returns an .ics string, or null when the date is
-// missing and a calendar entry would land on the wrong day.
-export function concertIcs(event, artistName, { now = new Date() } = {}) {
+// event is a Ticketmaster event; returns a URL, or null when the date is missing and
+// the entry would land on the wrong day.
+export function googleCalendarUrl(event, artistName) {
   const start = event?.dates?.start;
   const localDate = start?.localDate;
   if (!localDate) return null;
@@ -42,42 +29,22 @@ export function concertIcs(event, artistName, { now = new Date() } = {}) {
     .filter(Boolean)
     .join(", ");
 
-  // dateTime carries the exact UTC start; without it the show is an all-day entry
-  const [dtstart, dtend] = start.dateTime
-    ? [
-        `DTSTART:${utcStamp(new Date(start.dateTime))}`,
-        `DTEND:${utcStamp(new Date(Date.parse(start.dateTime) + SHOW_HOURS * 3600000))}`,
-      ]
-    : [
-        `DTSTART;VALUE=DATE:${dayStamp(localDate)}`,
-        `DTEND;VALUE=DATE:${dayStamp(addDays(localDate, 1))}`,
-      ];
+  // dateTime carries the exact UTC start; without it the show is an all-day entry,
+  // and Google reads the end of an all-day range as exclusive
+  const dates = start.dateTime
+    ? `${utcStamp(new Date(start.dateTime))}/${utcStamp(
+        new Date(Date.parse(start.dateTime) + SHOW_HOURS * 3600000)
+      )}`
+    : `${dayStamp(localDate)}/${dayStamp(addDays(localDate, 1))}`;
 
-  const summary = place ? `${artistName} at ${venue.name}` : artistName;
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: venue?.name ? `${artistName} at ${venue.name}` : artistName,
+    dates,
+  });
 
-  // The second alarm has to land on the show day itself. A timed show starts in the
-  // evening, so twelve hours earlier is that morning; an all-day entry starts at
-  // midnight, so the trigger runs forward to 9am instead.
-  const sameDay = start.dateTime ? "-PT12H" : "PT9H";
+  if (place) params.set("location", place);
+  if (event.url) params.set("details", event.url);
 
-  return [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//ConcertFYI//EN",
-    "CALSCALE:GREGORIAN",
-    "BEGIN:VEVENT",
-    `UID:${event.id}@concertfyi.com`,
-    `DTSTAMP:${utcStamp(now)}`,
-    dtstart,
-    dtend,
-    `SUMMARY:${escape(summary)}`,
-    place && `LOCATION:${escape(place)}`,
-    event.url && `URL:${escape(event.url)}`,
-    ...alarm("-P1D", `${artistName} plays tomorrow`),
-    ...alarm(sameDay, `${artistName} plays tonight`),
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ]
-    .filter(Boolean)
-    .join("\r\n");
+  return `https://calendar.google.com/calendar/render?${params}`;
 }

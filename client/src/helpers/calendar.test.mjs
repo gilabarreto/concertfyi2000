@@ -1,13 +1,11 @@
 // node --test client/src/helpers/calendar.test.mjs
 import { test } from "node:test";
 import assert from "node:assert";
-import { concertIcs } from "./calendar.js";
-
-const now = new Date("2026-09-15T12:00:00Z");
+import { googleCalendarUrl } from "./calendar.js";
 
 const event = (start) => ({
   id: "G5vYZbMN2qDpw",
-  url: "https://www.ticketmaster.com/event/G5vYZbMN2qDpw",
+  url: "https://on.fgtix.com/trk/g3Nfc",
   dates: { start },
   _embedded: {
     venues: [
@@ -20,56 +18,35 @@ const event = (start) => ({
   },
 });
 
-test("a timed show becomes a UTC entry that ends the same night", () => {
-  const ics = concertIcs(
-    event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
-    "Nekrogoblikon",
-    { now }
+const paramsOf = (url) => new URL(url).searchParams;
+
+test("a timed show spans the evening in UTC", () => {
+  const params = paramsOf(
+    googleCalendarUrl(event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }), "Nekrogoblikon")
   );
 
-  assert.match(ics, /^DTSTART:20261003T020000Z$/m);
-  assert.match(ics, /^DTEND:20261003T050000Z$/m);
-  assert.match(ics, /^UID:G5vYZbMN2qDpw@concertfyi\.com$/m);
-  assert.match(ics, /^SUMMARY:Nekrogoblikon at Ace of Spades$/m);
-  assert.ok(ics.endsWith("END:VCALENDAR"));
+  assert.equal(params.get("dates"), "20261003T020000Z/20261003T050000Z");
+  assert.equal(params.get("text"), "Nekrogoblikon at Ace of Spades");
+  assert.equal(params.get("location"), "Ace of Spades, Sacramento, CA");
+  assert.equal(params.get("action"), "TEMPLATE");
 });
 
-test("a timed show alarms the day before and that same morning", () => {
-  const ics = concertIcs(
-    event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
-    "Nekrogoblikon",
-    { now }
-  );
+test("a show with no time is all day, ending the next day", () => {
+  // Google reads the end of an all-day range as exclusive, so a one-night show
+  // has to end on the 3rd to sit on the 2nd
+  const params = paramsOf(googleCalendarUrl(event({ localDate: "2026-10-02" }), "Nekrogoblikon"));
 
-  // a 2am UTC start is an evening show; twelve hours earlier is the day of it
-  assert.deepEqual(ics.match(/^TRIGGER:.+$/gm), ["TRIGGER:-P1D", "TRIGGER:-PT12H"]);
+  assert.equal(params.get("dates"), "20261002/20261003");
 });
 
-test("a show with no time is all day and ends the next day", () => {
-  const ics = concertIcs(event({ localDate: "2026-10-02" }), "Nekrogoblikon", { now });
+test("spaces and commas survive as encoded query values", () => {
+  const url = googleCalendarUrl(event({ localDate: "2026-10-02" }), "Godspeed You! Black Emperor");
 
-  assert.match(ics, /^DTSTART;VALUE=DATE:20261002$/m);
-  assert.match(ics, /^DTEND;VALUE=DATE:20261003$/m);
-  // an all-day entry starts at midnight, so the day-of alarm runs forward, not back
-  assert.deepEqual(ics.match(/^TRIGGER:.+$/gm), ["TRIGGER:-P1D", "TRIGGER:PT9H"]);
+  assert.ok(!url.includes(" "), "a raw space would truncate the link");
+  assert.equal(paramsOf(url).get("text"), "Godspeed You! Black Emperor at Ace of Spades");
 });
 
-test("commas and semicolons in a venue name stay escaped", () => {
-  const venue = event({ localDate: "2026-10-02" });
-  venue._embedded.venues[0].name = "Bob's Bar, Grill; Co";
-
-  const ics = concertIcs(venue, "Nekrogoblikon", { now });
-
-  assert.match(ics, /^LOCATION:Bob's Bar\\, Grill\\; Co\\, Sacramento\\, CA$/m);
-});
-
-test("every line is CRLF terminated, as readers require", () => {
-  const ics = concertIcs(event({ localDate: "2026-10-02" }), "Nekrogoblikon", { now });
-
-  assert.equal(ics.split("\r\n").length, ics.split("\n").length);
-});
-
-test("no date means no entry rather than one on the wrong day", () => {
-  assert.equal(concertIcs(event({}), "Nekrogoblikon", { now }), null);
-  assert.equal(concertIcs({}, "Nekrogoblikon", { now }), null);
+test("no date means no link rather than an entry on the wrong day", () => {
+  assert.equal(googleCalendarUrl(event({}), "Nekrogoblikon"), null);
+  assert.equal(googleCalendarUrl({}, "Nekrogoblikon"), null);
 });
