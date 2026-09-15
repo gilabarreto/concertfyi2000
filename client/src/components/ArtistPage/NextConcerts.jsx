@@ -1,18 +1,14 @@
+import { getNextConcertsByArtist } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
 
 export default function NextConcerts(props) {
-  const events = (props.ticketmaster.events || [])
-    .filter((item) =>
-      item._embedded.attractions?.some((a) => a.name === props.concert.artist.name)
-    )
-    .map((item) => {
-      const [year, month, day] = item.dates.start.localDate.split("-");
-      return { ...item, dateObj: new Date(year, month - 1, day) };
-    })
-    .sort((a, b) => a.dateObj - b.dateObj);
+  const events = getNextConcertsByArtist(
+    props.ticketmaster.events,
+    props.concert.artist.name
+  );
 
   return (
     <ConcertList

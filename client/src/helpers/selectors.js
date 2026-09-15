@@ -12,6 +12,21 @@ export function getLastConcertsByArtist(setlist = [], artistId) {
     .sort((a, b) => b.dateObj - a.dateObj);
 }
 
+// A irmã da de cima, para o outro lado da linha do tempo. As duas APIs não
+// compartilham id nenhum: Setlist.fm casa com Ticketmaster pelo nome do artista,
+// e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
+export function getNextConcertsByArtist(events = [], artistName) {
+  return events
+    .filter(item =>
+      item._embedded?.attractions?.some(a => a.name === artistName)
+    )
+    .map(item => {
+      const [year, month, day] = item.dates.start.localDate.split("-");
+      return { ...item, dateObj: new Date(year, month - 1, day) };
+    })
+    .sort((a, b) => a.dateObj - b.dateObj);
+}
+
 export function getBestImage(images = []) {
   if (!images.length) return null;
   const ratio169 = images.filter(img => img.ratio === '16_9');
