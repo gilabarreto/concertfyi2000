@@ -1,6 +1,7 @@
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
+import ConcertReminder from "./ConcertReminder";
 
 export default function NextConcerts(props) {
   const events = (props.ticketmaster.events || [])
@@ -28,6 +29,7 @@ export default function NextConcerts(props) {
         <>
           <TicketOptions event={concert} artistName={props.concert.artist.name} />
           <HotelOptions event={concert} />
+          <ConcertReminder event={concert} artistName={props.concert.artist.name} />
         </>
       )}
     />
