@@ -9,8 +9,9 @@ const nextDay = (localDate) => {
   return date.toISOString().slice(0, 10);
 };
 
-// None of these publish a nightly rate without an affiliate key, so every tile falls
-// back to "Check price". The links do land on the right city and dates.
+// Booking has its own affiliate program; Expedia and Vrbo share one, so these three are
+// the ones worth monetising. None publishes a nightly rate without an affiliate key, so
+// every tile falls back to "Check price". The links do land on the right city and dates.
 export default function HotelOptions({ event }) {
   const venue = event._embedded?.venues?.[0];
   const checkin = event.dates?.start?.localDate;
@@ -36,14 +37,9 @@ export default function HotelOptions({ event }) {
       href: `https://www.expedia.com/Hotel-Search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
     },
     {
-      name: "Hotels.com",
-      domain: "hotels.com",
-      href: `https://www.hotels.com/Hotel-Search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
-    },
-    {
-      name: "Airbnb",
-      domain: "airbnb.com",
-      href: `https://www.airbnb.com/s/${dest}/homes?checkin=${checkin}&checkout=${checkout}`,
+      name: "Vrbo",
+      domain: "vrbo.com",
+      href: `https://www.vrbo.com/search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
     },
   ];
 
