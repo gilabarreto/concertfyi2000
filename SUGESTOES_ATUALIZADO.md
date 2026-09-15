@@ -386,9 +386,9 @@ O que a skill levantou e não foi resolvido no mesmo dia está abaixo.
 
 ### 🟠 Próximo na fila
 
-- [ ] **Rodar `npm run check` no CI.** Hoje o `deploy.yml` builda e publica a cada push sem rodar
-      lint nem teste: um push vermelho vai ao ar igual. Enquanto isso não existir, o
-      `CONSTRAINTS.md` depende de alguém lembrar de rodar na mão.
+- [x] **Rodar o piso no CI** — feito em 2026-09-15. O `deploy.yml` roda lint e teste antes do
+      build; falhou, o deploy não acontece. Ficou de fora a varredura de segredo, que continua
+      dependendo do `npm run check` local (motivo na tabela de exceções do `CONSTRAINTS.md`).
 - [ ] **Error Boundary.** Qualquer exceção de render hoje apaga o site para o usuário. ~20 linhas.
       É o item "Error Handling Robusto" mais acima, reduzido ao que importa primeiro.
 - [ ] **Code splitting por rota.** O bundle é um chunk único de 516,53 kB (154,77 kB gzip). É o

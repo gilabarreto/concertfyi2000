@@ -13,6 +13,9 @@ npm run check:full   # ~5s   — check + build, antes de push
 
 O `check` precisa do `gitleaks` no PATH (`~/.local/bin/gitleaks`, binário único).
 
+No CI, o `deploy.yml` roda **lint e teste antes do build**: falhou, o deploy não acontece. O que
+vai ao ar em `concertfyi.com` passou pelo piso.
+
 ---
 
 ## Piso — bloqueia
@@ -78,7 +81,7 @@ vale voltar aqui e medir antes de exigir.
 | 87 achados de gitleaks no histórico da `gh-pages` | São bundles buildados contendo `VITE_GOOGLE_MAPS_KEY`. Chave de browser é pública por design; o controle dela é restrição de referrer no Google Cloud, não segredo. | Victor | sem vencimento — aceito |
 | `VITE_GOOGLE_MAPS_KEY` sem restrição de referrer confirmada | Nunca foi verificado no console do Google Cloud. Enquanto não for, a chave pública é abusável por qualquer um. | Victor | **2026-10-15** |
 | `server/` sem lint | O ESLint foi instalado só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
-| Nenhum portão roda no CI | `deploy.yml` builda e publica sem rodar `check`. Hoje a régua depende de alguém rodar na mão. | Victor | **próximo item do roadmap** |
+| CI não varre segredos | O `deploy.yml` roda lint e teste antes do build, mas não o gitleaks — ele precisaria do binário na runner, e o modo `--staged` não faz sentido lá. A varredura de segredo depende de rodar `npm run check` antes de commitar. | Victor | reavaliar se algum segredo escapar |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
 
 ---

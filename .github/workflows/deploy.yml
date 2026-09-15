@@ -24,6 +24,14 @@ jobs:
         run: npm install
         working-directory: ./client
 
+      # O portão do CONSTRAINTS.md. Falhou aqui, o Deploy lá embaixo nem roda.
+      - name: Lint
+        run: npm run lint
+        working-directory: ./client
+
+      - name: Test
+        run: node --test
+
       - name: Build client
         run: npm run build 2>&1
         working-directory: ./client
