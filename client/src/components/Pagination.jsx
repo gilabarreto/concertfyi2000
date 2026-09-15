@@ -29,7 +29,10 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
   const visiblePages = getVisiblePages();
 
   return (
-    <div className="flex items-center justify-center space-x-2 mt-4 text-sm">
+    <nav
+      aria-label="Concert pages"
+      className="flex items-center justify-center space-x-2 mt-4 text-sm tabular-nums"
+    >
       <button
         className="px-2 py-1 rounded disabled:opacity-50"
         onClick={() => onPageChange(currentPage - 1)}
@@ -47,6 +50,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
           }`}
           onClick={() => onPageChange(pageNum)}
+          aria-current={pageNum === currentPage ? "page" : undefined}
         >
           {pageNum + 1}
         </button>
@@ -59,6 +63,6 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
       >
         Next &gt;
       </button>
-    </div>
+    </nav>
   );
 }

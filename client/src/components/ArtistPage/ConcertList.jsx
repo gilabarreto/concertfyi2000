@@ -34,24 +34,30 @@ export default function ConcertList({
 
   return (
     <>
-      <h2 className="text-3xl font-bold mb-2">{title}</h2>
+      <h2 className="text-3xl font-bold mb-2 text-balance">{title}</h2>
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
       {items.length === 0 ? (
-        <p className="py-2 ml-6 text-gray-500">{empty}</p>
+        <div className="py-2 ml-6 text-gray-500 text-pretty">
+          <p>{empty}</p>
+          <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
+            Search another artist
+          </Link>
+        </div>
       ) : (
         <>
           <ol className="pl-6">
             {currentPage.map((concert) => {
               const open = openId === concert.id;
+              // the date never truncates; a long city name does, so the icon keeps its place
               const label = (
-                <span className="flex items-center">
-                  <span>{dateLabel(concert.dateObj)}</span>
-                  <span className="text-gray-500 ml-2">- {locationOf(concert)}</span>
+                <span className="flex min-w-0 items-center">
+                  <span className="tabular-nums">{dateLabel(concert.dateObj)}</span>
+                  <span className="text-gray-500 ml-2 truncate">- {locationOf(concert)}</span>
                 </span>
               );
               const className =
-                "flex w-full items-center justify-between py-2 hover:text-red-800";
+                "flex w-full items-center justify-between gap-2 py-2 hover:text-red-800";
               const link = linkOf(concert);
 
               if (expand) {
@@ -67,7 +73,7 @@ export default function ConcertList({
                       {label}
                       <FontAwesomeIcon
                         icon={open ? faChevronUp : faChevronDown}
-                        className="text-red-600 pl-2"
+                        className="text-red-600 shrink-0"
                         aria-hidden="true"
                       />
                     </button>
@@ -79,20 +85,26 @@ export default function ConcertList({
               const row = (
                 <>
                   {label}
-                  <FontAwesomeIcon icon={icon} className="text-red-600" title={iconTitle} />
+                  {/* the row text already names the concert, so the icon is decoration */}
+                  <FontAwesomeIcon
+                    icon={icon}
+                    className="text-red-600 shrink-0"
+                    aria-hidden="true"
+                  />
                 </>
               );
+              const rowProps = { className, title: iconTitle };
 
               return (
                 <li key={concert.id} className="border-b border-gray-300/50">
                   {!link ? (
-                    <div className={className}>{row}</div>
+                    <div {...rowProps}>{row}</div>
                   ) : link.startsWith("http") ? (
-                    <a className={className} href={link} target="_blank" rel="noopener noreferrer">
+                    <a {...rowProps} href={link} target="_blank" rel="noopener noreferrer">
                       {row}
                     </a>
                   ) : (
-                    <Link className={className} to={link}>
+                    <Link {...rowProps} to={link}>
                       {row}
                     </Link>
                   )}
