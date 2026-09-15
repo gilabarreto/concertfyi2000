@@ -1,5 +1,6 @@
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
+import HotelOptions from "./HotelOptions";
 
 export default function NextConcerts(props) {
   const events = (props.ticketmaster.events || [])
@@ -22,9 +23,12 @@ export default function NextConcerts(props) {
         return venue ? `${venue.city.name}, ${venue.country.countryCode}` : "Unknown location";
       }}
       linkOf={(concert) => concert.url}
-      iconTitle="Where to buy"
+      iconTitle="Get tickets"
       expand={(concert) => (
-        <TicketOptions event={concert} artistName={props.concert.artist.name} />
+        <>
+          <TicketOptions event={concert} artistName={props.concert.artist.name} />
+          <HotelOptions event={concert} />
+        </>
       )}
     />
   );
