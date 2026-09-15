@@ -41,14 +41,14 @@ export default function TicketOptions({ event, artistName }) {
         Where to buy
       </h3>
 
-      <ul className="grid grid-cols-2 gap-2">
+      <ul className="flex justify-center gap-4">
         {sellers.map((seller) => {
           const price = seller.price?.(event);
 
           return (
             <li key={seller.name}>
               <a
-                className="flex flex-col items-center gap-1 rounded p-2 hover:text-red-800 hover:bg-gray-100"
+                className="flex flex-col items-center gap-1 rounded px-6 py-2 hover:text-red-800 hover:bg-gray-100"
                 href={seller.url(event, artistName, city)}
                 target="_blank"
                 rel="noopener noreferrer"
