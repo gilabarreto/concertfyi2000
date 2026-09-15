@@ -66,7 +66,8 @@ export default function TicketOptions({ event, artistName }) {
                   }}
                 />
                 <span className="text-sm text-center">{seller.name}</span>
-                {price && <span className="text-sm font-semibold">{price}</span>}
+                {/* every tile keeps a line here, so the pair stays the same height */}
+                <span className="text-sm font-semibold">{price || "Check price"}</span>
               </a>
             </li>
           );
