@@ -8,7 +8,7 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
 
 function Navbar() {
-  const { searchValue, setSearchValue } = useContext(AppContext);
+  const { setSearchValue } = useContext(AppContext);
   const { city = 'Locating...', country = 'Unknown', isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);

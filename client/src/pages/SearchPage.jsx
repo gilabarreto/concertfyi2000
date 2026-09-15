@@ -6,7 +6,7 @@ import { SEOHead } from "../components/SEOHead";
 
 export default function SearchPage() {
   const { setlist = [], ticketmaster = {} } = useContext(AppContext);
-  const { attractions = [], events = [] } = ticketmaster;
+  const { attractions = [] } = ticketmaster;
 
   const uniqueSetlist = Array.from(
     new Map(
