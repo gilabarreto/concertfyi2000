@@ -47,7 +47,11 @@ o scanner. O staged pega o que importa: o segredo prestes a entrar.
 
 | O quê | Hoje | Limite | Por quê |
 |---|---|---|---|
-| Maior chunk de JS | 516,53 kB | **550 kB** | Hoje + ~6%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. Chunk único, sem code splitting — quando entrar `React.lazy` por rota, este número muda e o limite tem que ser reescrito. |
+| Maior chunk de JS (entrada) | 356,10 kB | **380 kB** | Hoje + ~7%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. Era 516,53 kB num chunk só até o code splitting por rota entrar em 2026-09-15. |
+
+O que o usuário baixa ao abrir o site é o chunk de entrada. As rotas viraram chunks próprios e só
+descem quando alguém navega para elas — `ArtistPage` sozinha são 155 kB (arrasta o Google Maps) que
+a maioria das visitas nunca pede.
 
 Aplicado por `build.chunkSizeWarningLimit` no `client/vite.config.js` — recurso nativo do Vite,
 zero dependência nova. Avisa e não quebra: subir 10 kB numa feature legítima não pode travar
@@ -61,7 +65,7 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 
 | Métrica | 2026-09-15 |
 |---|---|
-| JS gzipado | 154,77 kB |
+| JS gzipado na entrada | 116,45 kB (era 154,77 kB antes do code splitting) |
 | CSS | 23,95 kB (5,16 kB gzip) |
 | Linhas de JS/JSX no fonte | 3.310 |
 | Cobertura de testes | **não medida** |

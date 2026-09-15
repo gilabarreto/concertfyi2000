@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     // Teto de bundle do CONSTRAINTS.md. Avisa, não quebra o build.
-    chunkSizeWarningLimit: 550,
+    chunkSizeWarningLimit: 380,
   },
   server: {
     port: 3000,
