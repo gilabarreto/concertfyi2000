@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && cp dist/index.html dist/404.html",
+    "build": "vite build && cp dist/index.html dist/404.html && node scripts/static-routes.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",

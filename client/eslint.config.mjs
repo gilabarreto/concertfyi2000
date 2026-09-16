@@ -20,7 +20,7 @@ export default [
     },
   },
   {
-    files: ["*.js", "*.mjs"],
+    files: ["*.js", "*.mjs", "scripts/**/*.mjs"],
     languageOptions: { globals: globals.node, sourceType: "module" },
   },
   {
