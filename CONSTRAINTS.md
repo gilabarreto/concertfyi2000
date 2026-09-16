@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 29 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 29 testes, apagar um é apagar 3% da cobertura que existe. |
+| Testes | 30 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 30 testes, apagar um é apagar 3% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -109,7 +109,7 @@ vale voltar aqui e medir antes de exigir.
 | `server/` sem lint nem prettier | As duas ferramentas foram instaladas só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
 | CI não varre segredos | O `deploy.yml` roda lint e teste antes do build, mas não o gitleaks — ele precisaria do binário na runner, e o modo `--staged` não faz sentido lá. A varredura de segredo depende de rodar `npm run check` antes de commitar. | Victor | reavaliar se algum segredo escapar |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
-| Componentes e hooks sem teste | O `node:test` só enxerga arquivo que o node resolve sozinho — JSX e `import.meta.env` estão fora do alcance sem Vitest + jsdom + testing-library. A lógica que erra calado (costura das duas APIs, parse das duas datas, placar da playlist) está coberta; o resto é marcação. Decisão registrada no `SUGESTOES_ATUALIZADO.md`. | Victor | ao primeiro bug que só um teste de hook pegaria — `useGeolocation` é o candidato |
+| Componentes e hooks sem teste | O `node:test` só enxerga arquivo que o node resolve sozinho — JSX e `import.meta.env` estão fora do alcance sem Vitest + jsdom + testing-library. **Victor vetou as 3 dependências em 2026-09-15.** A lógica que erra calado (costura das duas APIs, parse das duas datas, placar da playlist) está coberta; o resto é marcação. | Victor | ao primeiro bug que só um teste de hook pegaria — `useGeolocation` é o candidato |
 
 ---
 

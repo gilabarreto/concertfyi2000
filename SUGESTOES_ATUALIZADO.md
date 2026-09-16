@@ -454,11 +454,18 @@ adiar, e que ela foi vetada.
       escondido no localStorage, e era o que prendia o módulo ao `spotifyAuth` — que lê `window` e
       `import.meta.env` no topo e por isso não carrega fora do Vite.
 
-Testes: 21 → 29.
+- [x] **Data do Setlist.fm parseada num lugar só** (`a2d2c1b`). Três arquivos partiam `DD-MM-YYYY`
+      por conta própria e **um fazia diferente**: a `SearchPage` montava a string `"2026-09-16"` e
+      entregava ao `Date`, que pela especificação é meia-noite **UTC** — 21h do dia anterior em
+      São Paulo. Resultado: nas últimas 3 horas de todo dia, show de amanhã aparecia entre os
+      passados. Agora existe `parseSetlistDate` e os três chamam ela. Verificado por mutação.
 
-### 🔴 Colisão ponytail × agent-skills — decisão do Victor
+Testes: 21 → 30.
 
-O `CLAUDE.md` manda trazer isto para você em vez de eu escolher sozinho.
+### 🔵 Sugestão futura — Vitest para componentes e hooks (**decidido: não agora**)
+
+**O Victor vetou em 2026-09-15.** Não entra por enquanto; fica aqui como sugestão para quando o
+gatilho abaixo acontecer. Não reabrir sem motivo novo.
 
 **O fato:** o `node:test` só alcança arquivo que o node consegue resolver sozinho. Hoje isso são
 três helpers. Componentes, hooks (`useGeolocation`, `useAppState`, `useDebounce`) e qualquer coisa
@@ -473,7 +480,9 @@ está coberta agora. Testar `<VendorTiles>` renderizar um `<div>` é o teatro de
 `CLAUDE.md` existe para evitar. O que me faria mudar de ideia é bug em hook: `useGeolocation` tem
 estado e caminho de erro de verdade, e é o único lugar onde eu aceitaria o framework hoje.
 
-- [ ] **Victor decide:** entra Vitest agora, ou espera o primeiro bug que só um teste de hook pegaria?
+**O gatilho para reabrir:** o primeiro bug que só um teste de hook pegaria. `useGeolocation` é o
+candidato — tem estado e caminho de erro de verdade. Até lá, o custo (3 dependências de dev) não
+compra nada que a lógica coberta hoje já não cubra.
 
 ### ⚪ Não testei de propósito
 

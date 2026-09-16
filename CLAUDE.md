@@ -57,7 +57,14 @@ this is the fragile seam of the app, and it is why `useArtistData` fetches both 
 swallows either one's failure rather than failing the page.
 
 Because the two date formats differ, both list builders parse to a `dateObj` before sorting
-(`selectors.js:getLastConcertsByArtist` for past, `NextConcerts.jsx` for upcoming).
+(`selectors.js:getLastConcertsByArtist` for past, `getNextConcertsByArtist` for upcoming).
+
+**Always build a Date from its parts, never from a date string.** `new Date("2026-09-16")` is
+midnight *UTC* per spec, which is the previous evening in any negative offset — that shipped as a
+bug where tomorrow's concert appeared among the past ones for the last three hours of every day.
+`selectors.js:parseSetlistDate` is the only parser for setlist.fm's `DD-MM-YYYY`; call it rather
+than splitting the string again. Tests that touch dates set `process.env.TZ` before the first
+`Date`, because CI runs in UTC where this whole class of bug is invisible.
 
 ### State: context for the session, React Query for fetching
 
