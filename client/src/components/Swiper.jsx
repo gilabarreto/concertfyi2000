@@ -37,6 +37,14 @@ export default function Swiper() {
   const [active, setActive] = useState(0);
   const [selectedArtist, setSelectedArtist] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Limpa o selectedArtist junto: o effect só dispara quando ele muda, então
+  // sem isso clicar de novo no mesmo slide depois de um erro não fazia nada.
+  const dismissError = () => {
+    setError(null);
+    setSelectedArtist(null);
+  };
   const navigate = useNavigate();
   const isSmallScreen = useIsSmallScreen();
   const carouselRef = useRef(null);
@@ -68,6 +76,7 @@ export default function Swiper() {
     if (!selectedArtist) return;
 
     setIsLoading(true);
+    setError(null);
     (async () => {
       try {
         const response = await fetchArtistData();
@@ -79,7 +88,7 @@ export default function Swiper() {
         const { setlist = [], ticketmaster = {} } = response.data;
 
         if (!setlist.length) {
-          alert(`No setlist data found for ${selectedArtist.artistName}`);
+          setError(`No setlist found for ${selectedArtist.artistName}.`);
           return;
         }
 
@@ -92,7 +101,7 @@ export default function Swiper() {
         navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
       } catch (err) {
         console.error("Error handling slide click:", err);
-        alert(`Error loading data for ${selectedArtist.artistName}. Please try again.`);
+        setError(`Couldn't load ${selectedArtist.artistName}. Please try again.`);
       } finally {
         setIsLoading(false);
       }
@@ -123,7 +132,13 @@ export default function Swiper() {
         }
       }
 
-      const shuffled = [...uniqueArtists].sort(() => Math.random() - 0.5);
+      // Fisher-Yates. O `sort(() => Math.random() - 0.5)` de antes é enviesado e o
+      // comparador inconsistente não tem comportamento definido entre engines.
+      const shuffled = [...uniqueArtists];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
       const list = shuffled.map((ev) => ({
         eventId: ev.id,
         artistId: ev._embedded.attractions[0].id,
@@ -218,6 +233,27 @@ export default function Swiper() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg text-sm">
             <p>Loading artist data...</p>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <div
+          role="alert"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={dismissError}
+        >
+          <div
+            className="bg-white p-6 rounded-lg text-sm max-w-sm text-center space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-zinc-800">{error}</p>
+            <button
+              onClick={dismissError}
+              className="px-4 py-2 rounded-lg bg-red-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
