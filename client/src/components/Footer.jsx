@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "./Icon";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 
 import { faInstagram, faFacebookF } from "@fortawesome/free-brands-svg-icons";
@@ -13,17 +13,17 @@ export default function Footer() {
 
         <div className="flex text-xs sm:text-sm items-center gap-3">
           <a href="#" aria-label="Instagram">
-            <FontAwesomeIcon icon={faInstagram} size="2x" />
+            <Icon icon={faInstagram} size="2x" />
           </a>
           <a href="#" aria-label="Facebook">
-            <FontAwesomeIcon icon={faFacebookF} size="2x" />
+            <Icon icon={faFacebookF} size="2x" />
           </a>
           <button
             onClick={() => navigate("/contact")}
             aria-label="Contact"
             className="bg-none border-none cursor-pointer text-white hover:opacity-80 transition-opacity"
           >
-            <FontAwesomeIcon icon={faEnvelope} size="2x" />
+            <Icon icon={faEnvelope} size="2x" />
           </button>
         </div>
       </footer>

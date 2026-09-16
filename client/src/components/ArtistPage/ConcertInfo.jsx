@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "../Icon";
 import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
@@ -53,11 +53,7 @@ export default function ConcertInfo(props) {
       <div className="flex-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">{artist}</h2>
-          <FontAwesomeIcon
-            icon={faHeart}
-            className="text-2xl cursor-pointer text-gray-500"
-            size="2x"
-          />
+          <Icon icon={faHeart} className="text-2xl cursor-pointer text-gray-500" size="2x" />
         </div>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
@@ -66,7 +62,7 @@ export default function ConcertInfo(props) {
           <li className="border-b border-gray-300/50 py-2">
             Concert date:&ensp;
             {lastConcertId && (
-              <FontAwesomeIcon
+              <Icon
                 icon={faBackward}
                 className="text-xs text-red-600 cursor-pointer mr-2"
                 onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
@@ -74,7 +70,7 @@ export default function ConcertInfo(props) {
             )}
             {concertDate()}&ensp;
             {nextConcertId && (
-              <FontAwesomeIcon
+              <Icon
                 icon={faForward}
                 className="text-xs text-red-600 cursor-pointer"
                 onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
@@ -98,7 +94,7 @@ export default function ConcertInfo(props) {
                 rel="noreferrer"
                 aria-label={label}
               >
-                <FontAwesomeIcon icon={icon} className="text-gray-500" size="2x" />
+                <Icon icon={icon} className="text-gray-500" size="2x" />
               </a>
             ) : null,
           )}

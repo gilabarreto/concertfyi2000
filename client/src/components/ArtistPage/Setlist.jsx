@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "../Icon";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
@@ -97,7 +97,7 @@ export default function Setlist(props) {
             aria-label="Disclaimer"
             aria-haspopup="dialog"
           >
-            <FontAwesomeIcon icon={faCircleInfo} className="text-gray-500" aria-hidden="true" />
+            <Icon icon={faCircleInfo} className="text-gray-500" aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function Setlist(props) {
                       aria-expanded={expandedLyrics === songIndex}
                       className="p-1 hover:text-red-800 ml-2"
                     >
-                      <FontAwesomeIcon
+                      <Icon
                         icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
                         className="text-red-600"
                         aria-hidden="true"
@@ -166,7 +166,7 @@ export default function Setlist(props) {
               className={`px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
               title="Create Spotify Playlist"
             >
-              <FontAwesomeIcon icon={faSpotify} aria-hidden="true" />
+              <Icon icon={faSpotify} aria-hidden="true" />
               {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
             </button>
           </div>

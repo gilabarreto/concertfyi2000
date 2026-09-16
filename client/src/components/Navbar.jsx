@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
 import SearchBar from "./SearchBar";
 import LocationSelector from "./LocationSelector";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "./Icon";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
@@ -80,7 +80,7 @@ function Navbar() {
           </button>
         </div>
         <button aria-label="User profile" className="flex">
-          <FontAwesomeIcon icon={faUser} className="text-lg cursor-pointer filter brightness-0" />
+          <Icon icon={faUser} className="text-lg cursor-pointer filter brightness-0" />
         </button>
       </nav>
 

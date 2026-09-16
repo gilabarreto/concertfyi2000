@@ -1,5 +1,5 @@
 import { useState, useContext, useRef, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "./Icon";
 import { faXmark, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import { useCitySearch } from "../api/queries";
@@ -102,7 +102,7 @@ export default function LocationSelector({ city, country, isLoading }) {
         <span className="text-lg font-medium tracking-tight">
           {isLoading && !selectedLocation ? "Locating..." : displayName || "Location unavailable"}
         </span>
-        <FontAwesomeIcon
+        <Icon
           className="text-sm"
           icon={showDropdown ? faChevronUp : faChevronDown}
           aria-hidden="true"
@@ -132,7 +132,7 @@ export default function LocationSelector({ city, country, isLoading }) {
                 title="Clear search"
                 aria-label="Clear search"
               >
-                <FontAwesomeIcon icon={faXmark} size="sm" aria-hidden="true" />
+                <Icon icon={faXmark} size="sm" aria-hidden="true" />
               </button>
             )}
           </div>

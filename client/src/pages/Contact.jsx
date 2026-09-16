@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "../components/Icon";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import Header from "../components/Header";
 import { useState } from "react";
@@ -53,7 +53,7 @@ export default function Contact() {
         <Header />
 
         <div>
-          <FontAwesomeIcon
+          <Icon
             icon={faEnvelope}
             className="text-[180px] sm:text-[270px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium"
           />

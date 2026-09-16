@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "../Icon";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../Pagination";
 
@@ -73,7 +73,7 @@ export default function ConcertList({
                       title={iconTitle}
                     >
                       {label}
-                      <FontAwesomeIcon
+                      <Icon
                         icon={open ? faChevronUp : faChevronDown}
                         className="text-red-600 shrink-0"
                         aria-hidden="true"
@@ -88,11 +88,7 @@ export default function ConcertList({
                 <>
                   {label}
                   {/* the row text already names the concert, so the icon is decoration */}
-                  <FontAwesomeIcon
-                    icon={icon}
-                    className="text-red-600 shrink-0"
-                    aria-hidden="true"
-                  />
+                  <Icon icon={icon} className="text-red-600 shrink-0" aria-hidden="true" />
                 </>
               );
               const rowProps = { className, title: iconTitle };

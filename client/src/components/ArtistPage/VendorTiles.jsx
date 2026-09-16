@@ -1,4 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "../Icon";
 
 // Shared panel for the seller and hotel rows inside an expanded concert: a centered
 // heading, then one logo tile per vendor. Logos come from Google's favicon service,
@@ -10,7 +10,7 @@ export default function VendorTiles({ icon, title, vendors }) {
   return (
     <div className="bg-gray-50 border-b border-gray-300/50 p-2 sm:p-4">
       <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
-        <FontAwesomeIcon icon={icon} className="text-sm text-red-600" aria-hidden="true" /> {title}
+        <Icon icon={icon} className="text-sm text-red-600" aria-hidden="true" /> {title}
       </h3>
 
       {/* no wrapping: the tiles shrink so all three hotels stay on one row on a phone */}

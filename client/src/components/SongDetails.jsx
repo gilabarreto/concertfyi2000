@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Icon from "./Icon";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
@@ -75,7 +75,7 @@ export default function SongDetails({ songName, artistName }) {
           className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
           title="Connect to Spotify"
         >
-          <FontAwesomeIcon icon={faSpotify} />
+          <Icon icon={faSpotify} />
           Connect to Listen
         </button>
       ) : playerLoading ? (
@@ -85,7 +85,7 @@ export default function SongDetails({ songName, artistName }) {
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
         <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
-          <FontAwesomeIcon
+          <Icon
             icon={faFileLines}
             className="text-sm text-red-600 hover:text-red-800"
             title="Lyrics"
@@ -127,7 +127,7 @@ export default function SongDetails({ songName, artistName }) {
       {videoId && (
         <div>
           <h3 className="text-base font-semibold text-gray-700 mb-2">
-            <FontAwesomeIcon
+            <Icon
               icon={faCirclePlay}
               className="text-sm text-red-600 hover:text-red-800"
               title="YouTube"
