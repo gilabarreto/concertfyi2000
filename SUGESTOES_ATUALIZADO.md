@@ -583,11 +583,15 @@ O item "44 kB de JS não usado" ficou em aberto por falta de saber *qual* biblio
       escala pelo `font-size` justamente para a altura (1em) e o alinhamento (−0,125em) andarem
       juntos. A versão que ficou mede idêntico ao original, caixa e `vertical-align`.
 
+- [x] **JS não usado: 37 → 29 kB**, medido contra o site no ar depois do deploy (três rodadas do
+      Lighthouse, todas 29 kB). O `fontawesome-svg-core` era a segunda maior fatia; o que sobra é
+      `react-dom`, que não sai. Acessibilidade **100** nas três, performance 71/77/80 — a mesma
+      faixa de ruído de antes, então **não afirmo ganho de performance**, só de bytes.
+
 ### 🔵 Aberto
 
-| Achado | Por que ficou |
-|---|---|
-| Os 37 kB de JS não usado | Medidos antes do FontAwesome sair, então o número está velho: o `fontawesome-svg-core` era a segunda maior fatia dele. Refaço a medição quando o deploy de `d335254` estiver no ar. O que sobra depois é `react-dom`, que não sai. |
+Nada deste eixo. O chunk de entrada saiu de 516,53 kB para 258,28 kB e o que sobra é `react-dom`
+(128,8 kB) mais o código do app.
 
 ---
 

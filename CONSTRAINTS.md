@@ -97,10 +97,10 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | Linhas de JS/JSX no fonte | 3.840 |
 | Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
-| Lighthouse mobile (`concertfyi.com`) | performance **71–78** (4 medições), acessibilidade **100**, best practices **96**, SEO **100** |
-| LCP mobile | **4,8–6,5 s** (FCP 2,6 s, CLS 0,001, TBT 90 ms) |
+| Lighthouse mobile (`concertfyi.com`) | performance **71–80** (7 medições), acessibilidade **100**, best practices **96**, SEO **100** |
+| LCP mobile | **4,8–6,8 s** (FCP 1,7–2,6 s, CLS 0,001–0,019, TBT 0–90 ms) |
 | Peso de imagem na home | **~0,5 MB em 7 requisições** (era 21,7 MB em 38) |
-| JS não usado no chunk de entrada | 37 kB (era 44 kB antes de tirar o axios) — a medir de novo depois do deploy de `d335254` |
+| JS não usado no chunk de entrada | 29 kB (era 44 kB antes de tirar o axios, 37 antes do FontAwesome) |
 
 Cobertura ficou fora de propósito: com 5 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
@@ -124,16 +124,18 @@ nome, **no diretório de onde o comando foi chamado** — ~10 MB por rodada no m
 Rodar de um diretório descartável deixa o lixo lá. O `.gitignore` cobre o caso de esquecer.
 
 Sem portão de propósito, e agora com medição para provar: quatro rodadas seguidas do mesmo commit
-deram **71, 72, 73 e 78**. A home sorteia os artistas do carrossel, então cada rodada baixa fotos
-diferentes e o LCP anda junto (4,8 s a 6,5 s). Uma faixa de 7 pontos como portão reprovaria commit
-inocente e aprovaria regressão pequena.
+deram **71, 72, 73 e 78**, e três rodadas contra o commit seguinte deram **71, 77 e 80**. A home
+sorteia os artistas do carrossel, então cada rodada baixa fotos diferentes e o LCP anda junto
+(4,8 s a 6,8 s). Uma faixa de 9 pontos como portão reprovaria commit inocente e aprovaria
+regressão pequena.
 
 Comparar antes/depois exige, então, ou uma métrica determinística (tamanho do chunk, bytes de
 imagem, JS não usado — essas vieram do build, não do Lighthouse) ou a mediana de várias rodadas.
 Uma medição sozinha não sustenta afirmação nenhuma sobre performance nesta página.
 
-Os valores acima são de 2026-09-15, depois de `797e895`, `5c892ec` e `57f3b88` — o LCP saiu de
-115,6 s, e o chunk de entrada de 408,49 kB.
+Os valores acima são de 2026-09-15, depois de `797e895`, `5c892ec`, `57f3b88` e `d335254` — o LCP
+saiu de 115,6 s, e o chunk de entrada de 408,49 kB. As últimas três rodadas foram contra o site no
+ar já sem o runtime do FontAwesome (258.294 bytes servidos, conferidos no arquivo baixado).
 
 ---
 
