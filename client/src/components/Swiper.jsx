@@ -212,7 +212,9 @@ export default function Swiper() {
             </>
           )}
           <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-            <h3 className="text-4xl font-bold text-white text-center px-4 [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">
+            {/* h2, não h3: o único heading acima na home é o h1 da tagline, e pular
+                nível é o achado "heading-order" do Lighthouse. O tamanho vem da classe. */}
+            <h2 className="text-4xl font-bold text-white text-center px-4 [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">
               {/* keyboard/screen-reader entry point; mouse clicks pass through (pointer-events-none) to the slide */}
               <button
                 type="button"
@@ -225,7 +227,7 @@ export default function Swiper() {
               >
                 {slide.artistName}
               </button>
-            </h3>
+            </h2>
           </div>
         </div>
       </div>

@@ -11,11 +11,12 @@ const Home = () => {
       />
       <div className="w-full flex flex-col items-center justify-between min-h-full p-6">
         <div className="flex flex-1 flex-col h-[120px] max-h-min justify-center text-2xl font-medium tracking-tight items-center">
-          <h1>
+          {/* A marca já é o link do Navbar; aqui ela é repetição visual, não título. */}
+          <p>
             concert{"{"}
             <span className="text-2xl tracking-tight font-semibold text-red-600">fyi</span>
             {"}"}
-          </h1>
+          </p>
           <h1 className="text-3xl top-0 font-bold text-center text-zinc-800 tracking-tight pt-2">
             Live Music Lives Here.
           </h1>
@@ -24,11 +25,11 @@ const Home = () => {
         <Swiper />
 
         <div className="w-full text-[22px] leading-[1.5rem] font-bold text-center tracking-tight">
-          <h1 className="[&>span]:block">
+          <p className="[&>span]:block">
             <span>Track your favorite artists,</span>
             <span>explore past performances,</span>
             <span>and never miss a concert again.</span>
-          </h1>
+          </p>
         </div>
 
         <div className="my-4 w-[250px] bg-white rounded-xl shadow py-2 flex justify-center items-center">
