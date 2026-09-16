@@ -519,6 +519,8 @@ sem sudo). O comando ficou registrado no `CONSTRAINTS.md`.
       sobrescrevia o "concert{fyi}" visível, então quem usa controle por voz não alcançava o link
       dizendo o que estava lendo na tela. Tirar o label deixa o nome ser o próprio texto.
 
+**As duas correções de acessibilidade foram medidas em produção depois do deploy: 98 → 100.**
+
 ### 🔵 Aberto — medido, não resolvido
 
 | Achado | Tamanho | Por que ficou |

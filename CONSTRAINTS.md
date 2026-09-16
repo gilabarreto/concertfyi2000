@@ -89,7 +89,7 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | Linhas de JS/JSX no fonte | 3.310 |
 | Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
-| Lighthouse mobile (`concertfyi.com`) | performance **78**, acessibilidade **98**, best practices **96**, SEO **100** |
+| Lighthouse mobile (`concertfyi.com`) | performance **78**, acessibilidade **100**, best practices **96**, SEO **100** |
 | LCP / FCP mobile | **4,8 s** / 2,6 s (CLS 0,001, TBT 90 ms) |
 | Peso de imagem na home | **0,57 MB em 7 requisições** (era 21,7 MB em 38) |
 
