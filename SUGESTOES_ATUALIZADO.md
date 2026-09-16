@@ -341,9 +341,8 @@ O que a skill levantou e não foi resolvido no mesmo dia está abaixo.
 > Esta é a lista canônica do que só você pode fazer. Tudo que eu esbarrar e não puder resolver
 > sozinho entra aqui, não no chat.
 
-- [ ] **`gh auth login`.** O GitHub CLI foi instalado em 2026-09-15 (`~/.local/bin/gh`, v2.101.0),
-      mas o login é interativo. Rode `! gh auth login` numa sessão. Sem isso eu não consigo
-      conferir se um run do Actions passou — foi exatamente o que faltou no dia do commit do CI.
+- [x] **`gh auth login`** — feito em 2026-09-15. Autenticado como `gilabarreto`, protocolo SSH.
+      Com isso eu consigo conferir run do Actions sem depender de você abrir o navegador.
 
 - [ ] **Restringir a `VITE_GOOGLE_MAPS_KEY` por referrer** no console do Google Cloud.
       A chave está no bundle — isso é normal e inevitável para chave de browser. O que não é
