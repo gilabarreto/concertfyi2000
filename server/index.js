@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { rateLimit } = require("./rateLimit");
+const { requestLog } = require("./requestLog");
 require("dotenv").config();
 
 const app = express();
@@ -18,6 +19,9 @@ const allowedOrigins = [
 
 // Não anuncia o framework para quem só quer saber o que é vulnerável aqui dentro.
 app.disable("x-powered-by");
+
+// Antes do rate limit, para o 429 aparecer no log como qualquer outra resposta.
+app.use(requestLog());
 
 app.use(express.json());
 
