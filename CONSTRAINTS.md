@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 34 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 34 testes, apagar um é apagar 3% da cobertura que existe. |
+| Testes | 43 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `api/request.js` (o wrapper de fetch do client), `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 43 testes, apagar um é apagar 2% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -37,7 +37,7 @@ Comandos exatos:
 gitleaks git --staged --redact --no-banner   # segredos no que está staged
 npm run format:check --prefix client         # prettier --check .
 npm run lint --prefix client                 # eslint .
-node --test                                  # da raiz, acha os cinco arquivos
+node --test                                  # da raiz, acha os seis arquivos
 
 # CVEs — fora do check de todo dia, depende de rede e o banco muda sem o código mudar
 osv-scanner scan source --lockfile client/package-lock.json --lockfile server/package-lock.json
@@ -89,14 +89,15 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 
 | Métrica | 2026-09-15 |
 |---|---|
-| JS gzipado na entrada | 116,45 kB (era 154,77 kB antes do code splitting) |
-| CSS | 23,95 kB (5,16 kB gzip) |
-| Linhas de JS/JSX no fonte | 3.310 |
+| JS gzipado na entrada | 110,99 kB (era 154,77 kB antes do code splitting) |
+| CSS | 23,87 kB (5,19 kB gzip) |
+| Linhas de JS/JSX no fonte | 3.840 |
 | Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
-| Lighthouse mobile (`concertfyi.com`) | performance **78**, acessibilidade **100**, best practices **96**, SEO **100** |
-| LCP / FCP mobile | **4,8 s** / 2,6 s (CLS 0,001, TBT 90 ms) |
-| Peso de imagem na home | **0,57 MB em 7 requisições** (era 21,7 MB em 38) |
+| Lighthouse mobile (`concertfyi.com`) | performance **71–78** (4 medições), acessibilidade **100**, best practices **96**, SEO **100** |
+| LCP mobile | **4,8–6,5 s** (FCP 2,6 s, CLS 0,001, TBT 90 ms) |
+| Peso de imagem na home | **~0,5 MB em 7 requisições** (era 21,7 MB em 38) |
+| JS não usado no chunk de entrada | 37 kB (era 44 kB antes de tirar o axios) |
 
 Cobertura ficou fora de propósito: com 5 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
@@ -119,9 +120,17 @@ a conversão do caminho falha e o `mkdir` acaba criando uma pasta só, com barra
 nome, **no diretório de onde o comando foi chamado** — ~10 MB por rodada no meio do repositório.
 Rodar de um diretório descartável deixa o lixo lá. O `.gitignore` cobre o caso de esquecer.
 
-Sem portão de propósito: performance de campo varia com a rede da medição, e 78 numa run não é
-78 na próxima. O número serve para comparar antes/depois de uma mudança na mesma sessão. Os três
-primeiros valores acima são de 2026-09-15, depois de `797e895` e `5c892ec` (LCP saiu de 115,6 s).
+Sem portão de propósito, e agora com medição para provar: quatro rodadas seguidas do mesmo commit
+deram **71, 72, 73 e 78**. A home sorteia os artistas do carrossel, então cada rodada baixa fotos
+diferentes e o LCP anda junto (4,8 s a 6,5 s). Uma faixa de 7 pontos como portão reprovaria commit
+inocente e aprovaria regressão pequena.
+
+Comparar antes/depois exige, então, ou uma métrica determinística (tamanho do chunk, bytes de
+imagem, JS não usado — essas vieram do build, não do Lighthouse) ou a mediana de várias rodadas.
+Uma medição sozinha não sustenta afirmação nenhuma sobre performance nesta página.
+
+Os valores acima são de 2026-09-15, depois de `797e895`, `5c892ec` e `57f3b88` — o LCP saiu de
+115,6 s, e o chunk de entrada de 408,49 kB.
 
 ---
 

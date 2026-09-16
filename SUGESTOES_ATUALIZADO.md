@@ -525,12 +525,54 @@ sem sudo). O comando ficou registrado no `CONSTRAINTS.md`.
 
 | Achado | Tamanho | Por que ficou |
 |---|---|---|
-| `unused-javascript` — 44 kB não usados no chunk de entrada (~320 ms) | médio | É o preço do bundle único de entrada. O code splitting por rota já tirou o que era fácil (`ArtistPage` são 169 kB que a maioria das visitas não pede). Cortar mais depende de achar *qual* biblioteca está entrando sem uso, o que é uma investigação com `rollup-plugin-visualizer` — vale quando o teto de 430 kB apertar, não antes. |
+| ~~`unused-javascript` — 44 kB não usados no chunk de entrada~~ | — | **Investigado e parcialmente resolvido, ver abaixo.** |
 | Google Fonts bloqueia a renderização (847 ms) | pequeno | O `<link>` do DM Sans no `index.html` trava o first paint. A correção conhecida é `preconnect` + `media="print" onload`, mas mexer em carregamento de fonte troca um problema por FOUT. Precisa de uma medição antes/depois própria. |
 | `cache-insight` — vida útil de cache curta | fora do alcance | Os assets estáticos são servidos pelo GitHub Pages, que não deixa configurar `Cache-Control`. Só muda migrando de host. |
 | Geolocalização pedida no carregamento | deliberado | Virou exceção registrada no `CONSTRAINTS.md`: o carrossel da home *é* "shows perto de você". Trocar por botão é decisão de produto. |
 
 **Testes: 30 → 34.** Régua atualizada com os números medidos (antes diziam "não medido").
+
+---
+
+## 🔍 O que havia no chunk de entrada (2026-09-15)
+
+O item "44 kB de JS não usado" ficou em aberto por falta de saber *qual* biblioteca. Medido com
+`vite build --sourcemap` + `npx source-map-explorer` — nenhuma dependência nova no projeto:
+
+| | kB no chunk | |
+|---|---|---|
+| `react-dom` | 128,8 | inevitável |
+| `@fortawesome/fontawesome-svg-core` | 87,0 | ver abaixo |
+| **`axios`** | **50,5** | **removido** |
+| `@tanstack/query-core` | 35,1 | inevitável |
+| código do app | 29,9 | |
+| `react-helmet-async` | 14,0 | |
+| `react-router` + `@remix-run/router` | 17,1 | |
+| ícones do FontAwesome (os 20 usados) | 8,8 | |
+
+### 🟢 Resolvido
+
+- [x] **`axios` fora, `fetch` no lugar** (`57f3b88`). 50,5 kB do chunk de entrada para dois GETs,
+      uma querystring e um timeout — tudo isso é nativo. Estava importado em **um arquivo só**
+      (`api/api.js`), então a troca foi contida. O wrapper foi para `api/request.js` pelo mesmo
+      motivo que o `server/http.js` existe separado: o `api.js` lê `import.meta.env` no topo e por
+      isso não carrega fora do Vite, e o `node:test` não o alcança. O `request.js` não tem nada de
+      Vite e ganhou 9 testes. **Entrada 408,49 → 356,76 kB; gzip 130,12 → 110,99 kB; JS não usado
+      44 → 37 kB.** Verificado contra a API no ar: 400 com corpo, busca real com acento, a chamada
+      ao Photon e um timeout forçado.
+- [x] **Teto do bundle baixado de 430 para 380 kB** (`eca072d`), em commit próprio, como a régua
+      exige. Com 73 kB de folga o aviso nunca dispararia.
+- [x] **Erro do nosso servidor voltou a aparecer** (`7c70c1f`). As dez rotas do `server/` respondem
+      `{ error }`, mas o interceptor do axios só lia `{ message }` — que é o formato de terceiro.
+      Toda falha do nosso proxy chegava ao `queries.js` como o genérico "Request failed", com o
+      motivo real descartado. Achado enquanto eu portava o wrapper, não procurado.
+
+### 🔵 Aberto
+
+| Achado | Por que ficou |
+|---|---|
+| `fontawesome-svg-core` são 87 kB para 20 ícones | É o maior peso removível que sobrou, mas está importado em **13 arquivos** — Navbar, Footer, LocationSelector e mais dez. Tirar é refatoração de verdade, não uma troca de import, e o ganho (~87 kB) é grande o bastante para merecer decisão sua em vez de iniciativa minha. Alternativas: SVG inline dos 20 ícones, ou `lucide-react` (tree-shakeable de verdade). **Opinião: vale, mas não no mesmo fôlego que o resto.** |
+| Os 37 kB de JS não usado que sobraram | Agora é `react-dom` e `fontawesome-svg-core`, nesta ordem. O primeiro não sai; o segundo é a linha acima. Sem um terceiro alvo, o item está esgotado. |
 
 ---
 
