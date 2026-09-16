@@ -53,7 +53,7 @@ o scanner. O staged pega o que importa: o segredo prestes a entrar.
 
 | O quê | Hoje | Limite | Por quê |
 |---|---|---|---|
-| Maior chunk de JS (entrada) | 356,76 kB | **380 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
+| Maior chunk de JS (entrada) | 258,28 kB | **270 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
 
 Histórico deste número, porque ele já mudou duas vezes em um dia:
 
@@ -63,15 +63,18 @@ Histórico deste número, porque ele já mudou duas vezes em um dia:
 | 2026-09-15 | 356,10 kB | 380 kB | `React.lazy` por rota tirou 161 kB da entrada |
 | 2026-09-15 | 407,72 kB | 430 kB | `react-router` 6.4.3 → 6.30.6 devolveu 51 kB |
 | 2026-09-15 | 356,76 kB | 380 kB | trocar o `axios` pelo `fetch` tirou os mesmos 51 kB de volta |
+| 2026-09-15 | 258,28 kB | 270 kB | sair o runtime do FontAwesome (94,6 kB para desenhar dez `<svg>`) |
 
 O de 430 foi um teto **subindo**, que é o movimento suspeito. A justificativa: 26 versões menores
 de atraso no router é pior dívida que 51 kB, e o `npm update` que trouxe isso limpou 38 CVEs. O
 aviso disparou no build e a decisão está aqui em vez de ter sido silenciada — que é o único uso
 honesto de um limite que sobe.
 
-O de 380 é o movimento contrário: o `axios` custava 50,5 kB do chunk de entrada para dois GETs e
-um timeout que a plataforma já tem, e saiu. Teto que fica largo depois de uma redução real deixa
-de avisar — a folga de 73 kB absorveria a próxima biblioteca pesada em silêncio.
+Os de 380 e 270 são o movimento contrário. O `axios` custava 50,5 kB do chunk de entrada para dois
+GETs e um timeout que a plataforma já tem; o runtime do FontAwesome custava 94,6 kB para converter
+dados de ícone em `<svg>`, coisa de cinco linhas. Os dois saíram. Teto que fica largo depois de uma
+redução real deixa de avisar — a folga de 122 kB absorveria as próximas duas bibliotecas pesadas em
+silêncio.
 
 O que o usuário baixa ao abrir o site é o chunk de entrada. As rotas viraram chunks próprios e só
 descem quando alguém navega para elas — `ArtistPage` sozinha são 155 kB (arrasta o Google Maps) que
@@ -89,15 +92,15 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 
 | Métrica | 2026-09-15 |
 |---|---|
-| JS gzipado na entrada | 110,99 kB (era 154,77 kB antes do code splitting) |
-| CSS | 23,87 kB (5,19 kB gzip) |
+| JS gzipado na entrada | 84,64 kB (era 154,77 kB antes do code splitting) |
+| CSS | 24,00 kB (5,23 kB gzip) |
 | Linhas de JS/JSX no fonte | 3.840 |
 | Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
 | Lighthouse mobile (`concertfyi.com`) | performance **71–78** (4 medições), acessibilidade **100**, best practices **96**, SEO **100** |
 | LCP mobile | **4,8–6,5 s** (FCP 2,6 s, CLS 0,001, TBT 90 ms) |
 | Peso de imagem na home | **~0,5 MB em 7 requisições** (era 21,7 MB em 38) |
-| JS não usado no chunk de entrada | 37 kB (era 44 kB antes de tirar o axios) |
+| JS não usado no chunk de entrada | 37 kB (era 44 kB antes de tirar o axios) — a medir de novo depois do deploy de `d335254` |
 
 Cobertura ficou fora de propósito: com 5 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
