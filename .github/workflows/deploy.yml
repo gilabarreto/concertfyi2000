@@ -20,9 +20,18 @@ jobs:
         with:
           node-version: 24
 
+      # `npm ci` instala o que está no lockfile e falha se ele divergir do
+      # package.json — o que vai ao ar é o que foi resolvido aqui, não o que a
+      # data do build resolveria.
       - name: Install client dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./client
+
+      # O `node --test` roda da raiz e acha os testes do servidor junto. Sem as
+      # dependências dele, o `require` de qualquer rota derruba o passo inteiro.
+      - name: Install server dependencies
+        run: npm ci
+        working-directory: ./server
 
       # O portão do CONSTRAINTS.md. Falhou aqui, o Deploy lá embaixo nem roda.
       - name: Format
