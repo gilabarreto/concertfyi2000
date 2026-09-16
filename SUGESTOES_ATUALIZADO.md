@@ -767,3 +767,38 @@ sim conta a pagar: como o proxy é aberto, qualquer um pode gastar a cota das no
       sessão nossa, e sem backend com sessão não há onde mais pôr num SPA de página estática. Trocar
       isso significa cookie `httpOnly` emitido pelo servidor — arquitetura nova. **Registro como
       risco aceito**, não como coisa a fazer amanhã.
+
+---
+
+## 🆕 Saldo do `/agent-skills:ci-cd-and-automation` — 2026-09-16
+
+### ✅ Resolvido agora
+
+- [x] **O CI estava vermelho e a culpa era minha** (`61af09d`). O passo de teste roda `node --test` da raiz, que enxerga os
+      testes do servidor também — e o workflow só instalava as dependências do `client/`. Os testes
+      de rota que entraram na varredura de segurança usam `express`, então três deploys seguidos
+      falharam com `Cannot find module 'express'`. O site no ar nunca quebrou (a `gh-pages` continua
+      com o último build bom), mas nada novo subia. Corrigido e verificado: run verde.
+- [x] **Os dois `npm install` do CI viraram `npm ci`.** Instala o que está no lockfile e falha se
+      ele divergir do `package.json` — o que vai ao ar passa a ser o que foi resolvido aqui, não o
+      que a data do build resolveria.
+- [x] **O CI agora varre segredo** — fecha a exceção "CI não varre segredos" do `CONSTRAINTS.md`.
+      `gitleaks dir . --redact` roda logo depois do checkout, **antes** de instalar ou buildar, com
+      a versão do binário fixa. O que é varrido é exatamente o que vai ao ar, sem `node_modules` nem
+      `dist` no meio. Primeira rodada: 234 kB, zero achados. O modo `--staged` local continua como
+      está; ele pega o segredo antes de virar commit, este pega o que escapou disso.
+- [x] **Dois deploys não correm mais um por cima do outro.** Sem `concurrency`, dois pushes com um
+      minuto de diferença publicavam a `gh-pages` ao mesmo tempo e quem terminasse por último
+      ganhava — podia ser o commit mais velho. Agora enfileira (não cancela: deploy interrompido no
+      meio da publicação deixa a branch pela metade).
+
+### 🟡 Ficou para depois
+
+- [ ] **`osv-scanner` ainda roda só na mão.** Agora que existe um passo de segurança no CI, ele tem
+      onde morar; o motivo de eu não ter posto junto é que o banco de CVE muda sem o código mudar, e
+      um deploy que falha por causa de advisory publicada de madrugada trava o push de quem não
+      mexeu em dependência. O lugar certo é um workflow **agendado** (semanal, abrindo issue), não o
+      deploy. Vale fazer — é a próxima automação óbvia.
+- [ ] **Nenhum workflow roda em pull request.** Hoje todo commit vai direto para `main`, então o CI
+      é sempre pós-fato: quando ele reprova, o commit já está publicado no repositório. Se em algum
+      momento passar a existir branch de trabalho, o mesmo job deve rodar em `pull_request`.

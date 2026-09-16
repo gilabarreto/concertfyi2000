@@ -13,8 +13,8 @@ npm run check:full   # ~5s   — check + build, antes de push
 
 O `check` precisa do `gitleaks` no PATH (`~/.local/bin/gitleaks`, binário único).
 
-No CI, o `deploy.yml` roda **lint e teste antes do build**: falhou, o deploy não acontece. O que
-vai ao ar em `concertfyi.com` passou pelo piso.
+No CI, o `deploy.yml` roda **varredura de segredo, formatação, lint e teste antes do build**:
+falhou qualquer um, o deploy não acontece. O que vai ao ar em `concertfyi.com` passou pelo piso.
 
 ---
 
@@ -43,9 +43,14 @@ node --test                                  # da raiz, acha os oito arquivos
 osv-scanner scan source --lockfile client/package-lock.json --lockfile server/package-lock.json
 ```
 
-O gitleaks roda **só no staged**, de propósito. Varrer o histórico inteiro devolve 88 achados,
-87 deles bundles da `gh-pages` com a chave pública do Google Maps — ruído que ensina a ignorar
-o scanner. O staged pega o que importa: o segredo prestes a entrar.
+Na máquina, o gitleaks roda **só no staged**, de propósito. Varrer o histórico inteiro devolve 88
+achados, 87 deles bundles da `gh-pages` com a chave pública do Google Maps — ruído que ensina a
+ignorar o scanner. O staged pega o que importa: o segredo prestes a entrar.
+
+No CI é outra varredura, e ela não depende de ninguém lembrar: o `deploy.yml` roda
+`gitleaks dir . --redact` na árvore recém-clonada, **antes de instalar ou buildar qualquer coisa**,
+com a versão do binário fixa. Assim o que é varrido é exatamente o que vai ao ar, sem `node_modules`
+nem `dist` no meio para produzir achado de terceiro. Hoje: 234 kB varridos, zero achados.
 
 ---
 
@@ -148,9 +153,8 @@ ar já sem o runtime do FontAwesome (258.294 bytes servidos, conferidos no arqui
 | 87 achados de gitleaks no histórico da `gh-pages` | São bundles buildados contendo `VITE_GOOGLE_MAPS_KEY`. Chave de browser é pública por design; o controle dela é restrição de referrer no Google Cloud, não segredo. | Victor | sem vencimento — aceito |
 | `VITE_GOOGLE_MAPS_KEY` sem restrição de referrer confirmada | Nunca foi verificado no console do Google Cloud. Enquanto não for, a chave pública é abusável por qualquer um. | Victor | **2026-10-15** |
 | 2 CVEs abertas no `react-router` 6.30.6 | `GHSA-337j-9hxr-rhxg` só afeta hidratação de SSR, e este app não tem SSR. `GHSA-wrjc-x8rr-h8h6` é open redirect via caminho não confiável chegando ao `navigate()`; as seis chamadas do app prefixam um segmento literal (`/artists/...`), então não viram protocolo relativo. As duas só fecham no react-router 7, que é major. | Victor | reavaliar se o app passar a aceitar caminho vindo do usuário |
-| `osv-scanner` fora do `npm run check` | Depende de rede e o banco de dados muda sem o código mudar — rodar a cada commit dá falso alarme em dia que ninguém mexeu em dependência. Rodar na mão, ou ao mexer em `package.json`. | Victor | quando houver CI com cache, mover para lá |
+| `osv-scanner` fora do `npm run check` | Depende de rede e o banco de dados muda sem o código mudar — rodar a cada commit dá falso alarme em dia que ninguém mexeu em dependência. Rodar na mão, ou ao mexer em `package.json`. | Victor | agora que o CI varre segredo, mover o osv-scanner para lá é o próximo passo natural |
 | `server/` sem lint nem prettier | As duas ferramentas foram instaladas só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
-| CI não varre segredos | O `deploy.yml` roda lint e teste antes do build, mas não o gitleaks — ele precisaria do binário na runner, e o modo `--staged` não faz sentido lá. A varredura de segredo depende de rodar `npm run check` antes de commitar. | Victor | reavaliar se algum segredo escapar |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
 | Geolocalização pedida no carregamento da home | Achado `geolocation-on-start` do Lighthouse. É deliberado: o carrossel da home é "shows perto de você", e sem coordenada não há o que mostrar. Existe fallback (São Paulo) e o `LocationSelector` deixa trocar de cidade sem conceder a permissão. Trocar por um botão "usar minha localização" é decisão de produto, não de qualidade. | Victor | reavaliar se a taxa de negação da permissão virar um problema medido |
 | Componentes e hooks sem teste | O `node:test` só enxerga arquivo que o node resolve sozinho — JSX e `import.meta.env` estão fora do alcance sem Vitest + jsdom + testing-library. **Victor vetou as 3 dependências em 2026-09-15.** A lógica que erra calado (costura das duas APIs, parse das duas datas, placar da playlist) está coberta; o resto é marcação. | Victor | ao primeiro bug que só um teste de hook pegaria — `useGeolocation` é o candidato |
