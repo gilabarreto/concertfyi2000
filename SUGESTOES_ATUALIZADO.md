@@ -542,7 +542,7 @@ O item "44 kB de JS não usado" ficou em aberto por falta de saber *qual* biblio
 | | kB no chunk | |
 |---|---|---|
 | `react-dom` | 128,8 | inevitável |
-| `@fortawesome/fontawesome-svg-core` | 87,0 | ver abaixo |
+| **`@fortawesome/fontawesome-svg-core`** | **87,0** | **removido** |
 | **`axios`** | **50,5** | **removido** |
 | `@tanstack/query-core` | 35,1 | inevitável |
 | código do app | 29,9 | |
@@ -566,13 +566,28 @@ O item "44 kB de JS não usado" ficou em aberto por falta de saber *qual* biblio
       `{ error }`, mas o interceptor do axios só lia `{ message }` — que é o formato de terceiro.
       Toda falha do nosso proxy chegava ao `queries.js` como o genérico "Request failed", com o
       motivo real descartado. Achado enquanto eu portava o wrapper, não procurado.
+- [x] **Runtime do FontAwesome fora** (`d335254`), com o seu "faça o que você acha melhor". Eu
+      tinha estimado 13 arquivos; contando os usos de verdade eram **10 chamadas em 9 arquivos**, e
+      entre todas elas só três props (`className`, `size`, `aria-hidden`). O
+      `@fortawesome/react-fontawesome` mais o `fontawesome-svg-core` que ele arrasta custavam
+      94,6 kB para transformar `{ icon: [largura, altura, , , path] }` num `<svg>` — o resto do que
+      eles trazem (registro global, injeção de CSS, troca de `<i class="fa-">` no DOM, máscaras,
+      transformações) este app nunca usou. `components/Icon.jsx` faz o desenho em cinco linhas.
+      Os pacotes de ícones ficam: 8,8 kB pelos vinte em uso. **Entrada 356,76 → 258,28 kB; gzip
+      110,99 → 84,64 kB.** Teto baixado para 270 kB em commit próprio (`d851501`).
+
+      Vale registrar o erro do caminho, porque ele quase passou: a primeira versão do `Icon.jsx`
+      mexia na **altura** em vez do `font-size`, e nas capturas de tela ficou indistinguível. Medindo
+      a caixa de cada `<svg>` no browser, não. Antes: 17,5×14, 22,5×18, 30×24, 30×24, 30×24. Aquela
+      versão: 14×14, 15,8×18, 21×24, 15×24, 24×24, todas meio fora da linha de base. O FontAwesome
+      escala pelo `font-size` justamente para a altura (1em) e o alinhamento (−0,125em) andarem
+      juntos. A versão que ficou mede idêntico ao original, caixa e `vertical-align`.
 
 ### 🔵 Aberto
 
 | Achado | Por que ficou |
 |---|---|
-| `fontawesome-svg-core` são 87 kB para 20 ícones | É o maior peso removível que sobrou, mas está importado em **13 arquivos** — Navbar, Footer, LocationSelector e mais dez. Tirar é refatoração de verdade, não uma troca de import, e o ganho (~87 kB) é grande o bastante para merecer decisão sua em vez de iniciativa minha. Alternativas: SVG inline dos 20 ícones, ou `lucide-react` (tree-shakeable de verdade). **Opinião: vale, mas não no mesmo fôlego que o resto.** |
-| Os 37 kB de JS não usado que sobraram | Agora é `react-dom` e `fontawesome-svg-core`, nesta ordem. O primeiro não sai; o segundo é a linha acima. Sem um terceiro alvo, o item está esgotado. |
+| Os 37 kB de JS não usado | Medidos antes do FontAwesome sair, então o número está velho: o `fontawesome-svg-core` era a segunda maior fatia dele. Refaço a medição quando o deploy de `d335254` estiver no ar. O que sobra depois é `react-dom`, que não sai. |
 
 ---
 
