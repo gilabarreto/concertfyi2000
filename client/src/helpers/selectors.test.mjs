@@ -94,26 +94,58 @@ test("getNextConcertsByArtist: lista vazia quando o nome não bate exatamente", 
   assert.deepStrictEqual(getNextConcertsByArtist(undefined, "Radiohead"), []);
 });
 
-test("getBestImage: prefere a 16_9 mais larga, senão a de maior área", () => {
-  const wide = { ratio: "16_9", width: 1920, height: 1080, url: "wide.jpg" };
+// A Ticketmaster oferece a mesma foto em 100, 205, 640, 1024, 1136 e 2048 de largura,
+// e às vezes um _SOURCE de vários MB. Pegar a maior custou 21,7 MB na home e um LCP
+// de 115s no mobile (Lighthouse, 2026-09-15). O certo é a menor que ainda cobre o
+// espaço onde ela vai aparecer.
+const tmSizes = [100, 205, 640, 1024, 1136, 2048].map((width) => ({
+  ratio: "16_9",
+  width,
+  height: Math.round((width * 9) / 16),
+  url: `${width}.jpg`,
+}));
 
+test("getBestImage: pega a menor que cobre a largura pedida, não a maior que existe", () => {
+  assert.strictEqual(getBestImage(tmSizes, 640), "640.jpg");
+  assert.strictEqual(getBestImage(tmSizes, 1024), "1024.jpg");
+
+  // 800 não existe: sobe para a próxima que cobre, nunca desce para uma borrada.
+  assert.strictEqual(getBestImage(tmSizes, 800), "1024.jpg");
+});
+
+test("getBestImage: se nenhuma cobre a largura pedida, fica com a maior disponível", () => {
+  assert.strictEqual(getBestImage(tmSizes, 4000), "2048.jpg");
+});
+
+test("getBestImage: sem 16_9, escolhe entre as outras pelo mesmo critério", () => {
   assert.strictEqual(
-    getBestImage([
-      { ratio: "3_2", width: 4000, height: 2666, url: "huge.jpg" },
-      { ratio: "16_9", width: 640, height: 360, url: "small-wide.jpg" },
-      wide,
-    ]),
-    "wide.jpg",
+    getBestImage(
+      [
+        { ratio: "3_2", width: 4000, height: 2666, url: "huge.jpg" },
+        { ratio: "3_2", width: 640, height: 427, url: "ok.jpg" },
+        { ratio: "4_3", width: 305, height: 225, url: "tiny.jpg" },
+      ],
+      640,
+    ),
+    "ok.jpg",
   );
+});
 
+test("getBestImage: ignora o _SOURCE gigante quando há uma variante que serve", () => {
+  // Era daqui que vinham 18,1 MB dos 21,7 MB da home: 27 originais sem redimensionar.
   assert.strictEqual(
-    getBestImage([
-      { ratio: "3_2", width: 100, height: 100, url: "tiny.jpg" },
-      { ratio: "4_3", width: 800, height: 600, url: "big.jpg" },
-    ]),
-    "big.jpg",
+    getBestImage(
+      [
+        { ratio: "16_9", width: 640, height: 360, url: "640.jpg" },
+        { ratio: "16_9", width: 4928, height: 2772, url: "foto_SOURCE" },
+      ],
+      640,
+    ),
+    "640.jpg",
   );
+});
 
+test("getBestImage: lista vazia devolve null", () => {
   assert.strictEqual(getBestImage([]), null);
 });
 

@@ -37,12 +37,22 @@ export function getNextConcertsByArtist(events = [], artistName) {
     .sort((a, b) => a.dateObj - b.dateObj);
 }
 
-export function getBestImage(images = []) {
+// A Ticketmaster manda a mesma foto em várias larguras (100 a 2048) e, em parte do
+// catálogo, um _SOURCE de vários MB. Esta função já se chamou "best" e queria dizer
+// "maior": a home baixava 21,7 MB de imagem e marcava LCP de 115s no mobile.
+// Agora "best" é a menor que ainda cobre o espaço onde a foto vai aparecer — subir
+// de resolução é barato, descer é borrão, então sem candidata à altura fica a maior.
+export function getBestImage(images = [], minWidth = 640) {
   if (!images.length) return null;
+
   const ratio169 = images.filter((img) => img.ratio === "16_9");
-  if (ratio169.length) {
-    return ratio169.reduce((max, img) => (img.width > max.width ? img : max)).url;
-  }
-  return images.reduce((max, img) => (img.width * img.height > max.width * max.height ? img : max))
-    .url;
+  const candidates = ratio169.length ? ratio169 : images;
+
+  const wideEnough = candidates.filter((img) => img.width >= minWidth);
+
+  const pick = wideEnough.length
+    ? wideEnough.reduce((min, img) => (img.width < min.width ? img : min))
+    : candidates.reduce((max, img) => (img.width > max.width ? img : max));
+
+  return pick.url;
 }

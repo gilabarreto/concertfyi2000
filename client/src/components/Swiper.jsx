@@ -174,7 +174,8 @@ export default function Swiper() {
   const renderSlide = (slide, index) => {
     const offset = index - active;
     const depth = Math.abs(offset);
-    const image = getBestImage(slide.images);
+    // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
+    const image = getBestImage(slide.images, 1024);
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
 
     return (
