@@ -718,3 +718,52 @@ então cada mudança abaixo veio com prova de equivalência, não com olhômetro
       está velha. Enquanto ficar assim, qualquer teste de fluxo de artista na sua máquina falha por
       um motivo que não é o código. Encaixa no chamado que você já ia abrir no setlist.fm
       (exceção com vencimento em 2026-10-15 no `CONSTRAINTS.md`).
+
+---
+
+## 🆕 Saldo do `/agent-skills:security-and-hardening` — 2026-09-16
+
+Modelo de ameaça deste app em três linhas: o único bem que vale roubar aqui são as **chaves de
+API**, e elas nunca chegam ao browser — quem fala com Setlist.fm, Ticketmaster, YouTube e Spotify é
+o proxy no Render. Não há login, não há banco, não há dado pessoal guardado. Sobra uma fronteira de
+confiança real: **tudo que entra pela query string do proxy**. E sobra um risco que não é roubo e
+sim conta a pagar: como o proxy é aberto, qualquer um pode gastar a cota das nossas chaves.
+
+### ✅ Resolvido agora
+
+- [x] **As rotas passavam adiante o que viesse** (`25eece8`). `/api/ticketmaster/events` sem
+      coordenada mandava `latlong=undefined,undefined`; `/api/setlist/search` sem nome de artista
+      perdia o parâmetro no caminho e a setlist.fm devolvia a lista inteira do mundo. As duas
+      gastavam uma chamada da cota para receber lixo. Agora há guarda com formato definido (número
+      em faixa válida, texto não-vazio de até 200 caracteres) e três testes que batem em cada forma
+      recusada — 54 testes no total.
+- [x] **`X-Powered-By` saiu e `X-Content-Type-Options: nosniff` entrou** (`25eece8`). O primeiro só
+      dizia a quem varre a internet qual framework procurar; o segundo impede o navegador de decidir
+      tratar uma resposta JSON como HTML.
+- [x] **O erro do `/api/spotify/token` parou de ecoar `details`** (`25eece8`). A mensagem carregava
+      o endpoint que chamamos e o cliente não lia esse campo. O que a Spotify respondeu continua.
+
+### ✅ Conferido, já estava certo
+
+| O quê | Estado |
+|---|---|
+| SSRF | Nenhuma rota monta URL com dado do usuário: os quatro hosts são literais no código. O `:id` do setlist vai `encodeURIComponent`. |
+| Injeção | Não há banco, não há shell, não há `eval` nem `innerHTML`. O React escapa a saída. |
+| Rate limit | 60 req/min por IP em `/api/*`, com `trust proxy` para o Render não virar um visitante só. |
+| CORS | Três origens nomeadas, sem curinga. |
+| Segredo em log | O `setlist.js` loga **"Set"/"Missing"**, nunca o valor. |
+| `npm audit` do servidor | 0 vulnerabilidades. |
+| `npm audit` do client | as 2 do `react-router` já registradas como exceção no `CONSTRAINTS.md`; reconferi hoje a alcançabilidade do open redirect: as seis navegações do app prefixam segmento literal, nenhuma aceita caminho digitado. |
+
+### 🟡 Vale fazer, mas é decisão sua
+
+- [ ] **Não há CSP.** O `index.html` é servido pelo GitHub Pages, que não deixa configurar cabeçalho
+      — dá para pôr por `<meta http-equiv>`. O motivo de eu não ter mandado: a política teria de
+      liberar Spotify, YouTube, Google Maps, Formspree e os domínios de imagem da Ticketmaster, e um
+      domínio esquecido quebra em produção **sem erro visível na tela**, só no console. Vale fazer
+      com verificação no browser rota a rota; é meia hora, não cinco minutos. Diga e eu faço.
+- [ ] **O token da Spotify mora no `localStorage`.** A cartilha diz para não guardar token de sessão
+      onde o JS alcança. O atenuante honesto: é token de terceiro com escopo de criar playlist, não
+      sessão nossa, e sem backend com sessão não há onde mais pôr num SPA de página estática. Trocar
+      isso significa cookie `httpOnly` emitido pelo servidor — arquitetura nova. **Registro como
+      risco aceito**, não como coisa a fazer amanhã.
