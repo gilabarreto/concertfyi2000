@@ -397,7 +397,15 @@ Revisão nos cinco eixos sobre os 17 commits do dia e a costura entre as duas AP
 
 ### 🔴 Decisão pendente com o Victor
 
-- [ ] **O proxy do Render é aberto — não tem rate limit.** `server/index.js:16-21` usa
+- [x] **Resolvido em 2026-09-15 (`35fc4d7`).** O Victor mandou ir para produção e deixou o número
+      comigo: **60 req/min por IP** em `/api/*`, janela fixa em memória, sem dependência nova.
+      `trust proxy` ligado junto — sem ele o `req.ip` no Render é o proxy para todo mundo e o
+      primeiro visitante trancaria o site inteiro. Verificado contra servidor de pé: 1-60 passam,
+      a 61ª devolve 429 com `Retry-After`. Se aparecer relato de usuário legítimo bloqueado, o
+      número está num lugar só (`server/index.js`) e sobe em um commit.
+      *Descrição original do achado abaixo, para o registro:*
+
+- [ ] ~~**O proxy do Render é aberto — não tem rate limit.**~~ `server/index.js:16-21` usa
       `cors({ origin: allowedOrigins })`, e CORS só governa o que o *navegador* deixa o JS ler.
       `curl` ignora e a rota executa igual. Busca no YouTube custa 100 unidades de uma cota
       diária de 10.000: **100 chamadas encerram o dia** e lyrics/vídeo somem para os usuários
@@ -420,14 +428,17 @@ Revisão nos cinco eixos sobre os 17 commits do dia e a costura entre as duas AP
 - [x] **`lyrics.js` era a única rota fora do wrapper** (`a719f4e`). Fazia o `CLAUDE.md` mentir, e
       misturava "música fora do catálogo" com "lrclib fora do ar" no mesmo 404.
 
-### ⚪ Achados que não vale corrigir agora — opinião do Claude, sujeita a veto
+### ⚪ Eu tinha proposto deixar para depois — o Victor mandou corrigir tudo
 
-| Achado | Por que fica |
+Os três primeiros foram feitos em 2026-09-15. Ficou registrado que a recomendação original era
+adiar, e que ela foi vetada.
+
+| Achado | Desfecho |
 |---|---|
-| `Swiper.jsx` usa `alert()` em dois caminhos de erro | Feio e destoa da UI, mas são caminhos de falha de rede que quase ninguém vê. Trocar por toast é UI nova para um caso raro. Vale junto da próxima mexida no Swiper, não sozinho. |
-| `[...].sort(() => Math.random() - 0.5)` é embaralhamento enviesado | O uso é ordem de slides num carrossel. O viés não é perceptível e ninguém depende de uniformidade. Fisher-Yates são 4 linhas se algum dia importar. |
-| `routes/spotify.js:29` não valida `code`/`redirectUri` | A Spotify rejeita `redirect_uri` fora da whitelist do app, então o raio de dano é dela, não nosso. Registrado por honestidade, não por risco. |
-| `console.error` em `queries.js` vai para o bundle de produção | São 3 chamadas em caminho de erro já deliberado (`useArtistData` engole falha de um dos lados de propósito). Remover perde o único rastro que existe no browser. |
+| `Swiper.jsx` usava `alert()` em dois caminhos de erro | Feito (`b873a2d`). Virou painel na própria UI com `role="alert"`. Achei um bug que o `alert` escondia: o effect só dispara quando `selectedArtist` muda, então depois de uma falha clicar no mesmo slide não fazia nada. Fechar o painel limpa os dois. |
+| `[...].sort(() => Math.random() - 0.5)` é embaralhamento enviesado | Feito (`b873a2d`). Fisher-Yates, 5 linhas. |
+| `routes/spotify.js:29` não validava `code`/`redirectUri` | Feito (`5e773f5`). Devolve 400 em vez de repassar lixo para a Spotify. |
+| `console.error` em `queries.js` vai para o bundle de produção | **Não fiz, e quero seu veto explícito se discordar.** São 3 chamadas no caminho de erro que o `useArtistData` engole de propósito. Tirar não ganha nada mensurável e apaga o único rastro que sobra quando um dos dois lados da costura falha no browser do usuário. |
 
 ---
 

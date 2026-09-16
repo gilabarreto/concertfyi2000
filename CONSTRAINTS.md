@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 17 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `helpers/calendar.js` e `helpers/selectors.js` — este último é a costura entre as duas APIs. São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 17 testes, apagar um é apagar 6% da cobertura que existe. |
+| Testes | 21 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js` e `helpers/selectors.js` — este último é a costura entre as duas APIs. São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 21 testes, apagar um é apagar 5% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -87,6 +87,7 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | JS gzipado na entrada | 116,45 kB (era 154,77 kB antes do code splitting) |
 | CSS | 23,95 kB (5,16 kB gzip) |
 | Linhas de JS/JSX no fonte | 3.310 |
+| Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
 | Lighthouse / acessibilidade | **não medido** |
 
