@@ -46,6 +46,11 @@ router.get("/suggest", async (req, res) => {
 
           allEvents = allEvents.concat(events);
         } catch (err) {
+          // Parar é certo — o que já veio serve. Mudo não: um 429 na página 2 sai
+          // daqui como um 200 com 20 eventos, igualzinho a um artista que só tem 20.
+          console.error(
+            `Ticketmaster page ${i} failed (${err.status || err.message}), returning ${allEvents.length} events so far`
+          );
           break;
         }
       }
