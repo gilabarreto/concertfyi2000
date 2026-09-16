@@ -1,9 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const { rateLimit } = require("./rateLimit");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// O Render serve atrás de um proxy. Sem isto req.ip é o IP do proxy para todo
+// mundo, e o rate limit abaixo passa a contar o site inteiro como um visitante só.
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "https://gilabarreto.github.io",
@@ -19,6 +24,12 @@ app.use(
     credentials: true,
   })
 );
+
+// CORS decide o que o navegador deixa o JS ler; curl ignora e a rota roda igual.
+// Uma busca no YouTube custa 100 de uma cota diária de 10.000, então 100 chamadas
+// num laço apagam letra e vídeo para os usuários reais até a virada do dia.
+// 60/min é folgado para uso de verdade (uma sessão ativa faz ~15) e fecha o laço.
+app.use("/api", rateLimit({ windowMs: 60_000, max: 60 }));
 
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
 app.use("/api/setlist", require("./routes/setlist"));
