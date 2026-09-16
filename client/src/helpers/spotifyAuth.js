@@ -4,7 +4,7 @@ const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = `${window.location.origin}/callback`;
 const SCOPES = ["playlist-modify-public", "playlist-modify-private"];
 
-export const getSpotifyAuthUrl = () => {
+const getSpotifyAuthUrl = () => {
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     response_type: "code",
@@ -12,6 +12,21 @@ export const getSpotifyAuthUrl = () => {
     scope: SCOPES.join(" "),
   });
   return `https://accounts.spotify.com/authorize?${params}`;
+};
+
+// Dois lugares abrem este popup: "conectar para ouvir" e "criar playlist". Centralizar
+// pela janela (screenX/outerWidth) e não pela tela é o que mantém o popup no monitor certo.
+export const openSpotifyAuthPopup = () => {
+  const width = 420;
+  const height = 320;
+  const left = window.screenX + (window.outerWidth - width) / 2;
+  const top = window.screenY + (window.outerHeight - height) / 2;
+
+  return window.open(
+    getSpotifyAuthUrl(),
+    "spotify_auth",
+    `width=${width},height=${height},left=${left},top=${top}`,
+  );
 };
 
 export const getAccessTokenFromCode = async (code) => {

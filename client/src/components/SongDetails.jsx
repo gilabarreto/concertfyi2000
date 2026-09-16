@@ -3,8 +3,10 @@ import Icon from "./Icon";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
-import { getSpotifyAuthUrl, getStoredAccessToken } from "../helpers/spotifyAuth";
+import { openSpotifyAuthPopup, getStoredAccessToken } from "../helpers/spotifyAuth";
 import { useLyrics, useYoutubeVideo, useSpotifyTrack } from "../api/queries";
+
+const FADE_OUT = "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)";
 
 export default function SongDetails({ songName, artistName }) {
   const [showFullLyrics, setShowFullLyrics] = useState(false);
@@ -37,19 +39,13 @@ export default function SongDetails({ songName, artistName }) {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  const handleConnectSpotify = () => {
-    const authUrl = getSpotifyAuthUrl();
-    const width = 420;
-    const height = 320;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    window.open(authUrl, "spotify_auth", `width=${width},height=${height},left=${left},top=${top}`);
-  };
-
   const lyricsLines = lyrics.split("\n");
   const previewLines = lyricsLines.slice(0, 5).join("\n");
   const hasMoreLyrics = lyricsLines.length > 5;
+
+  // A prévia termina desaparecendo em vez de cortar no meio da linha. `WebkitMaskImage`
+  // leva o mesmo valor porque o Safari só entende a propriedade com prefixo.
+  const lyricsMask = showFullLyrics ? "none" : FADE_OUT;
 
   const toggleLyrics = () => {
     setShowFullLyrics(!showFullLyrics);
@@ -58,10 +54,24 @@ export default function SongDetails({ songName, artistName }) {
     }
   };
 
-  return (
-    <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
-      {/* Spotify Embed or Connect Button */}
-      {trackUri && hasToken ? (
+  // Sem token não há o que tocar, então o convite vem antes de tudo. Com token e sem faixa
+  // a busca ou está em curso, ou terminou sem achar a música no catálogo — neste último
+  // caso não se mostra nada, porque não há erro nenhum a relatar ao ouvinte.
+  const spotifyPanel = () => {
+    if (!hasToken)
+      return (
+        <button
+          onClick={openSpotifyAuthPopup}
+          className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
+          title="Connect to Spotify"
+        >
+          <Icon icon={faSpotify} />
+          Connect to Listen
+        </button>
+      );
+
+    if (trackUri)
+      return (
         <iframe
           className="w-full rounded"
           height="80"
@@ -69,18 +79,15 @@ export default function SongDetails({ songName, artistName }) {
           title={`${songName} on Spotify`}
           allow="encrypted-media; clipboard-write"
         />
-      ) : !hasToken ? (
-        <button
-          onClick={handleConnectSpotify}
-          className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
-          title="Connect to Spotify"
-        >
-          <Icon icon={faSpotify} />
-          Connect to Listen
-        </button>
-      ) : playerLoading ? (
-        <p className="text-sm text-gray-500">Loading Spotify track...</p>
-      ) : null}
+      );
+
+    if (playerLoading) return <p className="text-sm text-gray-500">Loading Spotify track...</p>;
+    return null;
+  };
+
+  return (
+    <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
+      {spotifyPanel()}
 
       {/* Lyrics Section */}
       <div ref={lyricsRef}>
@@ -98,14 +105,7 @@ export default function SongDetails({ songName, artistName }) {
           <>
             <pre
               className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
-              style={{
-                maskImage: showFullLyrics
-                  ? "none"
-                  : "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-                WebkitMaskImage: showFullLyrics
-                  ? "none"
-                  : "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-              }}
+              style={{ maskImage: lyricsMask, WebkitMaskImage: lyricsMask }}
             >
               {showFullLyrics ? lyrics : previewLines}
             </pre>

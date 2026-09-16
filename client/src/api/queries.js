@@ -105,27 +105,25 @@ export const useTicketmasterSearch = (artistName) => {
 export const useArtistData = (artistName) => {
   return useQuery({
     queryKey: ["artist-data", artistName],
+    // As duas APIs se juntam pelo nome do artista e nenhuma delas é obrigatória: a página
+    // existe só com o setlist, e existe só com o Ticketmaster. Por isso cada uma engole o
+    // próprio erro e devolve vazio — o Promise.all aqui nunca rejeita.
     queryFn: async () => {
-      try {
-        const [setlistRes, ticketmasterRes] = await Promise.all([
-          getSetlist(artistName).catch((err) => {
-            console.error("Erro no setlist:", err);
-            return { data: { setlist: [] } };
-          }),
-          getTicketmaster(artistName).catch((err) => {
-            console.error("Erro no ticketmaster:", err);
-            return { data: { _embedded: {} } };
-          }),
-        ]);
+      const [setlistRes, ticketmasterRes] = await Promise.all([
+        getSetlist(artistName).catch((err) => {
+          console.error("Erro no setlist:", err);
+          return { data: { setlist: [] } };
+        }),
+        getTicketmaster(artistName).catch((err) => {
+          console.error("Erro no ticketmaster:", err);
+          return { data: { _embedded: {} } };
+        }),
+      ]);
 
-        return {
-          setlist: setlistRes?.data?.setlist || [],
-          ticketmaster: ticketmasterRes?.data?._embedded || {},
-        };
-      } catch (error) {
-        console.error("Erro geral na query:", error);
-        throw error;
-      }
+      return {
+        setlist: setlistRes?.data?.setlist || [],
+        ticketmaster: ticketmasterRes?.data?._embedded || {},
+      };
     },
     enabled: !!artistName,
     staleTime: 10 * 60 * 1000,

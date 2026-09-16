@@ -4,7 +4,7 @@ import Icon from "../Icon";
 import { faChevronDown, faChevronUp, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
-import { getSpotifyAuthUrl, getStoredAccessToken } from "../../helpers/spotifyAuth";
+import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
 export default function Setlist({ concert }) {
@@ -68,13 +68,7 @@ export default function Setlist({ concert }) {
       }),
     );
 
-    const authUrl = getSpotifyAuthUrl();
-    const width = 420;
-    const height = 320;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-
-    window.open(authUrl, "spotify_auth", `width=${width},height=${height},left=${left},top=${top}`);
+    openSpotifyAuthPopup();
   };
 
   const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
