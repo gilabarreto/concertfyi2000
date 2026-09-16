@@ -35,3 +35,8 @@ server/public/stylesheets/
 
 # === LOCAL HISTORY / DEV TOOLS ===
 .history
+
+# O chrome-launcher, dentro do WSL, monta o perfil descartável do Chrome num caminho
+# do Windows e falha ao convertê-lo — o mkdir vira uma pasta única com barras
+# invertidas no nome, no diretório de onde o Lighthouse foi chamado.
+C:\\Users\\*

@@ -102,10 +102,17 @@ O Lighthouse é medido contra o site no ar, com o Chrome for Testing
 rede e de um deploy concluído. Rodar depois de mexer em imagem, rota ou dependência pesada:
 
 ```bash
-CHROME_PATH=<chrome-for-testing> npx lighthouse https://concertfyi.com --output=json \
+cd "$(mktemp -d)" && CHROME_PATH=<chrome-for-testing> npx lighthouse https://concertfyi.com \
+  --output=json --output-path=<caminho absoluto> \
   --chrome-flags="--headless=new --no-sandbox" \
   --only-categories=performance,accessibility,best-practices,seo
 ```
+
+O `cd` não é enfeite. Dentro do WSL o `chrome-launcher` assume que vai abrir o Chrome **do
+Windows** e monta o perfil descartável em `C:\Users\<voce>\AppData\Local\lighthouse.<numero>`;
+a conversão do caminho falha e o `mkdir` acaba criando uma pasta só, com barras invertidas no
+nome, **no diretório de onde o comando foi chamado** — ~10 MB por rodada no meio do repositório.
+Rodar de um diretório descartável deixa o lixo lá. O `.gitignore` cobre o caso de esquecer.
 
 Sem portão de propósito: performance de campo varia com a rede da medição, e 78 numa run não é
 78 na próxima. O número serve para comparar antes/depois de uma mudança na mesma sessão. Os três
