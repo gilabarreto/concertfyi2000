@@ -30,7 +30,6 @@ function Navbar() {
             to="/"
             className="text-xl sm:text-2xl font-medium tracking-tight items-center"
             onClick={() => setSearchValue("")}
-            aria-label="Home"
           >
             <span className="sm:inline">concert</span>
             <span className="text-xl sm:text-2xl font-medium tracking-tight items-center">
