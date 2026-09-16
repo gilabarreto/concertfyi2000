@@ -13,8 +13,11 @@ export default function NextConcerts(props) {
       empty="No upcoming concerts. Check back later."
       items={events}
       locationOf={(concert) => {
-        const venue = concert._embedded.venues?.[0];
-        return venue ? `${venue.city.name}, ${venue.country.countryCode}` : "Unknown location";
+        // Parte dos eventos internacionais da Ticketmaster vem com venue sem city.
+        // O guard ia só até venues[0], então city.name derrubava a árvore de rotas inteira.
+        const venue = concert._embedded?.venues?.[0];
+        const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
+        return parts.join(", ") || "Unknown location";
       }}
       linkOf={(concert) => concert.url}
       iconTitle="Get tickets"
