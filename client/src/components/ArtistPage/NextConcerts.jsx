@@ -19,7 +19,6 @@ export default function NextConcerts(props) {
         const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
         return parts.join(", ") || "Unknown location";
       }}
-      linkOf={(concert) => concert.url}
       iconTitle="Get tickets"
       expand={(concert) => (
         <>

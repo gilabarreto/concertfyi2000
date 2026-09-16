@@ -11,8 +11,10 @@ const PAGE_SIZE = 5;
 const dateLabel = (date) =>
   `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
 
-// items carry a dateObj; linkOf returns an app path, or an http URL for an outside link.
-// expand turns the row into a disclosure instead of a link, like Setlist does.
+// items carry a dateObj. A row is either a link to one of our own routes (linkOf) or a
+// disclosure that opens panels in place (expand, like Setlist does) — never both, and the
+// disclosure wins. Rows used to be able to point at an outside URL too; since the next
+// concerts opened a seller list instead of a single ticket link, nothing passes one.
 export default function ConcertList({
   title,
   empty,
@@ -60,7 +62,6 @@ export default function ConcertList({
               );
               const className =
                 "flex w-full items-center justify-between gap-2 py-2 hover:text-red-800";
-              const link = linkOf(concert);
 
               if (expand) {
                 return (
@@ -83,28 +84,13 @@ export default function ConcertList({
                 );
               }
 
-              const row = (
-                <>
-                  {label}
-                  {/* the row text already names the concert, so the icon is decoration */}
-                  <Icon icon={icon} className="text-red-600 shrink-0" />
-                </>
-              );
-              const rowProps = { className, title: iconTitle };
-
               return (
                 <li key={concert.id} className="border-b border-gray-300/50">
-                  {!link ? (
-                    <div {...rowProps}>{row}</div>
-                  ) : link.startsWith("http") ? (
-                    <a {...rowProps} href={link} target="_blank" rel="noopener noreferrer">
-                      {row}
-                    </a>
-                  ) : (
-                    <Link {...rowProps} to={link}>
-                      {row}
-                    </Link>
-                  )}
+                  <Link to={linkOf(concert)} className={className} title={iconTitle}>
+                    {label}
+                    {/* the row text already names the concert, so the icon is decoration */}
+                    <Icon icon={icon} className="text-red-600 shrink-0" />
+                  </Link>
                 </li>
               );
             })}
