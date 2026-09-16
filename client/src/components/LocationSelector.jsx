@@ -46,9 +46,17 @@ export default function LocationSelector({ city, country, isLoading }) {
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
-    : city
-      ? `${city}, ${countryCodeMap[country] || country}`
-      : city;
+    : // sem cidade ainda, devolve o próprio valor vazio — quem desenha cai no fallback
+      city && `${city}, ${countryCodeMap[country] || country}`;
+
+  // A lista vazia tem três motivos diferentes e eles não são intercambiáveis: deu erro,
+  // ainda está buscando, ou buscou e não achou. `term !== query` é o intervalo em que o
+  // debounce ainda não alcançou o que foi digitado — ali ainda é "procurando".
+  const emptyMessage = () => {
+    if (isError) return "Couldn't search cities. Try again.";
+    if (isFetching || term !== query) return "Searching…";
+    return "No cities found";
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -102,10 +110,7 @@ export default function LocationSelector({ city, country, isLoading }) {
         <span className="text-lg font-medium tracking-tight">
           {isLoading && !selectedLocation ? "Locating..." : displayName || "Location unavailable"}
         </span>
-        <Icon
-          className="text-sm"
-          icon={showDropdown ? faChevronUp : faChevronDown}
-        />
+        <Icon className="text-sm" icon={showDropdown ? faChevronUp : faChevronDown} />
       </button>
 
       {showDropdown && (
@@ -150,13 +155,7 @@ export default function LocationSelector({ city, country, isLoading }) {
           )}
 
           {showResults && (isError || suggestions.length === 0) && (
-            <div className="px-4 py-3 text-center text-gray-500 text-sm">
-              {isError
-                ? "Couldn't search cities. Try again."
-                : isFetching || term !== query
-                  ? "Searching…"
-                  : "No cities found"}
-            </div>
+            <div className="px-4 py-3 text-center text-gray-500 text-sm">{emptyMessage()}</div>
           )}
 
           {showResults && !isError && suggestions.length > 0 && (
