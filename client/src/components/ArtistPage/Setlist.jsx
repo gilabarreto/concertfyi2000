@@ -1,21 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../Icon";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
-import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
 import { getSpotifyAuthUrl, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
-export default function Setlist(props) {
+export default function Setlist({ concert }) {
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
   const disclaimerRef = useRef(null);
 
-  const concert = props.concert;
   // every set in order, encore included: set[0] alone dropped the songs after the break,
   // so the numbering has to run across all of them to be the order played
   const songs = concert.sets?.set?.flatMap((set) => set.song || []) || [];
