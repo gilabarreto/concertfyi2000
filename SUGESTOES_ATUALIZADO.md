@@ -669,8 +669,27 @@ então cada mudança abaixo veio com prova de equivalência, não com olhômetro
       slide lateral → navega para `/artists/:id/concerts/:id` e a página mostra o artista clicado,
       sem erro no console.
 - [x] **`Setlist.jsx`: prop desestruturada e import duplicado juntado** (`dbbc104`).
+- [x] **`aria-hidden` que o troca-ícones deixou para trás** (`2eb2818`). O `<Icon>` já põe o atributo
+      por dentro; oito chamadas repetiam. Ficaram só os que estão em `<span>` no `SearchPage`.
+- [x] **Os três estados da lista vazia do `LocationSelector` ganharam nome** (`c76e978`). "Deu erro",
+      "ainda procurando" e "procurei e não achei" eram um ternário de três níveis dentro do JSX.
+      Viraram `emptyMessage()` com guardas. O `displayName` tinha um `city ? … : city` — devolver a
+      própria string vazia é só `&&`.
+- [x] **Um helper para o popup do Spotify** (`eb1c7e5`). As mesmas seis linhas de centralização
+      estavam copiadas no `SongDetails` e no `Setlist`; foram para o `spotifyAuth.js`, ao lado da URL
+      que elas abrem — que agora deixou de ser exportada, porque ninguém mais a chama de fora.
+      No mesmo commit: o ternário de três níveis que escolhe o painel do Spotify virou guardas, o
+      gradiente da máscara da letra (escrito duas vezes, um para o Safari) virou constante, e o
+      `try/catch` em volta do `Promise.all` do `useArtistData` saiu — os dois lados já engolem o
+      próprio erro, então ele nunca podia disparar. Verificado no browser: abrir um show, expandir
+      uma música, painel no estado "Connect to Listen" e letra na tela, sem erro no console.
+- [x] **Linhas de show que não existiam mais** (`51d9225`). A linha podia ser três elementos: `Link`,
+      `<a>` para fora, ou `div` sem link. Hoje só o `Link` acontece — o `NextConcerts` passa `expand`,
+      que devolve o botão de sanfona antes de o link ser lido, e ainda assim entregava a URL da
+      Ticketmaster para ninguém. O `LastConcerts` sempre monta rota interna. Duas das três variantes
+      eram código morto desde que a linha de próximos shows virou lista de vendedores.
 
-`Swiper.jsx`: 284 → 251 linhas. Testes: 46 → 51.
+`Swiper.jsx`: 284 → 251 linhas. `ConcertList.jsx`: 121 → 106. Testes: 46 → 51.
 
 ### ⚪ Olhei e deixei quieto — opinião, pode vetar
 
@@ -678,7 +697,18 @@ então cada mudança abaixo veio com prova de equivalência, não com olhômetro
 |---|---|
 | `Setlist.jsx` tem 213 linhas | O tamanho é marcação, não lógica emaranhada. Quebrar em subcomponentes com um uso só cada é a abstração que o CLAUDE.md manda evitar neste tamanho de app. |
 | `key={songIndex}` no map das músicas | É smell de verdade, mas a chave alternativa (nome da música) não é única — banda repete música no bis. Trocar sem essa garantia é arriscar remontagem errada de linha. Vale se aparecer bug de render. |
-| `LocationSelector.jsx` (185 linhas) e `SongDetails.jsx` (152) | Fora do escopo deste passe. O skill pede escopo no que mudou; ampliar mais faria um diff que ninguém revisa direito. |
+| `Navbar.jsx`: as duas listas de links (desktop e mobile) | Já saem do mesmo `navLinks`; o que se repete é só a classe CSS de cada uma. Unificar exigiria um componente para dois usos que nem se parecem na tela. |
+
+### 🟡 Não é simplificação, é decisão sua — `Contact.jsx`
+
+- [ ] **O formulário fala por `alert()` e não trava o botão enquanto envia.** Três `alert()`
+      (sucesso, erro do Formspree, falha de conexão) e nenhum estado de "enviando": dá para apertar
+      *Send Message* várias vezes e mandar a mesma mensagem repetida. Trocar por uma mensagem inline
+      abaixo do botão mais um `disabled` resolve as duas coisas em ~10 linhas. **Não mexi porque é
+      mudança visível de UX** e você pode preferir o alerta nativo — diga e eu faço.
+- [ ] **O botão de perfil do `Navbar` não faz nada.** Ele existe, recebe foco e o leitor de tela o
+      anuncia como "User profile", mas o clique não tem efeito. Ou ele vira o começo do login, ou
+      sai da barra. **É seu:** depende de haver conta de usuário no plano.
 
 ### 🔴 Achado de passagem, é seu (fora do repositório)
 
