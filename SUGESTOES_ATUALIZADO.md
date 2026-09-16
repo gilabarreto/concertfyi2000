@@ -802,3 +802,33 @@ sim conta a pagar: como o proxy é aberto, qualquer um pode gastar a cota das no
 - [ ] **Nenhum workflow roda em pull request.** Hoje todo commit vai direto para `main`, então o CI
       é sempre pós-fato: quando ele reprova, o commit já está publicado no repositório. Se em algum
       momento passar a existir branch de trabalho, o mesmo job deve rodar em `pull_request`.
+
+---
+
+## 🆕 Saldo do `/agent-skills:observability-and-instrumentation` — 2026-09-16
+
+### ✅ Resolvido agora
+
+- [x] **O proxy agora escreve uma linha por requisição** (`dbea635`). O Render guarda o stdout, e a
+      única coisa que ia para lá eram os `console.error` das falhas: dava para ver *que* quebrou,
+      nunca quanto tráfego havia, o que estava lento nem quantas vezes o rate limit devolveu 429.
+      Agora vai método, caminho, status e duração, escritos no evento `finish` (antes dele o status
+      ainda pode virar 500). **Sem IP e sem query string**: o caminho já diz qual rota rodou, e o que
+      a query carrega é o que a pessoa digitou e onde ela está. Dois testes cobrem o formato e a
+      ausência da query. Achei um defeito meu no meio: com `req.path` o Express corta o prefixo
+      dentro do router e o log saía `/events`, sem dizer de qual API — passou a usar `originalUrl`.
+
+### 🟡 É seu — precisa de conta em serviço
+
+- [ ] **Erro de JavaScript no navegador do usuário não chega a ninguém.** O `ErrorBoundary` mostra a
+      tela de falha e escreve no console **da pessoa**, que é o único lugar onde ninguém vai olhar.
+      Quer dizer que uma quebra de render em produção só aparece se alguém reclamar. O caminho normal
+      é Sentry (plano grátis cobre este volume de sobra), e o custo real não é dinheiro: é uma
+      dependência nova no bundle (~30 kB gzip, e o teto do chunk está em 270 kB), mais uma conta,
+      mais uma chave. **Não instalei porque isso é escolha de dono**, não correção de defeito.
+      Se disser que sim, é meia hora: `@sentry/react` com `tracesSampleRate` baixo e o DSN entrando
+      pelos secrets do deploy, como as outras `VITE_*`.
+- [ ] **Não há alerta de nada.** Se o Render cair, ou a cota do YouTube estourar, ninguém é avisado —
+      descobre-se abrindo o site. O passo mais barato aqui não é ferramenta paga: é um workflow
+      agendado que bate numa rota do proxy e abre issue se ela não responder 200. Anda junto com o
+      `osv-scanner` semanal da seção do CI.
