@@ -391,6 +391,46 @@ qualquer linha continua sendo decisão dele — a tabela é o registro, não uma
 
 ---
 
+## 🆕 Saldo do `/agent-skills:review` — 2026-09-15
+
+Revisão nos cinco eixos sobre os 17 commits do dia e a costura entre as duas APIs.
+
+### 🔴 Decisão pendente com o Victor
+
+- [ ] **O proxy do Render é aberto — não tem rate limit.** `server/index.js:16-21` usa
+      `cors({ origin: allowedOrigins })`, e CORS só governa o que o *navegador* deixa o JS ler.
+      `curl` ignora e a rota executa igual. Busca no YouTube custa 100 unidades de uma cota
+      diária de 10.000: **100 chamadas encerram o dia** e lyrics/vídeo somem para os usuários
+      reais até a virada. Ticketmaster e setlist.fm caem pelo mesmo caminho, mais devagar.
+      É a mesma classe do vazamento de julho — o servidor protege a chave e não protege a cota
+      que a chave compra. Não implementei sozinho porque um limitador mal calibrado devolve 429
+      para usuário legítimo, em produção, num serviço que eu não consigo testar nem reverter.
+      Precisa da sua decisão sobre o número.
+
+### 🟢 Resolvido na própria revisão
+
+- [x] **Venue sem city derrubava a árvore de rotas** (`6e9448a`). O guard parava em `venues?.[0]`
+      e `city.name` estourava no render. O ErrorBoundary pega — mas pega o `<Routes>` inteiro.
+- [x] **"Next Concerts" listava show que já aconteceu** (`9a60c15`). `getNextConcertsByArtist`
+      não tinha o corte de data que a irmã sempre teve, e em ordem crescente o passado ia para o
+      topo. Coberto por teste; as datas do arquivo de teste viraram relativas a hoje no mesmo
+      commit, porque data fixa em teste que depende de "agora" é falha marcada no calendário.
+- [x] **`catch { break }` mudo na paginação da Ticketmaster** (`59fd106`). Um 429 na página 2 saía
+      como 200 com 20 eventos, idêntico a um artista que só tem 20.
+- [x] **`lyrics.js` era a única rota fora do wrapper** (`a719f4e`). Fazia o `CLAUDE.md` mentir, e
+      misturava "música fora do catálogo" com "lrclib fora do ar" no mesmo 404.
+
+### ⚪ Achados que não vale corrigir agora — opinião do Claude, sujeita a veto
+
+| Achado | Por que fica |
+|---|---|
+| `Swiper.jsx` usa `alert()` em dois caminhos de erro | Feio e destoa da UI, mas são caminhos de falha de rede que quase ninguém vê. Trocar por toast é UI nova para um caso raro. Vale junto da próxima mexida no Swiper, não sozinho. |
+| `[...].sort(() => Math.random() - 0.5)` é embaralhamento enviesado | O uso é ordem de slides num carrossel. O viés não é perceptível e ninguém depende de uniformidade. Fisher-Yates são 4 linhas se algum dia importar. |
+| `routes/spotify.js:29` não valida `code`/`redirectUri` | A Spotify rejeita `redirect_uri` fora da whitelist do app, então o raio de dano é dela, não nosso. Registrado por honestidade, não por risco. |
+| `console.error` em `queries.js` vai para o bundle de produção | São 3 chamadas em caminho de erro já deliberado (`useArtistData` engole falha de um dos lados de propósito). Remover perde o único rastro que existe no browser. |
+
+---
+
 ## 📞 Próximas Conversas
 
 1. **Diferencial**: qual é a proposta de valor do ConcertFYI que o separa do Bandsintown? É a
