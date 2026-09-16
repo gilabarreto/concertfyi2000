@@ -39,21 +39,44 @@ test("getLastConcertsByArtist: lê DD-MM-YYYY, não MM-DD-YYYY", () => {
   assert.strictEqual(first.dateObj.getMonth(), 2); // março
 });
 
+// Datas relativas de propósito: com o filtro de passado, data fixa no teste
+// vira falha marcada no calendário.
+// Montado a partir das partes locais, não de toISOString(): o selector parseia
+// a data em horário local, e às 21h de um fuso negativo o UTC já é amanhã.
+const dayOffset = (days) => {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+};
+
 test("getNextConcertsByArtist: casa pelo nome, ordena do mais próximo e ignora evento sem _embedded", () => {
   const events = [
-    upcoming("Radiohead", "2027-05-10"),
-    upcoming("Radiohead", "2026-11-02"),
-    upcoming("Blur", "2026-10-01"),
-    { id: "sem-embedded", dates: { start: { localDate: "2026-12-01" } } },
+    upcoming("Radiohead", dayOffset(600)),
+    upcoming("Radiohead", dayOffset(48)),
+    upcoming("Blur", dayOffset(16)),
+    { id: "sem-embedded", dates: { start: { localDate: dayOffset(77) } } },
   ];
 
   const got = getNextConcertsByArtist(events, "Radiohead").map((e) => e.id);
 
-  assert.deepStrictEqual(got, ["2026-11-02", "2027-05-10"]);
+  assert.deepStrictEqual(got, [dayOffset(48), dayOffset(600)]);
+});
+
+test("getNextConcertsByArtist: descarta o que já passou e mantém o show de hoje", () => {
+  const events = [
+    upcoming("Radiohead", dayOffset(-1)),
+    upcoming("Radiohead", dayOffset(-400)),
+    upcoming("Radiohead", dayOffset(0)),
+    upcoming("Radiohead", dayOffset(30)),
+  ];
+
+  const got = getNextConcertsByArtist(events, "Radiohead").map((e) => e.id);
+
+  assert.deepStrictEqual(got, [dayOffset(0), dayOffset(30)]);
 });
 
 test("getNextConcertsByArtist: lista vazia quando o nome não bate exatamente", () => {
-  const events = [upcoming("Radiohead", "2026-11-02")];
+  const events = [upcoming("Radiohead", dayOffset(48))];
 
   // O join é por string literal — é a costura frágil do app, não um fuzzy match.
   assert.deepStrictEqual(getNextConcertsByArtist(events, "radiohead"), []);

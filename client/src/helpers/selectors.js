@@ -15,12 +15,19 @@ export function getLastConcertsByArtist(setlist = [], artistId) {
 // compartilham id nenhum: Setlist.fm casa com Ticketmaster pelo nome do artista,
 // e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
 export function getNextConcertsByArtist(events = [], artistName) {
+  // A rota /suggest pagina eventos por attractionId sem filtro de data, então o
+  // passado vem junto — e, em ordem crescente, vinha listado em primeiro lugar.
+  // O show de hoje continua contando como próximo: o corte é a meia-noite de hoje.
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return events
     .filter((item) => item._embedded?.attractions?.some((a) => a.name === artistName))
     .map((item) => {
       const [year, month, day] = item.dates.start.localDate.split("-");
       return { ...item, dateObj: new Date(year, month - 1, day) };
     })
+    .filter((item) => item.dateObj >= today)
     .sort((a, b) => a.dateObj - b.dateObj);
 }
 
