@@ -494,6 +494,44 @@ compra nada que a lógica coberta hoje já não cubra.
 
 ---
 
+## 🔦 Fechamento do `/agent-skills:review` — eixo performance e acessibilidade (2026-09-15)
+
+A última linha "não medido" do `CONSTRAINTS.md` era Lighthouse. O site está no ar, então foi medido
+de verdade, com o Chrome for Testing instalado local (`npx @puppeteer/browsers install chrome@stable`,
+sem sudo). O comando ficou registrado no `CONSTRAINTS.md`.
+
+### 🟢 Resolvido
+
+- [x] **A home baixava 21,7 MB de imagem** (`797e895`). O `getBestImage` chamava "best" o que na
+      verdade era "maior": a Ticketmaster manda a mesma foto em 100/205/640/1024/1136/2048 e, em
+      parte do catálogo, um `_SOURCE` de vários MB — 27 desses originais eram 18,1 MB dos 21,7.
+      Agora "best" é a menor variante que ainda cobre o espaço onde a foto aparece. **LCP mobile:
+      115,6 s → 6,5 s.** Coberto por 5 testes novos em `selectors.test.mjs`.
+- [x] **Slides invisíveis do carrossel baixavam foto** (`5c892ec`). O `getSlideStyle` põe
+      `opacity: 0` acima de `depth > 2` e mesmo assim montava o `background` — o navegador baixava
+      tudo. Carrega até depth 3 (um anel de folga, para quem desliza não ver a imagem aparecer).
+      **Medido depois do deploy: 38 imagens / 21,7 MB → 7 imagens / 0,57 MB (−97%), LCP 4,8 s,
+      performance 67 → 78.**
+- [x] **`heading-order`: a home pulava de h1 para h3** (`5916557`). Três dos quatro "headings" da
+      home não eram headings — a marca repete o link do Navbar e o texto de três linhas é corpo.
+      Sobrou um h1 (a tagline) e o título do slide virou h2.
+- [x] **`label-content-name-mismatch` no link da marca** (`5a593ac`). O `aria-label="Home"`
+      sobrescrevia o "concert{fyi}" visível, então quem usa controle por voz não alcançava o link
+      dizendo o que estava lendo na tela. Tirar o label deixa o nome ser o próprio texto.
+
+### 🔵 Aberto — medido, não resolvido
+
+| Achado | Tamanho | Por que ficou |
+|---|---|---|
+| `unused-javascript` — 44 kB não usados no chunk de entrada (~320 ms) | médio | É o preço do bundle único de entrada. O code splitting por rota já tirou o que era fácil (`ArtistPage` são 169 kB que a maioria das visitas não pede). Cortar mais depende de achar *qual* biblioteca está entrando sem uso, o que é uma investigação com `rollup-plugin-visualizer` — vale quando o teto de 430 kB apertar, não antes. |
+| Google Fonts bloqueia a renderização (847 ms) | pequeno | O `<link>` do DM Sans no `index.html` trava o first paint. A correção conhecida é `preconnect` + `media="print" onload`, mas mexer em carregamento de fonte troca um problema por FOUT. Precisa de uma medição antes/depois própria. |
+| `cache-insight` — vida útil de cache curta | fora do alcance | Os assets estáticos são servidos pelo GitHub Pages, que não deixa configurar `Cache-Control`. Só muda migrando de host. |
+| Geolocalização pedida no carregamento | deliberado | Virou exceção registrada no `CONSTRAINTS.md`: o carrossel da home *é* "shows perto de você". Trocar por botão é decisão de produto. |
+
+**Testes: 30 → 34.** Régua atualizada com os números medidos (antes diziam "não medido").
+
+---
+
 ## 📞 Próximas Conversas
 
 1. **Diferencial**: qual é a proposta de valor do ConcertFYI que o separa do Bandsintown? É a

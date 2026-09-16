@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 30 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 30 testes, apagar um é apagar 3% da cobertura que existe. |
+| Testes | 34 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 34 testes, apagar um é apagar 3% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -53,7 +53,7 @@ o scanner. O staged pega o que importa: o segredo prestes a entrar.
 
 | O quê | Hoje | Limite | Por quê |
 |---|---|---|---|
-| Maior chunk de JS (entrada) | 408,41 kB | **430 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
+| Maior chunk de JS (entrada) | 408,49 kB | **430 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
 
 Histórico deste número, porque ele já mudou duas vezes em um dia:
 
@@ -89,11 +89,27 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | Linhas de JS/JSX no fonte | 3.310 |
 | Rate limit do proxy | 60 req/min por IP em `/api/*` (`server/rateLimit.js`) |
 | Cobertura de testes | **não medida** |
-| Lighthouse / acessibilidade | **não medido** |
+| Lighthouse mobile (`concertfyi.com`) | performance **78**, acessibilidade **98**, best practices **96**, SEO **100** |
+| LCP / FCP mobile | **4,8 s** / 2,6 s (CLS 0,001, TBT 90 ms) |
+| Peso de imagem na home | **0,57 MB em 7 requisições** (era 21,7 MB em 38) |
 
 Cobertura ficou fora de propósito: com 5 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
 vale voltar aqui e medir antes de exigir.
+
+O Lighthouse é medido contra o site no ar, com o Chrome for Testing
+(`npx @puppeteer/browsers install chrome@stable`, sem sudo) — não entra no `check` porque depende de
+rede e de um deploy concluído. Rodar depois de mexer em imagem, rota ou dependência pesada:
+
+```bash
+CHROME_PATH=<chrome-for-testing> npx lighthouse https://concertfyi.com --output=json \
+  --chrome-flags="--headless=new --no-sandbox" \
+  --only-categories=performance,accessibility,best-practices,seo
+```
+
+Sem portão de propósito: performance de campo varia com a rede da medição, e 78 numa run não é
+78 na próxima. O número serve para comparar antes/depois de uma mudança na mesma sessão. Os três
+primeiros valores acima são de 2026-09-15, depois de `797e895` e `5c892ec` (LCP saiu de 115,6 s).
 
 ---
 
@@ -109,6 +125,7 @@ vale voltar aqui e medir antes de exigir.
 | `server/` sem lint nem prettier | As duas ferramentas foram instaladas só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
 | CI não varre segredos | O `deploy.yml` roda lint e teste antes do build, mas não o gitleaks — ele precisaria do binário na runner, e o modo `--staged` não faz sentido lá. A varredura de segredo depende de rodar `npm run check` antes de commitar. | Victor | reavaliar se algum segredo escapar |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
+| Geolocalização pedida no carregamento da home | Achado `geolocation-on-start` do Lighthouse. É deliberado: o carrossel da home é "shows perto de você", e sem coordenada não há o que mostrar. Existe fallback (São Paulo) e o `LocationSelector` deixa trocar de cidade sem conceder a permissão. Trocar por um botão "usar minha localização" é decisão de produto, não de qualidade. | Victor | reavaliar se a taxa de negação da permissão virar um problema medido |
 | Componentes e hooks sem teste | O `node:test` só enxerga arquivo que o node resolve sozinho — JSX e `import.meta.env` estão fora do alcance sem Vitest + jsdom + testing-library. **Victor vetou as 3 dependências em 2026-09-15.** A lógica que erra calado (costura das duas APIs, parse das duas datas, placar da playlist) está coberta; o resto é marcação. | Victor | ao primeiro bug que só um teste de hook pegaria — `useGeolocation` é o candidato |
 
 ---
