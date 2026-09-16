@@ -442,6 +442,49 @@ adiar, e que ela foi vetada.
 
 ---
 
+## 🆕 Saldo do `/agent-skills:test` — 2026-09-15
+
+### 🟢 Feito
+
+- [x] **`findTrackUri` coberta** (`911e4e7`). É o placar que decide se a música entra na playlist
+      do usuário: 70 pontos de corte, 50 do artista, +40 nome exato ou +25 nome contido. Abaixo
+      disso a música some da playlist **em silêncio**. 8 casos, incluindo os dois que têm de
+      devolver `null` (título certo de banda cover; artista certo com título sem relação).
+- [x] **`createSpotifyPlaylist` recebe o token por parâmetro.** Era o único dado que ela pegava
+      escondido no localStorage, e era o que prendia o módulo ao `spotifyAuth` — que lê `window` e
+      `import.meta.env` no topo e por isso não carrega fora do Vite.
+
+Testes: 21 → 29.
+
+### 🔴 Colisão ponytail × agent-skills — decisão do Victor
+
+O `CLAUDE.md` manda trazer isto para você em vez de eu escolher sozinho.
+
+**O fato:** o `node:test` só alcança arquivo que o node consegue resolver sozinho. Hoje isso são
+três helpers. Componentes, hooks (`useGeolocation`, `useAppState`, `useDebounce`) e qualquer coisa
+com JSX ou `import.meta.env` estão fora do alcance — não por falta de vontade, por falta de runner.
+
+**Para passar disso seria preciso Vitest + jsdom + @testing-library/react** — 3 dependências de
+dev. O Vitest reaproveita o `vite.config.js` que já existe, então não é arquivo de config novo.
+
+**Minha opinião, e ela é contra:** os componentes deste app são quase todos marcação. A lógica que
+podia errar calado — a costura entre as duas APIs, o parse das duas datas, o placar da playlist —
+está coberta agora. Testar `<VendorTiles>` renderizar um `<div>` é o teatro de cobertura que o
+`CLAUDE.md` existe para evitar. O que me faria mudar de ideia é bug em hook: `useGeolocation` tem
+estado e caminho de erro de verdade, e é o único lugar onde eu aceitaria o framework hoje.
+
+- [ ] **Victor decide:** entra Vitest agora, ou espera o primeiro bug que só um teste de hook pegaria?
+
+### ⚪ Não testei de propósito
+
+| O quê | Por quê |
+|---|---|
+| Lote de 100 faixas em `createSpotifyPlaylist` | O laço só tem segunda volta com mais de 100 músicas. Setlist de show real tem ~20. É caminho praticamente morto neste app. |
+| `spotifyAuth.js` | São quatro linhas em cima do `localStorage` e uma montagem de URL. Não carrega fora do Vite e não guarda decisão nenhuma. |
+| Rotas do `server/` | O `http.js` (o wrapper que todas usam) e o `rateLimit.js` estão cobertos. As rotas em si são repasse fino — testá-las seria testar o `fetch`. |
+
+---
+
 ## 📞 Próximas Conversas
 
 1. **Diferencial**: qual é a proposta de valor do ConcertFYI que o separa do Bandsintown? É a
