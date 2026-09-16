@@ -70,7 +70,10 @@ export default function Swiper() {
     localEventsData &&
     !localEventsData._embedded?.events?.some((ev) => ev._embedded?.attractions?.[0]?.name);
 
-  const { data: artistData, refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName);
+  // Só o refetch interessa: quem usa a resposta é o effect abaixo, que precisa dela
+  // em ordem (guardar no contexto, depois navegar). `data` era lido por um segundo
+  // effect que escrevia o mesmo no contexto — ver o commit que tirou isso.
+  const { refetch: fetchArtistData } = useArtistData(selectedArtist?.artistName);
 
   // O clique só guarda o slide; o fetch mora aqui porque é a troca de
   // selectedArtist que muda a queryKey de useArtistData.
@@ -109,14 +112,6 @@ export default function Swiper() {
       }
     })();
   }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster]);
-
-  useEffect(() => {
-    if (artistData) {
-      const { setlist, ticketmaster } = artistData;
-      setSetlist(setlist);
-      setTicketmaster(ticketmaster);
-    }
-  }, [artistData, setSetlist, setTicketmaster]);
 
   useEffect(() => {
     if (!localEventsData) return;
