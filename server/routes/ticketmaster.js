@@ -5,8 +5,16 @@ const { request } = require("../http");
 const TM_BASE = "https://app.ticketmaster.com/discovery/v2";
 const headers = { "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)" };
 
+// Nome de artista mais longo que isto não existe; o limite está aqui para a fronteira
+// ter um formato definido, não para caber algum nome específico.
+const MAX_TERM = 200;
+
 router.get("/suggest", async (req, res) => {
   const { keyword } = req.query;
+
+  if (typeof keyword !== "string" || !keyword.trim() || keyword.length > MAX_TERM) {
+    return res.status(400).json({ error: "Missing or invalid keyword" });
+  }
 
   try {
     // Primeiro, busca com /suggest para pegar as atrações
@@ -77,7 +85,14 @@ router.get("/suggest", async (req, res) => {
 });
 
 router.get("/events", async (req, res) => {
-  const { lat, long } = req.query;
+  const lat = Number(req.query.lat);
+  const long = Number(req.query.long);
+
+  // Sem isto, um pedido sem coordenada virava `latlong=undefined,undefined` e gastava
+  // uma chamada da cota para receber erro da Ticketmaster.
+  if (!Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) {
+    return res.status(400).json({ error: "Missing or invalid lat/long" });
+  }
 
   try {
     const data = await request(`${TM_BASE}/events.json`, {

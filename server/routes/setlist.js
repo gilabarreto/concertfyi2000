@@ -12,6 +12,12 @@ const headers = {
 router.get("/search", async (req, res) => {
   const { artistName } = req.query;
 
+  // O `request` descarta parâmetro undefined, então uma busca sem nome ia para a
+  // setlist.fm sem filtro nenhum e voltava com a lista inteira do mundo.
+  if (typeof artistName !== "string" || !artistName.trim() || artistName.length > 200) {
+    return res.status(400).json({ error: "Missing or invalid artistName" });
+  }
+
   try {
     const data = await request("https://api.setlist.fm/rest/1.0/search/setlists", {
       headers,

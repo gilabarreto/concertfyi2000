@@ -16,7 +16,17 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
+// Não anuncia o framework para quem só quer saber o que é vulnerável aqui dentro.
+app.disable("x-powered-by");
+
 app.use(express.json());
+
+// Toda resposta daqui é JSON. O nosniff impede que o navegador resolva tratar uma
+// delas como HTML e execute o que veio de terceiro dentro do nosso domínio.
+app.use((req, res, next) => {
+  res.set("X-Content-Type-Options", "nosniff");
+  next();
+});
 
 app.use(
   cors({

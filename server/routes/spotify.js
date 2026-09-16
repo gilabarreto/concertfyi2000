@@ -29,9 +29,10 @@ router.post("/token", async (req, res) => {
     });
   } catch (error) {
     console.error("Spotify token error:", error.message);
+    // Sem `details`: a mensagem carrega o endpoint que chamamos, e o cliente não
+    // fazia nada com ela. O que a Spotify respondeu (`invalid_grant` e afins) fica.
     res.status(error.status || 500).json({
       error: error.data || "Failed to get Spotify token",
-      details: error.message,
     });
   }
 });
