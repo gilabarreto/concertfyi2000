@@ -438,7 +438,7 @@ adiar, e que ela foi vetada.
 | `Swiper.jsx` usava `alert()` em dois caminhos de erro | Feito (`b873a2d`). Virou painel na própria UI com `role="alert"`. Achei um bug que o `alert` escondia: o effect só dispara quando `selectedArtist` muda, então depois de uma falha clicar no mesmo slide não fazia nada. Fechar o painel limpa os dois. |
 | `[...].sort(() => Math.random() - 0.5)` é embaralhamento enviesado | Feito (`b873a2d`). Fisher-Yates, 5 linhas. |
 | `routes/spotify.js:29` não validava `code`/`redirectUri` | Feito (`5e773f5`). Devolve 400 em vez de repassar lixo para a Spotify. |
-| `console.error` em `queries.js` vai para o bundle de produção | **Não fiz, e quero seu veto explícito se discordar.** São 3 chamadas no caminho de erro que o `useArtistData` engole de propósito. Tirar não ganha nada mensurável e apaga o único rastro que sobra quando um dos dois lados da costura falha no browser do usuário. |
+| `console.error` em `queries.js` vai para o bundle de produção | **Fica — decidido pelo Victor em 2026-09-15.** São 3 chamadas no caminho de erro que o `useArtistData` engole de propósito. Tirar não ganha nada mensurável e apaga o único rastro que sobra quando um dos dois lados da costura falha no browser do usuário. Item fechado, não reabrir sem motivo novo. |
 
 ---
 
