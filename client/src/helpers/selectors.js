@@ -37,6 +37,40 @@ export function getNextConcertsByArtist(events = [], artistName) {
     .sort((a, b) => a.dateObj - b.dateObj);
 }
 
+// Os slides do carrossel da home, a partir da resposta de /ticketmaster/events.
+//
+// Estava dentro de um useEffect do Swiper, fora do alcance do node:test. É lógica que
+// erra calada: evento sem attraction não tem nome de artista para mostrar, a mesma
+// turnê volta em várias datas na mesma cidade, e a ordem precisa ser sorteada.
+//
+// O sorteio é Fisher-Yates. O `sort(() => Math.random() - 0.5)` de antes é enviesado,
+// e comparador inconsistente não tem comportamento definido entre engines.
+export function getCarouselSlides(localEventsData) {
+  // Um evento por artista, o primeiro que aparecer. O Map guarda a ordem de inserção,
+  // que é a da API — não que importe muito, já que logo abaixo ela é embaralhada.
+  const firstByArtist = new Map();
+
+  for (const ev of localEventsData?._embedded?.events || []) {
+    const artist = ev._embedded?.attractions?.[0];
+    if (artist?.name && !firstByArtist.has(artist.name)) firstByArtist.set(artist.name, ev);
+  }
+
+  const shuffled = [...firstByArtist.values()];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+
+  return shuffled.map((ev) => ({
+    eventId: ev.id,
+    artistId: ev._embedded.attractions[0].id,
+    artistName: ev._embedded.attractions[0].name,
+    title: ev.name,
+    date: ev.dates.start.localDate,
+    images: ev.images || [],
+  }));
+}
+
 // A Ticketmaster manda a mesma foto em várias larguras (100 a 2048) e, em parte do
 // catálogo, um _SOURCE de vários MB. Esta função já se chamou "best" e queria dizer
 // "maior": a home baixava 21,7 MB de imagem e marcava LCP de 115s no mobile.

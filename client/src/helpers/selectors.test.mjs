@@ -11,6 +11,7 @@ import {
   getLastConcertsByArtist,
   getNextConcertsByArtist,
   getBestImage,
+  getCarouselSlides,
   parseSetlistDate,
 } from "./selectors.js";
 
@@ -161,4 +162,66 @@ test("parseSetlistDate: DD-MM-YYYY vira meia-noite LOCAL, não UTC", () => {
   // passados durante as últimas 3 horas de todo dia. Era o que a SearchPage fazia.
   assert.strictEqual(d.getHours(), 0);
   assert.notStrictEqual(d.getTime(), new Date("2026-09-16").getTime());
+});
+
+// Ticketmaster: /ticketmaster/events devolve `_embedded.events`, cada um com
+// `_embedded.attractions` — que é quem tem o artista.
+const event = (id, artistName, extra = {}) => ({
+  id,
+  name: `${artistName} live`,
+  dates: { start: { localDate: "2026-10-01" } },
+  _embedded: { attractions: [{ id: `att-${artistName}`, name: artistName }] },
+  ...extra,
+});
+
+// A ordem sai sorteada, então comparar lista com lista testaria o Math.random.
+const artistsOf = (slides) => slides.map((s) => s.artistName).sort();
+
+test("getCarouselSlides: um slide por artista, o primeiro evento dele", () => {
+  const slides = getCarouselSlides({
+    _embedded: {
+      events: [event("e1", "Kehlani"), event("e2", "Kehlani"), event("e3", "Fisher")],
+    },
+  });
+
+  assert.strictEqual(slides.length, 2);
+  assert.deepStrictEqual(artistsOf(slides), ["Fisher", "Kehlani"]);
+  assert.strictEqual(slides.find((s) => s.artistName === "Kehlani").eventId, "e1");
+});
+
+test("getCarouselSlides: evento sem attraction fica de fora", () => {
+  const slides = getCarouselSlides({
+    _embedded: {
+      events: [{ id: "sem", name: "Festival", dates: { start: { localDate: "2026-10-01" } } }],
+    },
+  });
+
+  assert.deepStrictEqual(slides, []);
+});
+
+test("getCarouselSlides: resposta vazia ou sem _embedded não quebra", () => {
+  assert.deepStrictEqual(getCarouselSlides(undefined), []);
+  assert.deepStrictEqual(getCarouselSlides({}), []);
+  assert.deepStrictEqual(getCarouselSlides({ _embedded: {} }), []);
+});
+
+test("getCarouselSlides: o slide leva o que o carrossel desenha", () => {
+  const [slide] = getCarouselSlides({
+    _embedded: { events: [event("e1", "Kehlani", { images: [{ width: 640 }] })] },
+  });
+
+  assert.deepStrictEqual(slide, {
+    eventId: "e1",
+    artistId: "att-Kehlani",
+    artistName: "Kehlani",
+    title: "Kehlani live",
+    date: "2026-10-01",
+    images: [{ width: 640 }],
+  });
+});
+
+test("getCarouselSlides: sem imagem vira lista vazia, não undefined", () => {
+  const [slide] = getCarouselSlides({ _embedded: { events: [event("e1", "Fisher")] } });
+
+  assert.deepStrictEqual(slide.images, []);
 });

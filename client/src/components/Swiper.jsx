@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
-import { getBestImage, getLastConcertsByArtist } from "../helpers/selectors";
+import { getBestImage, getCarouselSlides, getLastConcertsByArtist } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
@@ -118,40 +118,11 @@ export default function Swiper() {
   }, [artistData, setSetlist, setTicketmaster]);
 
   useEffect(() => {
-    if (localEventsData) {
-      const events = localEventsData._embedded?.events || [];
-      const eventsWithArtists = events.filter((ev) => ev._embedded?.attractions?.[0]?.name);
+    if (!localEventsData) return;
 
-      const uniqueArtists = [];
-      const seenArtists = new Set();
-
-      for (const ev of eventsWithArtists) {
-        const artistName = ev._embedded.attractions[0].name;
-        if (!seenArtists.has(artistName)) {
-          seenArtists.add(artistName);
-          uniqueArtists.push(ev);
-        }
-      }
-
-      // Fisher-Yates. O `sort(() => Math.random() - 0.5)` de antes é enviesado e o
-      // comparador inconsistente não tem comportamento definido entre engines.
-      const shuffled = [...uniqueArtists];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      const list = shuffled.map((ev) => ({
-        eventId: ev.id,
-        artistId: ev._embedded.attractions[0].id,
-        artistName: ev._embedded.attractions[0].name,
-        title: ev.name,
-        date: ev.dates.start.localDate,
-        images: ev.images || [],
-      }));
-
-      setSlides(list);
-      setActive(Math.floor(list.length / 2));
-    }
+    const list = getCarouselSlides(localEventsData);
+    setSlides(list);
+    setActive(Math.floor(list.length / 2));
   }, [localEventsData]);
 
   // Prev/Next live inside the centered slide, so after moving, focus the same control in the new center
