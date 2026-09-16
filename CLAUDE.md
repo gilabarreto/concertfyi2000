@@ -28,8 +28,11 @@ Read `CONSTRAINTS.md` before changing code, and make your change pass it. Never 
 delete a test, or add a suppression to get a change through — if a limit is wrong, change it in its
 own commit with the reason.
 
-Deploy is automatic: push to `main` builds the client and publishes `client/dist` to the `gh-pages`
-branch (`concertfyi.com`). The server is hosted separately on Render; nothing in this repo deploys it.
+Deploy is automatic on both sides: push to `main` runs `deploy.yml`, which builds the client and
+publishes `client/dist` to the `gh-pages` branch (`concertfyi.com`). The server is hosted on Render,
+which watches `main` itself and redeploys on its own — no workflow in this repo does it, but a
+push to `main` still ships `server/` to production. Verified 2026-09-15 by probing the live
+`/api/spotify/token` for a change that had only just been pushed.
 
 `.history/` is a VS Code local-history dump (gitignored, thousands of timestamped `.jsx` copies).
 Exclude it from every search — grep/find hits there are stale duplicates, never the live file.
