@@ -105,7 +105,6 @@ export default function LocationSelector({ city, country, isLoading }) {
         <Icon
           className="text-sm"
           icon={showDropdown ? faChevronUp : faChevronDown}
-          aria-hidden="true"
         />
       </button>
 
@@ -132,7 +131,7 @@ export default function LocationSelector({ city, country, isLoading }) {
                 title="Clear search"
                 aria-label="Clear search"
               >
-                <Icon icon={faXmark} size="sm" aria-hidden="true" />
+                <Icon icon={faXmark} size="sm" />
               </button>
             )}
           </div>

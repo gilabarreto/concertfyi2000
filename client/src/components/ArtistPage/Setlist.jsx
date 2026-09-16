@@ -95,7 +95,7 @@ export default function Setlist({ concert }) {
             aria-label="Disclaimer"
             aria-haspopup="dialog"
           >
-            <Icon icon={faCircleInfo} className="text-gray-500" aria-hidden="true" />
+            <Icon icon={faCircleInfo} className="text-gray-500" />
           </button>
         </div>
       </div>
@@ -132,7 +132,6 @@ export default function Setlist({ concert }) {
                       <Icon
                         icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
                         className="text-red-600"
-                        aria-hidden="true"
                       />
                     </button>
                   </div>
@@ -164,7 +163,7 @@ export default function Setlist({ concert }) {
               className={`px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
               title="Create Spotify Playlist"
             >
-              <Icon icon={faSpotify} aria-hidden="true" />
+              <Icon icon={faSpotify} />
               {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
             </button>
           </div>

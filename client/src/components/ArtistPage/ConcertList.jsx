@@ -76,7 +76,6 @@ export default function ConcertList({
                       <Icon
                         icon={open ? faChevronUp : faChevronDown}
                         className="text-red-600 shrink-0"
-                        aria-hidden="true"
                       />
                     </button>
                     {open && expand(concert)}
@@ -88,7 +87,7 @@ export default function ConcertList({
                 <>
                   {label}
                   {/* the row text already names the concert, so the icon is decoration */}
-                  <Icon icon={icon} className="text-red-600 shrink-0" aria-hidden="true" />
+                  <Icon icon={icon} className="text-red-600 shrink-0" />
                 </>
               );
               const rowProps = { className, title: iconTitle };
