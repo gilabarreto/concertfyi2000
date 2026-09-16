@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 54 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `server/routes/validation.test.js` (as guardas de entrada das rotas), `api/request.js` (o wrapper de fetch do client), `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs), `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist) e `scripts/static-routes.mjs` (quais rotas viram arquivo no build). São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 54 testes, apagar um é apagar 2% da cobertura que existe. |
+| Testes | 56 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `server/requestLog.js` (o formato da linha de log, e que a query não entra nela), `server/routes/validation.test.js` (as guardas de entrada das rotas), `api/request.js` (o wrapper de fetch do client), `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs), `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist) e `scripts/static-routes.mjs` (quais rotas viram arquivo no build). São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 56 testes, apagar um é apagar 2% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -37,7 +37,7 @@ Comandos exatos:
 gitleaks git --staged --redact --no-banner   # segredos no que está staged
 npm run format:check --prefix client         # prettier --check .
 npm run lint --prefix client                 # eslint .
-node --test                                  # da raiz, acha os oito arquivos
+node --test                                  # da raiz, acha os nove arquivos
 
 # CVEs — fora do check de todo dia, depende de rede e o banco muda sem o código mudar
 osv-scanner scan source --lockfile client/package-lock.json --lockfile server/package-lock.json
@@ -108,7 +108,7 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | Status HTTP das URLs do sitemap | **200 nas três** (eram 404 em `/about` e `/contact`) |
 | JS não usado no chunk de entrada | 29 kB (era 44 kB antes de tirar o axios, 37 antes do FontAwesome) |
 
-Cobertura ficou fora de propósito: com 8 arquivos de teste, qualquer meta percentual vira teatro.
+Cobertura ficou fora de propósito: com 9 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
 vale voltar aqui e medir antes de exigir.
 
