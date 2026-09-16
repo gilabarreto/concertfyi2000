@@ -25,6 +25,10 @@ jobs:
         working-directory: ./client
 
       # O portão do CONSTRAINTS.md. Falhou aqui, o Deploy lá embaixo nem roda.
+      - name: Format
+        run: npm run format:check
+        working-directory: ./client
+
       - name: Lint
         run: npm run lint
         working-directory: ./client

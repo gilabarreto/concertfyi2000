@@ -25,6 +25,7 @@ Falhou, o trabalho não sai daqui.
 | O quê | Hoje | Regra | Por quê este número |
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
+| Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
 | Testes | 17 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `helpers/calendar.js` e `helpers/selectors.js` — este último é a costura entre as duas APIs. São poucos; justamente por isso nenhum pode ser sacrificado. |
 | Teste deletado ou pulado para o código passar | — | **proibido** | Com 17 testes, apagar um é apagar 6% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
@@ -34,6 +35,7 @@ Comandos exatos:
 
 ```bash
 gitleaks git --staged --redact --no-banner   # segredos no que está staged
+npm run format:check --prefix client         # prettier --check .
 npm run lint --prefix client                 # eslint .
 node --test                                  # da raiz, acha os três arquivos
 
@@ -103,7 +105,7 @@ vale voltar aqui e medir antes de exigir.
 | `VITE_GOOGLE_MAPS_KEY` sem restrição de referrer confirmada | Nunca foi verificado no console do Google Cloud. Enquanto não for, a chave pública é abusável por qualquer um. | Victor | **2026-10-15** |
 | 2 CVEs abertas no `react-router` 6.30.6 | `GHSA-337j-9hxr-rhxg` só afeta hidratação de SSR, e este app não tem SSR. `GHSA-wrjc-x8rr-h8h6` é open redirect via caminho não confiável chegando ao `navigate()`; as seis chamadas do app prefixam um segmento literal (`/artists/...`), então não viram protocolo relativo. As duas só fecham no react-router 7, que é major. | Victor | reavaliar se o app passar a aceitar caminho vindo do usuário |
 | `osv-scanner` fora do `npm run check` | Depende de rede e o banco de dados muda sem o código mudar — rodar a cada commit dá falso alarme em dia que ninguém mexeu em dependência. Rodar na mão, ou ao mexer em `package.json`. | Victor | quando houver CI com cache, mover para lá |
-| `server/` sem lint | O ESLint foi instalado só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
+| `server/` sem lint nem prettier | As duas ferramentas foram instaladas só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
 | CI não varre segredos | O `deploy.yml` roda lint e teste antes do build, mas não o gitleaks — ele precisaria do binário na runner, e o modo `--staged` não faz sentido lá. A varredura de segredo depende de rodar `npm run check` antes de commitar. | Victor | reavaliar se algum segredo escapar |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
 

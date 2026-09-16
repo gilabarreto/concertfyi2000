@@ -3,7 +3,7 @@
   "private": true,
   "description": "Raiz só de scripts. Não é workspace: client/ e server/ continuam com node_modules próprios e npm install separado.",
   "scripts": {
-    "check": "gitleaks git --staged --redact --no-banner && npm run lint --prefix client && node --test",
+    "check": "gitleaks git --staged --redact --no-banner && npm run format:check --prefix client && npm run lint --prefix client && node --test",
     "check:full": "npm run check && npm run build --prefix client"
   }
 }
