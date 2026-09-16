@@ -5,6 +5,10 @@ const { request } = require("../http");
 router.post("/token", async (req, res) => {
   const { code, redirectUri } = req.body;
 
+  if (typeof code !== "string" || typeof redirectUri !== "string") {
+    return res.status(400).json({ error: "Missing code or redirectUri" });
+  }
+
   try {
     const data = await request("https://accounts.spotify.com/api/token", {
       method: "POST",
