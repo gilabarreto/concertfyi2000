@@ -5,26 +5,57 @@
 
 ## 🔴 CRÍTICO - Problema de SEO/Discovery
 
-### ❌ Problema: SPAs não são indexadas pelo Google
-- O Googlebot não executa JavaScript na maioria dos casos
-- Site aparece como "página em branco" nos resultados de busca
-- Zero tráfego orgânico = crescimento limitado
+> **Revisado em 2026-09-15.** A premissa original era "o Googlebot não executa JavaScript na
+> maioria dos casos". Isso deixou de valer em 2019: o Googlebot renderiza JS. O que eu medi no
+> site no ar foi um problema diferente, menor de consertar e pior de ignorar. Texto original
+> preservado no fim da seção.
 
-### ✅ Solução Recomendada
-**Opção A (Melhor)**: Migrar para **SSR** com **Next.js** ou **Remix**
-- Renderização do servidor
-- SEO automático com meta tags corretas
-- Mantém toda a funcionalidade React
-- Esforço: Alto, mas essencial
+### ❌ O problema medido: as URLs do seu próprio sitemap devolviam 404
 
-**Opção B (Médio esforço)**: Pre-rendering estático
-- Gerar versões HTML estáticas de cada artista/show
-- Usar ferramentas como `@vitejs/plugin-ssr`
-- Funciona bem para conteúdo semi-estático
+```
+/            200
+/about       404   ← anunciada no sitemap.xml
+/contact     404   ← anunciada no sitemap.xml
+/artists/…   404
+```
 
-**Opção C (Rápido)**: Usar Prerender.io
-- Serviço terceirizado que simula JavaScript
-- Menos código, mas custa dinheiro
+O GitHub Pages devolve 404 para todo caminho que não tem arquivo, e o `404.html` é uma cópia do
+app — então a página abre, ninguém percebe olhando a tela, e o status continua 404. Nenhum
+buscador indexa 404. O sitemap estava, na prática, anunciando duas páginas inexistentes.
+
+Renderização nunca foi o gargalo: o Lighthouse dá **SEO 100** e o `SEOHead.jsx` já monta title,
+description, Open Graph e canonical por página com `react-helmet-async`.
+
+- [x] **Resolvido** (`741ac0b`). `client/scripts/static-routes.mjs` emite um `dist/<rota>.html` por
+      `<loc>` do sitemap, no build. A lista sai do próprio sitemap para que rota anunciada e
+      arquivo emitido não possam divergir. Conferido em produção depois do deploy: as três URLs do
+      sitemap respondem **200**.
+
+### 🔵 O que sobra: as páginas de artista
+
+`/artists/:artistId/concerts/:concertId` continua em 404 (com o app abrindo por cima). São
+infinitas e vêm da busca, então não dá para enumerar num sitemap nem copiar um arquivo por rota.
+É o único lugar onde a conversa de pre-render/SSR ainda faz sentido — e aí ela é sobre o conteúdo
+que traria tráfego de verdade ("setlist do show tal"), não sobre o `/about`.
+
+| Opção | Esforço | Observação |
+|---|---|---|
+| Pre-render dos artistas mais buscados | Médio | Precisa de uma lista — os N artistas mais pedidos. Hoje não existe essa métrica; o passo anterior é medir. |
+| SSR (Next.js / Remix) | Alto | Resolve tudo e muda a hospedagem: sai o GitHub Pages, entra um servidor. O proxy do Render passaria a ser desnecessário. |
+| Prerender.io | Baixo | Serviço pago; adia a decisão em vez de tomá-la. |
+
+**Opinião: nada disso antes de haver tráfego para medir.** O que estava barato e quebrado (status
+404 em página estática) foi consertado; o resto é uma migração de arquitetura atrás de uma
+hipótese de crescimento que ainda não foi testada.
+
+<details><summary>Texto original de 2026-08-23</summary>
+
+**Opção A (Melhor)**: Migrar para **SSR** com **Next.js** ou **Remix** — renderização do servidor,
+SEO automático, mantém a funcionalidade React. Esforço alto, mas essencial.
+**Opção B (Médio esforço)**: Pre-rendering estático com `@vitejs/plugin-ssr`.
+**Opção C (Rápido)**: Prerender.io, serviço terceirizado que simula JavaScript.
+
+</details>
 
 ---
 

@@ -26,8 +26,8 @@ Falhou, o trabalho não sai daqui.
 |---|---|---|---|
 | Lint do client | 0 achados | **0** | Foi instalado com 4 achados e os 4 foram corrigidos. Zero é o estado real, não uma meta; qualquer achado novo é regressão do mesmo dia. |
 | Formatação do client | tudo formatado | **`prettier --check` limpo** | Todo o `client/` foi formatado de uma vez em 2026-09-15. Formatar só o arquivo tocado deixaria cada diff futuro misturando mudança real com reformatação. |
-| Testes | 43 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `api/request.js` (o wrapper de fetch do client), `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist). São poucos; justamente por isso nenhum pode ser sacrificado. |
-| Teste deletado ou pulado para o código passar | — | **proibido** | Com 43 testes, apagar um é apagar 2% da cobertura que existe. |
+| Testes | 46 passam, 0 falham | **0 falhas** | Cobrem `server/http.js`, `server/rateLimit.js`, `api/request.js` (o wrapper de fetch do client), `helpers/calendar.js`, `helpers/selectors.js` (a costura entre as duas APIs), `helpers/spotifyPlaylist.js` (o placar que decide o que entra na playlist) e `scripts/static-routes.mjs` (quais rotas viram arquivo no build). São poucos; justamente por isso nenhum pode ser sacrificado. |
+| Teste deletado ou pulado para o código passar | — | **proibido** | Com 46 testes, apagar um é apagar 2% da cobertura que existe. |
 | Segredo no que vai ser commitado | 0 | **0** | O servidor existe *só* para manter chave fora do browser. Uma chave commitada anula a única razão de ele existir. Já aconteceu: ver Exceções. |
 | CVE conhecida em dependência de runtime | 0 | **0** | Dependência de build quebrada atrapalha quem desenvolve; dependência de runtime quebrada chega no usuário. As de `(dev)` entram na conta só quando houver folga. |
 
@@ -37,7 +37,7 @@ Comandos exatos:
 gitleaks git --staged --redact --no-banner   # segredos no que está staged
 npm run format:check --prefix client         # prettier --check .
 npm run lint --prefix client                 # eslint .
-node --test                                  # da raiz, acha os seis arquivos
+node --test                                  # da raiz, acha os sete arquivos
 
 # CVEs — fora do check de todo dia, depende de rede e o banco muda sem o código mudar
 osv-scanner scan source --lockfile client/package-lock.json --lockfile server/package-lock.json
@@ -100,9 +100,10 @@ Números que registramos para ver a direção, sem regra amarrada. Não invente 
 | Lighthouse mobile (`concertfyi.com`) | performance **71–80** (7 medições), acessibilidade **100**, best practices **96**, SEO **100** |
 | LCP mobile | **4,8–6,8 s** (FCP 1,7–2,6 s, CLS 0,001–0,019, TBT 0–90 ms) |
 | Peso de imagem na home | **~0,5 MB em 7 requisições** (era 21,7 MB em 38) |
+| Status HTTP das URLs do sitemap | **200 nas três** (eram 404 em `/about` e `/contact`) |
 | JS não usado no chunk de entrada | 29 kB (era 44 kB antes de tirar o axios, 37 antes do FontAwesome) |
 
-Cobertura ficou fora de propósito: com 5 arquivos de teste, qualquer meta percentual vira teatro.
+Cobertura ficou fora de propósito: com 7 arquivos de teste, qualquer meta percentual vira teatro.
 A regra útil hoje é a do piso — não deletar teste para passar. Quando houver teste de componente,
 vale voltar aqui e medir antes de exigir.
 
