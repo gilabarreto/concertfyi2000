@@ -634,3 +634,57 @@ Nada deste eixo. O chunk de entrada saiu de 516,53 kB para 258,28 kB e o que sob
    a meta real. Depende da resposta 1.
 3. **Sentry**: o Error Boundary hoje manda o erro para o `console` do usuário, onde ninguém lê.
    Sentry é o próximo passo natural — ~20 linhas e uma conta grátis.
+
+---
+
+## 🆕 Saldo do `/agent-skills:code-simplify` — 2026-09-16
+
+Alvo: `Swiper.jsx`, o maior arquivo do projeto (284 linhas), mais o `Setlist.jsx` que o
+troca-ícones já tinha tocado. A régua do skill é "mesmo comportamento, leitura mais rápida" —
+então cada mudança abaixo veio com prova de equivalência, não com olhômetro.
+
+### 🟢 Resolvido
+
+- [x] **A montagem dos slides saiu do `useEffect`** (`9d65952`). Eram 35 linhas de transformação
+      pura presas dentro de um efeito: descartar evento sem attraction, um evento por artista,
+      embaralhar, mapear para o formato do slide. Nada disso precisa de React — e dentro de um
+      componente o `node:test` não alcança, que é exatamente por que o carrossel não tinha teste.
+      Agora é `getCarouselSlides` no `helpers/selectors.js`, com **5 testes**. A deduplicação virou
+      um `Map` no lugar de array + `Set`: mesma ordem, primeiro vence, um laço em vez de dois.
+      Como o sorteio é aleatório, os testes conferem o **conjunto** de artistas e não a sequência —
+      conferir a sequência seria testar o `Math.random`.
+- [x] **Ternário aninhado do `getSlideStyle` virou guarda** (`59aca6a`). O slide do meio estava dito
+      três vezes (`offset === 0 ? … : …` dentro de `transform`, `filter` e `opacity`, com os dois
+      transforms aninhados no primeiro). É um caso só. Provado, não olhado: rodei as duas versões
+      em toda a grade que o carrossel produz — offsets −8 a 8, com e sem imagem, mobile e desktop,
+      **68 combinações, saída idêntica**.
+- [x] **Efeito duplicado removido** (`f53b4d9`). Dois efeitos gravavam a mesma coisa no contexto.
+      O `git blame` explicou a cerca: o `fbb425d` (migração para React Query) criou o segundo com
+      três `console.log` no corpo — era para *ver* o dado chegando. O `c6ed37a` limpou os logs do
+      arquivo e deixou os dois setters órfãos, já duplicando o que o handler fazia.
+      **Uma diferença de comportamento, e ela vai para o lado certo:** quando não há setlist, o
+      handler mostra "No setlist found" e de propósito não toca no contexto; o efeito órfão
+      sobrescrevia assim mesmo, com setlist vazia, jogando fora o artista carregado antes.
+      Como nenhum teste unitário alcança esse fluxo, verifiquei no browser: home → clique num
+      slide lateral → navega para `/artists/:id/concerts/:id` e a página mostra o artista clicado,
+      sem erro no console.
+- [x] **`Setlist.jsx`: prop desestruturada e import duplicado juntado** (`dbbc104`).
+
+`Swiper.jsx`: 284 → 251 linhas. Testes: 46 → 51.
+
+### ⚪ Olhei e deixei quieto — opinião, pode vetar
+
+| O quê | Por que não mexi |
+|---|---|
+| `Setlist.jsx` tem 213 linhas | O tamanho é marcação, não lógica emaranhada. Quebrar em subcomponentes com um uso só cada é a abstração que o CLAUDE.md manda evitar neste tamanho de app. |
+| `key={songIndex}` no map das músicas | É smell de verdade, mas a chave alternativa (nome da música) não é única — banda repete música no bis. Trocar sem essa garantia é arriscar remontagem errada de linha. Vale se aparecer bug de render. |
+| `LocationSelector.jsx` (185 linhas) e `SongDetails.jsx` (152) | Fora do escopo deste passe. O skill pede escopo no que mudou; ampliar mais faria um diff que ninguém revisa direito. |
+
+### 🔴 Achado de passagem, é seu (fora do repositório)
+
+- [ ] **A `SETLISTFM_API_KEY` do `server/.env` local responde 403.** Descobri porque o clique no
+      carrossel falhava em desenvolvimento e funcionava em produção; tive de apontar o dev para a
+      API do Render para conseguir verificar. A chave da produção está boa — é a cópia local que
+      está velha. Enquanto ficar assim, qualquer teste de fluxo de artista na sua máquina falha por
+      um motivo que não é o código. Encaixa no chamado que você já ia abrir no setlist.fm
+      (exceção com vencimento em 2026-10-15 no `CONSTRAINTS.md`).
