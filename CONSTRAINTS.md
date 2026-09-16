@@ -53,7 +53,7 @@ o scanner. O staged pega o que importa: o segredo prestes a entrar.
 
 | O quê | Hoje | Limite | Por quê |
 |---|---|---|---|
-| Maior chunk de JS (entrada) | 408,49 kB | **430 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
+| Maior chunk de JS (entrada) | 356,76 kB | **380 kB** | Hoje + ~5%. Uma feature normal cabe sem alarme falso; um `import` de biblioteca pesada acende a luz no mesmo build. |
 
 Histórico deste número, porque ele já mudou duas vezes em um dia:
 
@@ -62,11 +62,16 @@ Histórico deste número, porque ele já mudou duas vezes em um dia:
 | 2026-09-15 | 516,53 kB | 550 kB | chunk único, sem code splitting |
 | 2026-09-15 | 356,10 kB | 380 kB | `React.lazy` por rota tirou 161 kB da entrada |
 | 2026-09-15 | 407,72 kB | 430 kB | `react-router` 6.4.3 → 6.30.6 devolveu 51 kB |
+| 2026-09-15 | 356,76 kB | 380 kB | trocar o `axios` pelo `fetch` tirou os mesmos 51 kB de volta |
 
-O último foi um teto **subindo**, que é o movimento suspeito. A justificativa: 26 versões menores
+O de 430 foi um teto **subindo**, que é o movimento suspeito. A justificativa: 26 versões menores
 de atraso no router é pior dívida que 51 kB, e o `npm update` que trouxe isso limpou 38 CVEs. O
 aviso disparou no build e a decisão está aqui em vez de ter sido silenciada — que é o único uso
 honesto de um limite que sobe.
+
+O de 380 é o movimento contrário: o `axios` custava 50,5 kB do chunk de entrada para dois GETs e
+um timeout que a plataforma já tem, e saiu. Teto que fica largo depois de uma redução real deixa
+de avisar — a folga de 73 kB absorveria a próxima biblioteca pesada em silêncio.
 
 O que o usuário baixa ao abrir o site é o chunk de entrada. As rotas viraram chunks próprios e só
 descem quando alguém navega para elas — `ArtistPage` sozinha são 155 kB (arrasta o Google Maps) que
