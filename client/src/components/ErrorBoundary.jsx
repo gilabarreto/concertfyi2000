@@ -17,12 +17,8 @@ export default class ErrorBoundary extends Component {
 
     return (
       <div className="w-full bg-red-600 flex flex-col items-center justify-center gap-4 p-6 text-white text-center">
-        <p className="text-lg font-semibold tracking-tight">
-          Something broke on this page.
-        </p>
-        <p className="text-base font-medium tracking-tight">
-          The rest of the site still works.
-        </p>
+        <p className="text-lg font-semibold tracking-tight">Something broke on this page.</p>
+        <p className="text-base font-medium tracking-tight">The rest of the site still works.</p>
         {/* Recarrega em vez de resetar o state: volta limpo sem depender do router. */}
         <a
           href="/"

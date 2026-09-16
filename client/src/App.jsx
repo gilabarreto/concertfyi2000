@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { HelmetProvider } from 'react-helmet-async';
+import { HelmetProvider } from "react-helmet-async";
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
 import Navbar from "./components/Navbar";
@@ -39,7 +39,11 @@ function App() {
           <main className={isSpotifyPopup ? "" : "pt-16 pb-16 min-h-dvh w-full flex"}>
             {/* Só as rotas: um erro de página não leva Navbar e Footer junto. */}
             <ErrorBoundary>
-              <Suspense fallback={<div className="w-full flex items-center justify-center p-6">Loading…</div>}>
+              <Suspense
+                fallback={
+                  <div className="w-full flex items-center justify-center p-6">Loading…</div>
+                }
+              >
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/search" element={<SearchPage />} />

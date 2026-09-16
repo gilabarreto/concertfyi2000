@@ -23,7 +23,7 @@ export default function SpotifyCallback() {
         const playlistData = JSON.parse(localStorage.getItem("spotifyPlaylistData") || "{}");
         window.opener?.postMessage(
           { type: "SPOTIFY_AUTH_SUCCESS", accessToken, playlistData },
-          window.location.origin
+          window.location.origin,
         );
 
         setStatus("success");

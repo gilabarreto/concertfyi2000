@@ -1,12 +1,7 @@
 // node --test client/src/helpers/calendar.test.mjs
 import { test } from "node:test";
 import assert from "node:assert";
-import {
-  googleCalendarUrl,
-  outlookCalendarUrl,
-  concertIcs,
-  concertIcsUrl,
-} from "./calendar.js";
+import { googleCalendarUrl, outlookCalendarUrl, concertIcs, concertIcsUrl } from "./calendar.js";
 
 const now = new Date("2026-09-15T12:00:00Z");
 
@@ -42,8 +37,8 @@ test("a start time does not turn the entry back into a timed block", () => {
   const params = paramsOf(
     googleCalendarUrl(
       event({ localDate: "2026-10-02", dateTime: "2026-10-03T02:00:00Z" }),
-      "Nekrogoblikon"
-    )
+      "Nekrogoblikon",
+    ),
   );
 
   // the UTC time sits on the 3rd, so honouring it would move the show off its day

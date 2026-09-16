@@ -1,58 +1,61 @@
-import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const fetchCity = async (lat, long) => {
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`
+    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`,
   );
   const data = await response.json();
-  const city = data.address.city || data.address.town || data.address.village || 'Unknown';
-  const country = data.address.country || 'Unknown';
+  const city = data.address.city || data.address.town || data.address.village || "Unknown";
+  const country = data.address.country || "Unknown";
   return { city, country };
 };
 
 export const useGeolocation = () => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['geolocation'],
+    queryKey: ["geolocation"],
     queryFn: async () => {
       const position = await new Promise((resolve, reject) => {
         navigator.geolocation.getCurrentPosition(resolve, reject, {
           enableHighAccuracy: true,
-          timeout: 10000
+          timeout: 10000,
         });
       });
-      
-      const { city, country } = await fetchCity(position.coords.latitude, position.coords.longitude);
+
+      const { city, country } = await fetchCity(
+        position.coords.latitude,
+        position.coords.longitude,
+      );
 
       return {
         coords: {
           lat: position.coords.latitude,
-          long: position.coords.longitude
+          long: position.coords.longitude,
         },
         city,
-        country
+        country,
       };
     },
     staleTime: 1000 * 60 * 30, // 30 minutos
     gcTime: 1000 * 60 * 60 * 24, // 24 horas
     retry: 1,
     initialData: () => {
-      const cached = localStorage.getItem('geolocationCache');
+      const cached = localStorage.getItem("geolocationCache");
       return cached ? JSON.parse(cached) : undefined;
-    }
+    },
   });
 
   useEffect(() => {
     if (data) {
-      localStorage.setItem('geolocationCache', JSON.stringify(data));
+      localStorage.setItem("geolocationCache", JSON.stringify(data));
     }
   }, [data]);
 
   return {
     coords: data?.coords || { lat: 49.2827, long: -123.1207 },
-    city: data?.city || 'Vancouver',
-    country: data?.country || 'Canada',
+    city: data?.city || "Vancouver",
+    country: data?.country || "Canada",
     isLoading,
-    error
+    error,
   };
 };

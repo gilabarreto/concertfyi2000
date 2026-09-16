@@ -17,10 +17,10 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
     offset === 0
       ? "none"
       : isSmallScreen
-        ? `scale(${1 - SCALE_FACTOR_MOBILE * depth}) translateY(${depth * VERTICAL_SHIFT_MOBILE
-        }px)`
-        : `translateX(${offset * SPACING}px) scale(${1 - SCALE_FACTOR_DESKTOP * depth
-        }) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`;
+        ? `scale(${1 - SCALE_FACTOR_MOBILE * depth}) translateY(${depth * VERTICAL_SHIFT_MOBILE}px)`
+        : `translateX(${offset * SPACING}px) scale(${
+            1 - SCALE_FACTOR_DESKTOP * depth
+          }) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`;
 
   return {
     transform,
@@ -42,7 +42,12 @@ export default function Swiper() {
   const carouselRef = useRef(null);
   const refocusNav = useRef(null);
 
-  const { coords = { lat: -23.5505, long: -46.6333 }, city, country, isLoading: isGeoLoading } = useGeolocation();
+  const {
+    coords = { lat: -23.5505, long: -46.6333 },
+    city,
+    country,
+    isLoading: isGeoLoading,
+  } = useGeolocation();
 
   const effectiveCoords = selectedLocation
     ? { lat: selectedLocation.lat, long: selectedLocation.lon }
@@ -105,9 +110,7 @@ export default function Swiper() {
   useEffect(() => {
     if (localEventsData) {
       const events = localEventsData._embedded?.events || [];
-      const eventsWithArtists = events.filter(
-        (ev) => ev._embedded?.attractions?.[0]?.name
-      );
+      const eventsWithArtists = events.filter((ev) => ev._embedded?.attractions?.[0]?.name);
 
       const uniqueArtists = [];
       const seenArtists = new Set();
@@ -140,7 +143,8 @@ export default function Swiper() {
     e.stopPropagation();
     const next = Math.min(Math.max(active + step, 0), slides.length - 1);
     if (next === active) return;
-    refocusNav.current = document.activeElement === e.currentTarget ? e.currentTarget.dataset.nav : null;
+    refocusNav.current =
+      document.activeElement === e.currentTarget ? e.currentTarget.dataset.nav : null;
     setActive(next);
   };
 
@@ -225,11 +229,13 @@ export default function Swiper() {
           <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
         </div>
       ) : (
-        <div ref={carouselRef} className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden">
+        <div
+          ref={carouselRef}
+          className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden"
+        >
           {slides.map(renderSlide)}
         </div>
       )}
-
     </>
   );
 }

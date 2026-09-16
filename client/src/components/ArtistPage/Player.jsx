@@ -5,9 +5,7 @@ export default function Player({ ticketmaster }) {
 
   if (!spotify) {
     return (
-      <div className="text-white text-center">
-        Spotify link not available for this artist.
-      </div>
+      <div className="text-white text-center">Spotify link not available for this artist.</div>
     );
   }
 

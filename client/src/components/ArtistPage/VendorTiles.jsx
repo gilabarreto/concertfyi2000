@@ -37,9 +37,7 @@ export default function VendorTiles({ icon, title, vendors }) {
               />
               <span className="text-sm text-center">{vendor.name}</span>
               {hasSubtitle && (
-                <span className="text-sm font-semibold text-center">
-                  {vendor.subtitle || " "}
-                </span>
+                <span className="text-sm font-semibold text-center">{vendor.subtitle || " "}</span>
               )}
             </a>
           </li>

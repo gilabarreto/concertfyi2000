@@ -5,10 +5,7 @@ import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
 
 export default function NextConcerts(props) {
-  const events = getNextConcertsByArtist(
-    props.ticketmaster.events,
-    props.concert.artist.name
-  );
+  const events = getNextConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
 
   return (
     <ConcertList

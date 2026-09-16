@@ -1,11 +1,12 @@
-import { Helmet } from 'react-helmet-async';
+import { Helmet } from "react-helmet-async";
 
 export function SEOHead({ title, description, image, url }) {
-  const siteTitle = 'concertfyi';
+  const siteTitle = "concertfyi";
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
-  const defaultDescription = 'Discover live music, concerts, and setlists. Track your favorite artists and never miss a show.';
+  const defaultDescription =
+    "Discover live music, concerts, and setlists. Track your favorite artists and never miss a show.";
   const metaDescription = description || defaultDescription;
-  const siteUrl = 'https://concertfyi.com';
+  const siteUrl = "https://concertfyi.com";
   const metaImage = image || `${siteUrl}/og-image.png`;
   const metaUrl = url ? `${siteUrl}${url}` : siteUrl;
 

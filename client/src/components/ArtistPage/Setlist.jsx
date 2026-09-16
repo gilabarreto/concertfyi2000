@@ -5,9 +5,7 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
-import {
-  getSpotifyAuthUrl,
-} from "../../helpers/spotifyAuth";
+import { getSpotifyAuthUrl } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
 export default function Setlist(props) {
@@ -39,7 +37,7 @@ export default function Setlist(props) {
               playlistData.songs,
               playlistData.artistName,
               playlistData.tourName,
-              playlistData.concertDate
+              playlistData.concertDate,
             );
             window.open(playlist.external_urls.spotify, "_blank");
           } catch (err) {
@@ -61,12 +59,15 @@ export default function Setlist(props) {
     if (creatingPlaylist) return;
 
     // Store playlist data in localStorage (shared between popup and parent)
-    localStorage.setItem("spotifyPlaylistData", JSON.stringify({
-      songs,
-      artistName,
-      tourName,
-      concertDate
-    }));
+    localStorage.setItem(
+      "spotifyPlaylistData",
+      JSON.stringify({
+        songs,
+        artistName,
+        tourName,
+        concertDate,
+      }),
+    );
 
     const authUrl = getSpotifyAuthUrl();
     const width = 420;
@@ -74,13 +75,8 @@ export default function Setlist(props) {
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 
-    window.open(
-      authUrl,
-      "spotify_auth",
-      `width=${width},height=${height},left=${left},top=${top}`
-    );
+    window.open(authUrl, "spotify_auth", `width=${width},height=${height},left=${left},top=${top}`);
   };
-
 
   const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
 
@@ -127,9 +123,9 @@ export default function Setlist(props) {
 
                     <button
                       type="button"
-                      onClick={() => setExpandedLyrics(
-                        expandedLyrics === songIndex ? null : songIndex
-                      )}
+                      onClick={() =>
+                        setExpandedLyrics(expandedLyrics === songIndex ? null : songIndex)
+                      }
                       aria-label={`Details for ${song.name}`}
                       aria-expanded={expandedLyrics === songIndex}
                       className="p-1 hover:text-red-800 ml-2"
@@ -143,10 +139,7 @@ export default function Setlist(props) {
                   </div>
 
                   {expandedLyrics === songIndex && (
-                    <SongDetails
-                      songName={song.name}
-                      artistName={artistName}
-                    />
+                    <SongDetails songName={song.name} artistName={artistName} />
                   )}
                 </li>
               );
@@ -169,7 +162,7 @@ export default function Setlist(props) {
               onClick={handleSpotifyPlaylist}
               disabled={creatingPlaylist}
               aria-busy={creatingPlaylist}
-              className={`px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2 ${creatingPlaylist ? 'animate-pulse motion-reduce:animate-none' : ''}`}
+              className={`px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded disabled:opacity-50 flex items-center gap-2 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
               title="Create Spotify Playlist"
             >
               <FontAwesomeIcon icon={faSpotify} aria-hidden="true" />
@@ -185,10 +178,13 @@ export default function Setlist(props) {
         aria-labelledby="disclaimer-title"
         className="bg-white rounded-lg p-8 w-[calc(100%-2rem)] max-w-md backdrop:bg-black/50"
       >
-        <h3 id="disclaimer-title" className="text-xl font-bold mb-4">Disclaimer</h3>
+        <h3 id="disclaimer-title" className="text-xl font-bold mb-4">
+          Disclaimer
+        </h3>
         <div className="text-sm text-gray-700 space-y-3 mb-6">
           <p>
-            ConcertFYI uses information from third-party sources. We don't own or control all of the content displayed here.
+            ConcertFYI uses information from third-party sources. We don't own or control all of the
+            content displayed here.
           </p>
           <p>
             Found something missing or incorrect?{" "}

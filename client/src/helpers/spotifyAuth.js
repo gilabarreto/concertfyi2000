@@ -15,14 +15,11 @@ export const getSpotifyAuthUrl = () => {
 };
 
 export const getAccessTokenFromCode = async (code) => {
-  const response = await fetch(
-    `${API_BASE}/api/spotify/token`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code, redirectUri: REDIRECT_URI }),
-    }
-  );
+  const response = await fetch(`${API_BASE}/api/spotify/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code, redirectUri: REDIRECT_URI }),
+  });
 
   if (!response.ok) throw new Error("Failed to get access token");
   const data = await response.json();

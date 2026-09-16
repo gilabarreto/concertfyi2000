@@ -9,7 +9,7 @@ import { AppContext } from "../context/AppContext";
 
 function Navbar() {
   const { setSearchValue } = useContext(AppContext);
-  const { city = 'Locating...', country = 'Unknown', isLoading: isGeoLoading } = useGeolocation();
+  const { city = "Locating...", country = "Unknown", isLoading: isGeoLoading } = useGeolocation();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -19,7 +19,7 @@ function Navbar() {
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/about", label: "About" },
-    { path: "/contact", label: "Contact" }
+    { path: "/contact", label: "Contact" },
   ];
 
   return (
@@ -52,9 +52,7 @@ function Navbar() {
         </div>
 
         <div className="hidden sm:flex justify-center items-center gap-2">
-          <span className="text-xl font-medium tracking-tight items-center">
-            {"{"}
-          </span>
+          <span className="text-xl font-medium tracking-tight items-center">{"{"}</span>
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -65,9 +63,7 @@ function Navbar() {
               {link.label}
             </Link>
           ))}
-          <span className="text-xl font-medium tracking-tight items-center">
-            {"}"}
-          </span>
+          <span className="text-xl font-medium tracking-tight items-center">{"}"}</span>
         </div>
 
         <div className="sm:hidden flex items-center z-30">
@@ -79,23 +75,15 @@ function Navbar() {
           >
             <span className="flex items-center">
               <span className="text-black mr-2">{"{"}</span>
-              <span className="inline-block w-4 text-center">
-                {isOpen ? "×" : "☰"}
-              </span>
+              <span className="inline-block w-4 text-center">{isOpen ? "×" : "☰"}</span>
               <span className="text-black ml-2">{"}"}</span>
             </span>
           </button>
-
-
         </div>
         <button aria-label="User profile" className="flex">
-          <FontAwesomeIcon
-            icon={faUser}
-            className="text-lg cursor-pointer filter brightness-0"
-          />
+          <FontAwesomeIcon icon={faUser} className="text-lg cursor-pointer filter brightness-0" />
         </button>
       </nav>
-
 
       {/* SearchBar for mobile - full width on new line */}
       <div className="sm:hidden w-full px-6 pb-3 border-b border-gray-200">
@@ -103,7 +91,10 @@ function Navbar() {
       </div>
 
       {isOpen && (
-        <div className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down" role="menu">
+        <div
+          className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down"
+          role="menu"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.path}

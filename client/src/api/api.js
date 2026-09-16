@@ -21,8 +21,8 @@ API.interceptors.response.use(
             status: error.response.status,
             data: error.response.data,
           }
-        : { message: error.message || "No response received" }
-    )
+        : { message: error.message || "No response received" },
+    ),
 );
 
 export const getSetlist = (artistName) =>
@@ -52,6 +52,3 @@ export const getLocalEvents = (lat, long) =>
   API.get("/ticketmaster/events", {
     params: { lat, long },
   });
-
-
-

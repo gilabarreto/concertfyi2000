@@ -7,28 +7,28 @@ import useDebounce from "../hooks/useDebounce";
 
 // Country to code mapping for geolocation display
 const countryCodeMap = {
-  "Brazil": "BR",
-  "Canada": "CAN",
+  Brazil: "BR",
+  Canada: "CAN",
   "United States": "US",
-  "Mexico": "MX",
-  "Argentina": "AR",
-  "Chile": "CL",
-  "Colombia": "CO",
-  "Peru": "PE",
-  "Venezuela": "VE",
-  "Spain": "ES",
-  "Portugal": "PT",
+  Mexico: "MX",
+  Argentina: "AR",
+  Chile: "CL",
+  Colombia: "CO",
+  Peru: "PE",
+  Venezuela: "VE",
+  Spain: "ES",
+  Portugal: "PT",
   "United Kingdom": "GB",
-  "France": "FR",
-  "Germany": "DE",
-  "Netherlands": "NL",
-  "Italy": "IT",
-  "Austria": "AT",
+  France: "FR",
+  Germany: "DE",
+  Netherlands: "NL",
+  Italy: "IT",
+  Austria: "AT",
   "Czech Republic": "CZ",
-  "Poland": "PL",
-  "Australia": "AU",
-  "Japan": "JP",
-  "South Korea": "KR"
+  Poland: "PL",
+  Australia: "AU",
+  Japan: "JP",
+  "South Korea": "KR",
 };
 
 export default function LocationSelector({ city, country, isLoading }) {
@@ -46,7 +46,9 @@ export default function LocationSelector({ city, country, isLoading }) {
 
   const displayName = selectedLocation
     ? `${selectedLocation.city}, ${selectedLocation.countryCode || selectedLocation.country}`
-    : city ? `${city}, ${countryCodeMap[country] || country}` : city;
+    : city
+      ? `${city}, ${countryCodeMap[country] || country}`
+      : city;
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -70,7 +72,8 @@ export default function LocationSelector({ city, country, isLoading }) {
     // arrows move focus between the search input and the suggestion buttons
     const items = [...dropdownRef.current.querySelectorAll("input, li button")];
     const i = items.indexOf(document.activeElement);
-    const next = items[Math.min(Math.max(i + (e.key === "ArrowDown" ? 1 : -1), 0), items.length - 1)];
+    const next =
+      items[Math.min(Math.max(i + (e.key === "ArrowDown" ? 1 : -1), 0), items.length - 1)];
     if (next) {
       e.preventDefault();
       next.focus();
@@ -105,7 +108,6 @@ export default function LocationSelector({ city, country, isLoading }) {
           aria-hidden="true"
         />
       </button>
-
 
       {showDropdown && (
         <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
@@ -161,18 +163,13 @@ export default function LocationSelector({ city, country, isLoading }) {
           {showResults && !isError && suggestions.length > 0 && (
             <ul className="max-h-72 overflow-y-auto">
               {suggestions.map((loc) => (
-                <li
-                  key={loc.id}
-                  className="border-b border-gray-100 last:border-0"
-                >
+                <li key={loc.id} className="border-b border-gray-100 last:border-0">
                   <button
                     type="button"
                     onClick={() => handleSelectLocation(loc)}
                     className="w-full px-4 py-3 text-left hover:bg-red-50 cursor-pointer transition-colors focus-visible:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-600"
                   >
-                    <span className="block font-medium text-gray-800 text-sm">
-                      {loc.city}
-                    </span>
+                    <span className="block font-medium text-gray-800 text-sm">{loc.city}</span>
                     <span className="block text-gray-500 text-xs">
                       {[loc.state, loc.country].filter(Boolean).join(", ")}
                     </span>

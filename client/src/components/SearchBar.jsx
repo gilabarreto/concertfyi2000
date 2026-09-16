@@ -46,18 +46,14 @@ export default function SearchBar() {
     };
 
     handleResize();
-    
-    window.addEventListener('resize', handleResize);
-    
-    return () => window.removeEventListener('resize', handleResize);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
 
   return (
-    <form
-      onSubmit={(e) => e.preventDefault()}
-      className="flex w-full mx-auto"
-    >
+    <form onSubmit={(e) => e.preventDefault()} className="flex w-full mx-auto">
       <input
         type="search"
         value={searchValue}
@@ -72,7 +68,6 @@ export default function SearchBar() {
           focus:ring-black lg:w-96
         "
       />
-      
     </form>
   );
 }

@@ -1,8 +1,6 @@
 export default function Header() {
   return (
-    <div
-      className="flex flex-1 flex-col h-[120px] max-h-min justify-center items-center text-center"
-    >
+    <div className="flex flex-1 flex-col h-[120px] max-h-min justify-center items-center text-center">
       <h1 className="text-2xl font-medium tracking-tight">
         concert{"{"}
         <span className="text-2xl font-semibold text-zinc-100">fyi</span>

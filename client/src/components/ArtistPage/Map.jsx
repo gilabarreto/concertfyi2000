@@ -11,16 +11,10 @@ export default function Map({ concert }) {
   if (!coords) return null;
 
   if (!isLoaded) {
-    return (
-      <div className="flex items-center justify-center h-64 md:h-full">
-        Loading…
-      </div>
-    );
+    return <div className="flex items-center justify-center h-64 md:h-full">Loading…</div>;
   }
 
-  return (
-    <ArtistMap latitude={coords.lat} longitude={coords.long} />
-  );
+  return <ArtistMap latitude={coords.lat} longitude={coords.long} />;
 }
 
 function ArtistMap({ latitude, longitude }) {

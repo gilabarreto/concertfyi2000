@@ -1,11 +1,7 @@
 // node --test client/src/helpers/selectors.test.mjs
 import { test } from "node:test";
 import assert from "node:assert";
-import {
-  getLastConcertsByArtist,
-  getNextConcertsByArtist,
-  getBestImage,
-} from "./selectors.js";
+import { getLastConcertsByArtist, getNextConcertsByArtist, getBestImage } from "./selectors.js";
 
 // Setlist.fm: DD-MM-YYYY
 const past = (mbid, eventDate) => ({ id: eventDate, artist: { mbid }, eventDate });
@@ -27,7 +23,7 @@ test("getLastConcertsByArtist: filtra pelo mbid, descarta futuro e ordena do mai
     past("outro-artista", "10-10-2025"),
   ];
 
-  const got = getLastConcertsByArtist(setlist, MBID).map(c => c.id);
+  const got = getLastConcertsByArtist(setlist, MBID).map((c) => c.id);
 
   assert.deepStrictEqual(got, ["15-08-2025", "01-03-2024"]);
 });
@@ -36,7 +32,7 @@ test("getLastConcertsByArtist: lê DD-MM-YYYY, não MM-DD-YYYY", () => {
   // Se o parser trocasse dia e mês, 03-01 viria depois de 01-03.
   const [first] = getLastConcertsByArtist(
     [past(MBID, "01-03-2024"), past(MBID, "03-01-2024")],
-    MBID
+    MBID,
   );
 
   assert.strictEqual(first.id, "01-03-2024");
@@ -51,7 +47,7 @@ test("getNextConcertsByArtist: casa pelo nome, ordena do mais próximo e ignora 
     { id: "sem-embedded", dates: { start: { localDate: "2026-12-01" } } },
   ];
 
-  const got = getNextConcertsByArtist(events, "Radiohead").map(e => e.id);
+  const got = getNextConcertsByArtist(events, "Radiohead").map((e) => e.id);
 
   assert.deepStrictEqual(got, ["2026-11-02", "2027-05-10"]);
 });
@@ -73,7 +69,7 @@ test("getBestImage: prefere a 16_9 mais larga, senão a de maior área", () => {
       { ratio: "16_9", width: 640, height: 360, url: "small-wide.jpg" },
       wide,
     ]),
-    "wide.jpg"
+    "wide.jpg",
   );
 
   assert.strictEqual(
@@ -81,7 +77,7 @@ test("getBestImage: prefere a 16_9 mais larga, senão a de maior área", () => {
       { ratio: "3_2", width: 100, height: 100, url: "tiny.jpg" },
       { ratio: "4_3", width: 800, height: 600, url: "big.jpg" },
     ]),
-    "big.jpg"
+    "big.jpg",
   );
 
   assert.strictEqual(getBestImage([]), null);

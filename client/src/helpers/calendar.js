@@ -25,11 +25,7 @@ function details(event, artistName) {
     localDate,
     endDate: addDays(localDate, 1),
     title: venue?.name ? `${artistName} at ${venue.name}` : artistName,
-    place: [
-      venue?.name,
-      venue?.city?.name,
-      venue?.state?.stateCode || venue?.country?.countryCode,
-    ]
+    place: [venue?.name, venue?.city?.name, venue?.state?.stateCode || venue?.country?.countryCode]
       .filter(Boolean)
       .join(", "),
     url: event.url,

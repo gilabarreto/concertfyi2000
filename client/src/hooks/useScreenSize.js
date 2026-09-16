@@ -1,5 +1,5 @@
 // src/hooks/useScreenSize.js
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export default function useIsSmallScreen(breakpoint = 768) {
   const [isSmall, setIsSmall] = useState(window.innerWidth < breakpoint);

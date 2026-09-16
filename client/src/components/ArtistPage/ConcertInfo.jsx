@@ -102,7 +102,7 @@ export default function ConcertInfo(props) {
               >
                 <FontAwesomeIcon icon={icon} className="text-gray-500" size="2x" />
               </a>
-            ) : null
+            ) : null,
           )}
         </span>
       </div>

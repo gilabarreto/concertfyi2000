@@ -4,7 +4,7 @@ import { getStoredAccessToken } from "./spotifyAuth";
 export const findTrackUri = async (accessToken, artistName, songName) => {
   const response = await fetch(
     `https://api.spotify.com/v1/search?q=${encodeURIComponent(`${artistName} ${songName}`)}&type=track&limit=10`,
-    { headers: { Authorization: `Bearer ${accessToken}` } }
+    { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (!response.ok) {
     throw Object.assign(new Error("Failed to search track"), { status: response.status });
@@ -45,21 +45,18 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
   const playlistDescription = `Setlist from ${artistName} concert at ${concertDate}. Created with ConcertFYI.com`;
 
   // Create playlist
-  const playlistResponse = await fetch(
-    `https://api.spotify.com/v1/users/${user.id}/playlists`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        name: playlistName,
-        description: playlistDescription,
-        public: true,
-      }),
-    }
-  );
+  const playlistResponse = await fetch(`https://api.spotify.com/v1/users/${user.id}/playlists`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: playlistName,
+      description: playlistDescription,
+      public: true,
+    }),
+  });
 
   if (!playlistResponse.ok) throw new Error("Failed to create playlist");
   const playlist = await playlistResponse.json();
@@ -92,7 +89,7 @@ export const createSpotifyPlaylist = async (songs, artistName, tourName, concert
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ uris: batch }),
-        }
+        },
       );
 
       if (!addResponse.ok) {
