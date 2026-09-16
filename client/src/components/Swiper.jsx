@@ -13,22 +13,23 @@ const SCALE_FACTOR_MOBILE = 0.15;
 const VERTICAL_SHIFT_MOBILE = 10;
 
 function getSlideStyle(offset, depth, image, isSmallScreen) {
-  const transform =
-    offset === 0
-      ? "none"
-      : isSmallScreen
-        ? `scale(${1 - SCALE_FACTOR_MOBILE * depth}) translateY(${depth * VERTICAL_SHIFT_MOBILE}px)`
-        : `translateX(${offset * SPACING}px) scale(${
-            1 - SCALE_FACTOR_DESKTOP * depth
-          }) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`;
-
-  return {
-    transform,
+  const common = {
     zIndex: 10 - depth,
-    filter: offset === 0 ? "none" : "blur(3px)",
-    opacity: offset === 0 ? 1 : depth > 2 ? 0 : 0.6,
     // Sem imagem não põe background nenhum: slide invisível não baixa foto.
     ...(image ? { background: `url(${image}) center/cover no-repeat` } : null),
+  };
+
+  // O slide do meio é o caso especial: sem deslocamento, sem desfoque, opaco.
+  if (offset === 0) return { ...common, transform: "none", filter: "none", opacity: 1 };
+
+  return {
+    ...common,
+    transform: isSmallScreen
+      ? `scale(${1 - SCALE_FACTOR_MOBILE * depth}) translateY(${depth * VERTICAL_SHIFT_MOBILE}px)`
+      : `translateX(${offset * SPACING}px) scale(${1 - SCALE_FACTOR_DESKTOP * depth}) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`,
+    filter: "blur(3px)",
+    // Do terceiro vizinho em diante o slide já saiu de vista.
+    opacity: depth > 2 ? 0 : 0.6,
   };
 }
 
