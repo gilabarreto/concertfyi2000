@@ -5,7 +5,7 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
-import { getSpotifyAuthUrl } from "../../helpers/spotifyAuth";
+import { getSpotifyAuthUrl, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 
 export default function Setlist(props) {
@@ -34,6 +34,7 @@ export default function Setlist(props) {
           setCreatingPlaylist(true);
           try {
             const playlist = await createSpotifyPlaylist(
+              getStoredAccessToken(),
               playlistData.songs,
               playlistData.artistName,
               playlistData.tourName,

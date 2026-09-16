@@ -1,5 +1,3 @@
-import { getStoredAccessToken } from "./spotifyAuth";
-
 // Best-matching Spotify track URI for a song, or null when there is no confident match
 export const findTrackUri = async (accessToken, artistName, songName) => {
   const response = await fetch(
@@ -28,8 +26,16 @@ export const findTrackUri = async (accessToken, artistName, songName) => {
   return best?.score >= 70 ? best.track.uri : null;
 };
 
-export const createSpotifyPlaylist = async (songs, artistName, tourName, concertDate) => {
-  const accessToken = getStoredAccessToken();
+// O token vem de quem chama, não do localStorage aqui dentro: era a única coisa
+// que este módulo pegava escondido, e era o que prendia ele ao spotifyAuth — que
+// lê window e import.meta.env no topo e não carrega fora do Vite.
+export const createSpotifyPlaylist = async (
+  accessToken,
+  songs,
+  artistName,
+  tourName,
+  concertDate,
+) => {
   if (!accessToken) throw new Error("Not authenticated with Spotify");
 
   // Get current user
