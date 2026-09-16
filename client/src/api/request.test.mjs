@@ -61,6 +61,17 @@ test("status fora do 2xx vira erro com status e corpo — o fetch sozinho não r
   });
 });
 
+test("lê o `error` do nosso servidor, não só o `message` de terceiro", async () => {
+  // As dez rotas do server/ respondem `{ error }`. O axios só olhava `message`, então
+  // todo erro do nosso próprio proxy chegava ao log como o genérico "Request failed".
+  respondWith({ ok: false, status: 400, body: { error: "Missing artist or song parameter" } });
+
+  await assert.rejects(request("https://api.test/lyrics"), (err) => {
+    assert.strictEqual(err.message, "Missing artist or song parameter");
+    return true;
+  });
+});
+
 test("erro sem corpo JSON mantém o status e não estoura no parse", async () => {
   // Um 502 do proxy vem em HTML. O status é a informação útil; perdê-lo num
   // SyntaxError seria trocar "o servidor caiu" por "erro de sintaxe".

@@ -37,7 +37,12 @@ export async function request(url, { params, timeout = TIMEOUT_MS } = {}) {
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw failure(data?.message || "Request failed", { status: response.status, data });
+    // O servidor responde `{ error }` nas dez rotas; `message` é o que terceiro manda.
+    // O axios só olhava `message`, então todo erro nosso chegava como "Request failed".
+    throw failure(data?.message || data?.error || "Request failed", {
+      status: response.status,
+      data,
+    });
   }
 
   return { data };
