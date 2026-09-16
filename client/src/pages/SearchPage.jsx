@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import { getBestImage, getLastConcertsByArtist } from "../helpers/selectors";
+import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
@@ -11,10 +11,7 @@ export default function SearchPage() {
   const uniqueSetlist = Array.from(
     new Map(
       setlist
-        .filter((item) => {
-          const [day, month, year] = item.eventDate.split("-");
-          return new Date(`${year}-${month}-${day}`) < new Date();
-        })
+        .filter((item) => parseSetlistDate(item.eventDate) < new Date())
         .map((item) => [item.artist.mbid, item]),
     ).values(),
   );

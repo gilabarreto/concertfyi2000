@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { getBestImage, getLastConcertsByArtist } from "../../helpers/selectors";
+import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
 
 const SOCIALS = [
   { key: "youtube", icon: faYoutube, label: "YouTube" },
@@ -25,9 +25,7 @@ export default function ConcertInfo(props) {
   const nextConcertId = lastConcerts[idx - 1]?.id;
 
   const concertDate = () => {
-    const [day, month, year] = concert.eventDate.split("-");
-    const dateObj = new Date(year, month - 1, day);
-    return dateObj.toLocaleDateString("en-US", {
+    return parseSetlistDate(concert.eventDate).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",

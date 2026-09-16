@@ -1,12 +1,18 @@
+// A data do Setlist.fm é DD-MM-YYYY. Sempre monte a partir das partes: passar a
+// string "2026-09-16" para o Date é meia-noite UTC pela especificação, e em fuso
+// negativo isso é o dia anterior à noite — um show de amanhã cai na lista de
+// passados nas últimas horas do dia. Era o que a SearchPage fazia sozinha.
+export function parseSetlistDate(eventDate) {
+  const [day, month, year] = eventDate.split("-");
+  return new Date(year, month - 1, day);
+}
+
 export function getLastConcertsByArtist(setlist = [], artistId) {
   const now = new Date();
 
   return setlist
     .filter((item) => item.artist.mbid === artistId)
-    .map((item) => {
-      const [d, m, y] = item.eventDate.split("-");
-      return { ...item, dateObj: new Date(y, m - 1, d) };
-    })
+    .map((item) => ({ ...item, dateObj: parseSetlistDate(item.eventDate) }))
     .filter((item) => item.dateObj <= now)
     .sort((a, b) => b.dateObj - a.dateObj);
 }

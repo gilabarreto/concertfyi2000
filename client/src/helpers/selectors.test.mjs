@@ -1,7 +1,18 @@
 // node --test client/src/helpers/selectors.test.mjs
+
+// Fuso fixo antes de qualquer Date. O CI roda em UTC, onde o bug de parse que o
+// último teste deste arquivo cobre é invisível — e um teste que só passa por causa
+// do fuso da máquina não está testando nada.
+process.env.TZ = "America/Sao_Paulo";
+
 import { test } from "node:test";
 import assert from "node:assert";
-import { getLastConcertsByArtist, getNextConcertsByArtist, getBestImage } from "./selectors.js";
+import {
+  getLastConcertsByArtist,
+  getNextConcertsByArtist,
+  getBestImage,
+  parseSetlistDate,
+} from "./selectors.js";
 
 // Setlist.fm: DD-MM-YYYY
 const past = (mbid, eventDate) => ({ id: eventDate, artist: { mbid }, eventDate });
@@ -104,4 +115,18 @@ test("getBestImage: prefere a 16_9 mais larga, senão a de maior área", () => {
   );
 
   assert.strictEqual(getBestImage([]), null);
+});
+
+test("parseSetlistDate: DD-MM-YYYY vira meia-noite LOCAL, não UTC", () => {
+  const d = parseSetlistDate("16-09-2026");
+
+  assert.strictEqual(d.getFullYear(), 2026);
+  assert.strictEqual(d.getMonth(), 8); // setembro
+  assert.strictEqual(d.getDate(), 16);
+
+  // O ponto do teste. `new Date("2026-09-16")` é meia-noite UTC pela especificação,
+  // que em São Paulo são 21h do dia 15 — e aí um show de amanhã entra na lista de
+  // passados durante as últimas 3 horas de todo dia. Era o que a SearchPage fazia.
+  assert.strictEqual(d.getHours(), 0);
+  assert.notStrictEqual(d.getTime(), new Date("2026-09-16").getTime());
 });
