@@ -27,7 +27,8 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
     zIndex: 10 - depth,
     filter: offset === 0 ? "none" : "blur(3px)",
     opacity: offset === 0 ? 1 : depth > 2 ? 0 : 0.6,
-    background: `url(${image}) center/cover no-repeat`,
+    // Sem imagem não põe background nenhum: slide invisível não baixa foto.
+    ...(image ? { background: `url(${image}) center/cover no-repeat` } : null),
   };
 }
 
@@ -174,8 +175,11 @@ export default function Swiper() {
   const renderSlide = (slide, index) => {
     const offset = index - active;
     const depth = Math.abs(offset);
+    // Acima de depth 2 o slide está com opacity 0 — invisível, e ainda assim baixava
+    // uma foto. Carrega até 3 para ter um anel de folga: quem desliza um slide já
+    // encontra a imagem pronta, em vez de vê-la aparecer depois.
     // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
-    const image = getBestImage(slide.images, 1024);
+    const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
 
     return (
