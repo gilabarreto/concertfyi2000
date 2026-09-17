@@ -70,3 +70,13 @@ test("quem desiste no meio também vira linha, e não vira um 200 falso", () => 
 
   assert.match(lines[0], /^GET \/api\/setlist\/search ABORTED \d+ms$/);
 });
+
+test("caminho gigante não vira linha gigante", () => {
+  const lines = [];
+  const { finish } = call(requestLog((l) => lines.push(l)), {
+    originalUrl: `/api/setlist/${"A".repeat(9000)}`,
+  });
+  finish();
+
+  assert.ok(lines[0].length < 160, `linha com ${lines[0].length} caracteres`);
+});
