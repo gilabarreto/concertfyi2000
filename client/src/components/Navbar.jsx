@@ -2,8 +2,6 @@ import { Link } from "react-router-dom";
 import { useState, useContext } from "react";
 import SearchBar from "./SearchBar";
 import LocationSelector from "./LocationSelector";
-import Icon from "./Icon";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
 
@@ -79,9 +77,6 @@ function Navbar() {
             </span>
           </button>
         </div>
-        <button aria-label="User profile" className="flex">
-          <Icon icon={faUser} className="text-lg cursor-pointer filter brightness-0" />
-        </button>
       </nav>
 
       {/* SearchBar for mobile - full width on new line */}
