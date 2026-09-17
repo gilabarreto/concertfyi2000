@@ -1007,3 +1007,74 @@ todas as letras, porque o valor da rodada está aí.
       mesmo buffer do `dist/index.html`, então o `<link>` não pode sumir em uma e ficar na outra —
       e se a cópia quebrar, a página inteira some, o que é bem mais visível que a fonte. O teste
       também exigiria um build feito antes do `node --test`, que hoje roda sozinho.
+
+---
+
+## 🆕 Saldo do `/agent-skills:plan` — 2026-09-17
+
+A skill que faltava da fila combinada em 2026-09-15: `plan` era o item 2 e nunca rodou — as outras
+nove passaram na frente. A entrada não foi um `SPEC.md` (não existe), foi este arquivo.
+
+O plano está em `tasks/plan.md`, as tarefas em `tasks/todo.md` (`11ff66f`). **As cinco fecharam.**
+
+### O corte que o plano fez, e por que importa
+
+Dos ~30 itens `[ ]` daqui, **cinco** eram tarefa. O resto é decisão de dono (sair do GitHub Pages,
+mapa estático, Sentry, rotacionar a chave da setlist.fm, o log de acesso do Render) ou risco aceito
+e já registrado. Escrever isso deu o número que faltava: o backlog não tem 30 coisas a fazer, tem
+cinco — e elas couberam numa tarde.
+
+### ✅ Resolvido agora
+
+- [x] **`preconnect` para o host do Render** (`4c89e7d`). Medido antes com `curl -w`, porque a nota
+      do Lighthouse tem ruído de ±7 pontos e o que o `preconnect` compra não é nota: é handshake.
+      Primeira conexão fria: **37 ms de DNS + 6 ms de TCP + 190 ms de TLS = 233 ms** em série, que
+      hoje só começam depois de o bundle baixar, parsear e executar. Agora correm em paralelo com o
+      download. Conferido no `dist/index.html` e nas cópias por rota.
+- [x] **`loading="lazy"` no iframe da Spotify** (`19e6e40`). O contraponto do mapa: adiar o mapa
+      piorou a medição porque ele está **dentro** da primeira dobra (topo a 592 px num viewport de
+      823 px). O player vem depois do mapa e da setlist inteira, então está fora dela por
+      construção, e adiar tira concorrência de rede de quem está na tela.
+- [x] **Varredura semanal de CVE + health check do proxy** (`2143d91`, `3015158`). Fecha os dois
+      itens que sobraram do `ci-cd`. Moram num workflow **agendado**, não no `deploy.yml`: os dois
+      falham por motivo que não é commit de ninguém, e gate que reprova sem culpado é gate que se
+      aprende a ignorar. Abrem issue, e só uma — a segunda rodada com o mesmo problema diz "já
+      existe issue aberta" em vez de duplicar. A sonda bate em `/api/ticketmaster/events` sem
+      parâmetro, que devolve 400 na **nossa** guarda de entrada: prova que o processo subiu, o
+      router está montado e o nosso código roda, sem gastar cota de terceiro.
+- [x] **README com setup e deploy** (`211dbf5`). O que uma pessoa que clona o repositório precisa
+      estava só no `CLAUDE.md`, que é documento para agente. Todo comando citado foi rodado antes
+      de entrar no arquivo.
+- [x] **A regra de fluxo saiu da memória pessoal** (`361426b`). Item aberto desde 2026-09-15.
+      Vale para o projeto, e o motivo não é preferência: **não há staging**. Um push no `main`
+      publica o client na `gh-pages` e faz o Render redeployar o servidor do mesmo commit.
+
+### 🔴 Dois defeitos que não estavam no plano
+
+Apareceram porque o plano mandou verificar, não porque alguém suspeitava deles.
+
+- [x] **O alarme novo morria calado** (`3015158`). O passo que abre a issue rodava `gh issue
+      create` num job **sem `checkout`** — o `gh` procura o repositório no remote do git, não achava
+      e saía com `not a git repository`. O workflow teria ficado verde na rotina e mudo no dia em
+      que o proxy caísse. Só apareceu porque o caminho de falha foi **executado**: numa branch
+      descartável, com a sonda forçada a falhar. A issue nasceu (`#1`), a segunda rodada não
+      duplicou, a issue foi fechada e a branch apagada. Um alarme que nunca tocou é um alarme sobre
+      o qual você está chutando.
+- [x] **O teto de bundle do `CONSTRAINTS.md` não era aplicado por ninguém** (`5cdf3b2`). O
+      documento afirma, com todas as letras, que os 270 kB saem do `build.chunkSizeWarningLimit` do
+      `vite.config.js`. Lá estava **430**: os dois ratchets de 2026-09-15 (430 → 380 → 270) mexeram
+      só no documento. Por dois dias houve **172 kB de folga silenciosa** sobre o chunk de entrada —
+      uma biblioteca pesada entraria sem acender luz nenhuma, que é exatamente o que o limite existe
+      para impedir. Descoberto lendo o `vite.config.js` para conferir uma frase do README. Corrigido
+      para 270, e o aviso foi visto disparar (baixando para 250 de propósito) antes de entrar.
+- [x] **O piso dizia 56 testes e são 58** (`7f0d852`). Os dois que a rodada do `ship` acrescentou
+      ao `requestLog.test.js` nunca entraram no número contra o qual o piso está escrito.
+
+### ⚪ Sobre a skill, para a próxima vez
+
+`plan` foi a de menor custo e maior retorno até aqui — não por causa das cinco tarefas, que eram
+pequenas, mas porque **separar o que é tarefa do que é decisão de dono** transformou um backlog de
+58 kB numa lista de cinco linhas. E porque o hábito que ela impõe (critério de aceite antes de
+código, verificação depois) foi o que achou os dois defeitos acima, que nenhuma das dez rodadas
+anteriores tinha visto. O que ela **não** substitui: nada aqui precisou de `spec`, e insistir nele
+teria sido cerimônia — o `CLAUDE.md` já diz que a implementação é do ponytail.

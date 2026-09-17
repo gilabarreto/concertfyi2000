@@ -1,5 +1,9 @@
 # Tarefas — saldo em aberto do ConcertFYI
 
+> **Todas fechadas em 2026-09-17.** Commits: `4c89e7d` (1), `19e6e40` (2), `2143d91` + `3015158`
+> (3), `211dbf5` (4), `361426b` (5). O fechamento com números está no `SUGESTOES_ATUALIZADO.md`.
+> Dois defeitos apareceram no caminho e não estavam no plano: `5cdf3b2` e `7f0d852`.
+
 Fonte: `tasks/plan.md`. Item fechado aqui vira commit **e** linha no `SUGESTOES_ATUALIZADO.md`.
 
 ---
@@ -12,13 +16,13 @@ host de terceiro acontecem em série nesse ponto. Um `<link rel="preconnect">` n
 esse custo em paralelo com o download do bundle.
 
 **Critérios de aceite:**
-- [ ] O tempo de DNS+TCP+TLS para o host do Render está medido, com número, antes da mudança
-- [ ] Se o número for irrelevante (< ~50 ms), a tarefa vira registro de "testado e descartado" em vez de commit
+- [x] O tempo de DNS+TCP+TLS para o host do Render está medido, com número, antes da mudança
+- [x] Se o número for irrelevante (< ~50 ms), a tarefa vira registro de "testado e descartado" em vez de commit
 
 **Verificação:**
-- [ ] `curl -o /dev/null -s -w` contra o host, três vezes, cache de DNS limpo entre elas
-- [ ] `npm run check:full` limpo
-- [ ] O `<link>` aparece no `dist/index.html` e nas cópias por rota
+- [x] `curl -o /dev/null -s -w` contra o host, três vezes, cache de DNS limpo entre elas
+- [x] `npm run check:full` limpo
+- [x] O `<link>` aparece no `dist/index.html` e nas cópias por rota
 
 **Dependências:** Nenhuma
 
@@ -36,12 +40,12 @@ do mapa — que a rodada de webperf mediu **dentro** da primeira dobra e por iss
 este está fora dela.
 
 **Critérios de aceite:**
-- [ ] O iframe tem `loading="lazy"`
-- [ ] Está confirmado que o player fica fora da primeira dobra no viewport móvel do Lighthouse (823 px), e não repetido de cabeça
+- [x] O iframe tem `loading="lazy"`
+- [x] Está confirmado que o player fica fora da primeira dobra no viewport móvel do Lighthouse (823 px), e não repetido de cabeça
 
 **Verificação:**
-- [ ] `npm run check:full` limpo
-- [ ] O player ainda toca quando a pessoa rola até ele
+- [x] `npm run check:full` limpo
+- [x] O player ainda toca quando a pessoa rola até ele
 
 **Dependências:** Nenhuma
 
@@ -59,14 +63,14 @@ quando alguém lembra, e ninguém é avisado se o proxy do Render cair. Ambas v�
 travar o push de quem não mexeu em dependência.
 
 **Critérios de aceite:**
-- [ ] `schedule` semanal + `workflow_dispatch` para rodar na mão
-- [ ] Varre os dois lockfiles (`client` e `server`) com `osv-scanner`
-- [ ] Bate numa rota do proxy e falha só quando ela não responde 200
-- [ ] Falha abre issue; não toca no deploy
+- [x] `schedule` semanal + `workflow_dispatch` para rodar na mão
+- [x] Varre os dois lockfiles (`client` e `server`) com `osv-scanner`
+- [x] Bate numa rota do proxy e falha só quando ela não responde 200
+- [x] Falha abre issue; não toca no deploy
 
 **Verificação:**
-- [ ] Rodado por `workflow_dispatch` e verde uma vez
-- [ ] `deploy.yml` inalterado
+- [x] Rodado por `workflow_dispatch` e verde uma vez
+- [x] `deploy.yml` inalterado
 
 **Dependências:** Nenhuma
 
@@ -84,14 +88,14 @@ ambiente cada lado precisa, qual é o portão de qualidade nem como o deploy aco
 no `CLAUDE.md`, que é documento para agente, não para pessoa.
 
 **Critérios de aceite:**
-- [ ] Setup dos dois lados, com os comandos rodados antes de entrarem no arquivo
-- [ ] As variáveis de ambiente dos dois lados, por nome, sem valor
-- [ ] O portão (`npm run check`) e como o deploy dispara nos dois lados
-- [ ] A vitrine que já existe continua lá
+- [x] Setup dos dois lados, com os comandos rodados antes de entrarem no arquivo
+- [x] As variáveis de ambiente dos dois lados, por nome, sem valor
+- [x] O portão (`npm run check`) e como o deploy dispara nos dois lados
+- [x] A vitrine que já existe continua lá
 
 **Verificação:**
-- [ ] Todo comando citado foi executado nesta sessão
-- [ ] `npm run format:check --prefix client` continua limpo
+- [x] Todo comando citado foi executado nesta sessão
+- [x] `npm run format:check --prefix client` continua limpo
 
 **Dependências:** Nenhuma
 
@@ -108,11 +112,11 @@ no `CLAUDE.md`, que é documento para agente, não para pessoa.
 e não conhece a regra. Decidir se vale para o projeto e, se valer, escrevê-la no `CLAUDE.md`.
 
 **Critérios de aceite:**
-- [ ] A regra está no `CLAUDE.md` ou o item está fechado com o motivo de não estar
-- [ ] O item correspondente no `SUGESTOES_ATUALIZADO.md` sai de `[ ]`
+- [x] A regra está no `CLAUDE.md` ou o item está fechado com o motivo de não estar
+- [x] O item correspondente no `SUGESTOES_ATUALIZADO.md` sai de `[ ]`
 
 **Verificação:**
-- [ ] Nenhuma — é documentação
+- [x] Nenhuma — é documentação
 
 **Dependências:** Nenhuma
 

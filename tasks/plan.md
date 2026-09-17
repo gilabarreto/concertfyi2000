@@ -37,27 +37,27 @@ A ordem abaixo é por risco decrescente: o que pode dar errado vem primeiro.
 ## Lista de tarefas
 
 ### Fase 1: o que pode não valer a pena (mede antes de afirmar)
-- [ ] Tarefa 1: `preconnect` para o host do Render
-- [ ] Tarefa 2: `loading="lazy"` no iframe da Spotify
+- [x] Tarefa 1: `preconnect` para o host do Render
+- [x] Tarefa 2: `loading="lazy"` no iframe da Spotify
 
 ### Checkpoint: Fase 1
-- [ ] `npm run check:full` limpo
-- [ ] O teto de bundle não se mexeu (nenhuma das duas é JS)
+- [x] `npm run check:full` limpo
+- [x] O teto de bundle não se mexeu (nenhuma das duas é JS)
 
 ### Fase 2: automação que hoje só roda na mão
-- [ ] Tarefa 3: workflow semanal — `osv-scanner` + health check do proxy, abrindo issue
+- [x] Tarefa 3: workflow semanal — `osv-scanner` + health check do proxy, abrindo issue
 
 ### Checkpoint: Fase 2
-- [ ] O workflow roda por `workflow_dispatch` e passa uma vez de verdade
-- [ ] O `deploy.yml` continua sem depender dele
+- [x] O workflow roda por `workflow_dispatch` e passa uma vez de verdade
+- [x] O `deploy.yml` continua sem depender dele
 
 ### Fase 3: o que não está escrito em lugar nenhum
-- [ ] Tarefa 4: README com setup e deploy
-- [ ] Tarefa 5: a regra de fluxo sai da memória pessoal e entra no `CLAUDE.md`
+- [x] Tarefa 4: README com setup e deploy
+- [x] Tarefa 5: a regra de fluxo sai da memória pessoal e entra no `CLAUDE.md`
 
 ### Checkpoint: Completo
-- [ ] Todo item fechado tem commit citado no `SUGESTOES_ATUALIZADO.md`
-- [ ] `npm run check:full` limpo
+- [x] Todo item fechado tem commit citado no `SUGESTOES_ATUALIZADO.md`
+- [x] `npm run check:full` limpo
 
 ## Riscos e mitigação
 
