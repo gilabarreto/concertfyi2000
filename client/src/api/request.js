@@ -5,6 +5,9 @@
 // Era o axios: 50,5 kB no chunk de entrada para dois GETs, uma querystring e um timeout.
 // O que ele fazia e precisa continuar valendo está tudo abaixo — inclusive o formato do
 // erro, que o `queries.js` lê (`err.status === 401`) e o React Query propaga.
+//
+// O que **não** continuou: o envelope `{ data }`. Era imitação do axios, e o axios saiu.
+// Devolve o corpo direto, como o `server/http.js` sempre devolveu do outro lado.
 
 const TIMEOUT_MS = 10_000;
 
@@ -45,5 +48,5 @@ export async function request(url, { params, timeout = TIMEOUT_MS } = {}) {
     });
   }
 
-  return { data };
+  return data;
 }

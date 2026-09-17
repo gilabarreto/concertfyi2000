@@ -20,14 +20,14 @@ const respondWith = ({ ok = true, status = 200, body = {} } = {}) => {
   };
 };
 
-test("monta a querystring e devolve o corpo em { data }, como o axios devolvia", async () => {
+test("monta a querystring e devolve o corpo direto, sem envelope", async () => {
   respondWith({ body: { setlist: ["x"] } });
 
   const got = await request("https://api.test/setlist/search", {
     params: { artistName: "Sigur Rós" },
   });
 
-  assert.deepStrictEqual(got, { data: { setlist: ["x"] } });
+  assert.deepStrictEqual(got, { setlist: ["x"] });
   // Encodado, não concatenado à mão: acento e espaço passam inteiros.
   assert.strictEqual(calls[0].url, "https://api.test/setlist/search?artistName=Sigur+R%C3%B3s");
 });

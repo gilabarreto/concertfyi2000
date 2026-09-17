@@ -18,7 +18,7 @@ const songCache = { staleTime: Infinity, gcTime: 30 * 60 * 1000, retry: false };
 export const useLyrics = (artist, song) => {
   return useQuery({
     queryKey: ["lyrics", artist, song],
-    queryFn: () => getLyrics(artist, song).then((res) => res.data.lyrics || ""),
+    queryFn: () => getLyrics(artist, song).then((res) => res.lyrics || ""),
     ...songCache,
   });
 };
@@ -26,7 +26,7 @@ export const useLyrics = (artist, song) => {
 export const useYoutubeVideo = (artist, song) => {
   return useQuery({
     queryKey: ["youtube", artist, song],
-    queryFn: () => getYoutubeVideo(artist, song).then((res) => res.data.videoId || ""),
+    queryFn: () => getYoutubeVideo(artist, song).then((res) => res.videoId || ""),
     ...songCache,
   });
 };
@@ -49,7 +49,7 @@ export const useCitySearch = (query) => {
     queryKey: ["city-search", query],
     queryFn: () =>
       searchCities(query).then((res) =>
-        res.data.features.map(({ properties: p, geometry }) => ({
+        res.features.map(({ properties: p, geometry }) => ({
           id: `${p.osm_type}${p.osm_id}`,
           city: p.name,
           state: p.state,
@@ -68,7 +68,7 @@ export const useCitySearch = (query) => {
 export const useSetlistById = (id) => {
   return useQuery({
     queryKey: ["setlist", id],
-    queryFn: () => getSetlistById(id).then((res) => res.data),
+    queryFn: () => getSetlistById(id),
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
     retry: false,
@@ -78,7 +78,7 @@ export const useSetlistById = (id) => {
 export const useSetlistSearch = (artistName) => {
   return useQuery({
     queryKey: ["setlist-search", artistName],
-    queryFn: () => getSetlist(artistName).then((res) => res.data),
+    queryFn: () => getSetlist(artistName),
     enabled: !!artistName,
     staleTime: 10 * 60 * 1000,
   });
@@ -87,7 +87,7 @@ export const useSetlistSearch = (artistName) => {
 export const useLocalEvents = (lat, long) => {
   return useQuery({
     queryKey: ["local-events", lat, long],
-    queryFn: () => getLocalEvents(lat, long).then((res) => res.data),
+    queryFn: () => getLocalEvents(lat, long),
     enabled: !!lat && !!long,
     staleTime: 5 * 60 * 1000,
   });
@@ -96,7 +96,7 @@ export const useLocalEvents = (lat, long) => {
 export const useTicketmasterSearch = (artistName) => {
   return useQuery({
     queryKey: ["ticketmaster-search", artistName],
-    queryFn: () => getTicketmaster(artistName).then((res) => res.data),
+    queryFn: () => getTicketmaster(artistName),
     enabled: !!artistName,
     staleTime: 0,
   });
@@ -112,17 +112,17 @@ export const useArtistData = (artistName) => {
       const [setlistRes, ticketmasterRes] = await Promise.all([
         getSetlist(artistName).catch((err) => {
           console.error("Erro no setlist:", err);
-          return { data: { setlist: [] } };
+          return { setlist: [] };
         }),
         getTicketmaster(artistName).catch((err) => {
           console.error("Erro no ticketmaster:", err);
-          return { data: { _embedded: {} } };
+          return { _embedded: {} };
         }),
       ]);
 
       return {
-        setlist: setlistRes?.data?.setlist || [],
-        ticketmaster: ticketmasterRes?.data?._embedded || {},
+        setlist: setlistRes?.setlist || [],
+        ticketmaster: ticketmasterRes?._embedded || {},
       };
     },
     enabled: !!artistName,
