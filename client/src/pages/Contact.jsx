@@ -10,6 +10,8 @@ export default function Contact() {
     email: "",
     message: "",
   });
+  // null antes do primeiro envio, "sending" enquanto vai, e depois a frase que a pessoa lê.
+  const [status, setStatus] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,6 +23,7 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus("sending");
     try {
       const response = await fetch(`https://formspree.io/f/${import.meta.env.VITE_FORMSPREE_ID}`, {
         method: "POST",
@@ -31,16 +34,18 @@ export default function Contact() {
       });
 
       if (response.ok) {
-        alert("Message sent successfully!");
+        setStatus("Message sent successfully!");
         setFormData({ name: "", email: "", message: "" });
       } else {
-        alert("An error occurred while sending the message");
+        setStatus("An error occurred while sending the message.");
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Connection failed. Please try again later.");
+      setStatus("Connection failed. Please try again later.");
     }
   };
+
+  const sending = status === "sending";
 
   return (
     <>
@@ -108,10 +113,15 @@ export default function Contact() {
 
             <button
               type="submit"
-              className="bg-white text-red-600 font-bold py-1 px-3 rounded-md hover:bg-gray-100 transition mt-2"
+              disabled={sending}
+              className="bg-white text-red-600 font-bold py-1 px-3 rounded-md hover:bg-gray-100 transition mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Send Message
+              {sending ? "Sending…" : "Send Message"}
             </button>
+
+            <p role="status" aria-live="polite" className="text-white min-h-[1.25rem]">
+              {sending ? "" : status}
+            </p>
           </form>
         </div>
       </div>
