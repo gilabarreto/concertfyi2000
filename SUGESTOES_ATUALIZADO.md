@@ -1169,29 +1169,113 @@ teria de ser escrita duas vezes.
       O que o `<meta>` descarta em silêncio (`frame-ancestors`, `report-uri`, `sandbox`) virou
       exceção no `CONSTRAINTS.md`, para ninguém ler esta política como defesa de clickjacking.
 
+### ✅ Ainda na mesma rodada, depois que você pediu
+
+- [x] **A lista de agosto foi conferida contra o código que existe hoje** (`a02d230`). 22 linhas
+      reescritas com a evidência ao lado. Onze estavam feitas e por marcar (5 rotas em `lazy` no
+      `App.jsx:13-17`, cache do React Query com `retry: 1`, `ErrorBoundary.jsx`, contraste e
+      `button-name` em 100 na auditoria, o botão de limpar nativo do `type="search"`, o
+      placeholder rotativo do `SearchBar.jsx:38-52`, `TicketOptions`/`VendorTiles`, o README do
+      `211dbf5`). Quatro estavam pela metade, e agora dizem qual metade. Dois são "não" honesto:
+      não há service worker e ninguém passou um leitor de tela no app. "Enter para buscar" foi
+      aposentado por não ter objeto. **Um item andou para trás**: o `aria-current="page"` está no
+      `Pagination.jsx:53` mas não nos links do Navbar — item aberto de verdade que ninguém tinha
+      visto.
+- [x] **O botão de perfil do Navbar saiu** (`215deae`). Desenhava um ícone de pessoa, recebia foco
+      pelo teclado, era anunciado como "User profile" — e não tinha `onClick`. Você deu duas
+      saídas, "vira login ou sai"; virar login exigiria um sistema de contas que o app não tem, e
+      seria um segundo beco sem saída com mais preparo. Volta no dia em que houver login.
+
 ### 🔴 Bloqueado em você — mapa estático
 
-- [ ] **A chave `VITE_GOOGLE_MAPS_KEY` não tem permissão para a Maps Static API.** Testei antes de
-      escrever qualquer linha:
+- [ ] **A chave `VITE_GOOGLE_MAPS_KEY` não tem permissão para a Maps Static API.** Está por
+      inteiro na lista única do fim do arquivo, com o 403 que recebi.
+
+### 🔵 Apareceu ao hospedar a fonte — e já foi
+
+- [x] **`font-medium` e `font-semibold` não desenhavam 500 e 600.** **Resolvido (`a35bc40`).**
+      Há 20 usos de `font-medium` e 19 de `font-semibold` no app, e o `css2` do Google só entregava faces 400 e 700 — então 500
+      arredonda para 400 e 600 arredonda para 700. **Sempre foi assim**, não é regressão do
+      `7b876cb`; só ficou visível ao escrever as declarações à mão. O arquivo que já está no
+      repositório é variável e tem os pesos intermediários: trocar `font-weight: 400` / `700` por
+      `font-weight: 100 1000` numa face só faz 39 lugares passarem a desenhar o peso que a classe
+      diz. **Não fiz porque muda como o texto aparece em 39 lugares** e isso é chamada sua — o
+      escopo daquele commit era tirar o Google do caminho, não redesenhar tipografia. Você mandou
+      ligar. As quatro faces discretas viraram duas com `font-weight: 100 1000`, e
+      `format("woff2-variations")` virou `format("woff2")` — aquela é uma forma de rascunho que
+      navegador atual nenhum aceita, e deixá-la ali é arriscar a `src` inteira ser descartada. Medido no navegador com `measureText` em "Foo Fighters Setlist" a 40px:
+      100→318,24 · 300→348,16 · 400→352,64 · 500→359,40 · 600→367,76 · 700→374,00 · 900→380,31.
+      Sete larguras distintas, onde antes 500 e 400 davam o mesmo número e 600 e 700 também.
+      **Zero byte novo**: é o mesmo arquivo, que sempre teve o eixo inteiro. O CSS até encolheu
+      (25,28 → 24,66 kB) por serem duas declarações a menos.
+
+---
+
+## 🙋 Só você pode decidir — lista única (2026-09-17)
+
+Tudo que está parado esperando **você**, num lugar só. Nada aqui é trabalho que eu possa fazer
+sozinho: ou depende de um toggle numa conta que é sua, ou é uma escolha de arquitetura, ou é um
+risco que alguém precisa aceitar com o nome em cima. O detalhe longo continua na seção de origem;
+aqui fica a decisão e o custo dela.
+
+### Precisa de um clique seu numa conta
+
+- [ ] **Liberar a Maps Static API na chave `VITE_GOOGLE_MAPS_KEY`.** Testei antes de escrever
+      qualquer linha:
 
       ```
       GET .../staticmap?center=…&key=…
       403  "This API key is not authorized to use this service or API."
       ```
 
-      A chave tem restrição por API e a **Maps Static API não está na lista**. Se eu tivesse subido
-      a troca, a página de artista mostraria imagem quebrada onde havia mapa — e essa é a página
-      mais importante do site. **É um toggle no Google Cloud Console**, e é a mesma visita da
-      restrição por referrer que já vence em 2026-10-15 no `CONSTRAINTS.md`. Libere e eu faço a
-      troca: é a mudança de melhor retorno do projeto (LCP 7,3–7,5 s é o mapa).
+      A chave tem restrição por API e a **Maps Static API não está na lista**. Se eu tivesse
+      subido a troca, a página de artista mostraria imagem quebrada onde havia mapa — e é a página
+      mais importante do site. É um toggle no Google Cloud Console. Libere e eu faço a troca: é a
+      mudança de melhor retorno do projeto (LCP 7,3–7,5 s é o mapa).
+- [ ] **Restringir essa mesma chave por referrer** — é a mesma visita ao console, e a exceção
+      vence em 2026-10-15 no `CONSTRAINTS.md`. Detalhe na seção do `constraints` (2026-09-15).
+- [ ] **Rotacionar a `SETLISTFM_API_KEY`.** Vazou num bundle publicado na `gh-pages` em julho.
+      Só você tem a conta. Detalhe na seção do `constraints` (2026-09-15).
+- [ ] **Sentry e Google Analytics.** Hoje o `ErrorBoundary` manda o erro para o `console` do
+      visitante, onde ninguém lê — não sabemos o que quebra em produção. São ~20 linhas cada,
+      **e uma conta que é sua**; o plano grátis cobre este volume de sobra. O custo real não é
+      dinheiro, é a decisão de mandar dado de quem visita para um terceiro (e de acrescentar as
+      origens deles na CSP). Detalhe nas seções do `observability` (2026-09-16) e na lista de
+      alta prioridade.
 
-### 🔵 Aberto — apareceu ao hospedar a fonte
+### Escolha de arquitetura
 
-- [ ] **`font-medium` e `font-semibold` não desenham 500 e 600.** Há 20 usos de `font-medium` e 19
-      de `font-semibold` no app, e o `css2` do Google só entregava faces 400 e 700 — então 500
-      arredonda para 400 e 600 arredonda para 700. **Sempre foi assim**, não é regressão da mudança
-      de ontem; só ficou visível ao escrever as declarações à mão. O arquivo que já está no
-      repositório é variável e tem os pesos intermediários: trocar `font-weight: 400` / `700` por
-      `font-weight: 100 1000` numa face só faz 39 lugares passarem a desenhar o peso que a classe
-      diz. **Não fiz porque muda como o texto aparece em 39 lugares** e isso é chamada sua — o
-      escopo de ontem era tirar o Google do caminho, não redesenhar tipografia.
+- [ ] **Sair do GitHub Pages.** Uma decisão, dois problemas resolvidos de uma vez:
+      **(a)** a página de artista responde **404** de verdade — o app aparece porque o `404.html`
+      é cópia do `index.html` e o navegador não liga, mas Lighthouse, PageSpeed, CrUX e Search
+      Console se recusam a enxergar a página mais importante do site;
+      **(b)** a CSP deixa de depender de `<meta>`. O GitHub Pages não manda cabeçalho de resposta,
+      e o `<meta>` descarta em silêncio `frame-ancestors`, `report-uri` e `sandbox` — está como
+      exceção no `CONSTRAINTS.md` justamente para ninguém ler a política de hoje como defesa de
+      clickjacking. Netlify, Vercel e Cloudflare Pages fazem reescrita de verdade e mandam
+      cabeçalho, todas de graça neste volume, e o domínio continua o mesmo. Fecharia de quebra o
+      `Cache-Control` dos assets, que hoje é do GitHub.
+
+### Risco aceito — confirme ou mande trocar
+
+- [ ] **O token da Spotify mora no `localStorage`.** A cartilha diz para não guardar token de
+      sessão onde o JS alcança. O atenuante honesto: é token de terceiro com escopo de criar
+      playlist, não sessão nossa, e num SPA estático sem backend de sessão não há outro lugar.
+      Trocar significa cookie `httpOnly` emitido pelo servidor — arquitetura nova, e o servidor
+      hoje não guarda estado nenhum. **Minha opinião é aceitar**; a assinatura é sua.
+- [ ] **Foto que não é 16:9 é cortada.** O `getBestImage` prefere 16:9 e cai para qualquer
+      proporção quando o artista não tem a variante; dentro da caixa `aspect-video` com
+      `object-cover`, essas perdem topo e base. A troca é claramente boa (0,17 de CLS no catálogo
+      inteiro é pior que corte numa minoria de fotos), só nunca tinha sido escrita. **Se o corte
+      incomodar visualmente**, dá para `object-contain` com fundo — aí volta letterbox.
+
+### Espera um "pode fazer" seu — é trabalho meu, não decisão de conta
+
+- [ ] **Normalizar o id no log de acesso.** `/api/setlist/:id` gera um caminho por show
+      (`/api/setlist/abc`, `/api/setlist/def`), então dá para contar 429 mas não para agrupar
+      volume ou latência **por rota**. É trocar o caminho cru pelo padrão da rota antes de logar —
+      poucas linhas em `server/`. Só não entrei porque a seção do `ship` registrou como dívida e
+      ninguém pediu.
+- [ ] **`aria-current="page"` nos links do Navbar.** Existe no `Pagination.jsx:53` e falta no
+      Navbar; quem usa leitor de tela não ouve em qual página está. Apareceu na auditoria de hoje
+      (`a02d230`), é de uma linha por link.
