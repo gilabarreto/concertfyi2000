@@ -1,0 +1,16 @@
+# As exceções do CONSTRAINTS.md, na forma que o scanner lê.
+#
+# Enquanto elas só existissem em prosa, a varredura semanal reprovaria toda segunda por
+# um achado já respondido — e um alarme que toca certo toda semana é um alarme que se
+# aprende a desligar. Silenciadas aqui, a issue só nasce de coisa nova.
+#
+# Silenciar uma CVE é decisão de dono. Estas duas estão na tabela de Exceções do
+# CONSTRAINTS.md com o nome do Victor; qualquer outra entra aqui só depois de entrar lá.
+
+[[IgnoredVulns]]
+id = "GHSA-337j-9hxr-rhxg"
+reason = "react-router 6.30.6: só afeta hidratação de SSR, e este app não tem SSR. Fecha no react-router 7, que é major. Ver Exceções no CONSTRAINTS.md."
+
+[[IgnoredVulns]]
+id = "GHSA-wrjc-x8rr-h8h6"
+reason = "react-router 6.30.6: open redirect por caminho não confiável chegando ao navigate(). As seis navegações do app prefixam segmento literal, nenhuma aceita caminho digitado. Reavaliar se isso mudar — ver Exceções no CONSTRAINTS.md."

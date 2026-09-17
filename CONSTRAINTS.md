@@ -39,8 +39,12 @@ npm run format:check --prefix client         # prettier --check .
 npm run lint --prefix client                 # eslint .
 node --test                                  # da raiz, acha os nove arquivos
 
-# CVEs — fora do check de todo dia, depende de rede e o banco muda sem o código mudar
-osv-scanner scan source --lockfile client/package-lock.json --lockfile server/package-lock.json
+# CVEs — fora do check de todo dia, depende de rede e o banco muda sem o código mudar.
+# O `--config` carrega as exceções desta tabela lá embaixo na forma que o scanner lê; sem
+# ele o comando reprova por achado já respondido. Desde 2026-09-17 isto também roda
+# sozinho toda segunda (`.github/workflows/weekly-checks.yml`), abrindo issue se reprovar.
+osv-scanner scan source --config osv-scanner.toml \
+  --lockfile client/package-lock.json --lockfile server/package-lock.json
 ```
 
 Na máquina, o gitleaks roda **só no staged**, de propósito. Varrer o histórico inteiro devolve 88
@@ -177,7 +181,7 @@ sorteia conteúdo. Ainda assim: três rodadas, mesma URL, mesmo servidor, ou o n
 | 87 achados de gitleaks no histórico da `gh-pages` | São bundles buildados contendo `VITE_GOOGLE_MAPS_KEY`. Chave de browser é pública por design; o controle dela é restrição de referrer no Google Cloud, não segredo. | Victor | sem vencimento — aceito |
 | `VITE_GOOGLE_MAPS_KEY` sem restrição de referrer confirmada | Nunca foi verificado no console do Google Cloud. Enquanto não for, a chave pública é abusável por qualquer um. | Victor | **2026-10-15** |
 | 2 CVEs abertas no `react-router` 6.30.6 | `GHSA-337j-9hxr-rhxg` só afeta hidratação de SSR, e este app não tem SSR. `GHSA-wrjc-x8rr-h8h6` é open redirect via caminho não confiável chegando ao `navigate()`; as seis chamadas do app prefixam um segmento literal (`/artists/...`), então não viram protocolo relativo. As duas só fecham no react-router 7, que é major. | Victor | reavaliar se o app passar a aceitar caminho vindo do usuário |
-| `osv-scanner` fora do `npm run check` | Depende de rede e o banco de dados muda sem o código mudar — rodar a cada commit dá falso alarme em dia que ninguém mexeu em dependência. Rodar na mão, ou ao mexer em `package.json`. | Victor | agora que o CI varre segredo, mover o osv-scanner para lá é o próximo passo natural |
+| `osv-scanner` fora do `npm run check` | Depende de rede e o banco de dados muda sem o código mudar — rodar a cada commit dá falso alarme em dia que ninguém mexeu em dependência. Rodar na mão, ou ao mexer em `package.json`. | Victor | **fechada em 2026-09-17**: roda semanal em `weekly-checks.yml`, abrindo issue em vez de travar deploy. Continua fora do `check` de todo dia, de propósito |
 | `server/` sem lint nem prettier | As duas ferramentas foram instaladas só no client, onde estão os hooks e o valor real. São 5 arquivos de Express sem JSX. | Victor | reavaliar quando o servidor passar de ~500 linhas |
 | Regras do React Compiler desligadas | O preset do `eslint-plugin-react-hooks` v7 traz 15 regras de adoção do React Compiler. O projeto está em React 18 e não tem lentidão medida. Ver comentário no `client/eslint.config.mjs`. | Victor | reavaliar ao migrar para React 19 |
 | Geolocalização pedida no carregamento da home | Achado `geolocation-on-start` do Lighthouse. É deliberado: o carrossel da home é "shows perto de você", e sem coordenada não há o que mostrar. Existe fallback (São Paulo) e o `LocationSelector` deixa trocar de cidade sem conceder a permissão. Trocar por um botão "usar minha localização" é decisão de produto, não de qualidade. | Victor | reavaliar se a taxa de negação da permissão virar um problema medido |

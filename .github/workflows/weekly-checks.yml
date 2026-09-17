@@ -1,0 +1,78 @@
+# O que aqui dentro não pode morar no deploy.yml, e por quê.
+#
+# Estes dois checks falham por motivo que não é commit de ninguém: uma CVE publicada de
+# madrugada, o Render fora do ar. Se morassem no portão do deploy, travariam o push de quem
+# não mexeu em dependência — e um gate que reprova sem culpado é um gate que se aprende a
+# ignorar. Aqui eles abrem issue, que fica esperando, em vez de bloquear.
+name: Weekly checks
+
+on:
+  schedule:
+    # Segunda de manhã, UTC. Cron do GitHub atrasa em horário de pico; para isto tanto faz.
+    - cron: "0 9 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  cve:
+    name: CVE scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Mesmo padrão do gitleaks no deploy.yml: binário único, versão fixa. Scanner que se
+      # atualiza sozinho muda de opinião sem ninguém pedir, e aí o achado novo não tem data.
+      - name: Scan both lockfiles
+        run: |
+          curl -sSL https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_amd64 -o osv-scanner
+          chmod +x osv-scanner
+          ./osv-scanner scan source --config osv-scanner.toml \
+            --lockfile client/package-lock.json \
+            --lockfile server/package-lock.json
+
+      - name: Open an issue if something is vulnerable
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "CVE scan failed"
+        run: |
+          # Enquanto a issue anterior estiver aberta, não abre outra: uma CVE que demora
+          # três semanas para ter correção não vale três issues idênticas. Comparação de
+          # título em vez de `--search` porque o índice de busca atrasa, e um índice frio
+          # devolve "nenhuma" para uma issue que existe — que é exatamente a duplicata.
+          if gh issue list --state open --json title -q '.[].title' | grep -qxF "$TITLE"; then
+            echo "já existe issue aberta"; exit 0
+          fi
+          gh issue create --title "$TITLE" \
+            --body "\`osv-scanner\` reprovou em [esta run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). O CONSTRAINTS.md trata CVE em dependência de runtime como piso; as de \`(dev)\` entram na conta quando houver folga."
+
+  health:
+    name: Proxy is up
+    runs-on: ubuntu-latest
+    steps:
+      # Sem cota de terceiro: esta rota devolve 400 na guarda de entrada do nosso próprio
+      # código, antes de chamar a Ticketmaster. Um 400 aqui prova as três coisas que
+      # interessam — o processo subiu, o router está montado e o nosso código roda.
+      # O plano grátis do Render hiberna, então a primeira ida pode levar ~1 min: timeout
+      # largo e uma tentativa só. Falha aqui quer dizer fora do ar, não devagar.
+      - name: Probe the proxy
+        run: |
+          code=$(curl -o /dev/null -s -w '%{http_code}' --max-time 120 \
+            https://concertfyi2000.onrender.com/api/ticketmaster/events)
+          echo "HTTP $code"
+          test "$code" = "400"
+
+      - name: Open an issue if it is down
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TITLE: "Proxy health check failed"
+        run: |
+          if gh issue list --state open --json title -q '.[].title' | grep -qxF "$TITLE"; then
+            echo "já existe issue aberta"; exit 0
+          fi
+          gh issue create --title "$TITLE" \
+            --body "O proxy no Render não respondeu 400 em \`/api/ticketmaster/events\` sem parâmetro. [Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Com o proxy fora, o site abre e não carrega nada."
