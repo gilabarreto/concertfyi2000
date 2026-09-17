@@ -98,11 +98,16 @@ try {
 ```
 
 **Checklist**:
-- [ ] Error Boundary com fallback UI
-- [ ] Toast/mensagens amigáveis para timeouts
-- [ ] Retry logic com exponential backoff
-- [ ] Logging de erros (Sentry, LogRocket)
-- [ ] Loading skeletons enquanto dados carregam
+- [x] Error Boundary com fallback UI — `components/ErrorBoundary.jsx`, entrou em 2026-09-15
+- [ ] Toast/mensagens amigáveis para timeouts — **parcial, sem biblioteca de toast**: as mensagens
+      existem inline (`Could not load lyrics`, `No setlist found`, os três estados do
+      `LocationSelector`, o `role="status"` do contato). O que não existe é timeout próprio: o
+      `request.js` espera o navegador desistir
+- [x] Retry logic com exponential backoff — é o padrão do React Query; o `queryClient.js` só
+      aperta o orçamento para `retry: 1`, e o preset `songCache` usa `retry: false` de propósito
+      (APIs com cota)
+- [ ] Logging de erros (Sentry, LogRocket) — **é seu, precisa de conta.** Ver a lista do dono no fim
+- [ ] Loading skeletons enquanto dados carregam — não existe nenhum no projeto
 
 ---
 
@@ -120,11 +125,17 @@ const SearchPage = React.lazy(() => import('./pages/SearchPage'));
 ```
 
 **Checklist**:
-- [ ] Code splitting por rota (React.lazy + Suspense)
-- [ ] Lazy loading de imagens (next-gen formats: webp)
-- [ ] Caching de requisições API (LRU cache ou SWR)
-- [ ] Service Worker para offline mode
-- [ ] Monitoramento de performance (Core Web Vitals)
+- [x] Code splitting por rota (React.lazy + Suspense) — as cinco rotas em `App.jsx:13-17`
+- [ ] Lazy loading de imagens (next-gen formats: webp) — **meio feito**: `loading="lazy"` está nos
+      dois iframes e nos tiles de vendedor, e o carrossel só baixa foto até `depth 3` (`5c892ec`).
+      Webp não: as fotos vêm da Ticketmaster no formato que ela serve, e não passam por nós
+- [x] Caching de requisições API — React Query desde a migração; cada query em `queries.js` tem
+      seu `staleTime`/`gcTime`
+- [ ] Service Worker para offline mode — não existe. App de descoberta de show sem sessão: offline
+      não tem muito o que mostrar
+- [ ] Monitoramento de performance (Core Web Vitals) — Lighthouse roda na mão (receita no
+      `CONSTRAINTS.md`); contínuo não existe, e o CrUX não enxerga a página de artista enquanto
+      ela responder 404
 
 ---
 
@@ -146,11 +157,18 @@ const SearchPage = React.lazy(() => import('./pages/SearchPage'));
 ```
 
 **Checklist**:
-- [ ] `aria-label` em todos os ícones/botões sem texto
-- [ ] `aria-current='page'` em link ativo
-- [ ] Navegação por teclado (Tab, Enter, Arrows)
-- [ ] Contraste mínimo AA (4.5:1 para texto)
-- [ ] Testar com screen readers (NVDA, JAWS)
+- [x] `aria-label` em todos os ícones/botões sem texto — nenhum botão só-ícone ficou sem label, e
+      o `button-name` do Lighthouse passa (**acessibilidade 100 medida em produção**)
+- [ ] `aria-current='page'` em link ativo — existe na `Pagination.jsx`, **falta nos links do
+      `Navbar`**. É de uma linha cada, mas muda o que o leitor de tela anuncia; fica aqui como item
+      de verdade
+- [ ] Navegação por teclado (Tab, Enter, Arrows) — **parcial**: tudo é `<button>` ou `<Link>`
+      nativo, então Tab e Enter funcionam de graça. Setas no carrossel nunca foram implementadas
+      nem testadas
+- [x] Contraste mínimo AA (4.5:1) — o `color-contrast` do Lighthouse passa (100 em produção); o
+      par mais usado, branco sobre `red-600`, dá 4,85:1
+- [ ] Testar com screen readers (NVDA, JAWS) — nunca foi feito. Lighthouse é automação, não troca
+      por alguém ouvindo a página
 
 ---
 
@@ -195,10 +213,15 @@ mudança de comportamento.
 
 **SearchBar.jsx**:
 - [x] Debounce controlado
-- [ ] Ícone de loading enquanto busca
-- [ ] Botão 'Clear input'
-- [ ] Placeholder dinâmico por breakpoint
-- [ ] Suporte a Enter para buscar
+- [ ] Ícone de loading enquanto busca — não existe; a busca é por debounce de 700 ms e nada avisa
+      que ela está acontecendo
+- [x] Botão 'Clear input' — é o nativo do `type="search"`; o `index.css` estiliza o
+      `::-webkit-search-cancel-button` e o `::-moz-search-clear-button` para aparecer no fundo
+      vermelho. Zero JS
+- [x] Placeholder dinâmico por breakpoint — `SearchBar.jsx:38-52`, "Search" abaixo de 768 px
+- [x] Suporte a Enter para buscar — **item sem objeto**: a busca acontece ao digitar, e o `form`
+      dá `preventDefault` justamente para o Enter não recarregar a página. Não há o que o Enter
+      dispare que já não tenha disparado
 
 **Setlist.jsx**:
 - [x] LyricsDropdown integrado
@@ -211,7 +234,8 @@ mudança de comportamento.
 **ConcertInfo.jsx**:
 - [ ] Botão "Favoritar" com localStorage
 - [ ] Botão "Compartilhar" (social)
-- [ ] Info de ingressos (Ticketmaster, Vivid Seats)
+- [x] Info de ingressos — `TicketOptions.jsx` + `VendorTiles.jsx` na linha expandida de próximos
+      shows; os comentários de qual vendedor entrou e por quê são load-bearing
 - [ ] Loading skeleton enquanto dados carregam
 
 **SongDetails.jsx**:
@@ -279,7 +303,7 @@ mudança de comportamento.
 ### Documentation
 - [x] CLAUDE.md com contexto do projeto (no repo desde 2026-09-15)
 - [x] CONSTRAINTS.md com a régua de qualidade (2026-09-15)
-- [ ] README com setup e deploy
+- [x] README com setup e deploy (`211dbf5`) — todo comando citado foi rodado antes de entrar
 - Storybook: **descartado**, ver tabela no fim do documento
 
 ### DevOps
@@ -561,7 +585,7 @@ sem sudo). O comando ficou registrado no `CONSTRAINTS.md`.
 | Achado | Tamanho | Por que ficou |
 |---|---|---|
 | ~~`unused-javascript` — 44 kB não usados no chunk de entrada~~ | — | **Investigado e parcialmente resolvido, ver abaixo.** |
-| Google Fonts bloqueia a renderização (847 ms) | pequeno | O `<link>` do DM Sans no `index.html` trava o first paint. A correção conhecida é `preconnect` + `media="print" onload`, mas mexer em carregamento de fonte troca um problema por FOUT. Precisa de uma medição antes/depois própria. |
+| ~~Google Fonts bloqueia a renderização (847 ms)~~ **resolvido em 2026-09-17 (`7b876cb`)**, hospedando a DM Sans aqui — e sem FOUT, porque `font-display: swap` continua o mesmo | pequeno | O `<link>` do DM Sans no `index.html` trava o first paint. A correção conhecida é `preconnect` + `media="print" onload`, mas mexer em carregamento de fonte troca um problema por FOUT. Precisa de uma medição antes/depois própria. |
 | `cache-insight` — vida útil de cache curta | fora do alcance | Os assets estáticos são servidos pelo GitHub Pages, que não deixa configurar `Cache-Control`. Só muda migrando de host. |
 | Geolocalização pedida no carregamento | deliberado | Virou exceção registrada no `CONSTRAINTS.md`: o carrossel da home *é* "shows perto de você". Trocar por botão é decisão de produto. |
 
