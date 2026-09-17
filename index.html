@@ -44,6 +44,19 @@
     />
     <meta data-rh="true" name="twitter:image" content="https://concertfyi.com/og-image.png" />
 
+    <!--
+      A fonte morava num @import no topo do index.css, o que punha três idas em fila
+      antes da primeira pintura: baixar o CSS do app, só então descobrir a folha do
+      Google, só então o .woff2. Daqui a folha sai junto com o CSS do app, e o
+      preconnect abre as duas conexões antes de qualquer uma delas ser pedida.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    />
+
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/logo192.png" />
     <link data-rh="true" rel="canonical" href="https://concertfyi.com/" />
@@ -52,8 +65,8 @@
     <meta name="impact-site-verification" value="e467572e-7024-4b72-b1dc-72dbcccf693b" />
 
     <title>concertfyi - Discover Live Music & Concerts</title>
-    <script type="module" crossorigin src="/assets/index-5u3gRk3d.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C1SqBTOg.css">
+    <script type="module" crossorigin src="/assets/index-Drk8y7po.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-tgSzeHxA.css">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
