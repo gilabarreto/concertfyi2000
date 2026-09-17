@@ -906,11 +906,11 @@ nenhum deles tem número por trás ainda:
       `/api/ticketmaster/suggest`. A segunda etapa depende do `mbid` que vem da primeira, então não
       é só juntar — exigiria adivinhar o artista pela URL ou mudar a rota. Custa uma viagem inteira
       ao Render (que ainda por cima hiberna no plano grátis).
-- [ ] **Não há `preconnect` para o host do Render.** O mesmo truque que acabou de valer para a
-      fonte: a conexão com `concertfyi2000.onrender.com` só começa quando o JS pede a primeira
-      chamada. Uma linha no `index.html`. Barato, mas quero medir antes de afirmar.
-- [ ] **O iframe do Spotify não tem `loading="lazy"`** (`Player.jsx`). Esse sim está bem abaixo da
-      dobra, ao contrário do mapa.
+- [x] **Não há `preconnect` para o host do Render.** ~~Uma linha no `index.html`. Barato, mas quero
+      medir antes de afirmar.~~ Medido e resolvido na rodada do `plan` (`4c89e7d`): 233 ms de
+      DNS+TCP+TLS em série. Fechamento na seção do `plan`.
+- [x] **O iframe do Spotify não tem `loading="lazy"`** (`Player.jsx`). Resolvido na rodada do
+      `plan` (`19e6e40`), depois de confirmar que o player fica fora da primeira dobra.
 
 ---
 
@@ -1078,3 +1078,18 @@ pequenas, mas porque **separar o que é tarefa do que é decisão de dono** tran
 código, verificação depois) foi o que achou os dois defeitos acima, que nenhuma das dez rodadas
 anteriores tinha visto. O que ela **não** substitui: nada aqui precisou de `spec`, e insistir nele
 teria sido cerimônia — o `CLAUDE.md` já diz que a implementação é do ponytail.
+
+---
+
+## 🆕 Saldo avulso — o envelope `{ data }` do client (2026-09-17)
+
+Não é rodada de skill: saiu de uma leitura do `client/src/api/request.js` depois de fechar o `plan`.
+
+### ✅ Resolvido agora
+
+- [x] **O wrapper de `fetch` do client devolvia `{ data }` e ninguém precisava disso** (`38ad292`).
+      Era imitação do axios, que saiu do projeto em `57f3b88`. Oito `queryFn` pagavam por ele com um
+      `.then(res => res.data)` para desembrulhar um objeto de um campo só. O `server/http.js` sempre
+      devolveu o corpo direto; agora os dois lados combinam. Os 58 testes continuam verdes, e o
+      `request.test.mjs` foi ajustado junto — é o que provaria a quebra se o desembrulho tivesse
+      ficado para trás em alguma chamada.
