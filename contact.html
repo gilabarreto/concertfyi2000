@@ -60,12 +60,14 @@
     -->
     <link rel="preconnect" href="https://concertfyi2000.onrender.com" crossorigin />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"
-    />
+    <!--
+      A DM Sans é servida daqui, não pelo fonts.gstatic.com: tira dois handshakes de
+      DNS+TLS do caminho da primeira pintura e o IP de quem visita deixa de ir para o
+      Google por causa da fonte. O @font-face está no index.css; este preload existe
+      para o download começar antes de o CSS ser parseado. Só o arquivo latino — o
+      latin-ext só é usado quando aparece um nome acentuado.
+    -->
+    <link rel="preload" href="/fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin />
 
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/logo192.png" />
@@ -75,8 +77,8 @@
     <meta name="impact-site-verification" value="e467572e-7024-4b72-b1dc-72dbcccf693b" />
 
     <title>concertfyi - Discover Live Music & Concerts</title>
-    <script type="module" crossorigin src="/assets/index-8yxfPGya.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-B1N9SJ_f.css">
+    <script type="module" crossorigin src="/assets/index-Bic6ZT1x.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CvYfu3JZ.css">
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
