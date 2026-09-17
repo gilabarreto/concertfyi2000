@@ -40,14 +40,23 @@ export default function ConcertInfo(props) {
 
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
-      <div className="flex-1 flex justify-center sm:justify-start">
-        {bestImageUrl && (
-          <img
-            src={bestImageUrl}
-            alt={`${artist} portrait`}
-            className="object-cover w-full h-full sm:max-w-[400px] sm:h-auto rounded-md"
-          />
-        )}
+      {/* `w-full` aqui porque o pai é `items-center`: sem largura definida, o `w-full` da
+          caixa de baixo resolvia para zero e ela não reservava altura nenhuma. */}
+      <div className="flex-1 flex justify-center sm:justify-start w-full">
+        {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
+            caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
+            empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
+            16:9 é o formato que o getBestImage prefere e o que os cards da busca usam;
+            quem não tem foto na Ticketmaster fica com a caixa vazia em vez do pulo. */}
+        <div className="w-full sm:max-w-[400px] aspect-video rounded-md bg-gray-100">
+          {bestImageUrl && (
+            <img
+              src={bestImageUrl}
+              alt={`${artist} portrait`}
+              className="object-cover w-full h-full rounded-md"
+            />
+          )}
+        </div>
       </div>
 
       <div className="flex-1 w-full sm:w-auto">
