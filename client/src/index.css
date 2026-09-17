@@ -1,5 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-
+/* A fonte é carregada por <link> no index.html, não por @import aqui: dentro do CSS o
+   navegador só descobria a folha do Google depois de baixar esta inteira. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
