@@ -13,10 +13,15 @@ const requestLog =
     // qual API. O `split` tira a query.
     const path = req.originalUrl.split("?")[0];
 
-    // 'finish' é o único ponto em que o status já é definitivo — logar antes registra
-    // 200 para resposta que ainda vai virar 500.
-    res.on("finish", () => {
-      log(`${req.method} ${path} ${res.statusCode} ${Date.now() - start}ms`);
+    // 'close' e não 'finish': o 'finish' só dispara quando a resposta saiu inteira, e
+    // quem desiste no meio não gera linha nenhuma. O cliente aborta em 10 s
+    // (`AbortSignal.timeout` no `request.js`), então a requisição lenta — justamente a
+    // que este log existe para mostrar — era a única que sumia. O 'close' vale para os
+    // dois casos, e o `writableFinished` evita o inverso: registrar como 200 uma
+    // resposta que nunca chegou ao cliente.
+    res.on("close", () => {
+      const status = res.writableFinished ? res.statusCode : "ABORTED";
+      log(`${req.method} ${path} ${status} ${Date.now() - start}ms`);
     });
 
     next();
