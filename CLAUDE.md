@@ -73,9 +73,9 @@ navigating between concerts doesn't refetch, plus `selectedLocation` persisted t
 React Query owns everything network-shaped; all hooks live in `client/src/api/queries.js` and all
 axios calls in `api.js`. Nothing else in the app should call the network directly.
 
-Global defaults in `queryClient.js` are deliberately aggressive (`staleTime: 0`, `gcTime: 1000`) —
-per-query overrides carry the real caching, notably the `songCache` preset for lyrics/YouTube/
-Spotify lookups (immutable data, quota-limited APIs, `retry: false`).
+`queryClient.js` shares only a retry budget (`retry: 1`); every query in `queries.js` sets its own
+`staleTime`/`gcTime`, notably the `songCache` preset for lyrics/YouTube/Spotify lookups (immutable
+data, quota-limited APIs, `retry: false`).
 
 `ArtistPage.jsx` handles the cold-start case: a shared link or refresh lands with empty context, so
 it fetches the concert by URL id, then backfills the artist's full setlist + Ticketmaster data.

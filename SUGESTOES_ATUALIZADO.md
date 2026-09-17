@@ -832,3 +832,78 @@ sim conta a pagar: como o proxy é aberto, qualquer um pode gastar a cota das no
       descobre-se abrindo o site. O passo mais barato aqui não é ferramenta paga: é um workflow
       agendado que bate numa rota do proxy e abre issue se ela não responder 200. Anda junto com o
       `osv-scanner` semanal da seção do CI.
+
+---
+
+## 🆕 Saldo do `/agent-skills:webperf` — 2026-09-16
+
+Rodado em modo profundo: Lighthouse de verdade, não leitura de código. A novidade é o alvo — até
+agora tudo que foi medido neste projeto era a home, e a home é a página mais leve do app. Esta
+rodada foi na **página de artista**, que é onde as pessoas ficam. Três rodadas por build, mesma
+URL, servidor local (ver a seção nova do `CONSTRAINTS.md` sobre por que não dá para medir no ar).
+
+Ponto de partida: performance **55/57/59**, FCP 3,2–3,3 s, LCP 7,3–7,5 s, CLS **0,173**.
+
+### ✅ Resolvido agora
+
+- [x] **A página inteira pulava quando a foto do artista chegava** (`6fb62ff`) — CLS de **0,173 para
+      0,002**, de longe o pior número da página. A foto não vem com o show: vem da segunda chamada,
+      a da Ticketmaster. Então o card nascia sem ela e crescia ~210 px depois, empurrando mapa,
+      setlist e tudo abaixo. A correção é uma caixa `aspect-video` reservada antes de a foto chegar.
+      Vale registrar o erro, porque ele custou três tentativas: eu tinha certeza de que bastava dar
+      proporção à imagem, e o CLS voltava **idêntico até a 16ª casa decimal** em três builds
+      diferentes — sinal de que eu estava chutando. Parei e perguntei ao navegador, com um
+      `PerformanceObserver` de `layout-shift` listando cada elemento que se moveu. O culpado era
+      outro: o pai usa `items-center`, a coluna da imagem não tinha largura definida, e por isso o
+      `w-full` da caixa reservada resolvia para **zero** — reservando zero altura. Faltava um
+      `w-full` no meio. Duas linhas, e só apareceram porque a medição substituiu o palpite.
+- [x] **A fonte estava escondida dentro do CSS** (`d7fa48d`) — FCP 3,2–3,3 s para **3,1 s** nas três
+      rodadas, e a estimativa de bloqueio de render do Lighthouse de 600 ms para 450 ms. O
+      `@import` do DM Sans ficava no topo do `index.css`, o que põe três idas em fila antes da
+      primeira pintura: baixar o nosso CSS, só então descobrir a folha do Google, só então o
+      `.woff2`. Movido para um `<link>` no `index.html`, com `preconnect`. O ganho medido é pequeno
+      porque aqui o nosso CSS vem de `localhost` — no ar, que é onde essa espera custa, deve ser
+      maior. A nota de performance andou dentro do próprio ruído, então não conto como ganho dela.
+
+### ❌ Testado e descartado (não vale repetir)
+
+- [x] **Carregar o mapa só quando ele aparece na tela.** Parece óbvio — são ~400 kB de JS de
+      terceiro — e eu cheguei a implementar, com `IntersectionObserver`. Ficou **pior**: performance
+      caiu de 55/57/59 para 51/54/55, e as 25 requisições do Google Maps continuaram acontecendo.
+      O motivo é simples e eu devia ter medido antes: no celular o topo do card do mapa está a
+      **592 px** numa tela de 823 px, ou seja, **já está na primeira dobra**. Adiar o que já é
+      visível só atrasa. Revertido (`Map.jsx` voltou ao `useLoadScript`, o `GoogleMapPanel.jsx`
+      deixou de existir). Fica registrado para ninguém tentar de novo pelo mesmo raciocínio.
+
+### 🟡 É seu — muda comportamento, não é defeito
+
+- [ ] **O mapa é o elemento de LCP e custa ~400 kB de JS de terceiro.** É o que segura o LCP em
+      7,3–7,5 s, e nenhuma das duas correções acima encostou nisso. As saídas reais não são
+      técnicas, são de produto: (a) trocar o mapa interativo por uma **imagem estática** da Static
+      Maps API (o painel tem 380×256 — uma imagem resolve, e quem quiser navegar clica e abre o
+      Google Maps), ou (b) manter o mapa, mas atrás de um **clique** ("ver no mapa"). As duas
+      cortam quase todo o peso; as duas mudam o que a pessoa vê ao chegar. Por isso não fiz.
+      Se topar a (a), é a de melhor retorno do projeto inteiro hoje.
+- [ ] **A página de artista responde 404 no GitHub Pages.** O app aparece porque o `404.html` é uma
+      cópia do `index.html`, e o navegador não liga. Mas o Lighthouse se recusa a auditar, e o
+      PageSpeed, o CrUX e o Search Console também não enxergam. Ou seja: a página mais importante do
+      site é invisível para toda ferramenta de campo, e provavelmente para indexação. Resolver isso
+      é sair do GitHub Pages para qualquer hospedagem com reescrita de verdade (Netlify, Vercel,
+      Cloudflare Pages — todas de graça neste volume, e o domínio continua o mesmo). É mudança de
+      infraestrutura, então é sua.
+
+### 🟡 Ficou para depois — vi, não medi
+
+Achados plausíveis que **não** testei nesta rodada; ficam anotados para não se perderem, mas
+nenhum deles tem número por trás ainda:
+
+- [ ] **As chamadas de API acontecem em fila, não em paralelo.** Ao abrir um link direto, a página
+      busca `/api/setlist/:id`, e só quando essa responde é que dispara `/api/setlist/search` e
+      `/api/ticketmaster/suggest`. A segunda etapa depende do `mbid` que vem da primeira, então não
+      é só juntar — exigiria adivinhar o artista pela URL ou mudar a rota. Custa uma viagem inteira
+      ao Render (que ainda por cima hiberna no plano grátis).
+- [ ] **Não há `preconnect` para o host do Render.** O mesmo truque que acabou de valer para a
+      fonte: a conexão com `concertfyi2000.onrender.com` só começa quando o JS pede a primeira
+      chamada. Uma linha no `index.html`. Barato, mas quero medir antes de afirmar.
+- [ ] **O iframe do Spotify não tem `loading="lazy"`** (`Player.jsx`). Esse sim está bem abaixo da
+      dobra, ao contrário do mapa.

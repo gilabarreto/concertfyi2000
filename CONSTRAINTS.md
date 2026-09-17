@@ -143,6 +143,30 @@ Os valores acima são de 2026-09-15, depois de `797e895`, `5c892ec`, `57f3b88` e
 saiu de 115,6 s, e o chunk de entrada de 408,49 kB. As últimas três rodadas foram contra o site no
 ar já sem o runtime do FontAwesome (258.294 bytes servidos, conferidos no arquivo baixado).
 
+### A página de artista não dá para medir no ar
+
+Todos os números acima são da home, e a home é a página mais leve do app. A de artista, que é onde
+as pessoas passam o tempo, **o Lighthouse se recusa a auditar em produção**: a `gh-pages` responde
+**404** em `/artists/...` e o app só aparece porque o `404.html` é uma cópia do `index.html`. O
+Chrome aceita, o Lighthouse aborta com `ERRORED_DOCUMENT_REQUEST`. Nenhuma ferramenta de campo
+(PageSpeed, CrUX, Search Console) enxerga essa página — vale dizer que isso é problema de SEO antes
+de ser de medição.
+
+Medir exige servir o `client/dist` localmente com fallback de SPA em **status 200**, na porta
+**3000** (as outras não estão no `allowedOrigins` do `server/index.js`, e a chave local do
+setlist.fm está morta — buildar com `VITE_API_BASE=https://concertfyi2000.onrender.com`).
+Assim medida, em 2026-09-16 (Coldplay, mobile, três rodadas por build):
+
+| Métrica | antes de `6fb62ff` | depois de `6fb62ff` + `d7fa48d` |
+|---|---|---|
+| Performance | 55 / 57 / 59 | 59 / 61 / 61 |
+| FCP | 3,2–3,3 s | 3,1 s nas três |
+| LCP | 7,3–7,5 s | 7,3–7,5 s (é o mapa do Google, não mexido) |
+| CLS | **0,173** | **0,001–0,002** |
+
+A faixa de ruído aqui é bem menor que a da home (±2 a 3 pontos, contra ±7) porque a página não
+sorteia conteúdo. Ainda assim: três rodadas, mesma URL, mesmo servidor, ou o número não vale.
+
 ---
 
 ## Exceções
