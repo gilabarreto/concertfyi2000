@@ -907,3 +907,99 @@ nenhum deles tem número por trás ainda:
       chamada. Uma linha no `index.html`. Barato, mas quero medir antes de afirmar.
 - [ ] **O iframe do Spotify não tem `loading="lazy"`** (`Player.jsx`). Esse sim está bem abaixo da
       dobra, ao contrário do mapa.
+
+---
+
+## 🆕 Saldo do `/agent-skills:ship` — 2026-09-16
+
+Esta é diferente das outras: em vez de uma varredura, são três revisores independentes
+(qualidade, segurança, testes) lendo o mesmo diff das últimas seis entregas sem falar entre si.
+Acharam três defeitos meus que passaram pelas minhas próprias revisões. Vale dizer isso com
+todas as letras, porque o valor da rodada está aí.
+
+### ✅ Resolvido agora
+
+- [x] **O log de requisições não registrava justamente a requisição lenta** (`c59b252`). Ele
+      escutava o evento `finish`, que só dispara quando a resposta saiu inteira. Quem desiste no
+      meio não gerava linha nenhuma — e o nosso cliente desiste em **10 segundos** em toda chamada
+      (`AbortSignal.timeout` no `request.js`). Ou seja: o log foi criado para mostrar "o que estava
+      lento" e era cego exatamente aí. Reproduzido contra um Express de verdade antes e depois:
+      resposta de 800 ms com o cliente abortando aos 150 ms não escrevia nada, agora escreve
+      `GET /slow ABORTED 150ms`. Passou a escutar `close`, que vale para os dois finais, com
+      `writableFinished` para nunca registrar como `200` uma resposta que não chegou.
+      Junto vieram três correções no teste: ele não verificava que o middleware chama o `next()`
+      (e um log que esquece o `next()` **derruba o site inteiro** — é o primeiro middleware da
+      pilha; o `rateLimit.test.js` já fazia isso certo e eu não copiei), e a duração era conferida
+      por `\d+ms`, que aceitaria um timestamp cru no lugar do tempo decorrido.
+- [x] **Um cliente só podia entupir o log do Render** (`c6812d8`). O caminho vai para o log como
+      veio, e cabem ~16 kB nele. O rate limit não protege: ele responde 429 **e escreve a linha**,
+      de propósito, porque ver os 429 é metade do motivo do log existir. Cortado em 120 caracteres
+      (a rota mais longa daqui não passa de 60). No mesmo commit, um comentário no `http.js`
+      explicando que a mensagem de erro usa `url` e **não** `target` de propósito: as chaves de API
+      moram na query do `target`, e esse erro é impresso com `console.error` no mesmo stdout.
+      Um "arrumadinha" futuro ali publicaria as chaves nos logs.
+- [x] **Link social do artista agora só abre `http(s)`** (`2cd90ed`). O `href` vem do
+      `externalLinks` da Ticketmaster, dado de terceiro renderizado direto na âncora. O React 18
+      avisa no console quando o href é `javascript:` mas **renderiza mesmo assim** — um clique
+      rodaria o script na origem do `concertfyi.com`, onde o fluxo do Spotify guarda estado no
+      localStorage. Precisa de registro ruim lá em cima para acontecer, por isso é guarda e não
+      alarme; mas a guarda é uma linha e a fronteira é real.
+
+### 🟡 É seu — 5 minutos no painel do Render
+
+- [ ] **O "sem IP e sem query" vale para o nosso código, não necessariamente para a plataforma.**
+      O middleware não escreve IP nem query, e tem teste provando. Só que o Render mantém o log de
+      acesso **dele**, e esse tipo de log costuma guardar IP e a URL completa — com as coordenadas
+      do `/api/ticketmaster/events?lat=…&long=…` e o que a pessoa digitou na busca. Se estiver
+      ligado, a garantia que o `CONSTRAINTS.md` agora afirma não é a garantia que o sistema tem, e
+      geolocalização amarrada a IP é outra categoria de dado perante a LGPD. Não é regressão (o
+      Render já fazia isso antes), mas foi a nossa mudança que transformou um padrão nunca olhado
+      em promessa escrita. Dá para conferir no painel: o que o log de acesso guarda e por quanto
+      tempo. Conforme a resposta, ou confirmamos a frase ou a trocamos por "a aplicação não
+      escreve IP nem query".
+
+### 🟡 Vale, mas quero medir antes — ou custa binário no repositório
+
+- [ ] **Hospedar o DM Sans aqui dentro em vez de pedir ao Google.** Ganha nos três eixos ao mesmo
+      tempo: tira dois handshakes de DNS+TLS do caminho da primeira pintura (provavelmente mais
+      rápido que o `<link>` que acabei de subir), elimina a dependência de terceiro no `<head>` e
+      fecha de vez a questão do Google Fonts sob GDPR — a decisão de Munique de 2022 é sobre
+      exatamente isto. São ~20 linhas de `@font-face` e **quatro arquivos `.woff2` versionados no
+      repositório**. Não fiz por causa dos binários: é o tipo de coisa que quem é dono decide.
+      Observação honesta: o vazamento de IP para o Google já acontece de qualquer jeito hoje, pelo
+      mapa — então isto só fecha a porta de vez junto com a decisão sobre o mapa.
+- [ ] **Não existe CSP.** O GitHub Pages não deixa mandar cabeçalho de resposta, então a única via
+      seria um `<meta http-equiv>`, que não cobre tudo. Com o site sem login, sem sessão e sem
+      pagamento, o teto de uma injeção de CSS é desfiguração, não roubo de dado. Fica anotado
+      porque anda junto com a saída do GitHub Pages já registrada na seção do `webperf`.
+
+### 🟡 Anotado como troca aceita, não como defeito
+
+- [ ] **Foto que não é 16:9 agora é cortada.** O `getBestImage` *prefere* 16:9 mas cai para
+      qualquer proporção quando o artista não tem essa variante (tem teste cobrindo a queda).
+      Dentro da caixa `aspect-video` com `object-cover`, essas fotos perdem topo e base. A troca é
+      claramente boa — 0,17 de CLS no catálogo inteiro é pior que corte numa minoria de fotos —
+      mas ninguém tinha escrito que a troca existe.
+- [ ] **O log tem cardinalidade alta e por isso não agrega por rota.** `/api/setlist/:id` gera um
+      caminho diferente por show (`/api/setlist/abc`, `/api/setlist/def`). Dá para contar 429,
+      porque aí o caminho é fixo, mas não dá para agrupar volume ou latência por rota sem
+      normalizar o id antes. Não é defeito; só não entrega tudo que o commit prometia, e é melhor
+      estar escrito aqui do que ser descoberto no primeiro dia ruim.
+
+### ❌ Descartado — é opinião minha, pode vetar
+
+- [x] **Teste de componente com jsdom + Testing Library para a correção de CLS.** O revisor de
+      testes mediu em vez de supor: instalou o jsdom e deu a ele uma caixa com `aspect-ratio: 16/9`
+      de verdade. Resultado: `aspect-ratio` computa certo, **altura dá zero** — o jsdom implementa a
+      cascata do CSS e não tem motor de layout. Num navegador são 225 px. Então a única asserção
+      possível seria procurar a string `aspect-video` no HTML, que é testar a implementação e fica
+      **verde no exato cenário que quebraria a página de novo** (o Tailwind parar de emitir a
+      regra). Custo: **+57 pacotes** no client (+20%) para comprar um teste que comprovadamente não
+      pega este defeito. Descartado. O Playwright pegaria, mas são 120 MB de Chromium — se um dia
+      entrar, entra pelo fluxo de link direto da página de artista, que é o caminho não testado de
+      maior valor do projeto, e a asserção de CLS pega carona.
+- [x] **Asserção de build conferindo o `<link>` da fonte no HTML emitido.** Sugerida como coberta
+      barata (~6 linhas, zero dependência). Não fiz: as cópias por rota são `writeFileSync` do
+      mesmo buffer do `dist/index.html`, então o `<link>` não pode sumir em uma e ficar na outra —
+      e se a cópia quebrar, a página inteira some, o que é bem mais visível que a fonte. O teste
+      também exigiria um build feito antes do `node --test`, que hoje roda sozinho.
