@@ -358,7 +358,11 @@ Este era o bloqueador do item "CI/CD (lint, test, build)" mais acima. Está dest
 O fluxo "uma correção por vez, commit + push no `main` a cada item, usuário testa antes do próximo"
 vive na memória pessoal do Claude, não no repo. Qualquer outra pessoa (ou máquina) que abrir o
 projeto não o conhece.
-- [ ] Mover para o `CLAUDE.md` se a regra vale para o projeto, não só para o Victor
+- [x] **Resolvido em 2026-09-17.** A regra vale para o projeto, e o motivo não é preferência: não
+      há staging. Um push no `main` publica o client na `gh-pages` **e** faz o Render redeployar o
+      servidor do mesmo commit — todo commit é um release dos dois lados. Cinco mudanças que sobem
+      juntas não têm falha bissetável e o dono não consegue experimentar uma sem levar as outras
+      quatro. Está no `CLAUDE.md`.
 
 ---
 

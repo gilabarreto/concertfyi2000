@@ -128,6 +128,13 @@ Where the two collide on a concrete decision, say so and let the owner pick inst
 following one. A spec or a test that ponytail would skip is not waste here; an interface with one
 implementation still is.
 
+**One fix per commit, pushed as it lands.** There is no staging: a push to `main` builds the
+client onto `gh-pages` and Render redeploys the server off the same commit, so every commit is a
+release on both sides. A batch of five changes that ships at once has no bisectable failure, and
+the owner cannot try one of them without getting the other four. So: one item, one commit, push,
+next. When the owner is at the keyboard he tries each one before the next; when he is not, it is
+an autonomous round and the summary comes at the end — not a reason to batch.
+
 **Commit messages are in English.** The owner-facing docs (`SUGESTOES_ATUALIZADO.md`,
 `DOSSIE_TECNICO_ATUALIZADO.md`, `CONSTRAINTS.md`) stay in Portuguese, and so does the conversation.
 Commits from 2026-09-15 are in Portuguese; leave them, rewriting history over a language isn't worth
