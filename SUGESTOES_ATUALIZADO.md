@@ -705,11 +705,12 @@ então cada mudança abaixo veio com prova de equivalência, não com olhômetro
 
 ### 🟡 Não é simplificação, é decisão sua — `Contact.jsx`
 
-- [ ] **O formulário fala por `alert()` e não trava o botão enquanto envia.** Três `alert()`
+- [x] **O formulário fala por `alert()` e não trava o botão enquanto envia.**
+      **Resolvido em 2026-09-17 (`4440698`);** o texto original fica abaixo. ~~Três `alert()`
       (sucesso, erro do Formspree, falha de conexão) e nenhum estado de "enviando": dá para apertar
       *Send Message* várias vezes e mandar a mesma mensagem repetida. Trocar por uma mensagem inline
       abaixo do botão mais um `disabled` resolve as duas coisas em ~10 linhas. **Não mexi porque é
-      mudança visível de UX** e você pode preferir o alerta nativo — diga e eu faço.
+      mudança visível de UX** e você pode preferir o alerta nativo — diga e eu faço.~~
 - [ ] **O botão de perfil do `Navbar` não faz nada.** Ele existe, recebe foco e o leitor de tela o
       anuncia como "User profile", mas o clique não tem efeito. Ou ele vira o começo do login, ou
       sai da barra. **É seu:** depende de haver conta de usuário no plano.
@@ -761,7 +762,7 @@ sim conta a pagar: como o proxy é aberto, qualquer um pode gastar a cota das no
 
 ### 🟡 Vale fazer, mas é decisão sua
 
-- [ ] **Não há CSP.** O `index.html` é servido pelo GitHub Pages, que não deixa configurar cabeçalho
+- [x] **Não há CSP.** **Resolvida em 2026-09-17 (`351fd83`)** — fechamento na última seção. O `index.html` é servido pelo GitHub Pages, que não deixa configurar cabeçalho
       — dá para pôr por `<meta http-equiv>`. O motivo de eu não ter mandado: a política teria de
       liberar Spotify, YouTube, Google Maps, Formspree e os domínios de imagem da Ticketmaster, e um
       domínio esquecido quebra em produção **sem erro visível na tela**, só no console. Vale fazer
@@ -964,7 +965,7 @@ todas as letras, porque o valor da rodada está aí.
 
 ### 🟡 Vale, mas quero medir antes — ou custa binário no repositório
 
-- [ ] **Hospedar o DM Sans aqui dentro em vez de pedir ao Google.** Ganha nos três eixos ao mesmo
+- [x] **Hospedar o DM Sans aqui dentro em vez de pedir ao Google.** **Feito em 2026-09-17 (`7b876cb`)**, com dois arquivos em vez de quatro — fechamento na última seção. Ganha nos três eixos ao mesmo
       tempo: tira dois handshakes de DNS+TLS do caminho da primeira pintura (provavelmente mais
       rápido que o `<link>` que acabei de subir), elimina a dependência de terceiro no `<head>` e
       fecha de vez a questão do Google Fonts sob GDPR — a decisão de Munique de 2022 é sobre
@@ -972,7 +973,7 @@ todas as letras, porque o valor da rodada está aí.
       repositório**. Não fiz por causa dos binários: é o tipo de coisa que quem é dono decide.
       Observação honesta: o vazamento de IP para o Google já acontece de qualquer jeito hoje, pelo
       mapa — então isto só fecha a porta de vez junto com a decisão sobre o mapa.
-- [ ] **Não existe CSP.** O GitHub Pages não deixa mandar cabeçalho de resposta, então a única via
+- [x] **Não existe CSP.** **Resolvida em 2026-09-17 (`351fd83`).** O GitHub Pages não deixa mandar cabeçalho de resposta, então a única via
       seria um `<meta http-equiv>`, que não cobre tudo. Com o site sem login, sem sessão e sem
       pagamento, o teto de uma injeção de CSS é desfiguração, não roubo de dado. Fica anotado
       porque anda junto com a saída do GitHub Pages já registrada na seção do `webperf`.
@@ -1093,3 +1094,80 @@ Não é rodada de skill: saiu de uma leitura do `client/src/api/request.js` depo
       devolveu o corpo direto; agora os dois lados combinam. Os 58 testes continuam verdes, e o
       `request.test.mjs` foi ajustado junto — é o que provaria a quebra se o desembrulho tivesse
       ficado para trás em alguma chamada.
+
+---
+
+## 🆕 Saldo da rodada de decisões do dono — 2026-09-17
+
+Os quatro itens que estavam parados esperando você escolher. Você mandou fazer os quatro; um
+não deu, e o motivo não é código.
+
+**Troquei a ordem de propósito:** a CSP foi por último, não em terceiro. Ela precisa listar os
+domínios exatos, e tanto o mapa estático quanto hospedar a fonte mexem nessa lista — escrita antes,
+teria de ser escrita duas vezes.
+
+### ✅ Resolvido agora
+
+- [x] **O formulário de contato responde na página e não aceita segundo clique** (`4440698`).
+      Os três `alert()` viraram um `<p role="status">` embaixo do botão, e o botão desabilita
+      enquanto a requisição está aberta — era por aí que a mesma mensagem chegava duplicada ao
+      Formspree. Verificado no navegador **com o id do Formspree propositalmente errado**, para o
+      caminho de falha rodar de verdade: em voo o botão lê "Sending…" com `disabled=true` e a área
+      de status vazia; depois do 404 a mensagem aparece inline e o botão volta. O parágrafo reserva
+      a altura da linha, então a resposta não empurra o rodapé. Branco sobre `red-600` dá 4,85:1,
+      o mesmo par que os rótulos do formulário já usavam.
+- [x] **A DM Sans é servida daqui** (`7b876cb`). Saem dois handshakes do caminho da primeira
+      pintura (`fonts.googleapis.com` para a folha e `fonts.gstatic.com` para o arquivo) e o IP de
+      quem visita deixa de ir ao Google por causa da fonte.
+      **Dois arquivos, não quatro.** O woff2 da DM Sans é variável — o mesmo arquivo serve 400 e
+      700, que é exatamente o que o `css2` do Google já devolvia. Declarei os dois pesos como faces
+      separadas, e não como intervalo, para `font-medium` e `font-semibold` continuarem caindo no
+      mesmo peso de hoje: **isto é paridade, não melhoria** (veja o item aberto abaixo). O itálico
+      ficou de fora: a única marcação em itálico do app é a linha `"Could not load lyrics"`, e
+      60 kB de binário no repositório não se pagam por ela — o navegador sintetiza a oblíqua.
+      Verificado contra o build de produção: `document.fonts` reporta DM Sans 400 e 700 carregadas,
+      a única requisição de fonte é `/fonts/dm-sans-latin.woff2` da nossa própria origem, nada bate
+      em `gstatic` nem em `googleapis`, e o `latin-ext` desce sob demanda quando aparece nome
+      acentuado (Sigur Rós, Björk, Łódź). Chunk de entrada inalterado em 258,15 kB. A licença OFL
+      está versionada ao lado dos arquivos.
+- [x] **Existe CSP** (`351fd83`). Cada origem saiu do app **rodando**, não de leitura de código:
+      carrossel da home, página de artista com mapa, embed da Spotify, música expandida com letra e
+      YouTube, `LocationSelector`, `/about`, `/contact` e `/callback`. Duas origens só apareceriam
+      assim: `fonts.googleapis.com` e `fonts.gstatic.com` continuam sendo contatadas — **pelo
+      loader do Google Maps**, que puxa a Roboto por conta própria. Ou seja, tirar a nossa fonte do
+      Google fechou a nossa porta, não a do mapa; as duas só fecham junto com a decisão sobre o
+      mapa.
+      Vai por `<meta>` num plugin do Vite com `apply: "build"`, porque em desenvolvimento a política
+      barraria o script inline do Vite e o WebSocket do HMR. Como o `transformIndexHtml` roda antes
+      da cópia, `index.html`, `404.html` e as cópias por rota saem todas com a política — conferido
+      nas quatro. **Zero violação em todas as rotas**, com o mapa desenhando, os dois iframes
+      carregando, a letra chegando, e Formspree, Spotify, Photon e Nominatim alcançáveis.
+      O que o `<meta>` descarta em silêncio (`frame-ancestors`, `report-uri`, `sandbox`) virou
+      exceção no `CONSTRAINTS.md`, para ninguém ler esta política como defesa de clickjacking.
+
+### 🔴 Bloqueado em você — mapa estático
+
+- [ ] **A chave `VITE_GOOGLE_MAPS_KEY` não tem permissão para a Maps Static API.** Testei antes de
+      escrever qualquer linha:
+
+      ```
+      GET .../staticmap?center=…&key=…
+      403  "This API key is not authorized to use this service or API."
+      ```
+
+      A chave tem restrição por API e a **Maps Static API não está na lista**. Se eu tivesse subido
+      a troca, a página de artista mostraria imagem quebrada onde havia mapa — e essa é a página
+      mais importante do site. **É um toggle no Google Cloud Console**, e é a mesma visita da
+      restrição por referrer que já vence em 2026-10-15 no `CONSTRAINTS.md`. Libere e eu faço a
+      troca: é a mudança de melhor retorno do projeto (LCP 7,3–7,5 s é o mapa).
+
+### 🔵 Aberto — apareceu ao hospedar a fonte
+
+- [ ] **`font-medium` e `font-semibold` não desenham 500 e 600.** Há 20 usos de `font-medium` e 19
+      de `font-semibold` no app, e o `css2` do Google só entregava faces 400 e 700 — então 500
+      arredonda para 400 e 600 arredonda para 700. **Sempre foi assim**, não é regressão da mudança
+      de ontem; só ficou visível ao escrever as declarações à mão. O arquivo que já está no
+      repositório é variável e tem os pesos intermediários: trocar `font-weight: 400` / `700` por
+      `font-weight: 100 1000` numa face só faz 39 lugares passarem a desenhar o peso que a classe
+      diz. **Não fiz porque muda como o texto aparece em 39 lugares** e isso é chamada sua — o
+      escopo de ontem era tirar o Google do caminho, não redesenhar tipografia.
