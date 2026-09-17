@@ -14,6 +14,10 @@ export default function Player({ ticketmaster }) {
       className="w-full h-[500px] lg:h-full rounded-2xl"
       src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
       title="Artist on Spotify"
+      // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*
+      // piorou a medição. Este vem depois do mapa e da setlist inteira, sempre fora da
+      // primeira dobra, então aqui o adiamento tira concorrência de rede de quem está na tela.
+      loading="lazy"
       allow="encrypted-media; clipboard-write"
     />
   );
