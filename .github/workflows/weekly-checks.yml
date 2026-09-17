@@ -37,6 +37,10 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          # Sem isto o `gh` procura o repositório no remote do git, e o job do health check
+          # não faz checkout — o alarme morria calado com "not a git repository". Só se
+          # descobriu porque o caminho de falha foi executado de verdade antes de entrar.
+          GH_REPO: ${{ github.repository }}
           TITLE: "CVE scan failed"
         run: |
           # Enquanto a issue anterior estiver aberta, não abre outra: uma CVE que demora
@@ -69,6 +73,10 @@ jobs:
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          # Sem isto o `gh` procura o repositório no remote do git, e o job do health check
+          # não faz checkout — o alarme morria calado com "not a git repository". Só se
+          # descobriu porque o caminho de falha foi executado de verdade antes de entrar.
+          GH_REPO: ${{ github.repository }}
           TITLE: "Proxy health check failed"
         run: |
           if gh issue list --state open --json title -q '.[].title' | grep -qxF "$TITLE"; then
