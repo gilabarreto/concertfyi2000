@@ -50,6 +50,16 @@
       Google, só então o .woff2. Daqui a folha sai junto com o CSS do app, e o
       preconnect abre as duas conexões antes de qualquer uma delas ser pedida.
     -->
+    <!--
+      O proxy no Render é o primeiro terceiro que o app procura, e hoje a conexão com
+      ele só começa quando o JS dispara a primeira chamada — depois de baixar, parsear
+      e executar o bundle. Medido com `curl -w` na primeira conexão (DNS frio, sem
+      sessão TLS): 37 ms de DNS + 6 ms de TCP + 190 ms de TLS = 233 ms em série antes
+      de a requisição sair. Daqui isso corre em paralelo com o download do bundle.
+      Em desenvolvimento o app fala com o proxy do Vite, então esta linha não é usada.
+    -->
+    <link rel="preconnect" href="https://concertfyi2000.onrender.com" crossorigin />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
