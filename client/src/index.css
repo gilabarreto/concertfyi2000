@@ -1,5 +1,58 @@
-/* A fonte é carregada por <link> no index.html, não por @import aqui: dentro do CSS o
-   navegador só descobria a folha do Google depois de baixar esta inteira. */
+/* A DM Sans mora em client/public/fonts (OFL, licença ao lado dos arquivos). Estas
+   declarações ficam aqui e não num @import: @font-face não custa requisição nenhuma, ao
+   contrário do @import, que só é descoberto depois de esta folha inteira baixar. O
+   index.html ainda dá preload no arquivo latino, que é o que a primeira pintura precisa.
+
+   Os dois pesos apontam para o mesmo arquivo porque o woff2 é variável — é exatamente o
+   que o css2 do Google devolvia. Declarar 400 e 700 separados, em vez de um intervalo,
+   mantém font-medium e font-semibold caindo para o mesmo peso de antes.
+
+   Itálico não foi trazido: a única marcação em itálico do app é a linha de erro de letra,
+   e 60 kB de binário no repositório por causa dela não se paga. O navegador sintetiza. */
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/dm-sans-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/dm-sans-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext: nomes de artista e de cidade acentuados vêm da setlist.fm e do Photon */
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/dm-sans-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: "DM Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/dm-sans-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
