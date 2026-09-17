@@ -4,6 +4,12 @@ import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icon
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
 
+// O href vem do `externalLinks` da Ticketmaster, ou seja, de fora. O React 18 avisa no
+// console de desenvolvimento quando o href é `javascript:`, mas renderiza assim mesmo —
+// quem clicasse rodaria o script na origem do concertfyi.com. Um href indefinido vira
+// texto inerte, que é a falha certa aqui.
+const httpOnly = (url) => (/^https?:\/\//i.test(url) ? url : undefined);
+
 const SOCIALS = [
   { key: "youtube", icon: faYoutube, label: "YouTube" },
   { key: "instagram", icon: faInstagram, label: "Instagram" },
@@ -98,7 +104,7 @@ export default function ConcertInfo(props) {
             links[key] ? (
               <a
                 key={key}
-                href={links[key][0].url}
+                href={httpOnly(links[key][0].url)}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
