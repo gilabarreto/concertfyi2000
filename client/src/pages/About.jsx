@@ -1,4 +1,8 @@
 import Header from "../components/Header";
+import { Link } from "react-router-dom";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faInstagram, faFacebookF } from "@fortawesome/free-brands-svg-icons";
+import Icon from "../components/Icon";
 import { SEOHead } from "../components/SEOHead";
 
 export default function About() {
@@ -20,13 +24,34 @@ export default function About() {
           {"}"}
         </div>
 
-        <div className="[&>span]:block w-[350px] sm:w-[450px] text-justify text-white font-medium tracking-tight bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-6 flex justify-center items-center">
-          <span>
-            <span className="text-base sm:text-lg font-semibold">Concertfyi</span> is your backstage
-            pass to your favorite artist’s world. From past setlists to upcoming dates, hidden
-            venues to sold-out arenas — find it all here. Explore concert history, discover what’s
-            next, and connect with the music that moves you. The ultimate guide for true fans.
-          </span>
+        <div className="w-full max-w-[350px] sm:max-w-[450px]">
+          <div className="[&>span]:block w-full text-justify text-white font-medium tracking-tight bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-6 flex justify-center items-center">
+            <span>
+              <span className="text-base sm:text-lg font-semibold">Concertfyi</span> is your
+              backstage pass to your favorite artist’s world. From past setlists to upcoming dates,
+              hidden venues to sold-out arenas — find it all here. Explore concert history, discover
+              what’s next, and connect with the music that moves you. The ultimate guide for true
+              fans.
+            </span>
+          </div>
+          <div className="mt-6 flex flex-col items-center gap-4 text-center text-white font-sans">
+            <span className="text-sm tracking-tight">© 2025 concertfyi. all rights reserved.</span>
+            <div className="flex text-xs sm:text-sm items-center gap-3">
+              <a href="#" aria-label="Instagram">
+                <Icon icon={faInstagram} size="2x" />
+              </a>
+              <a href="#" aria-label="Facebook">
+                <Icon icon={faFacebookF} size="2x" />
+              </a>
+              <Link
+                to="/contact"
+                aria-label="Contact"
+                className="hover:opacity-80 transition-opacity"
+              >
+                <Icon icon={faEnvelope} size="2x" />
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </>
