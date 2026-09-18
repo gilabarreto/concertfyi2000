@@ -27,3 +27,6 @@ export const searchCities = (q) =>
   });
 
 export const getLocalEvents = (lat, long) => API("/ticketmaster/events", { params: { lat, long } });
+
+// :artistId na URL já é o mbid do MusicBrainz — Setlist.fm casa por ele.
+export const getArtistBackground = (mbid) => API("/musicbrainz", { params: { mbid } });

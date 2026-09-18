@@ -7,6 +7,7 @@ const assert = require("node:assert");
 
 const ticketmaster = require("./ticketmaster");
 const setlist = require("./setlist");
+const musicbrainz = require("./musicbrainz");
 
 // Express de mentira: um router é chamável, só precisa de req.url/method e do res.
 const call = (router, url, query) =>
@@ -48,5 +49,12 @@ test("a busca de setlist exige o nome do artista", async () => {
   for (const query of [{}, { artistName: "" }, { artistName: "a".repeat(201) }]) {
     const { status } = await call(setlist, "/search", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 40)}`);
+  }
+});
+
+test("musicbrainz exige um mbid de verdade", async () => {
+  for (const query of [{}, { mbid: "" }, { mbid: "not-a-uuid" }, { mbid: "9efff43b-3b29" }]) {
+    const { status } = await call(musicbrainz, "/", query);
+    assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query)}`);
   }
 });

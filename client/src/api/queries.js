@@ -7,9 +7,11 @@ import {
   searchCities,
   getLyrics,
   getYoutubeVideo,
+  getArtistBackground,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
+import { formatArtistBackground } from "../helpers/selectors";
 
 // Song details don't change: cache for the session instead of the 1s global gcTime,
 // so reopening a song is instant (and saves YouTube API quota). "Not found" is a normal answer, no retry.
@@ -90,6 +92,17 @@ export const useLocalEvents = (lat, long) => {
     queryFn: () => getLocalEvents(lat, long),
     enabled: !!lat && !!long,
     staleTime: 5 * 60 * 1000,
+  });
+};
+
+// mbid é o :artistId da URL. Biografia não muda dentro de uma sessão — mesmo preset
+// de cache que letra/vídeo, e 404 (artista sem entrada no MusicBrainz) não tenta de novo.
+export const useArtistBackground = (mbid) => {
+  return useQuery({
+    queryKey: ["artist-background", mbid],
+    queryFn: () => getArtistBackground(mbid).then(formatArtistBackground),
+    enabled: !!mbid,
+    ...songCache,
   });
 };
 

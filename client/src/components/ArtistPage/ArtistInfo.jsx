@@ -1,8 +1,9 @@
-import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
-import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
+import { getBestImage } from "../../helpers/selectors";
+import { useArtistBackground } from "../../api/queries";
+import { useParams } from "react-router-dom";
 
 // O href vem do `externalLinks` da Ticketmaster, ou seja, de fora. O React 18 avisa no
 // console de desenvolvimento quando o href é `javascript:`, mas renderiza assim mesmo —
@@ -17,32 +18,18 @@ const SOCIALS = [
 ];
 
 export default function ArtistInfo(props) {
-  const { concert, setlist, ticketmaster } = props;
-  const navigate = useNavigate();
-  const { artistId, concertId } = useParams();
+  const { concert, ticketmaster } = props;
+  const { artistId } = useParams();
 
   const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
   const links = ticketmaster.attractions?.[0]?.externalLinks || {};
 
-  const lastConcerts = getLastConcertsByArtist(setlist, artistId);
-
-  const idx = lastConcerts.findIndex((c) => String(c.id) === String(concertId));
-  const lastConcertId = lastConcerts[idx + 1]?.id;
-  const nextConcertId = lastConcerts[idx - 1]?.id;
-
-  const concertDate = () => {
-    return parseSetlistDate(concert.eventDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
+  // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
+  // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
+  const { data: background = {} } = useArtistBackground(artistId);
+  const { origin, genres, yearsActive, currentMembers, pastMembers } = background;
 
   const artist = concert.artist.name;
-  const tour = concert.tour?.name || "No tour name";
-  const venue = concert.venue?.name;
-  const city = concert.venue.city?.name;
-  const country = concert.venue.city?.country.code;
 
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
@@ -73,30 +60,28 @@ export default function ArtistInfo(props) {
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
+        {/* Estilo infobox da Wikipedia ("Background information"), mas só os campos que o
+            MusicBrainz modela como dado estruturado. Discografia e spinoffs ficam de fora —
+            aquilo exigiria raspar a infobox em si, não uma API. Artista raro no MusicBrainz
+            (ou ainda carregando) esconde a linha em vez de mostrar vazio. */}
         <ol className="pl-6">
-          <li className="border-b border-gray-300/50 py-2">
-            Concert date:&ensp;
-            {lastConcertId && (
-              <Icon
-                icon={faBackward}
-                className="text-xs text-red-600 cursor-pointer mr-2"
-                onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
-              />
-            )}
-            {concertDate()}&ensp;
-            {nextConcertId && (
-              <Icon
-                icon={faForward}
-                className="text-xs text-red-600 cursor-pointer"
-                onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
-              />
-            )}
-          </li>
-          <li className="border-b border-gray-300/50 py-2">Tour:&ensp;{tour}</li>
-          <li className="border-b border-gray-300/50 py-2">Venue:&ensp;{venue}</li>
-          <li className="border-b border-gray-300/50 py-2">
-            Location:&ensp;{city}, {country}
-          </li>
+          {origin && <li className="border-b border-gray-300/50 py-2">Origin:&ensp;{origin}</li>}
+          {genres?.length > 0 && (
+            <li className="border-b border-gray-300/50 py-2">Genres:&ensp;{genres.join(", ")}</li>
+          )}
+          {yearsActive && (
+            <li className="border-b border-gray-300/50 py-2">Years active:&ensp;{yearsActive}</li>
+          )}
+          {currentMembers?.length > 0 && (
+            <li className="border-b border-gray-300/50 py-2">
+              Members:&ensp;{currentMembers.join(", ")}
+            </li>
+          )}
+          {pastMembers?.length > 0 && (
+            <li className="border-b border-gray-300/50 py-2">
+              Past members:&ensp;{pastMembers.join(", ")}
+            </li>
+          )}
         </ol>
 
         <span className="flex text-sm justify-center mt-4 space-x-4">

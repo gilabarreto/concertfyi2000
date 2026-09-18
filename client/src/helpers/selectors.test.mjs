@@ -13,6 +13,7 @@ import {
   getBestImage,
   getCarouselSlides,
   parseSetlistDate,
+  formatArtistBackground,
 } from "./selectors.js";
 
 // Setlist.fm: DD-MM-YYYY
@@ -224,4 +225,53 @@ test("getCarouselSlides: sem imagem vira lista vazia, não undefined", () => {
   const [slide] = getCarouselSlides({ _embedded: { events: [event("e1", "Fisher")] } });
 
   assert.deepStrictEqual(slide.images, []);
+});
+
+const member = (name, ended) => ({ type: "member of band", artist: { name }, ended });
+
+test("formatArtistBackground: gêneros por contagem, banda dissolvida vira 'past members'", () => {
+  const got = formatArtistBackground({
+    "begin-area": { name: "Venice" },
+    area: { name: "United States" },
+    genres: [
+      { name: "rock", count: 10 },
+      { name: "acid rock", count: 21 },
+      { name: "pop", count: 1 },
+      { name: "hard rock", count: 4 },
+      { name: "blues rock", count: 18 },
+    ],
+    "life-span": { begin: "1965-07", end: "1973-01", ended: true },
+    relations: [
+      { type: "other databases" }, // tipo que não é integrante, tem que ser ignorado
+      member("Jim Morrison", true),
+      member("Ray Manzarek", true),
+    ],
+  });
+
+  assert.strictEqual(got.origin, "Venice, United States");
+  assert.deepStrictEqual(got.genres, ["acid rock", "blues rock", "rock", "hard rock"]);
+  assert.strictEqual(got.yearsActive, "1965–1973");
+  assert.deepStrictEqual(got.currentMembers, []);
+  assert.deepStrictEqual(got.pastMembers, ["Jim Morrison", "Ray Manzarek"]);
+});
+
+test("formatArtistBackground: banda ativa mostra 'present' e separa quem ainda está", () => {
+  const got = formatArtistBackground({
+    "life-span": { begin: "2010-01", ended: false },
+    relations: [member("Alguém", false), member("Quem Saiu", true)],
+  });
+
+  assert.strictEqual(got.yearsActive, "2010–present");
+  assert.deepStrictEqual(got.currentMembers, ["Alguém"]);
+  assert.deepStrictEqual(got.pastMembers, ["Quem Saiu"]);
+});
+
+test("formatArtistBackground: sem dados não quebra", () => {
+  assert.deepStrictEqual(formatArtistBackground(), {
+    origin: "",
+    genres: [],
+    yearsActive: "",
+    currentMembers: [],
+    pastMembers: [],
+  });
 });
