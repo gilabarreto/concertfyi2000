@@ -85,7 +85,7 @@ export default function ArtistInfo(props) {
         {/* Só no desktop: no mobile o socials sai daqui e vai pro fim da lista de info,
             depois do Members — próximo bloco de edição. */}
         {hasSocials && (
-          <p className="hidden sm:block mt-4">
+          <p className="hidden sm:block mt-4 text-pretty">
             Socials:&ensp;
             <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
           </p>
@@ -94,8 +94,19 @@ export default function ArtistInfo(props) {
 
       <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">{artist}</h2>
-          <Icon icon={faHeart} className="text-2xl cursor-pointer text-gray-500" size="2x" />
+          <h2 className="text-2xl font-bold text-balance">{artist}</h2>
+          {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS
+              THERE"/"Learn More": visível, mas `disabled` de verdade em vez de um ícone solto
+              com `cursor-pointer` fingindo ser clicável sem receber foco nem ter aria-label. */}
+          <button
+            type="button"
+            disabled
+            title="Coming soon"
+            aria-label="Favorite this artist"
+            className="text-2xl text-gray-500 cursor-not-allowed"
+          >
+            <Icon icon={faHeart} size="2x" />
+          </button>
         </div>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />

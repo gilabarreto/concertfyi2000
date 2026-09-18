@@ -44,7 +44,7 @@ export default function ConcertInfo(props) {
 
       <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Last Concert</h2>
+          <h2 className="text-2xl font-bold text-balance">Last Concert</h2>
 
           {/* Precisa de conta pra registrar presença — ainda não existe área do usuário,
               então o botão fica visível mas desativado até essa peça existir. */}
