@@ -23,6 +23,22 @@ export default function ArtistInfo(props) {
 
   const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
   const links = ticketmaster.attractions?.[0]?.externalLinks || {};
+  const hasSocials = SOCIALS.some(({ key }) => links[key]);
+  // A mesma lista de ícones aparece em dois lugares (foto no desktop, fim da ol no mobile) —
+  // um só e cada lugar decide se mostra via `hidden`/`sm:hidden`, não dois `.map` iguais.
+  const socialIcons = SOCIALS.map(({ key, icon, label }) =>
+    links[key] ? (
+      <a
+        key={key}
+        href={httpOnly(links[key][0].url)}
+        target="_blank"
+        rel="noreferrer"
+        aria-label={label}
+      >
+        <Icon icon={icon} className="text-gray-500" size="2x" />
+      </a>
+    ) : null,
+  );
 
   // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
   // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
@@ -66,21 +82,14 @@ export default function ArtistInfo(props) {
           )}
         </div>
 
-        <span className="flex text-sm justify-center mt-4 space-x-4">
-          {SOCIALS.map(({ key, icon, label }) =>
-            links[key] ? (
-              <a
-                key={key}
-                href={httpOnly(links[key][0].url)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-              >
-                <Icon icon={icon} className="text-gray-500" size="2x" />
-              </a>
-            ) : null,
-          )}
-        </span>
+        {/* Só no desktop: no mobile o socials sai daqui e vai pro fim da lista de info,
+            depois do Members — próximo bloco de edição. */}
+        {hasSocials && (
+          <span className="hidden sm:flex items-center gap-2 text-sm mt-4">
+            <span className="font-semibold">Socials:</span>
+            <span className="flex items-center space-x-4">{socialIcons}</span>
+          </span>
+        )}
       </div>
 
       <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
@@ -110,6 +119,15 @@ export default function ArtistInfo(props) {
           {currentMembers?.length > 0 && (
             <li className="border-b border-gray-300/50 py-2">
               Members:&ensp;{currentMembers.join(", ")}
+            </li>
+          )}
+          {/* Só no mobile (a versão desktop mora do lado da foto, acima): a mesma borda que
+              separa cada linha desta lista serve de divisor entre o socials e o Learn More
+              logo abaixo, sem precisar de outro elemento só pra isso. */}
+          {hasSocials && (
+            <li className="sm:hidden border-b border-gray-300/50 py-2 flex items-center gap-2">
+              <span>Socials:</span>
+              <span className="flex items-center gap-4">{socialIcons}</span>
             </li>
           )}
         </ol>
