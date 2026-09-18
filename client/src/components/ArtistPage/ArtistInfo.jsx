@@ -85,10 +85,10 @@ export default function ArtistInfo(props) {
         {/* Só no desktop: no mobile o socials sai daqui e vai pro fim da lista de info,
             depois do Members — próximo bloco de edição. */}
         {hasSocials && (
-          <span className="hidden sm:flex items-center gap-2 text-sm mt-4">
-            <span className="font-semibold">Socials:</span>
-            <span className="flex items-center space-x-4">{socialIcons}</span>
-          </span>
+          <p className="hidden sm:block mt-4">
+            Socials:&ensp;
+            <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
+          </p>
         )}
       </div>
 
@@ -125,9 +125,9 @@ export default function ArtistInfo(props) {
               separa cada linha desta lista serve de divisor entre o socials e o Learn More
               logo abaixo, sem precisar de outro elemento só pra isso. */}
           {hasSocials && (
-            <li className="sm:hidden border-b border-gray-300/50 py-2 flex items-center gap-2">
-              <span>Socials:</span>
-              <span className="flex items-center gap-4">{socialIcons}</span>
+            <li className="sm:hidden border-b border-gray-300/50 py-2">
+              Socials:&ensp;
+              <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
             </li>
           )}
         </ol>
