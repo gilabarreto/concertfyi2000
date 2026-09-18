@@ -229,7 +229,7 @@ test("getCarouselSlides: sem imagem vira lista vazia, não undefined", () => {
 
 const member = (name, ended) => ({ type: "member of band", artist: { name }, ended });
 
-test("formatArtistBackground: gêneros por contagem, banda dissolvida vira 'past members'", () => {
+test("formatArtistBackground: origin leva o ano de início entre parênteses, gêneros por contagem, só quem ainda está na banda", () => {
   const got = formatArtistBackground({
     "begin-area": { name: "Venice" },
     area: { name: "United States" },
@@ -243,35 +243,26 @@ test("formatArtistBackground: gêneros por contagem, banda dissolvida vira 'past
     "life-span": { begin: "1965-07", end: "1973-01", ended: true },
     relations: [
       { type: "other databases" }, // tipo que não é integrante, tem que ser ignorado
-      member("Jim Morrison", true),
-      member("Ray Manzarek", true),
+      member("Jim Morrison", true), // saiu, não aparece
+      member("Ray Manzarek", false),
     ],
   });
 
-  assert.strictEqual(got.origin, "Venice, United States");
+  assert.strictEqual(got.origin, "Venice, United States (1965)");
   assert.deepStrictEqual(got.genres, ["acid rock", "blues rock", "rock", "hard rock"]);
-  assert.strictEqual(got.yearsActive, "1965–1973");
-  assert.deepStrictEqual(got.currentMembers, []);
-  assert.deepStrictEqual(got.pastMembers, ["Jim Morrison", "Ray Manzarek"]);
+  assert.deepStrictEqual(got.currentMembers, ["Ray Manzarek"]);
 });
 
-test("formatArtistBackground: banda ativa mostra 'present' e separa quem ainda está", () => {
-  const got = formatArtistBackground({
-    "life-span": { begin: "2010-01", ended: false },
-    relations: [member("Alguém", false), member("Quem Saiu", true)],
-  });
+test("formatArtistBackground: sem ano de início, origin fica só o lugar", () => {
+  const got = formatArtistBackground({ area: { name: "United States" } });
 
-  assert.strictEqual(got.yearsActive, "2010–present");
-  assert.deepStrictEqual(got.currentMembers, ["Alguém"]);
-  assert.deepStrictEqual(got.pastMembers, ["Quem Saiu"]);
+  assert.strictEqual(got.origin, "United States");
 });
 
 test("formatArtistBackground: sem dados não quebra", () => {
   assert.deepStrictEqual(formatArtistBackground(), {
     origin: "",
     genres: [],
-    yearsActive: "",
     currentMembers: [],
-    pastMembers: [],
   });
 });

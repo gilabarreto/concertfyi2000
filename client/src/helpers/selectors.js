@@ -92,32 +92,25 @@ export function getBestImage(images = [], minWidth = 640) {
 }
 
 // O card "Background information" da ArtistInfo, a partir da resposta crua do
-// MusicBrainz (ws/2/artist?inc=genres+artist-rels). Igual à infobox da Wikipedia:
-// gêneros mais citados primeiro, integrantes atuais separados de quem já saiu. O
-// que a Wikipedia mostra e o MusicBrainz não modela direito (discografia, spinoffs)
-// fica de fora — puxar isso exigiria raspar a infobox em si, não uma API estruturada.
+// MusicBrainz (ws/2/artist?inc=genres+artist-rels). Igual à infobox da Wikipedia,
+// resumida a poucas linhas: gêneros mais citados primeiro, ano de início junto do
+// lugar em vez de uma linha própria, só integrantes atuais (passados some — banda
+// dissolvida vira lista longa e o card é pra ser curto). O que a Wikipedia mostra e
+// o MusicBrainz não modela direito (discografia, spinoffs) fica de fora — puxar
+// isso exigiria raspar a infobox em si, não uma API estruturada.
 export function formatArtistBackground(data = {}) {
-  const origin = [data["begin-area"]?.name, data.area?.name].filter(Boolean).join(", ");
+  const place = [data["begin-area"]?.name, data.area?.name].filter(Boolean).join(", ");
+  const beginYear = data["life-span"]?.begin?.slice(0, 4);
+  const origin = place && beginYear ? `${place} (${beginYear})` : place;
 
   const genres = [...(data.genres || [])]
     .sort((a, b) => b.count - a.count)
     .slice(0, 4)
     .map((g) => g.name);
 
-  const { begin, end, ended } = data["life-span"] || {};
-  const yearsActive = begin
-    ? `${begin.slice(0, 4)}–${ended ? end?.slice(0, 4) || "?" : "present"}`
-    : "";
+  const currentMembers = (data.relations || [])
+    .filter((r) => r.type === "member of band" && r.artist?.name && !r.ended)
+    .map((r) => r.artist.name);
 
-  const members = (data.relations || [])
-    .filter((r) => r.type === "member of band" && r.artist?.name)
-    .map((r) => ({ name: r.artist.name, current: !r.ended }));
-
-  return {
-    origin,
-    genres,
-    yearsActive,
-    currentMembers: members.filter((m) => m.current).map((m) => m.name),
-    pastMembers: members.filter((m) => !m.current).map((m) => m.name),
-  };
+  return { origin, genres, currentMembers };
 }

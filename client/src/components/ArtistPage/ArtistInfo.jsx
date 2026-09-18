@@ -27,7 +27,7 @@ export default function ArtistInfo(props) {
   // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
   // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
   const { data: background = {} } = useArtistBackground(artistId);
-  const { origin, genres, yearsActive, currentMembers, pastMembers } = background;
+  const { origin, genres, currentMembers } = background;
 
   const artist = concert.artist.name;
 
@@ -69,17 +69,9 @@ export default function ArtistInfo(props) {
           {genres?.length > 0 && (
             <li className="border-b border-gray-300/50 py-2">Genres:&ensp;{genres.join(", ")}</li>
           )}
-          {yearsActive && (
-            <li className="border-b border-gray-300/50 py-2">Years active:&ensp;{yearsActive}</li>
-          )}
           {currentMembers?.length > 0 && (
             <li className="border-b border-gray-300/50 py-2">
               Members:&ensp;{currentMembers.join(", ")}
-            </li>
-          )}
-          {pastMembers?.length > 0 && (
-            <li className="border-b border-gray-300/50 py-2">
-              Past members:&ensp;{pastMembers.join(", ")}
             </li>
           )}
         </ol>
