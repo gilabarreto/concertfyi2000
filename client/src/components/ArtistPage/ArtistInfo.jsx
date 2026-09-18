@@ -42,18 +42,25 @@ export default function ArtistInfo(props) {
 
   // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
   // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
-  const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artistId);
+  const {
+    data: background = {},
+    isLoading: isBackgroundLoading,
+    isError: isBackgroundError,
+    refetch: refetchBackground,
+  } = useArtistBackground(artistId);
   const { origin, genres = [], currentMembers } = background;
 
   // A Ticketmaster já está em mãos (é prop, não fetch) e cobre o mesmo campo, mais pobre: um
   // gênero e um subgênero contra o top 4 por tag do MusicBrainz. Só entra depois que o
-  // MusicBrainz responder e não tiver gênero pra esse artista — durante o carregamento fica
-  // só o "Loading artist info…", sem misturar tampão com dado ainda chegando.
-  const displayGenres = isBackgroundLoading
-    ? []
-    : genres.length > 0
-      ? genres
-      : getTicketmasterGenres(ticketmaster);
+  // MusicBrainz responder com sucesso e não tiver gênero pra esse artista — carregando ou
+  // com erro, o tampão fica de fora: um erro de rede virando silenciosamente "o gênero é
+  // esse aqui da Ticketmaster" escondia a falha em vez de avisar.
+  const displayGenres =
+    isBackgroundLoading || isBackgroundError
+      ? []
+      : genres.length > 0
+        ? genres
+        : getTicketmasterGenres(ticketmaster);
 
   const artist = concert.artist.name;
 
@@ -94,16 +101,19 @@ export default function ArtistInfo(props) {
 
       <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-balance">{artist}</h2>
+          <h2 className="text-3xl font-bold text-balance">{artist}</h2>
           {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS
               THERE"/"Learn More": visível, mas `disabled` de verdade em vez de um ícone solto
-              com `cursor-pointer` fingindo ser clicável sem receber foco nem ter aria-label. */}
+              com `cursor-pointer` fingindo ser clicável sem receber foco nem ter aria-label.
+              Sem `text-2xl` aqui de propósito: o `size="2x"` do Icon é `2em` relativo ao
+              font-size herdado — um `text-2xl` no botão dobra essa conta (2em de 1.5rem, não
+              de 1rem) e o ícone sai maior que o dos socials, que não tem essa classe. */}
           <button
             type="button"
             disabled
             title="Coming soon"
             aria-label="Favorite this artist"
-            className="text-2xl text-gray-500 cursor-not-allowed"
+            className="text-gray-500 cursor-not-allowed"
           >
             <Icon icon={faHeart} size="2x" />
           </button>
@@ -120,6 +130,18 @@ export default function ArtistInfo(props) {
               show do mesmo artista não reacende isto, já que o mbid não muda. */}
           {isBackgroundLoading && (
             <li className="border-b border-gray-300/50 py-2 text-gray-400">Loading artist info…</li>
+          )}
+          {isBackgroundError && (
+            <li className="border-b border-gray-300/50 py-2 text-gray-400">
+              Something went wrong.{" "}
+              <button
+                type="button"
+                onClick={() => refetchBackground()}
+                className="font-semibold text-red-600 hover:text-red-800"
+              >
+                Try again
+              </button>
+            </li>
           )}
           {origin && <li className="border-b border-gray-300/50 py-2">Origin:&ensp;{origin}</li>}
           {displayGenres.length > 0 && (
