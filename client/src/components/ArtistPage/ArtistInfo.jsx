@@ -46,7 +46,11 @@ export default function ArtistInfo(props) {
       {/* `items-center` no pai (a linha inteira) centraliza esta coluna na vertical contra a
           de texto, que costuma ser mais alta. Dentro dela, `items-center` de novo: a foto e
           os socials embaixo ficam no mesmo eixo central, não colados na borda esquerda. */}
-      <div className="flex-1 flex flex-col items-center w-full">
+      {/* `sm:flex-[2]` contra o `flex-1` (== flex-[1]) da coluna de texto: era 50/50 e o
+          `max-w-[520px]` da caixa abaixo nunca era alcançado — a coluna de 50% já ficava bem
+          menor que isso em qualquer largura razoável de tela, então subir o teto não mudava
+          nada visível. 2:1 dá espaço de verdade pra caixa crescer até o teto. */}
+      <div className="flex-1 sm:flex-[2] flex flex-col items-center w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.

@@ -34,7 +34,9 @@ export default function ConcertInfo(props) {
 
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
-      <div className="flex-1 flex justify-center sm:justify-start w-full">
+      {/* `sm:flex-[2]` contra o `flex-1` da coluna de texto: ver o comentário gêmeo em
+          ArtistInfo.jsx — sem isso a coluna de 50% nunca alcançava o max-w abaixo. */}
+      <div className="flex-1 sm:flex-[2] flex justify-center sm:justify-start w-full">
         <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-gray-100 overflow-hidden">
           <Map concert={concert} />
         </div>
