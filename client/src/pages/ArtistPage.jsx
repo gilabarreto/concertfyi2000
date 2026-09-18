@@ -1,8 +1,8 @@
 import { useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
+import ArtistInfo from "../components/ArtistPage/ArtistInfo";
 import ConcertInfo from "../components/ArtistPage/ConcertInfo";
-import Map from "../components/ArtistPage/Map";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
 import NextConcertList from "../components/ArtistPage/NextConcerts";
@@ -59,11 +59,11 @@ export default function ArtistPage() {
       <div className="w-full mx-auto p-4 space-y-4">
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
-            <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+            <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
 
-          <div className="bg-gray-100 rounded-xl shadow flex-1 h-64 lg:h-auto">
-            <Map concert={concert} />
+          <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
+            <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
         </div>
 

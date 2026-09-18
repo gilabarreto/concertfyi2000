@@ -2,13 +2,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
 import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
-import Map from "./Map";
+import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
 
-// Mesmo card que ArtistInfo.jsx, mesmos campos — só a caixa de mídia muda: mapa do show
-// em vez de foto do artista. Duplicado de propósito, não extraído: ArtistInfo vai divergir
-// nos campos que mostra, e um componente genérico pra dois conteúdos que estão prestes a
-// ser diferentes é abstração para o problema errado.
+// O href vem do `externalLinks` da Ticketmaster, ou seja, de fora. O React 18 avisa no
+// console de desenvolvimento quando o href é `javascript:`, mas renderiza assim mesmo —
+// quem clicasse rodaria o script na origem do concertfyi.com. Um href indefinido vira
+// texto inerte, que é a falha certa aqui.
 const httpOnly = (url) => (/^https?:\/\//i.test(url) ? url : undefined);
 
 const SOCIALS = [
@@ -17,11 +16,12 @@ const SOCIALS = [
   { key: "twitter", icon: faTwitter, label: "Twitter" },
 ];
 
-export default function ConcertInfo(props) {
+export default function ArtistInfo(props) {
   const { concert, setlist, ticketmaster } = props;
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
 
+  const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
   const links = ticketmaster.attractions?.[0]?.externalLinks || {};
 
   const lastConcerts = getLastConcertsByArtist(setlist, artistId);
@@ -46,9 +46,22 @@ export default function ConcertInfo(props) {
 
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+      {/* `w-full` aqui porque o pai é `items-center`: sem largura definida, o `w-full` da
+          caixa de baixo resolvia para zero e ela não reservava altura nenhuma. */}
       <div className="flex-1 flex justify-center sm:justify-start w-full">
-        <div className="w-full sm:max-w-[400px] aspect-video rounded-md bg-gray-100 overflow-hidden">
-          <Map concert={concert} />
+        {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
+            caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
+            empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
+            16:9 é o formato que o getBestImage prefere e o que os cards da busca usam;
+            quem não tem foto na Ticketmaster fica com a caixa vazia em vez do pulo. */}
+        <div className="w-full sm:max-w-[400px] aspect-video rounded-md bg-gray-100">
+          {bestImageUrl && (
+            <img
+              src={bestImageUrl}
+              alt={`${artist} portrait`}
+              className="object-cover w-full h-full rounded-md"
+            />
+          )}
         </div>
       </div>
 
