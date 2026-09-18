@@ -34,9 +34,11 @@ export default function About() {
               fans.
             </span>
           </div>
-          <div className="mt-6 flex flex-col items-center gap-4 text-center text-white font-sans">
-            <span className="text-sm tracking-tight">© 2025 concertfyi. all rights reserved.</span>
-            <div className="flex text-xs sm:text-sm items-center gap-3">
+          <div className="mt-6 flex items-center justify-between gap-2 text-white font-sans">
+            <span className="whitespace-nowrap text-[10px] sm:text-sm tracking-tight">
+              © 2025 concertfyi. all rights reserved.
+            </span>
+            <div className="flex shrink-0 text-[10px] sm:text-sm items-center gap-2 sm:gap-3">
               <a href="#" aria-label="Instagram">
                 <Icon icon={faInstagram} size="2x" />
               </a>
