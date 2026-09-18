@@ -29,10 +29,15 @@ export default function ArtistInfo(props) {
   const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artistId);
   const { origin, genres = [], currentMembers } = background;
 
-  // A Ticketmaster já está em mãos (é prop, não fetch) e cobre o mesmo campo, mais pobre:
-  // um gênero e um subgênero contra o top 4 por tag do MusicBrainz. Serve de placeholder até
-  // o MusicBrainz responder; se ele não tiver gênero pra esse artista, o tampão fica valendo.
-  const displayGenres = genres.length > 0 ? genres : getTicketmasterGenres(ticketmaster);
+  // A Ticketmaster já está em mãos (é prop, não fetch) e cobre o mesmo campo, mais pobre: um
+  // gênero e um subgênero contra o top 4 por tag do MusicBrainz. Só entra depois que o
+  // MusicBrainz responder e não tiver gênero pra esse artista — durante o carregamento fica
+  // só o "Loading artist info…", sem misturar tampão com dado ainda chegando.
+  const displayGenres = isBackgroundLoading
+    ? []
+    : genres.length > 0
+      ? genres
+      : getTicketmasterGenres(ticketmaster);
 
   const artist = concert.artist.name;
 
