@@ -7,6 +7,13 @@ export function parseSetlistDate(eventDate) {
   return new Date(year, month - 1, day);
 }
 
+// en-GB is the locale that shortens September to "Sept" (en-US stops at "Sep"); the
+// other eleven months are identical, and the month-day-year order stays ours. Shared by
+// every card that shows a concert date, so past/upcoming/last concert all read the same.
+export function dateLabel(date) {
+  return `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 export function getPastConcertsByArtist(setlist = [], artistId) {
   const now = new Date();
 

@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
 import { faBackward, faForward, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { getPastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
+import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import Map from "./Map";
 
 // Mesmo card que ArtistInfo.jsx, mesmos campos — só a caixa de mídia muda: mapa do show
@@ -19,14 +19,6 @@ export default function ConcertInfo(props) {
   const lastConcertId = pastConcerts[idx + 1]?.id;
   const nextConcertId = pastConcerts[idx - 1]?.id;
 
-  const concertDate = () => {
-    return parseSetlistDate(concert.eventDate).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   const tour = concert.tour?.name || "No tour name";
   const venue = concert.venue?.name;
   const city = concert.venue.city?.name;
@@ -35,14 +27,16 @@ export default function ConcertInfo(props) {
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
       {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: ver o comentário gêmeo em
-          ArtistInfo.jsx — +10% sobre o antigo 50/50, reduzido do 2:1 anterior a pedido. */}
-      <div className="flex-1 sm:flex-[1.1] flex justify-center sm:justify-start w-full">
+          ArtistInfo.jsx — +10% sobre o antigo 50/50, reduzido do 2:1 anterior a pedido.
+          `sm:order-2`: no desktop o mapa passa pra direita da info, sem mover o DOM — no
+          mobile (flex-col, sem classe de order) ele continua acima, como antes. */}
+      <div className="flex-1 sm:flex-[1.1] sm:order-2 flex justify-center sm:justify-start w-full">
         <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-gray-100 overflow-hidden">
           <Map concert={concert} />
         </div>
       </div>
 
-      <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
+      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-bold text-balance">Last Concert</h2>
 
@@ -74,7 +68,7 @@ export default function ConcertInfo(props) {
                 onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
               />
             )}
-            {concertDate()}&ensp;
+            {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
             {nextConcertId && (
               <Icon
                 icon={faForward}

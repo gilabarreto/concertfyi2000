@@ -3,13 +3,9 @@ import { Link } from "react-router-dom";
 import Icon from "../Icon";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../Pagination";
+import { dateLabel } from "../../helpers/selectors";
 
 const PAGE_SIZE = 5;
-
-// en-GB is the locale that shortens September to "Sept" (en-US stops at "Sep"); the
-// other eleven months are identical, and the month-day-year order stays ours.
-const dateLabel = (date) =>
-  `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
 
 // items carry a dateObj. A row is either a link to one of our own routes (linkOf) or a
 // disclosure that opens panels in place (expand, like Setlist does) — never both, and the

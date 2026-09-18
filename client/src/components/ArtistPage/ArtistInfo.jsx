@@ -72,8 +72,10 @@ export default function ArtistInfo(props) {
       {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: os dois somam 2, igual
           ao antigo flex-1/flex-1 (50/50) — então 1.1/2 = 55% é exatamente +10% sobre aquela
           metade. Era `flex-[2]`/`flex-1` (2:1, ~66%), reduzido a pedido. O `max-w-[520px]` da
-          caixa abaixo nunca é alcançado nessa proporção — ver o commit que explica por quê. */}
-      <div className="flex-1 sm:flex-[1.1] flex flex-col items-center w-full">
+          caixa abaixo nunca é alcançado nessa proporção — ver o commit que explica por quê.
+          `sm:order-2`: no desktop a foto passa pra direita da info, sem mover o DOM — no
+          mobile (flex-col, sem classe de order) ela continua acima, como antes. */}
+      <div className="flex-1 sm:flex-[1.1] sm:order-2 flex flex-col items-center w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
@@ -99,7 +101,7 @@ export default function ArtistInfo(props) {
         )}
       </div>
 
-      <div className="flex-1 sm:flex-[0.9] w-full sm:w-auto">
+      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-bold text-balance">{artist}</h2>
           {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS
