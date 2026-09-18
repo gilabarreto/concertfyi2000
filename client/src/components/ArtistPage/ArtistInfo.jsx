@@ -33,10 +33,11 @@ export default function ArtistInfo(props) {
 
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row sm:items-start justify-between space-y-6 sm:space-y-0 sm:space-x-6">
-      {/* `sm:items-start` no pai alinha esta coluna pelo topo: a foto some no meio de um
-          card mais alto quando fica centralizada. Socials mudaram pra baixo da foto —
-          moram na mesma coluna, e a coluna de texto fica só com o que é sobre o artista. */}
-      <div className="flex-1 flex flex-col items-center sm:items-start w-full">
+      {/* `sm:items-start` no pai (a linha inteira) alinha as duas colunas pelo topo — a foto
+          some no meio de um card mais alto quando o quadro fica centralizado. Dentro desta
+          coluna, porém, `items-center` continua: a foto e os socials embaixo dela ficam
+          centralizados entre si, não colados na borda esquerda. */}
+      <div className="flex-1 flex flex-col items-center w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
@@ -92,6 +93,18 @@ export default function ArtistInfo(props) {
             </li>
           )}
         </ol>
+
+        {/* Página própria do artista ainda não existe — quando existir, isto vira
+            <Link to={`/artists/${artistId}`}>. Por ora fica visível e inerte, como o
+            "I WAS THERE" do ConcertInfo. */}
+        <button
+          type="button"
+          disabled
+          title="Coming soon"
+          className="ml-6 mt-2 text-sm font-semibold text-gray-400 cursor-not-allowed"
+        >
+          Learn More
+        </button>
       </div>
     </div>
   );

@@ -50,9 +50,9 @@ export default function ConcertInfo(props) {
             type="button"
             disabled
             title="Coming soon — sign in required"
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-400 text-sm cursor-not-allowed"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
           >
-            <Icon icon={faPlus} className="text-xs" />I WAS THERE
+            <Icon icon={faPlus} className="text-[0.65rem]" />I WAS THERE
           </button>
         </div>
 
