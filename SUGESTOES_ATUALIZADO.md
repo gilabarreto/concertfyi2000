@@ -1,6 +1,14 @@
 # 💡 Sugestões de Melhorias - ConcertFYI
 **Atualizado em 2026-08-23** | Baseado em estado atual + mudanças recentes
 
+## Pendência de documentação — 2026-09-18
+
+- [ ] **Atualizar o `DOSSIE_TECNICO_ATUALIZADO.md`.** O documento ainda retrata agosto e precisa
+      incorporar as entregas de setembro: testes e CI, React Query e fetch, otimizações de imagens
+      e bundle, CSP, fontes locais e melhorias no contato. Conferir arquitetura, componentes e
+      funcionalidades contra o código atual; separar o que foi entregue das propostas futuras e
+      revisar as pendências de SEO, hospedagem e mapa com base nos registros mais recentes abaixo.
+
 ---
 
 ## 🔴 CRÍTICO - Problema de SEO/Discovery
