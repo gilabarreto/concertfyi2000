@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
-import { faBackward, faForward, faHeart } from "@fortawesome/free-solid-svg-icons";
-import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
+import { faBackward, faForward, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
 import Map from "./Map";
 
@@ -9,20 +8,10 @@ import Map from "./Map";
 // em vez de foto do artista. Duplicado de propósito, não extraído: ArtistInfo vai divergir
 // nos campos que mostra, e um componente genérico pra dois conteúdos que estão prestes a
 // ser diferentes é abstração para o problema errado.
-const httpOnly = (url) => (/^https?:\/\//i.test(url) ? url : undefined);
-
-const SOCIALS = [
-  { key: "youtube", icon: faYoutube, label: "YouTube" },
-  { key: "instagram", icon: faInstagram, label: "Instagram" },
-  { key: "twitter", icon: faTwitter, label: "Twitter" },
-];
-
 export default function ConcertInfo(props) {
-  const { concert, setlist, ticketmaster } = props;
+  const { concert, setlist } = props;
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
-
-  const links = ticketmaster.attractions?.[0]?.externalLinks || {};
 
   const lastConcerts = getLastConcertsByArtist(setlist, artistId);
 
@@ -38,7 +27,6 @@ export default function ConcertInfo(props) {
     });
   };
 
-  const artist = concert.artist.name;
   const tour = concert.tour?.name || "No tour name";
   const venue = concert.venue?.name;
   const city = concert.venue.city?.name;
@@ -54,8 +42,7 @@ export default function ConcertInfo(props) {
 
       <div className="flex-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">{artist}</h2>
-          <Icon icon={faHeart} className="text-2xl cursor-pointer text-gray-500" size="2x" />
+          <h2 className="text-2xl font-bold">Last Concert</h2>
         </div>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
@@ -86,21 +73,16 @@ export default function ConcertInfo(props) {
           </li>
         </ol>
 
-        <span className="flex text-sm justify-center mt-4 space-x-4">
-          {SOCIALS.map(({ key, icon, label }) =>
-            links[key] ? (
-              <a
-                key={key}
-                href={httpOnly(links[key][0].url)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-              >
-                <Icon icon={icon} className="text-gray-500" size="2x" />
-              </a>
-            ) : null,
-          )}
-        </span>
+        {/* Precisa de conta pra registrar presença — ainda não existe área do usuário,
+            então o botão fica visível mas desativado até essa peça existir. */}
+        <button
+          type="button"
+          disabled
+          title="Coming soon — sign in required"
+          className="flex items-center gap-2 mx-auto mt-4 px-4 py-2 rounded-full border border-gray-300 text-gray-400 text-sm cursor-not-allowed"
+        >
+          <Icon icon={faPlus} className="text-xs" />I WAS THERE
+        </button>
       </div>
     </div>
   );
