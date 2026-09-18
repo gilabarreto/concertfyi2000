@@ -17,9 +17,12 @@ const csp = [
   "font-src 'self' https://fonts.gstatic.com",
   // data:/blob: são os tiles e ícones que o Maps desenha em memória. www.google.com é o
   // serviço de favicon que o VendorTiles usa pros logos de vendor (Ticketmaster, SeatGeek,
-  // Booking.com...) — faltava aqui, então todo <img> deles quebrava no CSP e o onError
-  // escondia o ícone (visibility:hidden) sem erro visível nenhum pra quem via a página.
-  "img-src 'self' data: blob: https://s1.ticketm.net https://maps.googleapis.com https://maps.gstatic.com https://*.ggpht.com https://*.googleusercontent.com https://www.google.com",
+  // Booking.com...) — mas ele só redireciona (301) pra t0-t3.gstatic.com, quem manda a
+  // imagem de fato, girando entre os quatro a cada chamada (curl -D - nos cinco vendors:
+  // t0, t1, t2, t3, sem padrão fixo). CSP confere cada URL da cadeia de redirect, não só a
+  // primeira — daí o wildcard, e daí *.gstatic.com engloba o maps.gstatic.com que já
+  // estava aqui, então a entrada específica saiu.
+  "img-src 'self' data: blob: https://s1.ticketm.net https://maps.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com https://www.google.com",
   "connect-src 'self' https://concertfyi2000.onrender.com https://maps.googleapis.com https://api.spotify.com https://formspree.io https://photon.komoot.io https://nominatim.openstreetmap.org",
   "frame-src https://open.spotify.com https://www.youtube.com",
   "worker-src 'self' blob:",
