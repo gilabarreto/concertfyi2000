@@ -26,7 +26,7 @@ export default function ArtistInfo(props) {
 
   // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
   // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
-  const { data: background = {} } = useArtistBackground(artistId);
+  const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artistId);
   const { origin, genres, currentMembers } = background;
 
   const artist = concert.artist.name;
@@ -83,6 +83,11 @@ export default function ArtistInfo(props) {
             aquilo exigiria raspar a infobox em si, não uma API. Artista raro no MusicBrainz
             (ou ainda carregando) esconde a linha em vez de mostrar vazio. */}
         <ol className="pl-6">
+          {/* isLoading (não isFetching) é só a primeira busca, sem cache ainda — troca de
+              show do mesmo artista não reacende isto, já que o mbid não muda. */}
+          {isBackgroundLoading && (
+            <li className="border-b border-gray-300/50 py-2 text-gray-400">Loading artist info…</li>
+          )}
           {origin && <li className="border-b border-gray-300/50 py-2">Origin:&ensp;{origin}</li>}
           {genres?.length > 0 && (
             <li className="border-b border-gray-300/50 py-2">Genres:&ensp;{genres.join(", ")}</li>
