@@ -47,12 +47,16 @@ export default function ConcertInfo(props) {
           <h2 className="text-3xl font-bold text-balance">Last Concert</h2>
 
           {/* Precisa de conta pra registrar presença — ainda não existe área do usuário,
-              então o botão fica visível mas desativado até essa peça existir. */}
+              então o botão fica visível mas desativado até essa peça existir.
+              `scale-90` é o -10% pedido em cima do tamanho já reduzido antes (padding/texto
+              das classes abaixo) — transform em vez de recalcular cada valor de novo, e
+              `origin-right` porque o botão é o item da direita no `justify-between`: encolhe
+              pra dentro, não se descola da borda onde já estava encostado. */}
           <button
             type="button"
             disabled
             title="Coming soon — sign in required"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
+            className="flex origin-right scale-90 items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
           >
             <Icon icon={faPlus} className="text-[0.65rem]" />I WAS THERE
           </button>
