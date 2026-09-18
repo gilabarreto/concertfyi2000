@@ -32,10 +32,11 @@ export default function ArtistInfo(props) {
   const artist = concert.artist.name;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
-      {/* `w-full` aqui porque o pai é `items-center`: sem largura definida, o `w-full` da
-          caixa de baixo resolvia para zero e ela não reservava altura nenhuma. */}
-      <div className="flex-1 flex justify-center sm:justify-start w-full">
+    <div className="flex-1 flex flex-col items-center sm:flex-row sm:items-start justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+      {/* `sm:items-start` no pai alinha esta coluna pelo topo: a foto some no meio de um
+          card mais alto quando fica centralizada. Socials mudaram pra baixo da foto —
+          moram na mesma coluna, e a coluna de texto fica só com o que é sobre o artista. */}
+      <div className="flex-1 flex flex-col items-center sm:items-start w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
@@ -50,6 +51,22 @@ export default function ArtistInfo(props) {
             />
           )}
         </div>
+
+        <span className="flex text-sm justify-center mt-4 space-x-4">
+          {SOCIALS.map(({ key, icon, label }) =>
+            links[key] ? (
+              <a
+                key={key}
+                href={httpOnly(links[key][0].url)}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+              >
+                <Icon icon={icon} className="text-gray-500" size="2x" />
+              </a>
+            ) : null,
+          )}
+        </span>
       </div>
 
       <div className="flex-1 w-full sm:w-auto">
@@ -75,22 +92,6 @@ export default function ArtistInfo(props) {
             </li>
           )}
         </ol>
-
-        <span className="flex text-sm justify-center mt-4 space-x-4">
-          {SOCIALS.map(({ key, icon, label }) =>
-            links[key] ? (
-              <a
-                key={key}
-                href={httpOnly(links[key][0].url)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={label}
-              >
-                <Icon icon={icon} className="text-gray-500" size="2x" />
-              </a>
-            ) : null,
-          )}
-        </span>
       </div>
     </div>
   );

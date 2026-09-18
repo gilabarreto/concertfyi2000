@@ -43,6 +43,17 @@ export default function ConcertInfo(props) {
       <div className="flex-1 w-full sm:w-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Last Concert</h2>
+
+          {/* Precisa de conta pra registrar presença — ainda não existe área do usuário,
+              então o botão fica visível mas desativado até essa peça existir. */}
+          <button
+            type="button"
+            disabled
+            title="Coming soon — sign in required"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-gray-300 text-gray-400 text-sm cursor-not-allowed"
+          >
+            <Icon icon={faPlus} className="text-xs" />I WAS THERE
+          </button>
         </div>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
@@ -72,17 +83,6 @@ export default function ConcertInfo(props) {
             Location:&ensp;{city}, {country}
           </li>
         </ol>
-
-        {/* Precisa de conta pra registrar presença — ainda não existe área do usuário,
-            então o botão fica visível mas desativado até essa peça existir. */}
-        <button
-          type="button"
-          disabled
-          title="Coming soon — sign in required"
-          className="flex items-center gap-2 mx-auto mt-4 px-4 py-2 rounded-full border border-gray-300 text-gray-400 text-sm cursor-not-allowed"
-        >
-          <Icon icon={faPlus} className="text-xs" />I WAS THERE
-        </button>
       </div>
     </div>
   );
