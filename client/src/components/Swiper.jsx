@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
-import { getBestImage, getCarouselSlides, getLastConcertsByArtist } from "../helpers/selectors";
+import { getBestImage, getCarouselSlides, getPastConcertsByArtist } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
@@ -98,7 +98,7 @@ export default function Swiper() {
         }
 
         const correctArtistId = setlist[0]?.artist?.mbid || selectedArtist.artistId;
-        const targetId = getLastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
+        const targetId = getPastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
 
         setSetlist(setlist);
         setTicketmaster(ticketmaster);

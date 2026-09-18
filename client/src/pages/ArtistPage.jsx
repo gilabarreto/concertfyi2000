@@ -5,8 +5,8 @@ import ArtistInfo from "../components/ArtistPage/ArtistInfo";
 import ConcertInfo from "../components/ArtistPage/ConcertInfo";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
-import NextConcertList from "../components/ArtistPage/NextConcerts";
-import LastConcerts from "../components/ArtistPage/LastConcerts";
+import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
+import PastConcerts from "../components/ArtistPage/PastConcerts";
 import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
@@ -78,11 +78,11 @@ export default function ArtistPage() {
 
           <div>
             <div className="bg-white rounded-xl p-6 shadow space-y-2">
-              <LastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+              <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
             </div>
 
             <div className="bg-white rounded-xl p-6 shadow mt-6 space-y-2">
-              <NextConcertList ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
+              <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
             </div>
           </div>
         </div>

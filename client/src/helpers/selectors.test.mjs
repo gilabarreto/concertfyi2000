@@ -8,8 +8,8 @@ process.env.TZ = "America/Sao_Paulo";
 import { test } from "node:test";
 import assert from "node:assert";
 import {
-  getLastConcertsByArtist,
-  getNextConcertsByArtist,
+  getPastConcertsByArtist,
+  getUpcomingConcertsByArtist,
   getBestImage,
   getCarouselSlides,
   parseSetlistDate,
@@ -28,7 +28,7 @@ const upcoming = (name, localDate) => ({
 
 const MBID = "b10bbbfc-cf9e-42e0-be17-e2c3e1d2600d";
 
-test("getLastConcertsByArtist: filtra pelo mbid, descarta futuro e ordena do mais recente", () => {
+test("getPastConcertsByArtist: filtra pelo mbid, descarta futuro e ordena do mais recente", () => {
   const setlist = [
     past(MBID, "01-03-2024"),
     past(MBID, "15-08-2025"),
@@ -36,14 +36,14 @@ test("getLastConcertsByArtist: filtra pelo mbid, descarta futuro e ordena do mai
     past("outro-artista", "10-10-2025"),
   ];
 
-  const got = getLastConcertsByArtist(setlist, MBID).map((c) => c.id);
+  const got = getPastConcertsByArtist(setlist, MBID).map((c) => c.id);
 
   assert.deepStrictEqual(got, ["15-08-2025", "01-03-2024"]);
 });
 
-test("getLastConcertsByArtist: lê DD-MM-YYYY, não MM-DD-YYYY", () => {
+test("getPastConcertsByArtist: lê DD-MM-YYYY, não MM-DD-YYYY", () => {
   // Se o parser trocasse dia e mês, 03-01 viria depois de 01-03.
-  const [first] = getLastConcertsByArtist(
+  const [first] = getPastConcertsByArtist(
     [past(MBID, "01-03-2024"), past(MBID, "03-01-2024")],
     MBID,
   );
@@ -62,7 +62,7 @@ const dayOffset = (days) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
-test("getNextConcertsByArtist: casa pelo nome, ordena do mais próximo e ignora evento sem _embedded", () => {
+test("getUpcomingConcertsByArtist: casa pelo nome, ordena do mais próximo e ignora evento sem _embedded", () => {
   const events = [
     upcoming("Radiohead", dayOffset(600)),
     upcoming("Radiohead", dayOffset(48)),
@@ -70,12 +70,12 @@ test("getNextConcertsByArtist: casa pelo nome, ordena do mais próximo e ignora 
     { id: "sem-embedded", dates: { start: { localDate: dayOffset(77) } } },
   ];
 
-  const got = getNextConcertsByArtist(events, "Radiohead").map((e) => e.id);
+  const got = getUpcomingConcertsByArtist(events, "Radiohead").map((e) => e.id);
 
   assert.deepStrictEqual(got, [dayOffset(48), dayOffset(600)]);
 });
 
-test("getNextConcertsByArtist: descarta o que já passou e mantém o show de hoje", () => {
+test("getUpcomingConcertsByArtist: descarta o que já passou e mantém o show de hoje", () => {
   const events = [
     upcoming("Radiohead", dayOffset(-1)),
     upcoming("Radiohead", dayOffset(-400)),
@@ -83,17 +83,17 @@ test("getNextConcertsByArtist: descarta o que já passou e mantém o show de hoj
     upcoming("Radiohead", dayOffset(30)),
   ];
 
-  const got = getNextConcertsByArtist(events, "Radiohead").map((e) => e.id);
+  const got = getUpcomingConcertsByArtist(events, "Radiohead").map((e) => e.id);
 
   assert.deepStrictEqual(got, [dayOffset(0), dayOffset(30)]);
 });
 
-test("getNextConcertsByArtist: lista vazia quando o nome não bate exatamente", () => {
+test("getUpcomingConcertsByArtist: lista vazia quando o nome não bate exatamente", () => {
   const events = [upcoming("Radiohead", dayOffset(48))];
 
   // O join é por string literal — é a costura frágil do app, não um fuzzy match.
-  assert.deepStrictEqual(getNextConcertsByArtist(events, "radiohead"), []);
-  assert.deepStrictEqual(getNextConcertsByArtist(undefined, "Radiohead"), []);
+  assert.deepStrictEqual(getUpcomingConcertsByArtist(events, "radiohead"), []);
+  assert.deepStrictEqual(getUpcomingConcertsByArtist(undefined, "Radiohead"), []);
 });
 
 // A Ticketmaster oferece a mesma foto em 100, 205, 640, 1024, 1136 e 2048 de largura,

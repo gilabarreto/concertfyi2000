@@ -7,7 +7,7 @@ export function parseSetlistDate(eventDate) {
   return new Date(year, month - 1, day);
 }
 
-export function getLastConcertsByArtist(setlist = [], artistId) {
+export function getPastConcertsByArtist(setlist = [], artistId) {
   const now = new Date();
 
   return setlist
@@ -20,7 +20,7 @@ export function getLastConcertsByArtist(setlist = [], artistId) {
 // A irmã da de cima, para o outro lado da linha do tempo. As duas APIs não
 // compartilham id nenhum: Setlist.fm casa com Ticketmaster pelo nome do artista,
 // e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
-export function getNextConcertsByArtist(events = [], artistName) {
+export function getUpcomingConcertsByArtist(events = [], artistName) {
   // A rota /suggest pagina eventos por attractionId sem filtro de data, então o
   // passado vem junto — e, em ordem crescente, vinha listado em primeiro lugar.
   // O show de hoje continua contando como próximo: o corte é a meia-noite de hoje.

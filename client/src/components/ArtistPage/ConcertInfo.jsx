@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
 import { faBackward, faForward, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { getLastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
+import { getPastConcertsByArtist, parseSetlistDate } from "../../helpers/selectors";
 import Map from "./Map";
 
 // Mesmo card que ArtistInfo.jsx, mesmos campos — só a caixa de mídia muda: mapa do show
@@ -13,11 +13,11 @@ export default function ConcertInfo(props) {
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
 
-  const lastConcerts = getLastConcertsByArtist(setlist, artistId);
+  const pastConcerts = getPastConcertsByArtist(setlist, artistId);
 
-  const idx = lastConcerts.findIndex((c) => String(c.id) === String(concertId));
-  const lastConcertId = lastConcerts[idx + 1]?.id;
-  const nextConcertId = lastConcerts[idx - 1]?.id;
+  const idx = pastConcerts.findIndex((c) => String(c.id) === String(concertId));
+  const lastConcertId = pastConcerts[idx + 1]?.id;
+  const nextConcertId = pastConcerts[idx - 1]?.id;
 
   const concertDate = () => {
     return parseSetlistDate(concert.eventDate).toLocaleDateString("en-US", {

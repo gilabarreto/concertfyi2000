@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import { getBestImage, getLastConcertsByArtist, parseSetlistDate } from "../helpers/selectors";
+import { getBestImage, getPastConcertsByArtist, parseSetlistDate } from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
@@ -32,7 +32,7 @@ export default function SearchPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
           {uniqueSetlist.map((item) => {
             const artistId = item.artist.mbid;
-            const concertId = getLastConcertsByArtist(setlist, artistId)[0]?.id ?? item.id;
+            const concertId = getPastConcertsByArtist(setlist, artistId)[0]?.id ?? item.id;
             const artist = item.artist.name;
             const ticketmasterMap = attractions.find((a) => a.name === artist) || {};
             const rawImages = ticketmasterMap.images || [];

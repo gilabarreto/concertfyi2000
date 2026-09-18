@@ -52,12 +52,12 @@ The whole app is a join between two APIs that share no ids:
   `dates.start.localDate` (`YYYY-MM-DD`).
 
 They are matched **by artist name string** (`attractions.find(a => a.name === concert.artist.name)`
-in `ArtistPage.jsx`, the same filter in `NextConcerts.jsx`). There is no id mapping between them —
+in `ArtistPage.jsx`, the same filter in `UpcomingConcerts.jsx`). There is no id mapping between them —
 this is the fragile seam of the app, and it is why `useArtistData` fetches both in parallel and
 swallows either one's failure rather than failing the page.
 
 Because the two date formats differ, both list builders parse to a `dateObj` before sorting
-(`selectors.js:getLastConcertsByArtist` for past, `getNextConcertsByArtist` for upcoming).
+(`selectors.js:getPastConcertsByArtist` for past, `getUpcomingConcertsByArtist` for upcoming).
 
 **Always build a Date from its parts, never from a date string.** `new Date("2026-09-16")` is
 midnight *UTC* per spec, which is the previous evening in any negative offset — that shipped as a
@@ -83,8 +83,8 @@ it fetches the concert by URL id, then backfills the artist's full setlist + Tic
 ### Artist page layout
 
 `ArtistPage.jsx` composes the cards; everything under `components/ArtistPage/` is one card.
-`ConcertList.jsx` is the shared list shell — `LastConcerts` and `NextConcerts` both render through
-it with `locationOf` / `linkOf` / `expand` callbacks rather than their own markup. `NextConcerts`
+`ConcertList.jsx` is the shared list shell — `PastConcerts` and `UpcomingConcerts` both render through
+it with `locationOf` / `linkOf` / `expand` callbacks rather than their own markup. `UpcomingConcerts`
 supplies an expanded row of three panels: `TicketOptions`, `HotelOptions`, `ConcertReminder`.
 The first two render through `VendorTiles.jsx`, so tile sizing/alignment changes belong there, once.
 

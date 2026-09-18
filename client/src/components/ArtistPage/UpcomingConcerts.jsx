@@ -1,15 +1,15 @@
-import { getNextConcertsByArtist } from "../../helpers/selectors";
+import { getUpcomingConcertsByArtist } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
 
-export default function NextConcerts(props) {
-  const events = getNextConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
+export default function UpcomingConcerts(props) {
+  const events = getUpcomingConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
 
   return (
     <ConcertList
-      title="Next Concerts"
+      title="Upcoming Concerts"
       empty="No upcoming concerts. Check back later."
       items={events}
       locationOf={(concert) => {
