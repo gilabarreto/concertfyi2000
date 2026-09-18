@@ -14,6 +14,7 @@ import {
   getCarouselSlides,
   parseSetlistDate,
   formatArtistBackground,
+  getTicketmasterGenres,
 } from "./selectors.js";
 
 // Setlist.fm: DD-MM-YYYY
@@ -265,4 +266,47 @@ test("formatArtistBackground: sem dados não quebra", () => {
     genres: [],
     currentMembers: [],
   });
+});
+
+const classification = (genre, subGenre, primary = true) => ({
+  primary,
+  genre: { name: genre },
+  subGenre: { name: subGenre },
+});
+
+test("getTicketmasterGenres: gênero e subgênero da classificação primária", () => {
+  const ticketmaster = {
+    attractions: [{ classifications: [classification("Metal", "Heavy Metal")] }],
+  };
+
+  assert.deepStrictEqual(getTicketmasterGenres(ticketmaster), ["Metal", "Heavy Metal"]);
+});
+
+test("getTicketmasterGenres: 'Undefined' é 'sem essa informação', não um gênero", () => {
+  const ticketmaster = {
+    attractions: [{ classifications: [classification("Rock", "Undefined")] }],
+  };
+
+  assert.deepStrictEqual(getTicketmasterGenres(ticketmaster), ["Rock"]);
+});
+
+test("getTicketmasterGenres: ignora classificação que não é a primária", () => {
+  const ticketmaster = {
+    attractions: [
+      {
+        classifications: [
+          classification("Pop", "Undefined", false),
+          classification("Rock", "Indie Rock"),
+        ],
+      },
+    ],
+  };
+
+  assert.deepStrictEqual(getTicketmasterGenres(ticketmaster), ["Rock", "Indie Rock"]);
+});
+
+test("getTicketmasterGenres: sem classificação não quebra", () => {
+  assert.deepStrictEqual(getTicketmasterGenres({}), []);
+  assert.deepStrictEqual(getTicketmasterGenres(undefined), []);
+  assert.deepStrictEqual(getTicketmasterGenres({ attractions: [{}] }), []);
 });

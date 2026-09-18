@@ -1,7 +1,7 @@
 import Icon from "../Icon";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
-import { getBestImage } from "../../helpers/selectors";
+import { getBestImage, getTicketmasterGenres } from "../../helpers/selectors";
 import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";
 
@@ -27,7 +27,12 @@ export default function ArtistInfo(props) {
   // :artistId já é o mbid (é assim que o Setlist.fm casa com o mesmo artista), então
   // nenhuma busca por nome é necessária aqui — só o lookup direto no MusicBrainz.
   const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artistId);
-  const { origin, genres, currentMembers } = background;
+  const { origin, genres = [], currentMembers } = background;
+
+  // A Ticketmaster já está em mãos (é prop, não fetch) e cobre o mesmo campo, mais pobre:
+  // um gênero e um subgênero contra o top 4 por tag do MusicBrainz. Serve de placeholder até
+  // o MusicBrainz responder; se ele não tiver gênero pra esse artista, o tampão fica valendo.
+  const displayGenres = genres.length > 0 ? genres : getTicketmasterGenres(ticketmaster);
 
   const artist = concert.artist.name;
 
@@ -89,8 +94,10 @@ export default function ArtistInfo(props) {
             <li className="border-b border-gray-300/50 py-2 text-gray-400">Loading artist info…</li>
           )}
           {origin && <li className="border-b border-gray-300/50 py-2">Origin:&ensp;{origin}</li>}
-          {genres?.length > 0 && (
-            <li className="border-b border-gray-300/50 py-2">Genres:&ensp;{genres.join(", ")}</li>
+          {displayGenres.length > 0 && (
+            <li className="border-b border-gray-300/50 py-2">
+              Genres:&ensp;{displayGenres.join(", ")}
+            </li>
           )}
           {currentMembers?.length > 0 && (
             <li className="border-b border-gray-300/50 py-2">
@@ -106,7 +113,7 @@ export default function ArtistInfo(props) {
           type="button"
           disabled
           title="Coming soon"
-          className="ml-6 mt-2 text-sm font-semibold text-gray-400 cursor-not-allowed"
+          className="block mx-auto mt-2 text-sm font-semibold text-gray-400 cursor-not-allowed"
         >
           Learn More
         </button>
