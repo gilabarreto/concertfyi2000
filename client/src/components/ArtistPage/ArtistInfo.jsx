@@ -24,8 +24,6 @@ export default function ArtistInfo(props) {
   const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
   const links = ticketmaster.attractions?.[0]?.externalLinks || {};
   const hasSocials = SOCIALS.some(({ key }) => links[key]);
-  // A mesma lista de ícones aparece em dois lugares (foto no desktop, fim da ol no mobile) —
-  // um só e cada lugar decide se mostra via `hidden`/`sm:hidden`, não dois `.map` iguais.
   const socialIcons = SOCIALS.map(({ key, icon, label }) =>
     links[key] ? (
       <a
@@ -65,10 +63,15 @@ export default function ArtistInfo(props) {
   const artist = concert.artist.name;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between gap-6">
+      {/* `gap-6`, not `space-y-6`/`space-x-6`: those add margin to the DOM-second child only,
+          and `sm:order-*` below changes visual position without moving the DOM — the margin
+          stayed glued to the info column even after it became the visually-first one, so it
+          opened a gap on the wrong side. `gap` tracks visual order, so it always lands
+          between the two, whichever is on the right. */}
       {/* `items-center` no pai (a linha inteira) centraliza esta coluna na vertical contra a
           de texto, que costuma ser mais alta. Dentro dela, `items-center` de novo: a foto e
-          os socials embaixo ficam no mesmo eixo central, não colados na borda esquerda. */}
+          o nome/coração embaixo ficam no mesmo eixo central, não colados na borda esquerda. */}
       {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: os dois somam 2, igual
           ao antigo flex-1/flex-1 (50/50) — então 1.1/2 = 55% é exatamente +10% sobre aquela
           metade. Era `flex-[2]`/`flex-1` (2:1, ~66%), reduzido a pedido. O `max-w-[520px]` da
@@ -91,18 +94,7 @@ export default function ArtistInfo(props) {
           )}
         </div>
 
-        {/* Só no desktop: no mobile o socials sai daqui e vai pro fim da lista de info,
-            depois do Members — próximo bloco de edição. */}
-        {hasSocials && (
-          <p className="hidden sm:block mt-4 text-pretty">
-            Socials:&ensp;
-            <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
-          </p>
-        )}
-      </div>
-
-      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
-        <div className="flex justify-between items-center mb-4">
+        <div className="w-full sm:max-w-[520px] flex justify-between items-center mt-4">
           <h2 className="text-3xl font-bold text-balance">{artist}</h2>
           {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS
               THERE"/"Learn More": visível, mas `disabled` de verdade em vez de um ícone solto
@@ -120,6 +112,10 @@ export default function ArtistInfo(props) {
             <Icon icon={faHeart} size="2x" />
           </button>
         </div>
+      </div>
+
+      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
+        <h2 className="text-3xl font-bold text-balance mb-4">Artist Info</h2>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
@@ -156,11 +152,10 @@ export default function ArtistInfo(props) {
               Members:&ensp;{currentMembers.join(", ")}
             </li>
           )}
-          {/* Só no mobile (a versão desktop mora do lado da foto, acima): a mesma borda que
-              separa cada linha desta lista serve de divisor entre o socials e o Learn More
-              logo abaixo, sem precisar de outro elemento só pra isso. */}
+          {/* Mesma borda que separa cada linha desta lista serve de divisor entre o socials
+              e o Learn More logo abaixo, sem precisar de outro elemento só pra isso. */}
           {hasSocials && (
-            <li className="sm:hidden border-b border-gray-300/50 py-2">
+            <li className="border-b border-gray-300/50 py-2">
               Socials:&ensp;
               <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
             </li>

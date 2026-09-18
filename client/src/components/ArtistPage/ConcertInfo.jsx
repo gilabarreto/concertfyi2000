@@ -25,7 +25,12 @@ export default function ConcertInfo(props) {
   const country = concert.venue.city?.country.code;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between gap-6">
+      {/* `gap-6`, not `space-y-6`/`space-x-6`: those add margin to the DOM-second child only,
+          and `sm:order-*` below changes visual position without moving the DOM — the margin
+          stayed glued to the info column even after it became the visually-first one, so it
+          opened a gap on the wrong side. `gap` tracks visual order, so it always lands
+          between the two, whichever is on the right. */}
       {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: ver o comentário gêmeo em
           ArtistInfo.jsx — +10% sobre o antigo 50/50, reduzido do 2:1 anterior a pedido.
           `sm:order-2`: no desktop o mapa passa pra direita da info, sem mover o DOM — no
