@@ -52,7 +52,7 @@ export default function ArtistInfo(props) {
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
             16:9 é o formato que o getBestImage prefere e o que os cards da busca usam;
             quem não tem foto na Ticketmaster fica com a caixa vazia em vez do pulo. */}
-        <div className="w-full sm:max-w-[400px] aspect-video rounded-md bg-gray-100">
+        <div className="w-full sm:max-w-[460px] aspect-video rounded-md bg-gray-100">
           {bestImageUrl && (
             <img
               src={bestImageUrl}

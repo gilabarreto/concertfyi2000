@@ -35,7 +35,7 @@ export default function ConcertInfo(props) {
   return (
     <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
       <div className="flex-1 flex justify-center sm:justify-start w-full">
-        <div className="w-full sm:max-w-[400px] aspect-video rounded-md bg-gray-100 overflow-hidden">
+        <div className="w-full sm:max-w-[460px] aspect-video rounded-md bg-gray-100 overflow-hidden">
           <Map concert={concert} />
         </div>
       </div>
