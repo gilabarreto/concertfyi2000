@@ -37,11 +37,10 @@ export default function ArtistInfo(props) {
   const artist = concert.artist.name;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row sm:items-start justify-between space-y-6 sm:space-y-0 sm:space-x-6">
-      {/* `sm:items-start` no pai (a linha inteira) alinha as duas colunas pelo topo — a foto
-          some no meio de um card mais alto quando o quadro fica centralizado. Dentro desta
-          coluna, porém, `items-center` continua: a foto e os socials embaixo dela ficam
-          centralizados entre si, não colados na borda esquerda. */}
+    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between space-y-6 sm:space-y-0 sm:space-x-6">
+      {/* `items-center` no pai (a linha inteira) centraliza esta coluna na vertical contra a
+          de texto, que costuma ser mais alta. Dentro dela, `items-center` de novo: a foto e
+          os socials embaixo ficam no mesmo eixo central, não colados na borda esquerda. */}
       <div className="flex-1 flex flex-col items-center w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
