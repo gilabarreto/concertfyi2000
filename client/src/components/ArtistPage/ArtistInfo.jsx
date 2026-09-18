@@ -63,13 +63,22 @@ export default function ArtistInfo(props) {
   const artist = concert.artist.name;
 
   return (
-    <div className="flex-1 flex flex-col items-center gap-6">
-      {/* Sempre empilhado — foto/nome em cima, info embaixo — desde que o card passou a
-          dividir a fileira com outros dois (grid de 3), a coluna de texto ao lado nunca
-          teve espaço de sobra: testado de 1024px a 1920px, o cabeçalho "Artist Info" ainda
-          quebrava linha no maior deles. Era `sm:flex-row` com `sm:order-2`/`flex-[1.1]` pra
-          pôr a foto ao lado quando o card tinha metade da página; não tem mais essa largura. */}
-      <div className="flex flex-col items-center w-full">
+    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between gap-6">
+      {/* `gap-6`, not `space-y-6`/`space-x-6`: those add margin to the DOM-second child only,
+          and `sm:order-*` below changes visual position without moving the DOM — the margin
+          stayed glued to the info column even after it became the visually-first one, so it
+          opened a gap on the wrong side. `gap` tracks visual order, so it always lands
+          between the two, whichever is on the right. */}
+      {/* `items-center` no pai (a linha inteira) centraliza esta coluna na vertical contra a
+          de texto, que costuma ser mais alta. Dentro dela, `items-center` de novo: a foto e
+          o nome/coração embaixo ficam no mesmo eixo central, não colados na borda esquerda. */}
+      {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: os dois somam 2, igual
+          ao antigo flex-1/flex-1 (50/50) — então 1.1/2 = 55% é exatamente +10% sobre aquela
+          metade. Era `flex-[2]`/`flex-1` (2:1, ~66%), reduzido a pedido. O `max-w-[520px]` da
+          caixa abaixo nunca é alcançado nessa proporção — ver o commit que explica por quê.
+          `sm:order-2`: no desktop a foto passa pra direita da info, sem mover o DOM — no
+          mobile (flex-col, sem classe de order) ela continua acima, como antes. */}
+      <div className="flex-1 sm:flex-[1.1] sm:order-2 flex flex-col items-center w-full">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
@@ -105,7 +114,7 @@ export default function ArtistInfo(props) {
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
         <h2 className="text-3xl font-bold text-balance mb-4">Artist Info</h2>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />

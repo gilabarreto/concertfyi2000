@@ -57,31 +57,33 @@ export default function ArtistPage() {
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
       <div className="w-full mx-auto p-4 space-y-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow space-y-2">
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
             <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow space-y-2">
+          <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
             <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
-          </div>
-
-          <div className="bg-white rounded-xl p-6 shadow space-y-2">
-            <Setlist concert={concert} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl p-6 shadow space-y-2">
-            <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+            <Setlist concert={concert} />
           </div>
 
           <div className="bg-black text-white rounded-3xl p-2 shadow flex items-center justify-center">
             <Player ticketmaster={ticketmaster} />
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow space-y-2">
-            <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
+          <div>
+            <div className="bg-white rounded-xl p-6 shadow space-y-2">
+              <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+            </div>
+
+            <div className="bg-white rounded-xl p-6 shadow mt-6 space-y-2">
+              <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
+            </div>
           </div>
         </div>
       </div>
