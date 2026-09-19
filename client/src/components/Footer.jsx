@@ -1,32 +1,117 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useState, useContext, useRef, useEffect } from "react";
+import {
+  faHouse,
+  faCircleInfo,
+  faEnvelope,
+  faMagnifyingGlass,
+} from "@fortawesome/free-solid-svg-icons";
 import Icon from "./Icon";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-
-import { faInstagram, faFacebookF } from "@fortawesome/free-brands-svg-icons";
+import SearchBar from "./SearchBar";
+import LocationSelector from "./LocationSelector";
+import { useGeolocation } from "../hooks/useGeolocation";
+import { AppContext } from "../context/AppContext";
 
 export default function Footer() {
-  const navigate = useNavigate();
-  return (
-    <div className="fixed bottom-0 left-0 w-full h-16 bg-red-600 shadow z-20">
-      <footer className="mx-[1%] flex items-center justify-between px-6 py-4 text-white font-sans">
-        <span className="text-sm tracking-tight">© 2025 concertfyi. all rights reserved.</span>
+  const { setSearchValue } = useContext(AppContext);
+  const { city, country, isLoading } = useGeolocation();
+  const [openPanel, setOpenPanel] = useState(null);
+  const footerRef = useRef(null);
+  const searchButtonRef = useRef(null);
+  const searchPanelRef = useRef(null);
 
-        <div className="flex text-xs sm:text-sm items-center gap-3">
-          <a href="#" aria-label="Instagram">
-            <Icon icon={faInstagram} size="2x" />
-          </a>
-          <a href="#" aria-label="Facebook">
-            <Icon icon={faFacebookF} size="2x" />
-          </a>
-          <button
-            onClick={() => navigate("/contact")}
-            aria-label="Contact"
-            className="bg-none border-none cursor-pointer text-white hover:opacity-80 transition-opacity"
-          >
-            <Icon icon={faEnvelope} size="2x" />
-          </button>
+  useEffect(() => {
+    const closeOutside = (event) => {
+      if (!footerRef.current?.contains(event.target)) setOpenPanel(null);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    return () => document.removeEventListener("pointerdown", closeOutside);
+  }, []);
+
+  useEffect(() => {
+    if (openPanel === "search") searchPanelRef.current?.querySelector("input")?.focus();
+  }, [openPanel]);
+
+  const toggle = (panel) => setOpenPanel((current) => (current === panel ? null : panel));
+  const closeAndNavigate = () => {
+    setSearchValue("");
+    setOpenPanel(null);
+  };
+  const navLinks = [
+    { path: "/about", label: "About", icon: faCircleInfo },
+    { path: "/contact", label: "Contact", icon: faEnvelope },
+  ];
+  const panelClass =
+    "absolute bottom-full left-0 w-full bg-red-600 text-white shadow-md border-b border-white/20 px-6 py-4";
+  const buttonClass =
+    "flex shrink-0 items-center justify-center gap-2 min-h-11 px-1 text-xl font-normal hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white";
+
+  return (
+    <footer
+      ref={footerRef}
+      className="fixed bottom-0 left-0 w-full bg-red-600 text-white shadow z-20"
+      onKeyDown={(event) => {
+        if (event.key !== "Escape" || openPanel !== "search") return;
+        searchButtonRef.current?.focus();
+        setOpenPanel(null);
+      }}
+    >
+      <nav
+        aria-label="Footer navigation"
+        className="flex w-full max-w-[1200px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal"
+      >
+        <Link to="/" aria-label="Home" onClick={closeAndNavigate} className={buttonClass}>
+          <Icon icon={faHouse} />
+          <span className="hidden sm:inline">Home</span>
+        </Link>
+        <button
+          ref={searchButtonRef}
+          type="button"
+          aria-label="Search artists"
+          aria-expanded={openPanel === "search"}
+          aria-controls="footer-search"
+          onClick={() => toggle("search")}
+          className={buttonClass}
+        >
+          <Icon icon={faMagnifyingGlass} />
+          <span className="hidden sm:inline">Search</span>
+        </button>
+        <div className="min-w-0 [&>div>button]:max-w-full [&>div>button>span]:truncate">
+          <LocationSelector
+            city={city}
+            country={country}
+            isLoading={isLoading}
+            placement="top"
+            isOpen={openPanel === "location"}
+            onOpenChange={(open) =>
+              setOpenPanel((current) =>
+                open ? "location" : current === "location" ? null : current,
+              )
+            }
+          />
         </div>
-      </footer>
-    </div>
+        {navLinks.map((link) => (
+          <Link
+            key={link.path}
+            to={link.path}
+            aria-label={link.label}
+            onClick={closeAndNavigate}
+            className="flex shrink-0 items-center gap-2 min-h-11 text-xl font-normal hover:underline hover:underline-offset-8 hover:opacity-90 transition"
+          >
+            <Icon icon={link.icon} />
+            <span className="hidden sm:inline">{link.label}</span>
+          </Link>
+        ))}
+      </nav>
+      {openPanel === "search" && (
+        <div
+          id="footer-search"
+          ref={searchPanelRef}
+          className={`${panelClass} [&_input]:bg-white [&_input]:text-red-600 [&_input]:placeholder-red-600 [&_input]:w-full [&_form]:max-w-xl`}
+        >
+          <SearchBar />
+        </div>
+      )}
+    </footer>
   );
 }

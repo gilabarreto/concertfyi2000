@@ -74,6 +74,7 @@ export function getCarouselSlides(localEventsData) {
     artistName: ev._embedded.attractions[0].name,
     title: ev.name,
     date: ev.dates.start.localDate,
+    venue: ev._embedded?.venues?.[0]?.name || "",
     images: ev.images || [],
   }));
 }

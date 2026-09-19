@@ -1,7 +1,12 @@
 import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
-import { getBestImage, getCarouselSlides, getPastConcertsByArtist } from "../helpers/selectors";
+import {
+  dateLabel,
+  getBestImage,
+  getCarouselSlides,
+  getPastConcertsByArtist,
+} from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
@@ -148,55 +153,60 @@ export default function Swiper() {
     // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
     const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
+    const [year, month, day] = (slide.date || "").split("-").map(Number);
+    const concertDate =
+      year && month && day ? dateLabel(new Date(year, month - 1, day)) : "Date to be announced";
 
     return (
       <div
         key={slide.eventId}
         onClick={() => setSelectedArtist(slide)}
-        className="group absolute -translate-x-1/2 aspect-video rounded-xl overflow-hidden
+        className="group absolute -translate-x-1/2 aspect-video rounded-xl
                 transition-[transform,opacity] duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0"
         style={style}
       >
-        <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20">
-          {offset === 0 && (
-            <>
+        <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20"></div>
+        {offset === 0 && (
+          <>
+            <div className="absolute top-full left-0 w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-3 text-black font-sans">
               <button
-                onClick={(e) => go(e, -1)}
+                type="button"
+                onClick={(event) => go(event, -1)}
                 data-nav="prev"
                 aria-label="Previous"
-                className="absolute top-1/2 -translate-y-1/2 left-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                className="text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
               >
                 {"{"}
               </button>
+              <div className="min-w-0 flex flex-col items-center gap-1">
+                <h2 className="min-w-0 text-3xl font-bold text-balance text-center">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedArtist(slide);
+                    }}
+                    className="rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+                  >
+                    {slide.artistName}
+                  </button>
+                </h2>
+                <p className="text-base font-normal text-center">
+                  {concertDate} @ {slide.venue || "Venue to be announced"}
+                </p>
+              </div>
               <button
-                onClick={(e) => go(e, 1)}
+                type="button"
+                onClick={(event) => go(event, 1)}
                 data-nav="next"
                 aria-label="Next"
-                className="absolute top-1/2 -translate-y-1/2 right-2 text-red-600 [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] group-hover:text-zinc-800 text-9xl p-2 z-30 cursor-pointer pointer-events-auto"
+                className="text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
               >
                 {"}"}
               </button>
-            </>
-          )}
-          <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
-            {/* h2, não h3: o único heading acima na home é o h1 da tagline, e pular
-                nível é o achado "heading-order" do Lighthouse. O tamanho vem da classe. */}
-            <h2 className="text-4xl font-bold text-white text-center px-4 [text-shadow:_0_2px_8px_rgba(0,0,0,0.8)] sm:text-5xl">
-              {/* keyboard/screen-reader entry point; mouse clicks pass through (pointer-events-none) to the slide */}
-              <button
-                type="button"
-                tabIndex={offset === 0 ? 0 : -1}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setSelectedArtist(slide);
-                }}
-                className="rounded-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-white"
-              >
-                {slide.artistName}
-              </button>
-            </h2>
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </div>
     );
   };
@@ -239,11 +249,12 @@ export default function Swiper() {
           <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
         </div>
       ) : (
-        <div
-          ref={carouselRef}
-          className="relative w-full [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] h-[250px] sm:h-[380px] flex items-center justify-center overflow-hidden"
-        >
-          {slides.map(renderSlide)}
+        <div className="w-full">
+          <div ref={carouselRef} className="relative w-full">
+            <div className="relative w-full h-[300px] sm:h-[390px] flex items-center justify-center overflow-visible">
+              {slides.map(renderSlide)}
+            </div>
+          </div>
         </div>
       )}
     </>

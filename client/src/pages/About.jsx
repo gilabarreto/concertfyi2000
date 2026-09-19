@@ -1,4 +1,3 @@
-import Header from "../components/Header";
 import { Link } from "react-router-dom";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faInstagram, faFacebookF } from "@fortawesome/free-brands-svg-icons";
@@ -14,8 +13,6 @@ export default function About() {
         url="/about"
       />
       <div className="w-full bg-red-600 flex flex-col items-center justify-between p-6">
-        <Header />
-
         <div className="text-[150px] sm:text-[200px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium tracking-tight items-center text-center overflow-hidden text-balance">
           {"{"}
           <span className="text-[150px] sm:text-[200px] [text-shadow:_0_4px_12px_rgba(0,0,0,0.5)] tracking-tight font-semibold text-zinc-100">

@@ -1,112 +1,97 @@
-import { Link } from "react-router-dom";
-import { useState, useContext } from "react";
-import SearchBar from "./SearchBar";
-import LocationSelector from "./LocationSelector";
-import { useGeolocation } from "../hooks/useGeolocation";
-import { AppContext } from "../context/AppContext";
+import { useState, useRef, useEffect } from "react";
+import Icon from "./Icon";
+import { faBell, faMoon, faUser } from "@fortawesome/free-solid-svg-icons";
+
+const phrases = [
+  "Find Your Inspiration",
+  "Follow Your Instinct",
+  "Fuel Your Imagination",
+  "Forge Your Identity",
+  "Find Your Identity",
+  "Free Your Imagination",
+  "Feed Your Imagination",
+  "Follow Your Intuition",
+  "Follow Your Instincts",
+  "Fuel Your Intensity",
+  "Forge Your Independence",
+  "Free Your Identity",
+  "Follow Your Impulse",
+  "Fuel Your Ideas",
+  "Follow Your Inspiration",
+  "Feed Your Inspiration",
+  "Feed Your Interest",
+  "Fuel Your Inspiration",
+  "Find Your Interest",
+  "Find Your Itinerary",
+];
 
 function Navbar() {
-  const { setSearchValue } = useContext(AppContext);
-  const { city = "Locating...", country = "Unknown", isLoading: isGeoLoading } = useGeolocation();
+  const [phrase, setPhrase] = useState("");
+  const timerRef = useRef(null);
+  const [logoBusy, setLogoBusy] = useState(false);
 
-  const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => () => clearTimeout(timerRef.current), []);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
-
-  const navLinks = [
-    { path: "/", label: "Home" },
-    { path: "/about", label: "About" },
-    { path: "/contact", label: "Contact" },
-  ];
+  const expandLogo = () => {
+    if (logoBusy) return;
+    setLogoBusy(true);
+    setPhrase(phrases[Math.floor(Math.random() * phrases.length)].toLowerCase());
+    timerRef.current = setTimeout(() => {
+      setPhrase("");
+      timerRef.current = setTimeout(() => setLogoBusy(false), 300);
+    }, 5000);
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="flex w-full justify-items-center justify-center items-center px-6 py-4 h-16 font-sans flex-wrap gap-2">
-        <div>
-          <Link
-            to="/"
-            className="text-xl sm:text-2xl font-medium tracking-tight items-center"
-            onClick={() => setSearchValue("")}
+      <nav className="grid grid-cols-[1fr_auto_1fr] w-full max-w-[1200px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2">
+        <button
+          type="button"
+          disabled
+          aria-label="Notifications (coming soon)"
+          title="Notifications (coming soon)"
+          className="flex items-center justify-center justify-self-start min-h-11 px-1 text-xl text-red-600 cursor-default"
+        >
+          <Icon icon={faBell} />
+        </button>
+        <button
+          type="button"
+          onClick={expandLogo}
+          disabled={logoBusy}
+          aria-label="concertfyi — reveal a phrase"
+          className={`justify-self-center inline-flex items-center font-medium tracking-tight transition-[font-size] duration-300 motion-reduce:transition-none ${phrase ? "text-[10px] sm:text-2xl" : "text-xl sm:text-2xl"}`}
+        >
+          <span>concert{"{"}</span>
+          <span
+            className="inline-block overflow-hidden whitespace-nowrap text-center font-semibold text-red-600 transition-[width] duration-300 ease-in-out motion-reduce:transition-none"
+            style={{ width: phrase ? `${phrase.length * 0.57}em` : "1.1em" }}
           >
-            <span className="sm:inline">concert</span>
-            <span className="text-xl sm:text-2xl font-medium tracking-tight items-center">
-              {"{"}
-            </span>
-            <span className="text-xl sm:text-2xl tracking-tight font-semibold text-red-600">
-              fyi
-            </span>
-            <span className="text-xl sm:text-2xl font-medium tracking-tight items-center">
-              {"}"}
-            </span>
-          </Link>
-        </div>
+            {phrase || "fyi"}
+          </span>
+          <span>{"}"}</span>
+        </button>
 
-        <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
-
-        <div className="hidden sm:flex">
-          <SearchBar />
-        </div>
-
-        <div className="hidden sm:flex justify-center items-center gap-2">
-          <span className="text-xl font-medium tracking-tight items-center">{"{"}</span>
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              className="text-xl tracking-tight font-medium text-red-600 hover:text-red-700 hover:underline hover:underline-offset-8  hover:opacity-90 transition hidden sm:inline"
-              onClick={() => setSearchValue("")}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <span className="text-xl font-medium tracking-tight items-center">{"}"}</span>
-        </div>
-
-        <div className="sm:hidden flex items-center z-30">
+        <div className="flex items-center justify-self-end gap-2 sm:gap-4 text-red-600">
           <button
-            onClick={toggleMenu}
-            className="text-red-600 text-xl focus:outline-none"
-            aria-expanded={isOpen}
-            aria-label="Menu"
+            type="button"
+            disabled
+            aria-label="Dark mode (coming soon)"
+            title="Dark mode (coming soon)"
+            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl cursor-default"
           >
-            <span className="flex items-center">
-              <span className="text-black mr-2">{"{"}</span>
-              <span className="inline-block w-4 text-center">{isOpen ? "×" : "☰"}</span>
-              <span className="text-black ml-2">{"}"}</span>
-            </span>
+            <Icon icon={faMoon} />
+          </button>
+          <button
+            type="button"
+            disabled
+            aria-label="User profile (coming soon)"
+            title="User profile (coming soon)"
+            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl cursor-default"
+          >
+            <Icon icon={faUser} />
           </button>
         </div>
       </nav>
-
-      {/* SearchBar for mobile - full width on new line */}
-      <div className="sm:hidden w-full px-6 pb-3 border-b border-gray-200">
-        <SearchBar />
-      </div>
-
-      {isOpen && (
-        <div
-          className="sm:hidden bg-white shadow-md px-6 py-4 flex flex-col space-y-2 text-lg font-bold text-red-600 animate-fade-in-down"
-          role="menu"
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.path}
-              to={link.path}
-              onClick={closeMenu}
-              role="menuitem"
-              className="
-          hover:text-red-700
-          hover:underline hover:underline-offset-8
-          hover:opacity-90
-          transition
-        "
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-      )}
 
       <hr className="border-t border-gray-200" />
     </header>

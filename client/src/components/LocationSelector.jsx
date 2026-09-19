@@ -1,6 +1,11 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import Icon from "./Icon";
-import { faXmark, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import {
+  faXmark,
+  faChevronDown,
+  faChevronUp,
+  faLocationDot,
+} from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from "../context/AppContext";
 import { useCitySearch } from "../api/queries";
 import useDebounce from "../hooks/useDebounce";
@@ -31,9 +36,21 @@ const countryCodeMap = {
   "South Korea": "KR",
 };
 
-export default function LocationSelector({ city, country, isLoading }) {
+export default function LocationSelector({
+  city,
+  country,
+  isLoading,
+  placement = "bottom",
+  isOpen,
+  onOpenChange,
+}) {
   const { selectedLocation, updateLocation } = useContext(AppContext);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [localOpen, setLocalOpen] = useState(false);
+  const showDropdown = isOpen ?? localOpen;
+  const setShowDropdown = (open) => {
+    setLocalOpen(open);
+    onOpenChange?.(open);
+  };
   const [searchInput, setSearchInput] = useState("");
   const dropdownRef = useRef(null);
   const toggleRef = useRef(null);
@@ -61,7 +78,7 @@ export default function LocationSelector({ city, country, isLoading }) {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
+        setLocalOpen(false);
       }
     };
 
@@ -95,7 +112,7 @@ export default function LocationSelector({ city, country, isLoading }) {
   };
 
   return (
-    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown}>
+    <div className="static" ref={dropdownRef} onKeyDown={handleKeyDown}>
       <button
         ref={toggleRef}
         aria-expanded={showDropdown}
@@ -107,14 +124,23 @@ export default function LocationSelector({ city, country, isLoading }) {
         className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:opacity-90 transition bg-none border-none active:opacity-70"
         title="Change location"
       >
-        <span className="text-lg font-medium tracking-tight">
+        <Icon icon={faLocationDot} className="shrink-0 text-xl" />
+        <span
+          className={`tracking-tight ${placement === "top" ? "text-xl font-normal" : "text-lg font-medium"}`}
+        >
           {isLoading && !selectedLocation ? "Locating..." : displayName || "Location unavailable"}
         </span>
         <Icon className="text-sm" icon={showDropdown ? faChevronUp : faChevronDown} />
       </button>
 
       {showDropdown && (
-        <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg z-50 min-w-[280px]">
+        <div
+          className={
+            placement === "top"
+              ? "absolute bottom-full left-0 w-full bg-red-600 text-gray-900 shadow-md border-b border-white/20 px-6 py-4 [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>ul]:bg-white [&>button]:bg-white [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
+              : "absolute top-full left-0 w-full bg-white text-gray-900 border-t border-gray-200 shadow-md z-50 px-6 py-4 max-h-[calc(100dvh-8rem)] overflow-y-auto [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
+          }
+        >
           <div className="relative">
             <input
               ref={inputRef}
@@ -122,7 +148,7 @@ export default function LocationSelector({ city, country, isLoading }) {
               placeholder="Search location..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
+              className="bg-white w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
               autoFocus
             />
             {searchInput && (
@@ -155,7 +181,9 @@ export default function LocationSelector({ city, country, isLoading }) {
           )}
 
           {showResults && (isError || suggestions.length === 0) && (
-            <div className="px-4 py-3 text-center text-gray-500 text-sm">{emptyMessage()}</div>
+            <div className="bg-white px-4 py-3 text-center text-gray-500 text-sm">
+              {emptyMessage()}
+            </div>
           )}
 
           {showResults && !isError && suggestions.length > 0 && (

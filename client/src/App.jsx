@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
-import Navbar from "./components/Navbar";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 

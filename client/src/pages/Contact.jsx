@@ -1,6 +1,5 @@
 import Icon from "../components/Icon";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import Header from "../components/Header";
 import { useState } from "react";
 import { SEOHead } from "../components/SEOHead";
 
@@ -55,8 +54,6 @@ export default function Contact() {
         url="/contact"
       />
       <div className="w-full bg-red-600 flex flex-col items-center justify-between p-6">
-        <Header />
-
         <div>
           <Icon
             icon={faEnvelope}

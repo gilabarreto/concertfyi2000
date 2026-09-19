@@ -1,6 +1,25 @@
 # 💡 Sugestões de Melhorias - ConcertFYI
 **Atualizado em 2026-08-23** | Baseado em estado atual + mudanças recentes
 
+## Rodada visual — 2026-09-18
+
+- [x] **Reorganização do layout principal.** A Home agora separa header, Swiper e o bloco de
+      apresentação com cadastro/login dentro da área entre Navbar e footer, com altura calculada
+      para não invadir as barras fixas.
+- [x] **Navbar e footer redesenhados.** O Navbar mantém notificações à esquerda, a marca
+      centralizada e os ícones de modo escuro e usuário à direita. O footer reúne Home, Search,
+      Location, About e Contact; a localização abre em painel de largura total e os demais itens
+      preservam o comportamento responsivo.
+- [x] **Marca interativa.** Clicar em `concert{fyi}` revela uma frase aleatória por cinco segundos
+      e bloqueia novo clique até a contração terminar.
+- [x] **Swiper enriquecido.** O artista, a data e o venue aparecem abaixo da imagem; as chaves
+      laterais continuam controlando o slide. A resposta do Ticketmaster agora carrega o venue e
+      o teste de selectors cobre o novo campo.
+- [x] **Limpeza de cabeçalho.** O componente Header antigo foi removido das páginas About e
+      Contact; a Home usa apenas o título atual e o conteúdo do Swiper.
+
+---
+
 ## Pendência de documentação — 2026-09-18
 
 - [ ] **Atualizar o `DOSSIE_TECNICO_ATUALIZADO.md`.** O documento ainda retrata agosto e precisa

@@ -209,7 +209,17 @@ test("getCarouselSlides: resposta vazia ou sem _embedded não quebra", () => {
 
 test("getCarouselSlides: o slide leva o que o carrossel desenha", () => {
   const [slide] = getCarouselSlides({
-    _embedded: { events: [event("e1", "Kehlani", { images: [{ width: 640 }] })] },
+    _embedded: {
+      events: [
+        event("e1", "Kehlani", {
+          images: [{ width: 640 }],
+          _embedded: {
+            attractions: [{ id: "att-Kehlani", name: "Kehlani" }],
+            venues: [{ name: "Rogers Place" }],
+          },
+        }),
+      ],
+    },
   });
 
   assert.deepStrictEqual(slide, {
@@ -218,6 +228,7 @@ test("getCarouselSlides: o slide leva o que o carrossel desenha", () => {
     artistName: "Kehlani",
     title: "Kehlani live",
     date: "2026-10-01",
+    venue: "Rogers Place",
     images: [{ width: 640 }],
   });
 });
@@ -226,6 +237,7 @@ test("getCarouselSlides: sem imagem vira lista vazia, não undefined", () => {
   const [slide] = getCarouselSlides({ _embedded: { events: [event("e1", "Fisher")] } });
 
   assert.deepStrictEqual(slide.images, []);
+  assert.equal(slide.venue, "");
 });
 
 const member = (name, ended) => ({ type: "member of band", artist: { name }, ended });
