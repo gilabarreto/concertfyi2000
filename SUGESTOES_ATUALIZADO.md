@@ -15,12 +15,10 @@ ConcertFYI — Pendências e Decisões
 □ Diferencial de mercado — definir proposta de valor única (curadoria? cenas locais? social? setlists/lyrics?) e documentar no /about.
 □ Dark mode — Tailwind suporta; falta toggle + localStorage.
 🟢 Tarefas minhas, aguardando seu "pode fazer"
-□ Normalizar id no log de acesso — /api/setlist/:id gera caminho único por show; trocar pelo padrão da rota antes de logar (poucas linhas em server/).
-□ aria-current="page" nos links do Navbar — existe no Pagination.jsx:53, falta no Navbar (uma linha por link).
+☑ Normalizar id no log de acesso — resolvido em `41a0e3d`.
 ☑ Lint quebrado em SearchBar.jsx:11 (`setPlaceholder` não usado) — resolvido em `5ce7c2a`. Achado e já corrigido revisando o Swiper em 2026-09-20.
 ⚪ Itens abertos no repositório (sem decisão sua pendente)
 ☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
-□ Tooltips nos ícones do Setlist.jsx (Spotify, YouTube, Genius).
 □ Paginação no Setlist.jsx se >50 músicas.
 □ Tempo estimado do show no Setlist.jsx.
 □ Expandir/recolher "encore" no Setlist.jsx.
@@ -37,7 +35,7 @@ ConcertFYI — Pendências e Decisões
 □ osv-scanner semanal — rodar em workflow agendado (não no deploy), abrindo issue.
 □ Workflow em pull_request — hoje o CI é sempre pós-fato (todo commit vai direto para main).
 ⚪ Descartado (registro, decisão reversível)
-TypeScript · Storybook · reorganização de pastas (common/, layout/, services/, constants/) · extrair ArtistCard/EmptyState/Logo/SongItem · cobertura mínima de 80% · LogRocket · Service Worker/offline · Vitest + jsdom + Testing Library (reabrir só com bug que só teste de hook pegaria — candidato: useGeolocation) · Playwright (120 MB de Chromium).
+TypeScript · Storybook · reorganização de pastas (common/, layout/, services/, constants/) · extrair ArtistCard/EmptyState/Logo/SongItem · cobertura mínima de 80% · LogRocket · Service Worker/offline · Vitest + jsdom + Testing Library (reabrir só com bug que só teste de hook pegaria — candidato: useGeolocation) · Playwright (120 MB de Chromium) · aria-current="page" no Navbar (achado 2026-09-20: item ficou obsoleto — o Navbar de hoje não tem link de navegação nenhum, só 4 botões de ícone, 3 deles disabled como placeholder; os links existiram no passado, `31da572`, e saíram depois; reabrir se o Navbar ganhar links de novo).
 
 ✅ Referência rápida — o que já está feito
 SEO: rotas do sitemap respondem 200 (static-routes.mjs); SEOHead.jsx com Helmet.
@@ -63,4 +61,6 @@ Lighthouse produção: acessibilidade 100; SEO 100; CLS 0,002 na página de arti
 Formulário de contato inline com role="status" e botão desabilitado durante envio.
 
 Botão de perfil do Navbar removido (não tinha onClick).
+
+Tooltips nos ícones de Spotify e YouTube em SongDetails.jsx e Setlist.jsx (achado 2026-09-20, revisando o item — já existiam via `title`). Genius ainda não é feature no app; ver item de fallback do Genius, separado.
 
