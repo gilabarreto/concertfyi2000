@@ -1,4 +1,9 @@
-export default function Pagination({ currentPage, totalPages, onPageChange }) {
+export default function Pagination({
+  currentPage,
+  totalPages,
+  onPageChange,
+  label = "Concert pages",
+}) {
   const MAX_VISIBLE = 5;
 
   const getVisiblePages = () => {
@@ -30,7 +35,7 @@ export default function Pagination({ currentPage, totalPages, onPageChange }) {
 
   return (
     <nav
-      aria-label="Concert pages"
+      aria-label={label}
       className="flex items-center justify-center space-x-2 mt-4 text-sm tabular-nums"
     >
       <button

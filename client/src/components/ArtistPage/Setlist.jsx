@@ -4,15 +4,22 @@ import Icon from "../Icon";
 import { faChevronDown, faChevronUp, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
+import Pagination from "../Pagination";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
+
+// Above this, the "show all" toggle would dump a marathon set (Springsteen, festival sets)
+// into one giant list. Below it, a real setlist fits on one screen and the toggle is enough.
+const PAGE_SIZE = 20;
 
 export default function Setlist({ concert }) {
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [showAllSongs, setShowAllSongs] = useState(false);
+  const [page, setPage] = useState(0);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
   const disclaimerRef = useRef(null);
+  const titleRef = useRef(null);
 
   // every set in order, encore included: set[0] alone dropped the songs after the break,
   // so the numbering has to run across all of them to be the order played
@@ -71,12 +78,42 @@ export default function Setlist({ concert }) {
     openSpotifyAuthPopup();
   };
 
-  const displaySongs = showAllSongs ? songs : songs.slice(0, 5);
+  // "Show all" always offers the choice first; pagination only replaces the flat dump once
+  // that choice is made and the set is long enough that dumping it is the wrong move.
+  const paginated = showAllSongs && songs.length > PAGE_SIZE;
+  const pageCount = Math.ceil(songs.length / PAGE_SIZE);
+  // clamps a page left stale from a longer setlist (e.g. switching concerts) instead of
+  // rendering a blank page past the end
+  const currentPage = Math.min(page, Math.max(pageCount - 1, 0));
+  const offset = paginated ? currentPage * PAGE_SIZE : 0;
+  const displaySongs = !showAllSongs
+    ? songs.slice(0, 5)
+    : paginated
+      ? songs.slice(offset, offset + PAGE_SIZE)
+      : songs;
+
+  const toggleShowAll = () => {
+    if (showAllSongs) {
+      setPage(0);
+      setExpandedLyrics(null);
+    }
+    setShowAllSongs(!showAllSongs);
+  };
+
+  const goToPage = (next) => {
+    setExpandedLyrics(null);
+    setPage(next);
+    // the next page is often shorter than the one scrolled into, which leaves the
+    // viewport sitting over Past Concerts with nothing above it to explain why
+    setTimeout(() => titleRef.current?.scrollIntoView({ behavior: "smooth" }), 0);
+  };
 
   return (
     <>
       <div className="flex flex-1 justify-between items-center mb-2">
-        <h2 className="text-3xl font-bold">Setlist</h2>
+        <h2 ref={titleRef} className="text-3xl font-bold">
+          Setlist
+        </h2>
         <div className="flex items-center space-x-2">
           <button
             onClick={() => disclaimerRef.current.showModal()}
@@ -103,7 +140,8 @@ export default function Setlist({ concert }) {
       ) : (
         <>
           <ol className="pl-6">
-            {displaySongs.map((song, songIndex) => {
+            {displaySongs.map((song, i) => {
+              const songIndex = offset + i;
               return (
                 <li key={songIndex} className="flex flex-col">
                   <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
@@ -141,12 +179,21 @@ export default function Setlist({ concert }) {
           {songs.length > 5 && (
             <div className="flex justify-center mt-4">
               <button
-                onClick={() => setShowAllSongs(!showAllSongs)}
+                onClick={toggleShowAll}
                 className="px-4 py-2 text-md font-semibold text-red-600 hover:text-red-800"
               >
                 {showAllSongs ? "Show less" : `Show all ${songs.length} songs`}
               </button>
             </div>
+          )}
+
+          {paginated && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={pageCount}
+              onPageChange={goToPage}
+              label="Setlist pages"
+            />
           )}
 
           <div className="flex justify-center mt-6">
