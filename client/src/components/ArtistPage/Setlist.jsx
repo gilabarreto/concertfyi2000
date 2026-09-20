@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../Icon";
-import { faChevronDown, faChevronUp, faCircleInfo } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronDown,
+  faChevronUp,
+  faCircleInfo,
+  faCopy,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
 import SongDetails from "../SongDetails";
 import Pagination from "../Pagination";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
+import { parseSetlistDate, dateLabel } from "../../helpers/selectors";
 
 // Above this, the "show all" toggle would dump a marathon set (Springsteen, festival sets)
 // into one giant list. Below it, a real setlist fits on one screen and the toggle is enough.
@@ -18,8 +25,12 @@ export default function Setlist({ concert }) {
   const [showAllSongs, setShowAllSongs] = useState(false);
   const [page, setPage] = useState(0);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
+  const [copied, setCopied] = useState(false);
   const disclaimerRef = useRef(null);
   const titleRef = useRef(null);
+  const copyTimerRef = useRef(null);
+
+  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
 
   // setlist.fm marks a set as an encore with `set.encore` (unset on the main sets). mainSongs'
   // length is where the encore starts, kept apart just to draw a divider before it below —
@@ -82,6 +93,25 @@ export default function Setlist({ concert }) {
     openSpotifyAuthPopup();
   };
 
+  const handleCopySetlist = async () => {
+    const lines = [];
+    songs.forEach((song, i) => {
+      if (encoreSongs.length > 0 && i === mainSongs.length) lines.push("", "Encore");
+      lines.push(`${i + 1}. ${song.name}`);
+    });
+    const header = `${artistName} - ${concert.venue?.name || "Concert"} - ${dateLabel(parseSetlistDate(concertDate))}`;
+    const text = [header, "", ...lines].join("\n");
+
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard blocked (no permission, insecure context) — nothing to recover from here
+    }
+  };
+
   // "Show all" always offers the choice first; pagination only replaces the flat dump once
   // that choice is made and the set is long enough that dumping it is the wrong move.
   const paginated = showAllSongs && songs.length > PAGE_SIZE;
@@ -119,6 +149,21 @@ export default function Setlist({ concert }) {
           Setlist
         </h2>
         <div className="flex items-center space-x-2">
+          <button
+            type="button"
+            onClick={handleCopySetlist}
+            className="p-1 hover:text-red-800 active:opacity-70 transition-opacity"
+            title="Copy setlist"
+            aria-label="Copy setlist"
+          >
+            <Icon
+              icon={copied ? faCheck : faCopy}
+              className={copied ? "text-green-600" : "text-gray-500"}
+            />
+          </button>
+          <span role="status" aria-live="polite" className="sr-only">
+            {copied ? "Setlist copied to clipboard" : ""}
+          </span>
           <button
             onClick={() => disclaimerRef.current.showModal()}
             onTouchEnd={(e) => {
