@@ -25,3 +25,9 @@
   );
   mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.35) 35%, transparent 100%);
 }
+
+.original-swiper [data-active="true"],
+.original-swiper [data-carousel-photo] {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}

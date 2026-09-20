@@ -249,7 +249,7 @@ export default function Swiper() {
         key={slide.eventId}
         data-active={index === active}
         className={`group ${index === active ? "relative" : "absolute top-0"} rounded-xl
-                transition-[transform,opacity] duration-300 motion-reduce:transition-none w-full sm:w-[76%] md:w-[58%] lg:w-[40%] z-0`}
+                transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[76%] md:w-[58%] lg:w-[40%] z-0`}
         style={{
           ...style,
           transform: style.transform,
@@ -367,7 +367,7 @@ export default function Swiper() {
                   {"{"}
                 </button>
                 <div className="swiper-artist-info h-[104px] min-w-0 flex flex-col items-center gap-1 overflow-visible sm:h-[88px]">
-                  <h2 className="min-w-0 text-3xl font-bold text-balance text-center">
+                  <h2 className="min-w-0 text-2xl font-bold text-balance text-center">
                     <button
                       type="button"
                       onClick={() => setSelectedArtist(activeSlide)}
