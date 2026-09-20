@@ -170,14 +170,16 @@ export default function Swiper() {
       <div
         key={slide.eventId}
         onClick={() => setSelectedArtist(slide)}
-        className="group absolute -translate-x-1/2 aspect-video rounded-xl
-                transition-[transform,opacity] duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0"
-        style={style}
+        className={`group ${offset === 0 ? "relative" : "absolute top-0"} rounded-xl
+                transition-[transform,opacity] duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0`}
+        style={{ ...style, background: undefined }}
       >
-        <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 hover:bg-opacity-80 pointer-events-auto z-20"></div>
+        <div className="relative aspect-video rounded-xl" style={{ background: style.background }}>
+          <div className="absolute inset-0 rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 hover:bg-opacity-80 pointer-events-auto z-20"></div>
+        </div>
         {offset === 0 && (
           <>
-            <div className="absolute top-full left-0 w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-3 text-black font-sans">
+            <div className="w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-3 text-black font-sans">
               <button
                 type="button"
                 onClick={(event) => go(event, -1)}
@@ -260,7 +262,7 @@ export default function Swiper() {
       ) : (
         <div className="w-full">
           <div ref={carouselRef} className="relative w-full">
-            <div className="relative w-full h-[300px] sm:h-[390px] flex items-center justify-center overflow-visible">
+            <div className="relative w-full flex items-start justify-center overflow-clip">
               {slides.map(renderSlide)}
             </div>
           </div>
