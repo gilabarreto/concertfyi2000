@@ -22,7 +22,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Paginação no Setlist.jsx se >20 músicas — resolvido em `7156262`.
 □ Tempo estimado do show no Setlist.jsx.
 ☑ Sinalizar onde começa o "encore" no Setlist.jsx — resolvido em `c9f4f5e` (pedido original era expandir/recolher; o dono preferiu só sinalizar, sem esconder nada).
-□ Botão "Copiar setlist" (clipboard).
+☑ Botão "Copiar setlist" (clipboard) — resolvido em `8a5a94c`.
 □ Botão "Favoritar" em ConcertInfo.jsx (localStorage).
 □ Botão "Compartilhar" em ConcertInfo.jsx.
 □ Loading skeleton em ConcertInfo.jsx.
