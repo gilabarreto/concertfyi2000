@@ -36,21 +36,21 @@ export default function SearchBar() {
     }
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setPlaceholder("Search");
-      } else {
-        setPlaceholder("Search your favorite artist");
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (window.innerWidth < 768) {
+  //       setPlaceholder("Search");
+  //     } else {
+  //       setPlaceholder("Search your favorite artist");
+  //     }
+  //   };
 
-    handleResize();
+  //   handleResize();
 
-    window.addEventListener("resize", handleResize);
+  //   window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, []);
 
   return (
     <form onSubmit={(e) => e.preventDefault()} className="flex w-full mx-auto">
@@ -59,14 +59,7 @@ export default function SearchBar() {
         value={searchValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="
-        flex h-8 w-full sm:w-26 px-4 rounded-full text-sm
-          bg-red-600 placeholder-white text-white
-          ring-0
-          focus:outline-none
-          focus:ring-2
-          focus:ring-black lg:w-96
-        "
+        className="bg-white w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm text-gray-900"
       />
     </form>
   );

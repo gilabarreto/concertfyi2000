@@ -104,11 +104,7 @@ export default function Footer() {
         ))}
       </nav>
       {openPanel === "search" && (
-        <div
-          id="footer-search"
-          ref={searchPanelRef}
-          className={`${panelClass} [&_input]:bg-white [&_input]:text-red-600 [&_input]:placeholder-red-600 [&_input]:w-full [&_form]:max-w-xl`}
-        >
+        <div id="footer-search" ref={searchPanelRef} className={`${panelClass} [&_form]:max-w-xl`}>
           <SearchBar />
         </div>
       )}
