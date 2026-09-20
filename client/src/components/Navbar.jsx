@@ -59,12 +59,12 @@ function Navbar() {
           onClick={expandLogo}
           disabled={logoBusy}
           aria-label="concertfyi — reveal a phrase"
-          className={`justify-self-center inline-flex items-center font-medium tracking-tight transition-[font-size] duration-300 motion-reduce:transition-none ${phrase ? "text-[10px] sm:text-2xl" : "text-xl sm:text-2xl"}`}
+          className="justify-self-center inline-flex items-center font-medium tracking-tight text-xl sm:text-2xl"
         >
           <span>concert{"{"}</span>
           <span
-            className="inline-block overflow-hidden whitespace-nowrap text-center font-semibold text-red-600 transition-[width] duration-300 ease-in-out motion-reduce:transition-none"
-            style={{ width: phrase ? `${phrase.length * 0.57}em` : "1.1em" }}
+            className="inline-block overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold text-red-600 transition-[width] duration-300 ease-in-out motion-reduce:transition-none"
+            style={{ width: phrase ? `min(${phrase.length * 0.57}em, 40vw)` : "1.3em" }}
           >
             {phrase || "fyi"}
           </span>
