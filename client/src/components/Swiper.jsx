@@ -27,11 +27,20 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
   // O slide do meio é o caso especial: sem deslocamento, sem desfoque, opaco.
   if (offset === 0) return { ...common, transform: "none", filter: "none", opacity: 1 };
 
+  // Nem escala nem translateX têm teto: de puro depth/offset * fator, um slide muitas
+  // posições do centro fica com escala negativa (vira espelho e infla a caixa — medido
+  // scale(-1.85), 721px numa tela de 390px) ou some translateX afora (medido scrollWidth
+  // 3026px num viewport de 1440px no desktop). Invisível (opacity 0), mas ainda conta no
+  // scrollWidth da página. Trava os dois no mesmo depth 3 do anel de carregamento de
+  // imagem: dali pra frente já está fora de vista, ir mais longe não muda nada visível.
+  const scaleDepth = Math.min(depth, 3);
+  const clampedOffset = Math.sign(offset) * scaleDepth;
+
   return {
     ...common,
     transform: isSmallScreen
-      ? `scale(${1 - SCALE_FACTOR_MOBILE * depth}) translateY(${depth * VERTICAL_SHIFT_MOBILE}px)`
-      : `translateX(${offset * SPACING}px) scale(${1 - SCALE_FACTOR_DESKTOP * depth}) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`,
+      ? `scale(${1 - SCALE_FACTOR_MOBILE * scaleDepth}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
+      : `translateX(${clampedOffset * SPACING}px) scale(${1 - SCALE_FACTOR_DESKTOP * scaleDepth}) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`,
     filter: "blur(3px)",
     // Do terceiro vizinho em diante o slide já saiu de vista.
     opacity: depth > 2 ? 0 : 0.6,
@@ -165,7 +174,7 @@ export default function Swiper() {
                 transition-[transform,opacity] duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0"
         style={style}
       >
-        <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 group-hover:bg-opacity-80 pointer-events-auto z-20"></div>
+        <div className="absolute inset-0 aspect-video rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 hover:bg-opacity-80 pointer-events-auto z-20"></div>
         {offset === 0 && (
           <>
             <div className="absolute top-full left-0 w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-3 text-black font-sans">

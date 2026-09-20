@@ -9,16 +9,11 @@ const Home = () => {
         description="Track your favorite artists, explore past performances, and never miss a concert again. Find setlists, venues, and ticket information."
         url="/"
       />
-      <div className="box-border w-full min-h-[calc(100dvh-8rem)] flex flex-col items-center justify-between p-6">
-        <header className="w-full text-3xl font-bold text-center text-zinc-800 tracking-tight">
-          Live Music Lives Here.
-        </header>
+      <div className="flex w-full min-h-0 flex-1 items-start justify-center py-4">
+        <Swiper />
+      </div>
 
-        <div className="flex w-full min-h-0 flex-1 items-center justify-center py-4">
-          <Swiper />
-        </div>
-
-        <section className="w-full text-[22px] leading-[1.5rem] font-bold text-center tracking-tight">
+      {/* <section className="w-full text-[22px] leading-[1.5rem] font-bold text-center tracking-tight">
           <p className="[&>span]:block">
             <span>Track your favorite artists,</span>
             <span>explore past performances,</span>
@@ -32,8 +27,7 @@ const Home = () => {
               Login
             </span>
           </div>
-        </section>
-      </div>
+        </section> */}
     </>
   );
 };
