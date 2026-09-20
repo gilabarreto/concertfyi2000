@@ -15,7 +15,8 @@ const addDays = (localDate, days) => {
 // The pieces all three targets need, or null when the date is missing and the entry
 // would land on the wrong day. Every entry is all day: the doors time is a promise the
 // event rarely keeps, and a whole-day block is what the day actually costs.
-function details(event, artistName) {
+// Exported too: the share button wants the same title/place/url, not a fourth copy of it.
+export function details(event, artistName) {
   const localDate = event?.dates?.start?.localDate;
   if (!localDate) return null;
 

@@ -166,7 +166,7 @@ export default function ArtistInfo(props) {
 
         {/* Página própria do artista ainda não existe — quando existir, isto vira
             <Link to={`/artists/${artistId}`}>. Por ora fica visível e inerte, como o
-            "I WAS THERE" do ConcertInfo. */}
+            "I WAS THERE" do Last Concert. */}
         <button
           type="button"
           disabled

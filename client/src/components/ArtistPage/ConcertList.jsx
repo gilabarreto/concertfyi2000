@@ -11,6 +11,8 @@ const PAGE_SIZE = 5;
 // disclosure that opens panels in place (expand, like Setlist does) — never both, and the
 // disclosure wins. Rows used to be able to point at an outside URL too; since the next
 // concerts opened a seller list instead of a single ticket link, nothing passes one.
+// onSelect is optional and only fires on a disclosure row — UpcomingConcerts uses it to
+// mirror the click into the URL, so the Next Concert card above stays in sync.
 export default function ConcertList({
   title,
   empty,
@@ -20,6 +22,7 @@ export default function ConcertList({
   icon,
   iconTitle,
   expand,
+  onSelect,
 }) {
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
@@ -65,7 +68,10 @@ export default function ConcertList({
                     <button
                       type="button"
                       className={className}
-                      onClick={() => setOpenId(open ? null : concert.id)}
+                      onClick={() => {
+                        setOpenId(open ? null : concert.id);
+                        onSelect?.(concert);
+                      }}
                       aria-expanded={open}
                       title={iconTitle}
                     >

@@ -2,7 +2,8 @@ import { useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
-import ConcertInfo from "../components/ArtistPage/ConcertInfo";
+import LastConcert from "../components/ArtistPage/LastConcert";
+import NextConcert from "../components/ArtistPage/NextConcert";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
@@ -57,15 +58,19 @@ export default function ArtistPage() {
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
       <div className="w-full mx-auto px-6 py-4 space-y-4">
-        <div className="grid grid-cols-1 gap-6">
-          <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
-            <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+        <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
+          <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+        </div>
+
+        <hr className="w-[95%] mx-auto border-gray-300" />
+
+        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="min-w-0 bg-white p-6 space-y-2">
+            <LastConcert concert={concert} setlist={setlist} />
           </div>
 
-          <hr className="w-[95%] mx-auto border-gray-300" />
-
-          <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
-            <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+          <div className="min-w-0 bg-white p-6 space-y-2">
+            <NextConcert concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
         </div>
 
