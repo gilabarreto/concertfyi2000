@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
 import {
@@ -63,8 +63,6 @@ export default function Swiper() {
   };
   const navigate = useNavigate();
   const isSmallScreen = useIsSmallScreen();
-  const carouselRef = useRef(null);
-  const refocusNav = useRef(null);
 
   const {
     coords = { lat: -23.5505, long: -46.6333 },
@@ -135,21 +133,15 @@ export default function Swiper() {
     setActive(Math.floor(list.length / 2));
   }, [localEventsData]);
 
-  // Prev/Next live inside the centered slide, so after moving, focus the same control in the new center
-  const go = (e, step) => {
-    e.stopPropagation();
-    const next = Math.min(Math.max(active + step, 0), slides.length - 1);
-    if (next === active) return;
-    refocusNav.current =
-      document.activeElement === e.currentTarget ? e.currentTarget.dataset.nav : null;
-    setActive(next);
+  // Controls stay mounted outside the animated slides, preserving keyboard focus.
+  const go = (step) => {
+    setActive((current) => Math.min(Math.max(current + step, 0), slides.length - 1));
   };
 
-  useEffect(() => {
-    if (!refocusNav.current) return;
-    carouselRef.current?.querySelector(`[data-nav="${refocusNav.current}"]`)?.focus();
-    refocusNav.current = null;
-  }, [active]);
+  const activeSlide = slides[active];
+  const [year, month, day] = (activeSlide?.date || "").split("-").map(Number);
+  const concertDate =
+    year && month && day ? dateLabel(new Date(year, month - 1, day)) : "Date to be announced";
 
   // plain render function, not a component: a component declared inside Swiper would remount
   // every slide on each render, which killed the slide transition
@@ -162,9 +154,6 @@ export default function Swiper() {
     // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
     const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
     const style = getSlideStyle(offset, depth, image, isSmallScreen);
-    const [year, month, day] = (slide.date || "").split("-").map(Number);
-    const concertDate =
-      year && month && day ? dateLabel(new Date(year, month - 1, day)) : "Date to be announced";
 
     return (
       <div
@@ -177,47 +166,6 @@ export default function Swiper() {
         <div className="relative aspect-video rounded-xl" style={{ background: style.background }}>
           <div className="absolute inset-0 rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 hover:bg-opacity-80 pointer-events-auto z-20"></div>
         </div>
-        {offset === 0 && (
-          <>
-            <div className="w-full grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 pt-3 text-black font-sans">
-              <button
-                type="button"
-                onClick={(event) => go(event, -1)}
-                data-nav="prev"
-                aria-label="Previous"
-                className="text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-              >
-                {"{"}
-              </button>
-              <div className="min-w-0 flex flex-col items-center gap-1">
-                <h2 className="min-w-0 text-3xl font-bold text-balance text-center">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedArtist(slide);
-                    }}
-                    className="rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
-                  >
-                    {slide.artistName}
-                  </button>
-                </h2>
-                <p className="text-base font-normal text-center">
-                  {concertDate} @ {slide.venue || "Venue to be announced"}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={(event) => go(event, 1)}
-                data-nav="next"
-                aria-label="Next"
-                className="text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-              >
-                {"}"}
-              </button>
-            </div>
-          </>
-        )}
       </div>
     );
   };
@@ -261,10 +209,44 @@ export default function Swiper() {
         </div>
       ) : (
         <div className="w-full">
-          <div ref={carouselRef} className="relative w-full">
+          <div className="relative w-full">
             <div className="relative w-full flex items-start justify-center overflow-clip">
               {slides.map(renderSlide)}
             </div>
+            {activeSlide && (
+              <div className="mx-auto w-full sm:w-[80%] md:w-[60%] lg:w-[40%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-black font-sans">
+                <button
+                  type="button"
+                  onClick={() => go(-1)}
+                  aria-label="Previous"
+                  className="min-h-11 text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                >
+                  {"{"}
+                </button>
+                <div className="min-w-0 flex flex-col items-center gap-1">
+                  <h2 className="min-w-0 text-3xl font-bold text-balance text-center">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedArtist(activeSlide)}
+                      className="rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+                    >
+                      {activeSlide.artistName}
+                    </button>
+                  </h2>
+                  <p className="text-base font-normal text-center text-pretty">
+                    {concertDate} @ {activeSlide.venue || "Venue to be announced"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => go(1)}
+                  aria-label="Next"
+                  className="min-h-11 text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                >
+                  {"}"}
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
