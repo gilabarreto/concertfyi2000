@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useContext, useRef, useEffect } from "react";
 import {
   faHouse,
@@ -13,6 +13,8 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
 
 export default function Footer() {
+  const { pathname } = useLocation();
+  const showDivider = /^\/(about|contact)\/?$/.test(pathname);
   const { setSearchValue } = useContext(AppContext);
   const { city, country, isLoading } = useGeolocation();
   const [openPanel, setOpenPanel] = useState(null);
@@ -58,17 +60,21 @@ export default function Footer() {
     >
       <nav
         aria-label="Footer navigation"
-        className="relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal"
+        className={`relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal ${showDivider ? "bg-red-600 shadow-[0_-4px_6px_-4px_rgba(0,0,0,0.3)]" : ""}`}
       >
         {/* Concave ramps join the main's sides smoothly to the footer. */}
-        <div
-          aria-hidden="true"
-          className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_39.5px,_#dc2626_40px)]"
-        />
-        <div
-          aria-hidden="true"
-          className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_39.5px,_#dc2626_40px)]"
-        />
+        {!showDivider && (
+          <>
+            <div
+              aria-hidden="true"
+              className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_39.5px,_#dc2626_40px)]"
+            />
+            <div
+              aria-hidden="true"
+              className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_39.5px,_#dc2626_40px)]"
+            />
+          </>
+        )}
         <Link to="/" aria-label="Home" onClick={closeAndNavigate} className={buttonClass}>
           <Icon icon={faHouse} />
           <span className="hidden sm:inline">Home</span>

@@ -63,22 +63,8 @@ export default function ArtistInfo(props) {
   const artist = concert.artist.name;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between gap-6">
-      {/* `gap-6`, not `space-y-6`/`space-x-6`: those add margin to the DOM-second child only,
-          and `sm:order-*` below changes visual position without moving the DOM — the margin
-          stayed glued to the info column even after it became the visually-first one, so it
-          opened a gap on the wrong side. `gap` tracks visual order, so it always lands
-          between the two, whichever is on the right. */}
-      {/* `items-center` no pai (a linha inteira) centraliza esta coluna na vertical contra a
-          de texto, que costuma ser mais alta. Dentro dela, `items-center` de novo: a foto
-          fica no eixo central, não colada na borda esquerda. */}
-      {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: os dois somam 2, igual
-          ao antigo flex-1/flex-1 (50/50) — então 1.1/2 = 55% é exatamente +10% sobre aquela
-          metade. Era `flex-[2]`/`flex-1` (2:1, ~66%), reduzido a pedido. O `max-w-[520px]` da
-          caixa abaixo nunca é alcançado nessa proporção — ver o commit que explica por quê.
-          `sm:order-2`: no desktop a foto passa pra direita da info, sem mover o DOM — no
-          mobile (flex-col, sem classe de order) ela continua acima, como antes. */}
-      <div className="flex-1 sm:flex-[1.1] sm:order-2 flex flex-col items-center w-full">
+    <div className="flex-1 flex flex-col lg:flex-row items-center gap-6">
+      <div className="flex flex-col items-center w-full lg:flex-1 lg:min-w-0">
         {/* A foto não vem com o show: vem da segunda chamada, a da Ticketmaster. Sem esta
             caixa reservada o card nascia sem foto e crescia ~210px quando ela chegava,
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
@@ -95,7 +81,7 @@ export default function ArtistInfo(props) {
         </div>
       </div>
 
-      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
+      <div className="w-full lg:flex-1 lg:min-w-0">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-bold text-balance">{artist}</h2>
           {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS

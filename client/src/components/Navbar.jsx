@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Icon from "./Icon";
 import { faBell, faMoon, faUser } from "@fortawesome/free-solid-svg-icons";
 
@@ -26,11 +27,33 @@ const phrases = [
 ];
 
 function Navbar() {
+  const { pathname } = useLocation();
+  const redNavbar = /^\/(about|contact)\/?$/.test(pathname);
+  const iconColor = redNavbar ? "text-white" : "text-red-600";
   const [phrase, setPhrase] = useState("");
+  const logoRef = useRef(null);
+  const [phraseSize, setPhraseSize] = useState(null);
   const timerRef = useRef(null);
   const [logoBusy, setLogoBusy] = useState(false);
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
+
+  useEffect(() => {
+    if (!phrase) return;
+    const fitPhrase = () => {
+      const style = getComputedStyle(logoRef.current);
+      const context = document.createElement("canvas").getContext("2d");
+      context.font = `600 ${style.fontSize} ${style.fontFamily}`;
+      context.letterSpacing = style.letterSpacing;
+      const naturalWidth = context.measureText(phrase).width + 4;
+      const availableWidth = window.innerWidth * 0.4;
+      const scale = Math.min(1, availableWidth / naturalWidth);
+      setPhraseSize({ width: naturalWidth * scale, fontSize: parseFloat(style.fontSize) * scale });
+    };
+    fitPhrase();
+    window.addEventListener("resize", fitPhrase);
+    return () => window.removeEventListener("resize", fitPhrase);
+  }, [phrase]);
 
   const expandLogo = () => {
     if (logoBusy) return;
@@ -44,34 +67,38 @@ function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 w-full bg-red-600 z-20">
-      <nav className="grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 bg-white border-b border-gray-200">
+      <nav
+        className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : "bg-white border-b border-gray-200"}`}
+      >
         <button
           type="button"
           disabled
           aria-label="Notifications (coming soon)"
           title="Notifications (coming soon)"
-          className="flex items-center justify-center justify-self-start min-h-11 px-1 text-xl text-red-600 cursor-default"
+          className={`flex items-center justify-center justify-self-start min-h-11 px-1 text-xl ${iconColor} cursor-default`}
         >
           <Icon icon={faBell} />
         </button>
         <button
+          ref={logoRef}
           type="button"
           onClick={expandLogo}
           disabled={logoBusy}
           aria-label="concertfyi — reveal a phrase"
           className="justify-self-center inline-flex items-center font-medium tracking-tight text-xl sm:text-2xl"
         >
-          <span>concert{"{"}</span>
+          <span>concert</span>
+          <span className={redNavbar ? "text-black" : undefined}>{"{"}</span>
           <span
-            className="inline-block overflow-hidden text-ellipsis whitespace-nowrap text-center font-semibold text-red-600 transition-[width] duration-300 ease-in-out motion-reduce:transition-none"
-            style={{ width: phrase ? `min(${phrase.length * 0.57}em, 40vw)` : "1.3em" }}
+            className={`inline-block overflow-hidden whitespace-nowrap text-center font-semibold ${iconColor} transition-[width] duration-300 ease-in-out motion-reduce:transition-none`}
+            style={phrase ? phraseSize : { width: "1.3em" }}
           >
             {phrase || "fyi"}
           </span>
-          <span>{"}"}</span>
+          <span className={redNavbar ? "text-black" : undefined}>{"}"}</span>
         </button>
 
-        <div className="flex items-center justify-self-end gap-2 sm:gap-4 text-red-600">
+        <div className={`flex items-center justify-self-end gap-1 sm:gap-2 ${iconColor}`}>
           <button
             type="button"
             disabled

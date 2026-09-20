@@ -69,3 +69,21 @@ body {
   @apply text-zinc-800;
   font-family: "DM Sans", sans-serif;
 }
+
+/* A divisória acompanha 90% da altura de cada fileira de cards no desktop. */
+@media (min-width: 1024px) {
+  .artist-card-grid > div:nth-child(even) {
+    position: relative;
+  }
+
+  .artist-card-grid > div:nth-child(even)::before {
+    content: "";
+    position: absolute;
+    left: -0.75rem;
+    top: 5%;
+    height: 90%;
+    width: 1px;
+    background: #d1d5db;
+    pointer-events: none;
+  }
+}

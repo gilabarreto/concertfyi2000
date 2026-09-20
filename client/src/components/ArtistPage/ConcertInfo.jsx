@@ -25,24 +25,20 @@ export default function ConcertInfo(props) {
   const country = concert.venue.city?.country.code;
 
   return (
-    <div className="flex-1 flex flex-col items-center sm:flex-row justify-between gap-6">
-      {/* `gap-6`, not `space-y-6`/`space-x-6`: those add margin to the DOM-second child only,
-          and `sm:order-*` below changes visual position without moving the DOM — the margin
-          stayed glued to the info column even after it became the visually-first one, so it
-          opened a gap on the wrong side. `gap` tracks visual order, so it always lands
-          between the two, whichever is on the right. */}
-      {/* `sm:flex-[1.1]` contra `sm:flex-[0.9]` da coluna de texto: ver o comentário gêmeo em
-          ArtistInfo.jsx — +10% sobre o antigo 50/50, reduzido do 2:1 anterior a pedido.
-          `sm:order-2`: no desktop o mapa passa pra direita da info, sem mover o DOM — no
-          mobile (flex-col, sem classe de order) ele continua acima, como antes. */}
-      <div className="flex-1 sm:flex-[1.1] sm:order-2 flex justify-center sm:justify-start w-full">
-        <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-gray-100 overflow-hidden">
-          <Map concert={concert} />
+    <div className="flex-1 flex flex-col lg:flex-row items-center gap-6">
+      <div className="w-full lg:flex-1 lg:min-w-0">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <h2 className="text-3xl font-bold text-balance">Last Concert</h2>
+          {/* Disponível quando houver contas de usuário. */}
+          <button
+            type="button"
+            disabled
+            title="Coming soon — sign in required"
+            className="flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
+          >
+            <Icon icon={faPlus} className="text-[0.65rem]" />I WAS THERE
+          </button>
         </div>
-      </div>
-
-      <div className="flex-1 sm:flex-[0.9] sm:order-1 w-full sm:w-auto">
-        <h2 className="text-3xl font-bold text-balance mb-4">Last Concert</h2>
 
         <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
@@ -71,19 +67,12 @@ export default function ConcertInfo(props) {
             Location:&ensp;{city}, {country}
           </li>
         </ol>
+      </div>
 
-        {/* Precisa de conta pra registrar presença — ainda não existe área do usuário, então
-            o botão fica visível mas desativado até essa peça existir. Mora abaixo da lista,
-            centralizado como o Learn More do ArtistInfo, sem o scale-90 que tinha quando
-            morava ao lado do heading. */}
-        <button
-          type="button"
-          disabled
-          title="Coming soon — sign in required"
-          className="flex mx-auto mt-4 items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
-        >
-          <Icon icon={faPlus} className="text-[0.65rem]" />I WAS THERE
-        </button>
+      <div className="flex justify-center w-full lg:flex-1 lg:min-w-0">
+        <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-gray-100 overflow-hidden">
+          <Map concert={concert} />
+        </div>
       </div>
     </div>
   );

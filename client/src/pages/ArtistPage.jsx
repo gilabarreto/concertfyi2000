@@ -56,34 +56,40 @@ export default function ArtistPage() {
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
-      <div className="w-full mx-auto p-4 space-y-4">
-        <div className="flex flex-col gap-6">
-          <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
+      <div className="w-full mx-auto px-6 py-4 space-y-4">
+        <div className="grid grid-cols-1 gap-6">
+          <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
             <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
+          <hr className="w-[95%] mx-auto border-gray-300" />
+
+          <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
             <ConcertInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-6">
-          <div className="bg-white rounded-xl p-6 shadow space-y-2">
+        <hr className="w-[95%] mx-auto border-gray-300" />
+
+        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="min-w-0 bg-white p-6 space-y-2">
             <Setlist concert={concert} />
           </div>
 
-          <div className="bg-black text-white rounded-3xl p-2 shadow flex items-center justify-center">
+          <div className="min-w-0 p-2 sm:p-6 before:hidden">
             <Player ticketmaster={ticketmaster} />
           </div>
+        </div>
 
-          <div>
-            <div className="bg-white rounded-xl p-6 shadow space-y-2">
-              <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
-            </div>
+        <hr className="w-[95%] mx-auto border-gray-300" />
 
-            <div className="bg-white rounded-xl p-6 shadow mt-6 space-y-2">
-              <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
-            </div>
+        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="min-w-0 bg-white p-6 space-y-2">
+            <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+          </div>
+
+          <div className="min-w-0 bg-white p-6 space-y-2">
+            <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
           </div>
         </div>
       </div>
