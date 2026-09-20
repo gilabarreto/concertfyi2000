@@ -10,7 +10,7 @@ const Home = () => {
         url="/"
       />
       <div className="flex flex-col w-full flex-1 items-center justify-evenly gap-6 overflow-x-clip p-4">
-        <h1 className="w-full text-[24px] leading-[1.5rem] font-bold text-center tracking-tight [&>span]:block">
+        <h1 className="w-full text-[24px] sm:text-[28px] lg:text-[32px] leading-snug font-bold text-center tracking-tight [&>span]:block">
           <span>Track your favorite artists,</span>
           <span>explore past performances,</span>
           <span>and never miss a concert again.</span>
