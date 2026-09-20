@@ -13,7 +13,7 @@ export default function Map({ latitude, longitude }) {
   if (!latitude || !longitude) return null;
 
   if (!isLoaded) {
-    return <div className="flex items-center justify-center h-64">Loading…</div>;
+    return <div className="flex items-center justify-center h-full">Loading…</div>;
   }
 
   return <ArtistMap latitude={latitude} longitude={longitude} />;
@@ -24,11 +24,7 @@ function ArtistMap({ latitude, longitude }) {
   const lng = parseFloat(longitude);
 
   return (
-    <GoogleMap
-      zoom={12}
-      center={{ lat, lng }}
-      mapContainerClassName="w-full h-64 rounded-xl shadow"
-    >
+    <GoogleMap zoom={12} center={{ lat, lng }} mapContainerClassName="w-full h-full">
       <MarkerF position={{ lat, lng }} />
     </GoogleMap>
   );

@@ -10,7 +10,7 @@ export default function MapDialog({ dialogRef, title, latitude, longitude }) {
     <dialog
       ref={dialogRef}
       aria-label={title}
-      className="relative bg-white rounded-lg p-0 w-[calc(100%-2rem)] max-w-md overflow-hidden backdrop:bg-black/50"
+      className="relative bg-white rounded-lg p-0 w-[80vw] aspect-video overflow-hidden backdrop:bg-black/50"
     >
       <button
         type="button"
