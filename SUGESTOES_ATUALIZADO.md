@@ -21,7 +21,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
 ☑ Paginação no Setlist.jsx se >20 músicas — resolvido em `7156262`.
 □ Tempo estimado do show no Setlist.jsx.
-□ Expandir/recolher "encore" no Setlist.jsx.
+☑ Sinalizar onde começa o "encore" no Setlist.jsx — resolvido em `c9f4f5e` (pedido original era expandir/recolher; o dono preferiu só sinalizar, sem esconder nada).
 □ Botão "Copiar setlist" (clipboard).
 □ Botão "Favoritar" em ConcertInfo.jsx (localStorage).
 □ Botão "Compartilhar" em ConcertInfo.jsx.
