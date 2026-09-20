@@ -19,7 +19,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Lint quebrado em SearchBar.jsx:11 (`setPlaceholder` não usado) — resolvido em `5ce7c2a`. Achado e já corrigido revisando o Swiper em 2026-09-20.
 ⚪ Itens abertos no repositório (sem decisão sua pendente)
 ☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
-□ Paginação no Setlist.jsx se >50 músicas.
+☑ Paginação no Setlist.jsx se >20 músicas — resolvido em `7156262`.
 □ Tempo estimado do show no Setlist.jsx.
 □ Expandir/recolher "encore" no Setlist.jsx.
 □ Botão "Copiar setlist" (clipboard).
