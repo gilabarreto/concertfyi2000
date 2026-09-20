@@ -255,7 +255,6 @@ export default function Swiper() {
                 transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[76%] md:w-[58%] lg:w-[40%] z-0`}
         style={{
           ...style,
-          transform: style.transform,
           background: undefined,
           pointerEvents: depth > 2 ? "none" : "auto",
           transitionDuration: reduceMotion || dragOffset !== 0 ? "0ms" : undefined,
