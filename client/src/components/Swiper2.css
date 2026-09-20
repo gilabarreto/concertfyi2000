@@ -1,0 +1,30 @@
+/* Keep the library's transforms scoped to the experimental carousel. */
+.swiper2 {
+  width: 100%;
+  padding-block: 1rem;
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+.swiper2 .swiper-slide {
+  width: 80%;
+}
+
+@media (min-width: 640px) {
+  .swiper2 .swiper-slide {
+    width: 60%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .swiper2 .swiper-slide {
+    width: 40%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .swiper2 .swiper-wrapper,
+  .swiper2 .swiper-slide {
+    transition-duration: 0ms !important;
+  }
+}
