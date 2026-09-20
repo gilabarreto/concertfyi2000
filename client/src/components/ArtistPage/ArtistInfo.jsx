@@ -1,9 +1,17 @@
+import { useState } from "react";
 import Icon from "../Icon";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import { faInstagram, faTwitter, faYoutube } from "@fortawesome/free-brands-svg-icons";
 import { getBestImage, getTicketmasterGenres } from "../../helpers/selectors";
 import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";
+
+const FAVORITE_ARTISTS_KEY = "favoriteArtistIds";
+
+function getFavoriteArtists() {
+  return JSON.parse(localStorage.getItem(FAVORITE_ARTISTS_KEY) || "[]");
+}
 
 // O href vem do `externalLinks` da Ticketmaster, ou seja, de fora. O React 18 avisa no
 // console de desenvolvimento quando o href é `javascript:`, mas renderiza assim mesmo —
@@ -20,6 +28,16 @@ const SOCIALS = [
 export default function ArtistInfo(props) {
   const { concert, ticketmaster } = props;
   const { artistId } = useParams();
+  const [favoriteArtists, setFavoriteArtists] = useState(getFavoriteArtists);
+
+  const isFavorite = favoriteArtists.includes(artistId);
+  const toggleFavorite = () => {
+    const next = isFavorite
+      ? favoriteArtists.filter((id) => id !== artistId)
+      : [...favoriteArtists, artistId];
+    setFavoriteArtists(next);
+    localStorage.setItem(FAVORITE_ARTISTS_KEY, JSON.stringify(next));
+  };
 
   const bestImageUrl = getBestImage(ticketmaster.attractions?.[0]?.images || []);
   const links = ticketmaster.attractions?.[0]?.externalLinks || {};
@@ -84,20 +102,20 @@ export default function ArtistInfo(props) {
       <div className="w-full lg:flex-1 lg:min-w-0">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-3xl font-bold text-balance">{artist}</h2>
-          {/* Favoritar ainda não existe (sem área do usuário) — mesmo tratamento do "I WAS
-              THERE"/"Learn More": visível, mas `disabled` de verdade em vez de um ícone solto
-              com `cursor-pointer` fingindo ser clicável sem receber foco nem ter aria-label.
-              Sem `text-2xl` aqui de propósito: o `size="2x"` do Icon é `2em` relativo ao
-              font-size herdado — um `text-2xl` no botão dobra essa conta (2em de 1.5rem, não
-              de 1rem) e o ícone sai maior que o dos socials, que não tem essa classe. */}
+          {/* Favoritar guarda o mbid no localStorage — sem conta de usuário ainda, por
+              navegador em vez de por pessoa. Sem `text-2xl` aqui de propósito: o `size="2x"`
+              do Icon já é `2em` relativo ao font-size herdado — um `text-2xl` no botão dobra
+              essa conta (2em de 1.5rem, não de 1rem) e o ícone sai maior que o dos socials,
+              que não tem essa classe. */}
           <button
             type="button"
-            disabled
-            title="Coming soon"
-            aria-label="Favorite this artist"
-            className="text-gray-500 cursor-not-allowed"
+            onClick={toggleFavorite}
+            aria-pressed={isFavorite}
+            title={isFavorite ? "Remove from favorites" : "Favorite this artist"}
+            aria-label={isFavorite ? "Remove artist from favorites" : "Favorite this artist"}
+            className={isFavorite ? "text-red-600" : "text-gray-500 hover:text-red-600"}
           >
-            <Icon icon={faHeart} size="2x" />
+            <Icon icon={isFavorite ? faHeartSolid : faHeartRegular} size="2x" />
           </button>
         </div>
 

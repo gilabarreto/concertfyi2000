@@ -1,8 +1,15 @@
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
-import { faBackward, faForward, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faBackward, faForward, faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import Map from "./Map";
+
+const ATTENDED_KEY = "attendedConcertIds";
+
+function getAttended() {
+  return JSON.parse(localStorage.getItem(ATTENDED_KEY) || "[]");
+}
 
 // Mesmo card que ArtistInfo.jsx, mesmos campos — só a caixa de mídia muda: mapa do show
 // em vez de foto do artista. Duplicado de propósito, não extraído: ArtistInfo vai divergir
@@ -12,6 +19,14 @@ export default function ConcertInfo(props) {
   const { concert, setlist } = props;
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
+  const [attended, setAttended] = useState(getAttended);
+
+  const wasThere = attended.includes(concert.id);
+  const toggleWasThere = () => {
+    const next = wasThere ? attended.filter((id) => id !== concert.id) : [...attended, concert.id];
+    setAttended(next);
+    localStorage.setItem(ATTENDED_KEY, JSON.stringify(next));
+  };
 
   const pastConcerts = getPastConcertsByArtist(setlist, artistId);
 
@@ -29,14 +44,20 @@ export default function ConcertInfo(props) {
       <div className="w-full lg:flex-1 lg:min-w-0">
         <div className="flex items-center justify-between gap-3 mb-4">
           <h2 className="text-3xl font-bold text-balance">Last Concert</h2>
-          {/* Disponível quando houver contas de usuário. */}
+          {/* Marca localmente que o usuário esteve neste show — sem conta de usuário ainda,
+              guardado por navegador em vez de por pessoa. */}
           <button
             type="button"
-            disabled
-            title="Coming soon — sign in required"
-            className="flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border border-gray-300 text-gray-400 text-xs cursor-not-allowed"
+            onClick={toggleWasThere}
+            aria-pressed={wasThere}
+            title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
+            className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors ${
+              wasThere
+                ? "border-red-600 text-red-600 hover:bg-red-50"
+                : "border-gray-300 text-gray-500 hover:border-red-600 hover:text-red-600"
+            }`}
           >
-            <Icon icon={faPlus} className="text-[0.65rem]" />I WAS THERE
+            <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
           </button>
         </div>
 
