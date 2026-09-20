@@ -30,7 +30,7 @@ const SCALE_FACTOR_DESKTOP = 0.2;
 const SCALE_FACTOR_MOBILE = 0.15;
 const VERTICAL_SHIFT_MOBILE = 10;
 
-function getSlideStyle(offset, depth, image, isMobileScreen, spacing) {
+function getSlideStyle(offset, depth, restDepth, image, isMobileScreen, spacing) {
   const common = {
     zIndex: 10 - Math.round(depth),
     // Sem imagem não põe background nenhum: slide invisível não baixa foto.
@@ -51,7 +51,9 @@ function getSlideStyle(offset, depth, image, isMobileScreen, spacing) {
     transform: isMobileScreen
       ? `translateX(${clampedOffset * SPACING_COMPACT}px) scale(${1 - SCALE_FACTOR_MOBILE * scaleDepth}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
       : `translateX(${clampedOffset * spacing}px) scale(${1 - SCALE_FACTOR_DESKTOP * scaleDepth}) perspective(600px) rotateY(${-Math.sign(offset) * ROTATION_DEGREES}deg)`,
-    filter: `blur(${Math.min(depth, 1) * 3}px)`,
+    // Blur roda no depth de repouso (sem o drag): filter repinta, transform/opacity não —
+    // atrelar ao offset contínuo do gesto repintaria os cards a cada pointermove.
+    filter: `blur(${Math.min(restDepth, 1) * 3}px)`,
     // Fractional depth lets cards follow the gesture without changing their resting layout.
     opacity: depth <= 1 ? 1 - depth * 0.4 : Math.max(0, 0.6 * (3 - Math.max(2, depth))),
   };
@@ -237,12 +239,13 @@ export default function Swiper() {
     const visualDrag = reduceMotion ? 0 : dragOffset;
     const offset = index - active + visualDrag;
     const depth = Math.abs(offset);
+    const restDepth = Math.abs(index - active);
     // Acima de depth 2 o slide está com opacity 0 — invisível, e ainda assim baixava
     // uma foto. Carrega até 3 para ter um anel de folga: quem desliza um slide já
     // encontra a imagem pronta, em vez de vê-la aparecer depois.
     // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
     const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
-    const style = getSlideStyle(offset, depth, image, isMobileScreen, slideSpacing);
+    const style = getSlideStyle(offset, depth, restDepth, image, isMobileScreen, slideSpacing);
 
     return (
       <div
