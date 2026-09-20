@@ -10,9 +10,11 @@ const Home = () => {
         url="/"
       />
       <div className="flex flex-col w-full flex-1 items-center justify-evenly gap-6 overflow-x-clip p-4">
-        <div className="text-[32px] font-bold text-center tracking-tight">
-          <span>Live Music Lives Here</span>
-        </div>
+        <h1 className="w-full text-[24px] leading-[1.5rem] font-bold text-center tracking-tight [&>span]:block">
+          <span>Track your favorite artists,</span>
+          <span>explore past performances,</span>
+          <span>and never miss a concert again.</span>
+        </h1>
         <div className="w-full shrink-0">
           <Swiper />
         </div>

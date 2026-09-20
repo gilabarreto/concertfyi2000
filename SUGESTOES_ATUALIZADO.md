@@ -17,6 +17,7 @@ ConcertFYI — Pendências e Decisões
 🟢 Tarefas minhas, aguardando seu "pode fazer"
 □ Normalizar id no log de acesso — /api/setlist/:id gera caminho único por show; trocar pelo padrão da rota antes de logar (poucas linhas em server/).
 □ aria-current="page" nos links do Navbar — existe no Pagination.jsx:53, falta no Navbar (uma linha por link).
+□ Lint quebrado em SearchBar.jsx:11 (`setPlaceholder` declarado e nunca usado) — `npm run check` falha nisso hoje. Achado revisando o Swiper em 2026-09-20, fora do escopo daquela mudança.
 ⚪ Itens abertos no repositório (sem decisão sua pendente)
 ☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
 □ Tooltips nos ícones do Setlist.jsx (Spotify, YouTube, Genius).
