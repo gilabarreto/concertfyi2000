@@ -1,146 +1,80 @@
-# CLAUDE.md
+CLAUDE.md — Guia do repositório
+Comandos
+Dois projetos npm independentes, sem workspace raiz. Sempre cd client ou cd server primeiro.
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Commands
-
-Two independent npm projects, no workspace root. Always `cd client` or `cd server` first.
-
-```bash
-# client (Vite dev server on :3000, proxies /api to localhost:4000 — run the server too)
+bash
+# client (Vite dev em :3000, proxy /api → localhost:4000 — rode o server também)
 cd client && npm run dev
-cd client && npm run build       # vite build + copies dist/index.html to 404.html for GH Pages SPA routing
+cd client && npm run build       # vite build + copia dist/index.html para 404.html (SPA no GH Pages)
 
-# server (Express on :4000)
+# server (Express em :4000)
 cd server && npm run dev         # nodemon
 cd server && npm start
 
-# tests — node:test, no framework, no runner config, run from the repo root
-node --test                      # both test files, ~0.1s
-node --test server/http.test.js  # a single file
+# testes — node:test, sem framework nem config, da raiz do repo
+node --test                      # os dois arquivos de teste, ~0.1s
+node --test server/http.test.js  # um arquivo só
 
-# the quality gate — root package.json is scripts only, NOT a workspace
-npm run check                    # gitleaks (staged) + client lint + tests, ~2.5s
-npm run check:full               # check + client build, ~5s
-```
+# portão de qualidade — package.json da raiz é só scripts, NÃO é workspace
+npm run check                    # gitleaks (staged) + lint do client + testes, ~2.5s
+npm run check:full               # check + build do client, ~5s
+Ler CONSTRAINTS.md antes de mexer no código e fazer a mudança passar nele. Nunca enfraquecer limite, deletar teste ou adicionar supressão para a mudança passar — se um limite está errado, mudar em commit próprio com o motivo.
 
-Read `CONSTRAINTS.md` before changing code, and make your change pass it. Never weaken a limit,
-delete a test, or add a suppression to get a change through — if a limit is wrong, change it in its
-own commit with the reason.
+Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o client e publica client/dist na branch gh-pages (concertfyi.com). O servidor está no Render, que observa main sozinho e redeploya por conta própria — nenhum workflow deste repo faz isso, mas um push em main ainda entrega server/ para produção. Verificado em 2026-09-15 sondando /api/spotify/token ao vivo para uma mudança recém-pushada.
 
-Deploy is automatic on both sides: push to `main` runs `deploy.yml`, which builds the client and
-publishes `client/dist` to the `gh-pages` branch (`concertfyi.com`). The server is hosted on Render,
-which watches `main` itself and redeploys on its own — no workflow in this repo does it, but a
-push to `main` still ships `server/` to production. Verified 2026-09-15 by probing the live
-`/api/spotify/token` for a change that had only just been pushed.
+.history/ é um dump de histórico local do VS Code (gitignored, milhares de cópias .jsx com timestamp). Excluir de toda busca — hits de grep/find ali são duplicatas velhas, nunca o arquivo vivo.
 
-`.history/` is a VS Code local-history dump (gitignored, thousands of timestamped `.jsx` copies).
-Exclude it from every search — grep/find hits there are stale duplicates, never the live file.
+Arquitetura
+Client (GitHub Pages) → proxy Express (Render) → APIs de terceiros. O servidor existe só para manter as chaves de API fora do browser; não tem banco nem estado. Toda rota é repasse fino.
 
-## Architecture
+As duas fontes de dados e como se juntam
+O app inteiro é um join entre duas APIs que não compartilham ids:
 
-**Client (GitHub Pages) → Express proxy (Render) → third-party APIs.** The server exists only to
-keep API keys off the browser; it has no database and no state. Every route is a thin pass-through.
+Setlist.fm — shows passados e suas músicas. Shows com chave concert.id, artista por artist.mbid (id MusicBrainz, que é o :artistId nas URLs). Datas em DD-MM-YYYY.
 
-### The two data sources and how they join
+Ticketmaster — eventos futuros e imagens de artista. Eventos com id próprio, datas em dates.start.localDate (YYYY-MM-DD).
 
-The whole app is a join between two APIs that share no ids:
+São casados por string do nome do artista (attractions.find(a => a.name === concert.artist.name) em ArtistPage.jsx, mesmo filtro em UpcomingConcerts.jsx). Não há mapeamento de id entre eles — é a costura frágil do app, e é por isso que useArtistData busca os dois em paralelo e engole a falha de qualquer um em vez de quebrar a página.
 
-- **Setlist.fm** — past concerts and their songs. Concerts keyed by `concert.id`, artist by
-  `artist.mbid` (MusicBrainz id, which is the `:artistId` in URLs). Dates are `DD-MM-YYYY`.
-- **Ticketmaster** — upcoming events and artist images. Events keyed by their own id, dates are
-  `dates.start.localDate` (`YYYY-MM-DD`).
+Como os dois formatos de data diferem, os dois construtores de lista parseiam para um dateObj antes de ordenar (selectors.js:getPastConcertsByArtist para passado, getUpcomingConcertsByArtist para futuro).
 
-They are matched **by artist name string** (`attractions.find(a => a.name === concert.artist.name)`
-in `ArtistPage.jsx`, the same filter in `UpcomingConcerts.jsx`). There is no id mapping between them —
-this is the fragile seam of the app, and it is why `useArtistData` fetches both in parallel and
-swallows either one's failure rather than failing the page.
+Sempre construir um Date a partir das partes, nunca de uma string de data. new Date("2026-09-16") é meia-noite UTC pela especificação, ou seja, a noite anterior em qualquer offset negativo — isso foi ao ar como bug em que o show de amanhã aparecia entre os passados nas últimas três horas de todo dia. selectors.js:parseSetlistDate é o único parser do DD-MM-YYYY do setlist.fm; chamar ela em vez de partir a string de novo. Testes que tocam datas setam process.env.TZ antes do primeiro Date, porque o CI roda em UTC onde toda essa classe de bug é invisível.
 
-Because the two date formats differ, both list builders parse to a `dateObj` before sorting
-(`selectors.js:getPastConcertsByArtist` for past, `getUpcomingConcertsByArtist` for upcoming).
+Estado: context para a sessão, React Query para fetch
+AppContext (alimentado por useAppState) guarda os payloads atuais de setlist + ticketmaster para navegar entre shows não refazer fetch, mais selectedLocation persistido em localStorage. React Query é dono de tudo que é rede; todos os hooks vivem em client/src/api/queries.js e todas as chamadas axios em api.js. Nada mais no app deve chamar a rede direto.
 
-**Always build a Date from its parts, never from a date string.** `new Date("2026-09-16")` is
-midnight *UTC* per spec, which is the previous evening in any negative offset — that shipped as a
-bug where tomorrow's concert appeared among the past ones for the last three hours of every day.
-`selectors.js:parseSetlistDate` is the only parser for setlist.fm's `DD-MM-YYYY`; call it rather
-than splitting the string again. Tests that touch dates set `process.env.TZ` before the first
-`Date`, because CI runs in UTC where this whole class of bug is invisible.
+queryClient.js compartilha só um orçamento de retry (retry: 1); cada query em queries.js define seu próprio staleTime/gcTime, notadamente o preset songCache para lyrics/YouTube/Spotify (dados imutáveis, APIs com cota, retry: false).
 
-### State: context for the session, React Query for fetching
+ArtistPage.jsx trata o cold-start: link compartilhado ou refresh chega com context vazio, então busca o show pelo id da URL e depois backfilla o setlist completo do artista + dados do Ticketmaster.
 
-`AppContext` (fed by `useAppState`) holds the current `setlist` + `ticketmaster` payloads so
-navigating between concerts doesn't refetch, plus `selectedLocation` persisted to localStorage.
-React Query owns everything network-shaped; all hooks live in `client/src/api/queries.js` and all
-axios calls in `api.js`. Nothing else in the app should call the network directly.
+Layout da página de artista
+ArtistPage.jsx compõe os cards; tudo sob components/ArtistPage/ é um card. ConcertList.jsx é o shell de lista compartilhado — PastConcerts e UpcomingConcerts renderizam por ele com callbacks locationOf / linkOf / expand em vez de marcação própria. UpcomingConcerts fornece uma linha expandida de três painéis: TicketOptions, HotelOptions, ConcertReminder. Os dois primeiros renderizam por VendorTiles.jsx, então mudanças de tamanho/alinhamento de tile pertencem lá, uma vez.
 
-`queryClient.js` shares only a retry budget (`retry: 1`); every query in `queries.js` sets its own
-`staleTime`/`gcTime`, notably the `songCache` preset for lyrics/YouTube/Spotify lookups (immutable
-data, quota-limited APIs, `retry: false`).
+Superfícies de monetização (vendedores de ingresso, hotéis) são alvos de link de afiliado. Os comentários dizendo por que um vendedor foi mantido ou removido são load-bearing — ler antes de adicionar ou remover um. A Ticketmaster publica priceRanges só para uma fatia do inventário, então todo tile cai para "Check price".
 
-`ArtistPage.jsx` handles the cold-start case: a shared link or refresh lands with empty context, so
-it fetches the concert by URL id, then backfills the artist's full setlist + Ticketmaster data.
+Rotas do servidor
+server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta erro como { status, data }. Rotas: ticketmaster (suggest pagina até 5 páginas / 100 eventos, e /events faz a busca geográfica), setlist, spotify (troca de token — o client nunca vê o segredo), lyrics (lrclib.net, sem chave), youtube.
 
-### Artist page layout
+Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, PORT.
+Env do client: VITE_API_BASE, VITE_GOOGLE_MAPS_KEY, VITE_FORMSPREE_ID, VITE_SPOTIFY_CLIENT_ID (todas como secrets do GitHub para o deploy).
 
-`ArtistPage.jsx` composes the cards; everything under `components/ArtistPage/` is one card.
-`ConcertList.jsx` is the shared list shell — `PastConcerts` and `UpcomingConcerts` both render through
-it with `locationOf` / `linkOf` / `expand` callbacks rather than their own markup. `UpcomingConcerts`
-supplies an expanded row of three panels: `TicketOptions`, `HotelOptions`, `ConcertReminder`.
-The first two render through `VendorTiles.jsx`, so tile sizing/alignment changes belong there, once.
+Origens novas precisam entrar em allowedOrigins no server/index.js, ou o CORS bloqueia.
 
-Monetisation surfaces (ticket sellers, hotels) are affiliate-link targets. The comments naming why a
-vendor was kept or dropped are load-bearing — read them before adding or removing one. Ticketmaster
-publishes `priceRanges` for only a slice of its inventory, so every tile falls back to "Check price".
+Fluxo da playlist do Spotify
+Auth code flow num popup: Setlist.jsx guarda as músicas em localStorage, abre getSpotifyAuthUrl(), o popup cai em /callback (SpotifyCallback.jsx), troca o code pelo servidor e faz postMessage de SPOTIFY_AUTH_SUCCESS de volta para o opener, que então cria a playlist. O estado cruza a fronteira da janela por localStorage, não por props.
 
-### Server routes
+Qual processo governa o quê
+Dois conjuntos de instruções estão ativos ao mesmo tempo e puxam em direções opostas: ponytail (parar no primeiro degrau que funciona, sem abstrações não pedidas) e os workflows do agent-skills (spec primeiro, TDD, uma régua de qualidade escrita). A divisão, acordada com o dono:
 
-`server/http.js` is the shared fetch wrapper; every route uses it and reports errors as
-`{ status, data }`. Routes: `ticketmaster` (suggest paginates up to 5 pages / 100 events, and
-`/events` does the geo search), `setlist`, `spotify` (token exchange — the client never sees the
-secret), `lyrics` (lrclib.net, keyless), `youtube`.
+Planejamento, review, teste, constraints — os workflows do agent-skills lideram. É onde o projeto está genuinamente descoberto: sem lint, sem CI, e o client não tem teste nenhum.
 
-Server env: `TICKETMASTER_API_KEY`, `SETLISTFM_API_KEY`, `SPOTIFY_CLIENT_ID`,
-`SPOTIFY_CLIENT_SECRET`, `YOUTUBE_API_KEY`, `PORT`.
-Client env: `VITE_API_BASE`, `VITE_GOOGLE_MAPS_KEY`, `VITE_FORMSPREE_ID`,
-`VITE_SPOTIFY_CLIENT_ID` (all set as GitHub secrets for the deploy).
+Implementação — ponytail lidera. É um app de ~3.5k linhas com duas chamadas de API e sem banco; scaffolding para uma escala que ele não vai alcançar é o modo de falha que ele existe para prevenir.
 
-New origins must be added to `allowedOrigins` in `server/index.js` or CORS blocks them.
+Onde os dois colidem numa decisão concreta, dizer isso e deixar o dono escolher em vez de seguir um em silêncio. Uma spec ou um teste que o ponytail pularia não é desperdício aqui; uma interface com uma implementação só, sim.
 
-### Spotify playlist flow
+Uma correção por commit, pushada conforme entra. Não há staging: um push em main builda o client na gh-pages e o Render redeploya o server do mesmo commit, então todo commit é release dos dois lados. Um lote de cinco mudanças que sobe junto não tem falha bissetável, e o dono não consegue testar uma sem levar as outras quatro. Então: um item, um commit, push, próximo. Quando o dono está no teclado ele testa cada uma antes da próxima; quando não está, é uma rodada autônoma e o resumo vem no fim — não é motivo para lote.
 
-Auth code flow across a popup: `Setlist.jsx` stashes the songs in localStorage, opens
-`getSpotifyAuthUrl()`, the popup lands on `/callback` (`SpotifyCallback.jsx`), exchanges the code
-through the server, and `postMessage`s `SPOTIFY_AUTH_SUCCESS` back to the opener, which then creates
-the playlist. State crosses the window boundary through localStorage, not props.
+Mensagens de commit em inglês. Os docs do dono (SUGESTOES_ATUALIZADO.md, DOSSIE_TECNICO_ATUALIZADO.md, CONSTRAINTS.md) ficam em português, e a conversa também. Commits de 2026-09-15 estão em português; deixar, reescrever história por causa de idioma não vale o risco.
 
-## Which process governs what
+Fechar toda rodada de skill. Uma skill termina resolvendo o que achou. O que sobrar vai para SUGESTOES_ATUALIZADO.md com o motivo — resolvido (com hash do commit), esperando o dono, ou descartado. Um achado que não virou nem commit nem linha nesse arquivo foi perdido. Descartar um item é opinião, então marcar como tal; o dono pode vetar.
 
-Two sets of instructions are active at once and pull in opposite directions: ponytail (stop at the
-first rung that works, no unrequested abstractions) and the agent-skills workflows (spec first, TDD,
-a written quality bar). The split, agreed with the owner:
-
-- **Planning, review, testing, constraints** — the agent-skills workflows lead. This is where the
-  project is genuinely uncovered: no lint, no CI, and the client has no tests at all.
-- **Implementation** — ponytail leads. This is a ~3.5k-line app with two API calls and no database;
-  scaffolding for a scale it will not reach is the failure mode it exists to prevent.
-
-Where the two collide on a concrete decision, say so and let the owner pick instead of silently
-following one. A spec or a test that ponytail would skip is not waste here; an interface with one
-implementation still is.
-
-**One fix per commit, pushed as it lands.** There is no staging: a push to `main` builds the
-client onto `gh-pages` and Render redeploys the server off the same commit, so every commit is a
-release on both sides. A batch of five changes that ships at once has no bisectable failure, and
-the owner cannot try one of them without getting the other four. So: one item, one commit, push,
-next. When the owner is at the keyboard he tries each one before the next; when he is not, it is
-an autonomous round and the summary comes at the end — not a reason to batch.
-
-**Commit messages are in English.** The owner-facing docs (`SUGESTOES_ATUALIZADO.md`,
-`DOSSIE_TECNICO_ATUALIZADO.md`, `CONSTRAINTS.md`) stay in Portuguese, and so does the conversation.
-Commits from 2026-09-15 are in Portuguese; leave them, rewriting history over a language isn't worth
-the risk.
-
-**Close out every skill run.** A skill ends by resolving what it found. Anything left over goes into
-`SUGESTOES_ATUALIZADO.md` with its reason — resolved (with the commit hash), waiting on the owner,
-or dropped. A finding that became neither a commit nor a line in that file was lost. Dropping an
-item is an opinion, so mark it as one; the owner can veto it.
