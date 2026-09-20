@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce";
 import { useSetlistSearch, useTicketmasterSearch } from "../api/queries";
@@ -8,7 +8,7 @@ export default function SearchBar() {
   const { searchValue, setSearchValue, setSetlist, setTicketmaster } = useContext(AppContext);
   const navigate = useNavigate();
   const { artistId } = useParams();
-  const [placeholder, setPlaceholder] = useState("Search your favorite artist");
+  const placeholder = "Search your favorite artist";
 
   const term = useDebounce(searchValue, 700);
 
