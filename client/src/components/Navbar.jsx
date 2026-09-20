@@ -43,8 +43,8 @@ function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow z-20">
-      <nav className="grid grid-cols-[1fr_auto_1fr] w-full max-w-[1200px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2">
+    <header className="fixed top-0 left-0 w-full bg-red-600 z-20">
+      <nav className="grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 bg-white border-b border-gray-200">
         <button
           type="button"
           disabled
@@ -92,8 +92,6 @@ function Navbar() {
           </button>
         </div>
       </nav>
-
-      <hr className="border-t border-gray-200" />
     </header>
   );
 }

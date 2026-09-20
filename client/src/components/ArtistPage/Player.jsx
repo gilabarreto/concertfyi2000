@@ -11,7 +11,7 @@ export default function Player({ ticketmaster }) {
 
   return (
     <iframe
-      className="w-full h-[500px] lg:h-full rounded-2xl"
+      className="w-full h-[500px] rounded-2xl"
       src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
       title="Artist on Spotify"
       // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*

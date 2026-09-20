@@ -11,7 +11,7 @@ export default function Map({ concert }) {
   if (!coords) return null;
 
   if (!isLoaded) {
-    return <div className="flex items-center justify-center h-64 md:h-full">Loading…</div>;
+    return <div className="flex items-center justify-center h-64">Loading…</div>;
   }
 
   return <ArtistMap latitude={coords.lat} longitude={coords.long} />;
@@ -25,7 +25,7 @@ function ArtistMap({ latitude, longitude }) {
     <GoogleMap
       zoom={12}
       center={{ lat, lng }}
-      mapContainerClassName="w-full h-64 md:h-full rounded-xl shadow"
+      mapContainerClassName="w-full h-64 rounded-xl shadow"
     >
       <MarkerF position={{ lat, lng }} />
     </GoogleMap>

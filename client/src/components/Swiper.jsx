@@ -22,12 +22,13 @@ const getReducedMotion = () => motionPreference.matches;
 
 // Distância dos cards que ficam atrás. Estes são os valores mais fáceis de testar:
 // aumente para afastar os cards; diminua para deixá-los mais escondidos atrás do centro.
-const SPACING_DESKTOP = 90;
-const SPACING_TABLET = 105;
+const SPACING_DESKTOP = 100.8;
+const SPACING_TABLET = 126;
 const SPACING_COMPACT = 0;
+const VISIBLE_SIDE_CARDS = 4;
 const ROTATION_DEGREES = 30;
-const SCALE_FACTOR_DESKTOP = 0.2;
-const SCALE_FACTOR_MOBILE = 0.15;
+const SCALE_FACTOR_DESKTOP = 0.1;
+const SCALE_FACTOR_MOBILE = 0.075;
 const VERTICAL_SHIFT_MOBILE = 10;
 
 function getSlideStyle(offset, depth, restDepth, image, isMobileScreen, spacing) {
@@ -37,25 +38,25 @@ function getSlideStyle(offset, depth, restDepth, image, isMobileScreen, spacing)
     ...(image ? { background: `url(${image}) center/cover no-repeat` } : null),
   };
 
-  // Nem escala nem translateX têm teto: de puro depth/offset * fator, um slide muitas
-  // posições do centro fica com escala negativa (vira espelho e infla a caixa — medido
-  // scale(-1.85), 721px numa tela de 390px) ou some translateX afora (medido scrollWidth
-  // 3026px num viewport de 1440px no desktop). Invisível (opacity 0), mas ainda conta no
-  // scrollWidth da página. Trava os dois no mesmo depth 3 do anel de carregamento de
-  // imagem: dali pra frente já está fora de vista, ir mais longe não muda nada visível.
-  const scaleDepth = Math.min(depth, 3);
+  // Limita os slides fora de vista para evitar escala negativa e overflow.
+  const scaleDepth = Math.min(depth, VISIBLE_SIDE_CARDS + 1);
   const clampedOffset = Math.sign(offset) * scaleDepth;
+  // Reduz os laterais em 20%, interpolando até o tamanho cheio no centro durante o gesto.
+  const sideScale = 1 - 0.2 * Math.min(depth, 1);
 
   return {
     ...common,
     transform: isMobileScreen
-      ? `translateX(${clampedOffset * SPACING_COMPACT}px) scale(${1 - SCALE_FACTOR_MOBILE * scaleDepth}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
-      : `translateX(${clampedOffset * spacing}px) scale(${1 - SCALE_FACTOR_DESKTOP * scaleDepth}) perspective(600px) rotateY(${-Math.sign(offset) * ROTATION_DEGREES}deg)`,
+      ? `translateX(${clampedOffset * SPACING_COMPACT}px) scale(${(1 - SCALE_FACTOR_MOBILE * scaleDepth) * sideScale}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
+      : `translateX(${clampedOffset * spacing}px) scale(${Math.max(0.1, 1 - SCALE_FACTOR_DESKTOP * scaleDepth) * sideScale}) perspective(600px) rotateY(${-Math.sign(offset) * ROTATION_DEGREES}deg)`,
     // Blur roda no depth de repouso (sem o drag): filter repinta, transform/opacity não —
     // atrelar ao offset contínuo do gesto repintaria os cards a cada pointermove.
     filter: `blur(${Math.min(restDepth, 1) * 3}px)`,
     // Fractional depth lets cards follow the gesture without changing their resting layout.
-    opacity: depth <= 1 ? 1 - depth * 0.4 : Math.max(0, 0.6 * (3 - Math.max(2, depth))),
+    opacity:
+      depth <= 1
+        ? 1 - depth * 0.4
+        : Math.max(0, 0.6 * (VISIBLE_SIDE_CARDS + 1 - Math.max(VISIBLE_SIDE_CARDS, depth))),
   };
 }
 
@@ -240,11 +241,8 @@ export default function Swiper() {
     const offset = index - active + visualDrag;
     const depth = Math.abs(offset);
     const restDepth = Math.abs(index - active);
-    // Acima de depth 2 o slide está com opacity 0 — invisível, e ainda assim baixava
-    // uma foto. Carrega até 3 para ter um anel de folga: quem desliza um slide já
-    // encontra a imagem pronta, em vez de vê-la aparecer depois.
-    // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
-    const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
+    // Carrega os cards visíveis e mais um de cada lado para antecipar o gesto.
+    const image = depth <= VISIBLE_SIDE_CARDS + 1 ? getBestImage(slide.images, 1024) : null;
     const style = getSlideStyle(offset, depth, restDepth, image, isMobileScreen, slideSpacing);
 
     return (
@@ -252,11 +250,11 @@ export default function Swiper() {
         key={slide.eventId}
         data-active={index === active}
         className={`group ${index === active ? "relative" : "absolute top-0"} rounded-xl
-                transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[76%] md:w-[58%] lg:w-[40%] z-0`}
+                transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[76%] lg:w-[60.8%] z-0`}
         style={{
           ...style,
           background: undefined,
-          pointerEvents: depth > 2 ? "none" : "auto",
+          pointerEvents: depth > VISIBLE_SIDE_CARDS ? "none" : "auto",
           transitionDuration: reduceMotion || dragOffset !== 0 ? "0ms" : undefined,
         }}
       >
@@ -343,7 +341,7 @@ export default function Swiper() {
               tabIndex={0}
               role="group"
               aria-label="Concert photos. Use left and right arrow keys to browse."
-              className="swiper-photo-stage relative w-full h-[calc((100vw-2rem)*0.5625)] sm:h-[calc((100vw-2rem)*0.4275)] md:h-[calc((100vw-2rem)*0.32625)] lg:h-[calc((100vw-2rem)*0.225)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+              className="swiper-photo-stage relative w-full h-[calc((min(100vw,1012.44px)-2rem)*0.5625)] sm:h-[calc((min(100vw,1012.44px)-2rem)*0.4275)] lg:h-[calc((min(100vw,1012.44px)-2rem)*0.342)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
               onPointerDown={startDrag}
               onPointerMove={moveDrag}
               onPointerUp={endDrag}
@@ -358,7 +356,7 @@ export default function Swiper() {
               {slides.map(renderSlide)}
             </div>
             {activeSlide && (
-              <div className="mx-auto w-full sm:w-[80%] md:w-[60%] lg:w-[40%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-black font-sans">
+              <div className="mx-auto w-full sm:w-[80%] lg:w-[64%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-black font-sans">
                 <button
                   type="button"
                   onClick={() => go(-1)}

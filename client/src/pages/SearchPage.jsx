@@ -29,7 +29,7 @@ export default function SearchPage() {
         <h2 className="text-4xl font-bold mb-4">Search Results</h2>
         <hr className="border-t border-gray-300 opacity-50 mb-6" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center">
           {uniqueSetlist.map((item) => {
             const artistId = item.artist.mbid;
             const concertId = getPastConcertsByArtist(setlist, artistId)[0]?.id ?? item.id;
@@ -62,7 +62,7 @@ export default function SearchPage() {
                     </span>
 
                     <div className="w-full flex flex-1 justify-center mb-2">
-                      <h1 className="pb-2 text-center text-4xl lg:text-5xl font-bold">{artist}</h1>
+                      <h1 className="pb-2 text-center text-4xl font-bold">{artist}</h1>
                     </div>
 
                     <span

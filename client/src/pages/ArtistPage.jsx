@@ -57,7 +57,7 @@ export default function ArtistPage() {
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
       <div className="w-full mx-auto p-4 space-y-4">
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col gap-6">
           <div className="bg-white rounded-xl p-6 shadow flex-1 space-y-2">
             <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
           </div>
@@ -67,7 +67,7 @@ export default function ArtistPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div className="bg-white rounded-xl p-6 shadow space-y-2">
             <Setlist concert={concert} />
           </div>

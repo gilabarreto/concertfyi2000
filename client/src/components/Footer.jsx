@@ -49,7 +49,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="fixed bottom-0 left-0 w-full bg-red-600 text-white shadow z-20"
+      className="fixed bottom-0 left-0 w-full bg-red-600 text-white z-20"
       onKeyDown={(event) => {
         if (event.key !== "Escape" || openPanel !== "search") return;
         searchButtonRef.current?.focus();
@@ -58,8 +58,17 @@ export default function Footer() {
     >
       <nav
         aria-label="Footer navigation"
-        className="flex w-full max-w-[1200px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal"
+        className="relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal"
       >
+        {/* Concave ramps join the main's sides smoothly to the footer. */}
+        <div
+          aria-hidden="true"
+          className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_39.5px,_#dc2626_40px)]"
+        />
+        <div
+          aria-hidden="true"
+          className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_39.5px,_#dc2626_40px)]"
+        />
         <Link to="/" aria-label="Home" onClick={closeAndNavigate} className={buttonClass}>
           <Icon icon={faHouse} />
           <span className="hidden sm:inline">Home</span>
@@ -102,12 +111,16 @@ export default function Footer() {
             <span className="hidden sm:inline">{link.label}</span>
           </Link>
         ))}
+        {openPanel === "search" && (
+          <div
+            id="footer-search"
+            ref={searchPanelRef}
+            className={`${panelClass} [&_form]:max-w-xl`}
+          >
+            <SearchBar />
+          </div>
+        )}
       </nav>
-      {openPanel === "search" && (
-        <div id="footer-search" ref={searchPanelRef} className={`${panelClass} [&_form]:max-w-xl`}>
-          <SearchBar />
-        </div>
-      )}
     </footer>
   );
 }
