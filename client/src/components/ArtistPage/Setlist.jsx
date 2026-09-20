@@ -21,9 +21,13 @@ export default function Setlist({ concert }) {
   const disclaimerRef = useRef(null);
   const titleRef = useRef(null);
 
-  // every set in order, encore included: set[0] alone dropped the songs after the break,
-  // so the numbering has to run across all of them to be the order played
-  const songs = concert.sets?.set?.flatMap((set) => set.song || []) || [];
+  // setlist.fm marks a set as an encore with `set.encore` (unset on the main sets). mainSongs'
+  // length is where the encore starts, kept apart just to draw a divider before it below —
+  // every set in order, encore included, so the numbering stays the order actually played.
+  const sets = concert.sets?.set || [];
+  const mainSongs = sets.filter((set) => set.encore == null).flatMap((set) => set.song || []);
+  const encoreSongs = sets.filter((set) => set.encore != null).flatMap((set) => set.song || []);
+  const songs = [...mainSongs, ...encoreSongs];
   const artistName = concert.artist.name;
   const tourName = concert.tour?.name || "";
   const concertDate = concert.eventDate || "";
@@ -142,8 +146,14 @@ export default function Setlist({ concert }) {
           <ol className="pl-6">
             {displaySongs.map((song, i) => {
               const songIndex = offset + i;
+              const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;
               return (
                 <li key={songIndex} className="flex flex-col">
+                  {isEncoreStart && (
+                    <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      Encore
+                    </span>
+                  )}
                   <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
                     {/* the li is a flex container, which swallows the list marker, so the
                         position gets its own cell */}
