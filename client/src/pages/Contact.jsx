@@ -53,7 +53,7 @@ export default function Contact() {
         description="Get in touch with the concertfyi team. Questions about artists, concerts, or suggestions?"
         url="/contact"
       />
-      <div className="w-full bg-red-600 flex flex-col items-center justify-between p-6">
+      <div className="w-full bg-red-600 flex flex-col items-center justify-evenly p-6">
         <div>
           <Icon
             icon={faEnvelope}

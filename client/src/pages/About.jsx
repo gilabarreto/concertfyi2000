@@ -12,7 +12,7 @@ export default function About() {
         description="Learn about concertfyi - your backstage pass to live music. Discover concert history, setlists, and upcoming shows."
         url="/about"
       />
-      <div className="w-full bg-red-600 flex flex-col items-center justify-between p-6">
+      <div className="w-full bg-red-600 flex flex-col items-center justify-evenly p-6">
         <div className="text-[150px] sm:text-[200px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium tracking-tight items-center text-center overflow-hidden text-balance">
           {"{"}
           <span className="text-[150px] sm:text-[200px] [text-shadow:_0_4px_12px_rgba(0,0,0,0.5)] tracking-tight font-semibold text-zinc-100">
