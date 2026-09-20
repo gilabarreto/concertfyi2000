@@ -18,7 +18,7 @@ ConcertFYI — Pendências e Decisões
 □ Normalizar id no log de acesso — /api/setlist/:id gera caminho único por show; trocar pelo padrão da rota antes de logar (poucas linhas em server/).
 □ aria-current="page" nos links do Navbar — existe no Pagination.jsx:53, falta no Navbar (uma linha por link).
 ⚪ Itens abertos no repositório (sem decisão sua pendente)
-□ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — incorporar entregas de setembro (testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais, contato); separar entregue de propostas futuras.
+☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
 □ Tooltips nos ícones do Setlist.jsx (Spotify, YouTube, Genius).
 □ Paginação no Setlist.jsx se >50 músicas.
 □ Tempo estimado do show no Setlist.jsx.

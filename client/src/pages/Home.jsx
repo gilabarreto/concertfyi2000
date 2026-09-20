@@ -9,7 +9,7 @@ const Home = () => {
         description="Track your favorite artists, explore past performances, and never miss a concert again. Find setlists, venues, and ticket information."
         url="/"
       />
-      <div className="flex flex-col w-full flex-1 items-center justify-evenly gap-6 p-4">
+      <div className="flex flex-col w-full flex-1 items-center justify-evenly gap-6 overflow-x-clip p-4">
         <div className="text-[32px] font-bold text-center tracking-tight">
           <span>Live Music Lives Here</span>
         </div>

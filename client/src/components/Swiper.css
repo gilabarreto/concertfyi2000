@@ -1,0 +1,27 @@
+.original-swiper [data-carousel-photo]:is(:hover, :focus-visible) .swiper-photo-highlight,
+.original-swiper:has(.swiper-artist-info:is(:hover, :focus-within))
+  [data-active="true"]
+  .swiper-photo-highlight {
+  opacity: 0.8;
+}
+
+.original-swiper:has([data-active="true"] [data-carousel-photo]:is(:hover, :focus-visible))
+  .swiper-artist-info,
+.original-swiper .swiper-artist-info:is(:hover, :focus-within) {
+  color: rgb(220 38 38);
+}
+
+.swiper-photo-reflection {
+  opacity: 0.2;
+  transform: perspective(320px) rotateX(58deg) scaleY(1.25);
+  transform-origin: center top;
+  filter: blur(1px);
+  clip-path: polygon(0 0, 100% 0, 79% 100%, 21% 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    rgba(0, 0, 0, 0.35) 35%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.35) 35%, transparent 100%);
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef, useSyncExternalStore } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
 import {
@@ -11,21 +11,31 @@ import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
 import LocationSelector from "./LocationSelector";
+import "./Swiper.css";
 
-const SPACING = 120;
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+const subscribeMotion = (notify) => {
+  motionPreference.addEventListener("change", notify);
+  return () => motionPreference.removeEventListener("change", notify);
+};
+const getReducedMotion = () => motionPreference.matches;
+
+// Distância dos cards que ficam atrás. Estes são os valores mais fáceis de testar:
+// aumente para afastar os cards; diminua para deixá-los mais escondidos atrás do centro.
+const SPACING_DESKTOP = 90;
+const SPACING_TABLET = 105;
+const SPACING_COMPACT = 0;
+const ROTATION_DEGREES = 30;
 const SCALE_FACTOR_DESKTOP = 0.2;
 const SCALE_FACTOR_MOBILE = 0.15;
 const VERTICAL_SHIFT_MOBILE = 10;
 
-function getSlideStyle(offset, depth, image, isSmallScreen) {
+function getSlideStyle(offset, depth, image, isMobileScreen, spacing) {
   const common = {
-    zIndex: 10 - depth,
+    zIndex: 10 - Math.round(depth),
     // Sem imagem não põe background nenhum: slide invisível não baixa foto.
     ...(image ? { background: `url(${image}) center/cover no-repeat` } : null),
   };
-
-  // O slide do meio é o caso especial: sem deslocamento, sem desfoque, opaco.
-  if (offset === 0) return { ...common, transform: "none", filter: "none", opacity: 1 };
 
   // Nem escala nem translateX têm teto: de puro depth/offset * fator, um slide muitas
   // posições do centro fica com escala negativa (vira espelho e infla a caixa — medido
@@ -38,12 +48,12 @@ function getSlideStyle(offset, depth, image, isSmallScreen) {
 
   return {
     ...common,
-    transform: isSmallScreen
-      ? `scale(${1 - SCALE_FACTOR_MOBILE * scaleDepth}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
-      : `translateX(${clampedOffset * SPACING}px) scale(${1 - SCALE_FACTOR_DESKTOP * scaleDepth}) perspective(24px) rotateY(${offset > 0 ? -1 : 1}deg)`,
-    filter: "blur(3px)",
-    // Do terceiro vizinho em diante o slide já saiu de vista.
-    opacity: depth > 2 ? 0 : 0.6,
+    transform: isMobileScreen
+      ? `translateX(${clampedOffset * SPACING_COMPACT}px) scale(${1 - SCALE_FACTOR_MOBILE * scaleDepth}) translateY(${scaleDepth * VERTICAL_SHIFT_MOBILE}px)`
+      : `translateX(${clampedOffset * spacing}px) scale(${1 - SCALE_FACTOR_DESKTOP * scaleDepth}) perspective(600px) rotateY(${-Math.sign(offset) * ROTATION_DEGREES}deg)`,
+    filter: `blur(${Math.min(depth, 1) * 3}px)`,
+    // Fractional depth lets cards follow the gesture without changing their resting layout.
+    opacity: depth <= 1 ? 1 - depth * 0.4 : Math.max(0, 0.6 * (3 - Math.max(2, depth))),
   };
 }
 
@@ -51,9 +61,23 @@ export default function Swiper() {
   const { setSetlist, setTicketmaster, selectedLocation } = useContext(AppContext);
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
   const [selectedArtist, setSelectedArtist] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const drag = useRef(null);
+  const suppressClick = useRef(false);
+  const photosRef = useRef(null);
+  const focusPhoto = useRef(false);
+  const reduceMotion = useSyncExternalStore(subscribeMotion, getReducedMotion);
+
+  useEffect(() => {
+    if (!focusPhoto.current) return;
+    photosRef.current
+      ?.querySelector('[data-carousel-photo][tabindex="0"]')
+      ?.focus({ preventScroll: true });
+    focusPhoto.current = false;
+  }, [active]);
 
   // Limpa o selectedArtist junto: o effect só dispara quando ele muda, então
   // sem isso clicar de novo no mesmo slide depois de um erro não fazia nada.
@@ -62,7 +86,14 @@ export default function Swiper() {
     setSelectedArtist(null);
   };
   const navigate = useNavigate();
-  const isSmallScreen = useIsSmallScreen();
+  // Trata tablet e mobile como o modo compacto, para os cards laterais caberem na tela.
+  const isMobileScreen = useIsSmallScreen(640);
+  const isTabletScreen = useIsSmallScreen(1024);
+  const slideSpacing = isMobileScreen
+    ? SPACING_COMPACT
+    : isTabletScreen
+      ? SPACING_TABLET
+      : SPACING_DESKTOP;
 
   const {
     coords = { lat: -23.5505, long: -46.6333 },
@@ -131,11 +162,68 @@ export default function Swiper() {
     const list = getCarouselSlides(localEventsData);
     setSlides(list);
     setActive(Math.floor(list.length / 2));
+    drag.current = null;
+    setDragOffset(0);
   }, [localEventsData]);
 
   // Controls stay mounted outside the animated slides, preserving keyboard focus.
   const go = (step) => {
-    setActive((current) => Math.min(Math.max(current + step, 0), slides.length - 1));
+    // Depois de usar uma seta, devolve o foco ao card ativo. Isso mantém as
+    // setas do teclado funcionando também quando o carrossel está numa extremidade.
+    focusPhoto.current = true;
+    setActive((current) => {
+      const next = Math.max(0, Math.min(current + step, slides.length - 1));
+      if (next === current) {
+        requestAnimationFrame(() =>
+          photosRef.current
+            ?.querySelector('[data-carousel-photo]:not([tabindex="-1"])')
+            ?.focus({ preventScroll: true }),
+        );
+      }
+      return next;
+    });
+  };
+
+  const startDrag = (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    suppressClick.current = false;
+    drag.current = { id: event.pointerId, x: event.clientX, y: event.clientY, axis: null };
+    event.currentTarget.focus({ preventScroll: true });
+  };
+
+  const moveDrag = (event) => {
+    const gesture = drag.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.axis && Math.max(Math.abs(dx), Math.abs(dy)) > 10) {
+      gesture.axis = Math.abs(dx) > Math.abs(dy) ? "horizontal" : "vertical";
+    }
+    if (gesture.axis === "horizontal") {
+      // Capture only a drag: an ordinary click still reaches the artist card.
+      suppressClick.current = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      const progress = Math.max(-1, Math.min(1, dx / slideSpacing));
+      setDragOffset(Math.max(active - (slides.length - 1), Math.min(active, progress)));
+    }
+  };
+
+  const endDrag = (event) => {
+    const gesture = drag.current;
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    if (gesture.axis === "horizontal" && Math.abs(dx) >= 44) go(dx < 0 ? 1 : -1);
+    drag.current = null;
+    setDragOffset(0);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const cancelDrag = () => {
+    drag.current = null;
+    setDragOffset(0);
   };
 
   const activeSlide = slides[active];
@@ -146,26 +234,52 @@ export default function Swiper() {
   // plain render function, not a component: a component declared inside Swiper would remount
   // every slide on each render, which killed the slide transition
   const renderSlide = (slide, index) => {
-    const offset = index - active;
+    const visualDrag = reduceMotion ? 0 : dragOffset;
+    const offset = index - active + visualDrag;
     const depth = Math.abs(offset);
     // Acima de depth 2 o slide está com opacity 0 — invisível, e ainda assim baixava
     // uma foto. Carrega até 3 para ter um anel de folga: quem desliza um slide já
     // encontra a imagem pronta, em vez de vê-la aparecer depois.
     // O slide é a foto de largura cheia da home; 1024 cobre celular em DPR alto.
     const image = depth <= 3 ? getBestImage(slide.images, 1024) : null;
-    const style = getSlideStyle(offset, depth, image, isSmallScreen);
+    const style = getSlideStyle(offset, depth, image, isMobileScreen, slideSpacing);
 
     return (
       <div
         key={slide.eventId}
-        onClick={() => setSelectedArtist(slide)}
-        className={`group ${offset === 0 ? "relative" : "absolute top-0"} rounded-xl
-                transition-[transform,opacity] duration-300 cursor-pointer w-[100%] sm:w-[80%] md:w-[60%] lg:w-[40%] z-0`}
-        style={{ ...style, background: undefined }}
+        data-active={index === active}
+        className={`group ${index === active ? "relative" : "absolute top-0"} rounded-xl
+                transition-[transform,opacity] duration-300 motion-reduce:transition-none w-full sm:w-[76%] md:w-[58%] lg:w-[40%] z-0`}
+        style={{
+          ...style,
+          transform: style.transform,
+          background: undefined,
+          pointerEvents: depth > 2 ? "none" : "auto",
+          transitionDuration: reduceMotion || dragOffset !== 0 ? "0ms" : undefined,
+        }}
       >
-        <div className="relative aspect-video rounded-xl" style={{ background: style.background }}>
-          <div className="absolute inset-0 rounded-xl overflow-hidden bg-red-600 bg-opacity-0 flex items-end p-6 transition border-4 border-solid border-transparent hover:border-zinc-800 hover:bg-opacity-80 pointer-events-auto z-20"></div>
-        </div>
+        <button
+          type="button"
+          data-carousel-photo
+          tabIndex={index === active ? 0 : -1}
+          aria-label={index === active ? `Open ${slide.artistName}` : `Show ${slide.artistName}`}
+          onClick={() => {
+            if (index === active) setSelectedArtist(slide);
+            else setActive(index);
+          }}
+          className="swiper-photo relative block w-full aspect-video overflow-visible rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          style={{ background: style.background }}
+        >
+          <span className="swiper-photo-highlight absolute inset-0 rounded-xl bg-red-600 opacity-0 pointer-events-none" />
+          {image && index === active && (
+            <img
+              src={image}
+              alt=""
+              aria-hidden="true"
+              className="swiper-photo-reflection absolute left-0 top-[calc(100%-1px)] h-[45dvh] w-full rounded-b-xl object-fill pointer-events-none"
+            />
+          )}
+        </button>
       </div>
     );
   };
@@ -208,9 +322,37 @@ export default function Swiper() {
           <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
         </div>
       ) : (
-        <div className="w-full">
+        <div
+          className="original-swiper w-full"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Upcoming concerts"
+          onKeyDown={(event) => {
+            if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            event.preventDefault();
+            focusPhoto.current = event.target.hasAttribute("data-carousel-photo");
+            go(event.key === "ArrowLeft" ? -1 : 1);
+          }}
+        >
           <div className="relative w-full">
-            <div className="relative w-full flex items-start justify-center overflow-clip">
+            <div
+              ref={photosRef}
+              tabIndex={0}
+              role="group"
+              aria-label="Concert photos. Use left and right arrow keys to browse."
+              className="swiper-photo-stage relative w-full h-[calc((100vw-2rem)*0.5625)] sm:h-[calc((100vw-2rem)*0.4275)] md:h-[calc((100vw-2rem)*0.32625)] lg:h-[calc((100vw-2rem)*0.225)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+              onPointerDown={startDrag}
+              onPointerMove={moveDrag}
+              onPointerUp={endDrag}
+              onPointerCancel={cancelDrag}
+              onLostPointerCapture={cancelDrag}
+              onClickCapture={(event) => {
+                if (!suppressClick.current || event.detail === 0) return;
+                event.preventDefault();
+                event.stopPropagation();
+              }}
+            >
               {slides.map(renderSlide)}
             </div>
             {activeSlide && (
@@ -219,11 +361,12 @@ export default function Swiper() {
                   type="button"
                   onClick={() => go(-1)}
                   aria-label="Previous"
-                  className="min-h-11 text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                  disabled={active === 0}
+                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
                   {"{"}
                 </button>
-                <div className="min-w-0 flex flex-col items-center gap-1">
+                <div className="swiper-artist-info h-[104px] min-w-0 flex flex-col items-center gap-1 overflow-visible sm:h-[88px]">
                   <h2 className="min-w-0 text-3xl font-bold text-balance text-center">
                     <button
                       type="button"
@@ -241,7 +384,8 @@ export default function Swiper() {
                   type="button"
                   onClick={() => go(1)}
                   aria-label="Next"
-                  className="min-h-11 text-6xl text-red-600 px-1 hover:text-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                  disabled={active === slides.length - 1}
+                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
                   {"}"}
                 </button>
