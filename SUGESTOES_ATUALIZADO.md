@@ -23,7 +23,7 @@ ConcertFYI — Pendências e Decisões
 □ Tempo estimado do show no Setlist.jsx.
 ☑ Sinalizar onde começa o "encore" no Setlist.jsx — resolvido em `c9f4f5e` (pedido original era expandir/recolher; o dono preferiu só sinalizar, sem esconder nada).
 ☑ Botão "Copiar setlist" (clipboard) — resolvido em `8a5a94c`.
-□ Botão "Favoritar" em ConcertInfo.jsx (localStorage).
+☑ Favoritar — resolvido em `3e8398d`. Pedido original era favoritar o show em ConcertInfo.jsx; o dono não curtiu, preferiu favoritar o artista (coração em ArtistInfo.jsx) e marcar presença no show ("I WAS THERE" em ConcertInfo.jsx) — os dois já existiam desabilitados na UI, agora ligados em localStorage.
 □ Botão "Compartilhar" em ConcertInfo.jsx.
 □ Loading skeleton em ConcertInfo.jsx.
 □ Genius link como fallback em SongDetails.jsx.
