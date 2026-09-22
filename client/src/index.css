@@ -103,3 +103,11 @@ body {
     display: none;
   }
 }
+
+dialog.map-dialog[open] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
