@@ -18,7 +18,11 @@ export default function SongDetails({ songName, artistName }) {
     isLoading: loading,
     isError: lyricsError,
   } = useLyrics(artistName, songName);
-  const { data: videoId } = useYoutubeVideo(artistName, songName);
+  const {
+    data: videoId,
+    isLoading: videoLoading,
+    isError: videoError,
+  } = useYoutubeVideo(artistName, songName);
   const {
     data: trackUri,
     isLoading: playerLoading,
@@ -101,7 +105,9 @@ export default function SongDetails({ songName, artistName }) {
         </summary>
         <div className="mt-3">
           {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
-          {lyricsError && <p className="text-sm text-red-600 italic">Could not load lyrics</p>}
+          {lyricsError && (
+            <p className="text-sm text-red-600 italic text-center">Could not load lyrics</p>
+          )}
           {lyrics && !loading && (
             <>
               <pre
@@ -126,18 +132,24 @@ export default function SongDetails({ songName, artistName }) {
       </details>
 
       {/* YouTube Video */}
-      {videoId && (
-        <details className="group/video border-b border-gray-300/50 p-2 sm:p-4">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
-            <span>
-              <Icon icon={faCirclePlay} className="mr-2 text-sm text-red-600" />
-              Music Video
-            </span>
-            <span className="shrink-0 text-red-600">
-              <Icon icon={faPlus} className="group-open/video:hidden" />
-              <Icon icon={faMinus} className="hidden group-open/video:inline-block" />
-            </span>
-          </summary>
+      <details className="group/video border-b border-gray-300/50 p-2 sm:p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+          <span>
+            <Icon icon={faCirclePlay} className="mr-2 text-sm text-red-600" />
+            Music Video
+          </span>
+          <span className="shrink-0 text-red-600">
+            <Icon icon={faPlus} className="group-open/video:hidden" />
+            <Icon icon={faMinus} className="hidden group-open/video:inline-block" />
+          </span>
+        </summary>
+        {videoLoading ? (
+          <p className="mt-3 text-sm text-gray-500 text-center">Loading music video...</p>
+        ) : videoError ? (
+          <p className="mt-3 text-sm text-red-600 italic text-center">
+            Could not load music video.
+          </p>
+        ) : videoId ? (
           <div className="mt-3 rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
@@ -149,8 +161,12 @@ export default function SongDetails({ songName, artistName }) {
               style={{ display: "block" }}
             />
           </div>
-        </details>
-      )}
+        ) : (
+          <p className="mt-3 text-sm text-gray-500 text-center">
+            No music video available for this song.
+          </p>
+        )}
+      </details>
 
       <div className="bg-white px-2 py-3 sm:px-4">{spotifyPanel()}</div>
     </div>
