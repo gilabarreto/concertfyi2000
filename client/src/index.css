@@ -87,3 +87,19 @@ body {
     pointer-events: none;
   }
 }
+
+/* No mobile, os dois cards de cada fileira ficam empilhados; a linha no topo do
+   segundo card preserva a separação visual que existe entre ArtistInfo e a primeira fileira. */
+@media (max-width: 1023px) {
+  .artist-card-grid > div + div {
+    border-top: 1px solid #d1d5db;
+  }
+
+  .artist-card-grid > .spotify-player-card {
+    border-top: 0;
+  }
+
+  .past-section-divider {
+    display: none;
+  }
+}

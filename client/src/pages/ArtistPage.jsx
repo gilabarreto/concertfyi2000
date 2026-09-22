@@ -57,12 +57,12 @@ export default function ArtistPage() {
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
-      <div className="w-full mx-auto px-6 py-4 space-y-4">
+      <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
         <div className="min-w-0 bg-white p-6 flex-1 space-y-2">
           <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
         </div>
 
-        <hr className="w-[95%] mx-auto border-gray-300" />
+        <hr className="w-full sm:w-[95%] mx-auto border-gray-300" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="min-w-0 bg-white p-6 space-y-2">
@@ -74,19 +74,19 @@ export default function ArtistPage() {
           </div>
         </div>
 
-        <hr className="w-[95%] mx-auto border-gray-300" />
+        <hr className="w-full sm:w-[95%] mx-auto border-gray-300" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="min-w-0 bg-white p-6 space-y-2">
             <Setlist concert={concert} />
           </div>
 
-          <div className="min-w-0 p-2 sm:p-6 before:hidden">
+          <div className="min-w-0 p-2 sm:p-6 before:hidden spotify-player-card">
             <Player ticketmaster={ticketmaster} />
           </div>
         </div>
 
-        <hr className="w-[95%] mx-auto border-gray-300" />
+        <hr className="w-full sm:w-[95%] mx-auto border-gray-300 past-section-divider" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="min-w-0 bg-white p-6 space-y-2">
