@@ -110,27 +110,27 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
         <li className="border-b border-gray-300/50 py-2">Tour:&ensp;{tour}</li>
         <li className="border-b border-gray-300/50 py-2">Venue:&ensp;{venue?.name}</li>
         <li className="border-b border-gray-300/50 py-2">
-          Location:&ensp;{venue?.city?.name}, {venue?.country?.countryCode}
+          Location:&ensp;
+          {coords ? (
+            <button
+              type="button"
+              onClick={() => mapRef.current.showModal()}
+              title="View on map"
+              aria-haspopup="dialog"
+              className="inline align-baseline text-red-600 hover:text-red-800 hover:underline transition-colors"
+            >
+              <Icon icon={faLocationDot} className="mr-2" />
+              <span>
+                {venue?.city?.name}, {venue?.country?.countryCode}
+              </span>
+            </button>
+          ) : (
+            <span>
+              {venue?.city?.name}, {venue?.country?.countryCode}
+            </span>
+          )}
         </li>
       </ol>
-
-      {coords && (
-        <div className="flex justify-center mt-6">
-          <button
-            type="button"
-            onClick={() => mapRef.current.showModal()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              mapRef.current.showModal();
-            }}
-            title="View on map"
-            className="pl-6 pr-8 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center gap-2"
-          >
-            <Icon icon={faLocationDot} />
-            Map
-          </button>
-        </div>
-      )}
 
       <MapDialog
         dialogRef={mapRef}

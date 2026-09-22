@@ -75,16 +75,14 @@ export default function ConcertReminder({ event, artistName }) {
   return (
     <>
       <VendorTiles icon={faCalendarPlus} title="Add to calendar" vendors={vendors} />
-      <div className="flex justify-center py-3">
+      <div className="flex justify-center px-2 py-3 sm:px-4">
         {/* Same visual weight as "Create Spotify Playlist" below the setlist — both are
             the one committing action on their card, everything else on this row is a link. */}
         <button
           type="button"
           onClick={handleShare}
           title="Share"
-          className={`pl-6 pr-8 py-2 text-md font-semibold text-white rounded flex items-center gap-2 ${
-            copied ? "bg-green-600" : "bg-red-600 hover:bg-red-800"
-          }`}
+          className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors"
         >
           <Icon icon={copied ? faCheck : faShareNodes} />
           {copied ? "Link copied" : "Share"}
