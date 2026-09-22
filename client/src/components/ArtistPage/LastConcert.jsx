@@ -39,7 +39,7 @@ export default function LastConcert({ concert, setlist }) {
     localStorage.setItem(ATTENDED_KEY, JSON.stringify(next));
     // Just marked as attended: prompt for a rating right away rather than leaving it
     // to be found later.
-    if (!wasThere) ratingRef.current.showModal();
+    if (!wasThere) ratingRef.current.open("rate");
   };
 
   const pastConcerts = getPastConcertsByArtist(setlist, artistId);
@@ -119,23 +119,15 @@ export default function LastConcert({ concert, setlist }) {
             </span>
           )}
         </li>
-      </ol>
 
-      {(reviews.length > 0 || wasThere) && (
-        <div className="pl-6">
-          {reviews.length > 0 ? (
-            <ConcertComments reviews={reviews} key={concert.id} />
-          ) : (
-            <button
-              type="button"
-              onClick={() => ratingRef.current.showModal()}
-              className="mt-2 text-xs text-red-600 hover:text-red-800 font-semibold"
-            >
-              Rate this concert
-            </button>
-          )}
-        </div>
-      )}
+        <ConcertComments
+          concertId={concert.id}
+          reviews={reviews}
+          onSaved={setReviews}
+          onLeaveReview={() => ratingRef.current.open("comment")}
+          key={concert.id}
+        />
+      </ol>
 
       <MapDialog
         dialogRef={mapRef}
@@ -144,7 +136,7 @@ export default function LastConcert({ concert, setlist }) {
         longitude={coords?.long}
       />
 
-      <ConcertRatingDialog dialogRef={ratingRef} concertId={concert.id} onSaved={setReviews} />
+      <ConcertRatingDialog ref={ratingRef} concertId={concert.id} onSaved={setReviews} />
     </>
   );
 }

@@ -1,27 +1,40 @@
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import StarRating from "./StarRating";
-import { addReview } from "../../helpers/concertReviews";
+import { upsertReview } from "../../helpers/concertReviews";
 
 const MAX_COMMENT = 300;
 
-// Two steps in one <dialog>: rate first, then — only once a rating exists — offer to
-// comment. "Not now" and "Skip" both still count as answering; a rating alone is a
-// complete review, the comment step never blocks it.
-export default function ConcertRatingDialog({ dialogRef, concertId, onSaved }) {
+// Two entry points into the same <dialog>: "I WAS THERE" opens at the rate step (rating
+// is saved the moment "Next" is clicked, so it survives even if the comment step gets
+// closed unanswered); the Review row's own "Leave a review" skips straight to the comment
+// step and never touches the rating — that's what the stars in the list are for.
+const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId, onSaved }, ref) {
+  const dialogRef = useRef(null);
   const [step, setStep] = useState("rate");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  // Native <dialog> fires "close" for Esc too, not just our own buttons — reset there so
-  // reopening it later (a second "I WAS THERE") always starts from the rating step.
+  useImperativeHandle(ref, () => ({
+    open(startStep = "rate") {
+      setStep(startStep);
+      dialogRef.current.showModal();
+    },
+  }));
+
+  // Native <dialog> fires "close" for Esc too, not just our own buttons.
   const reset = () => {
     setStep("rate");
     setRating(0);
     setComment("");
   };
 
-  const save = (withComment) => {
-    onSaved(addReview(concertId, { rating, comment: withComment ? comment.trim() : "" }));
+  const goToComment = () => {
+    onSaved(upsertReview(concertId, { rating }));
+    setStep("comment");
+  };
+
+  const saveComment = (withComment) => {
+    if (withComment) onSaved(upsertReview(concertId, { comment: comment.trim() }));
     dialogRef.current.close();
   };
 
@@ -50,7 +63,7 @@ export default function ConcertRatingDialog({ dialogRef, concertId, onSaved }) {
             </button>
             <button
               type="button"
-              onClick={() => setStep("comment")}
+              onClick={goToComment}
               disabled={!rating}
               className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-800 disabled:opacity-50 text-white font-semibold rounded"
             >
@@ -76,14 +89,14 @@ export default function ConcertRatingDialog({ dialogRef, concertId, onSaved }) {
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => save(false)}
+              onClick={() => saveComment(false)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded font-semibold text-gray-600 hover:border-red-600 hover:text-red-600"
             >
               Skip
             </button>
             <button
               type="button"
-              onClick={() => save(true)}
+              onClick={() => saveComment(true)}
               disabled={!comment.trim()}
               className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-800 disabled:opacity-50 text-white font-semibold rounded"
             >
@@ -94,4 +107,6 @@ export default function ConcertRatingDialog({ dialogRef, concertId, onSaved }) {
       )}
     </dialog>
   );
-}
+});
+
+export default ConcertRatingDialog;
