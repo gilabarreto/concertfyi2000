@@ -165,78 +165,80 @@ export default function Setlist({ concert }) {
 
       <hr className="border-t border-gray-300 opacity-50 ml-6" />
 
-      {songs.length === 0 ? (
-        <span className="py-2 ml-6 block text-gray-500">
-          No songs in this setlist. Check back later.
-        </span>
-      ) : (
-        <>
-          <ol className="pl-6">
-            {displaySongs.map((song, i) => {
-              const songIndex = offset + i;
-              const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;
-              return (
-                <li key={songIndex} className="flex flex-col">
-                  {isEncoreStart && (
-                    <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
-                      Encore
-                    </span>
-                  )}
-                  <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
-                    {/* the li is a flex container, which swallows the list marker, so the
+      <>
+        {songs.length === 0 ? (
+          <span className="py-2 ml-6 block text-gray-500">
+            No songs in this setlist. Check back later.
+          </span>
+        ) : (
+          <>
+            <ol className="pl-6">
+              {displaySongs.map((song, i) => {
+                const songIndex = offset + i;
+                const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;
+                return (
+                  <li key={songIndex} className="flex flex-col">
+                    {isEncoreStart && (
+                      <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                        Encore
+                      </span>
+                    )}
+                    <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
+                      {/* the li is a flex container, which swallows the list marker, so the
                         position gets its own cell */}
-                    <span className="flex flex-1 items-center gap-2">
-                      <span className="tabular-nums text-gray-500">{songIndex + 1}.</span>
-                      <span>{song.name}</span>
-                    </span>
+                      <span className="flex flex-1 items-center gap-2">
+                        <span className="tabular-nums text-gray-500">{songIndex + 1}.</span>
+                        <span>{song.name}</span>
+                      </span>
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setExpandedLyrics(expandedLyrics === songIndex ? null : songIndex)
-                      }
-                      aria-label={`Details for ${song.name}`}
-                      aria-expanded={expandedLyrics === songIndex}
-                      className="p-1 hover:text-red-800 ml-2"
-                    >
-                      <Icon
-                        icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
-                        className="text-red-600"
-                      />
-                    </button>
-                  </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setExpandedLyrics(expandedLyrics === songIndex ? null : songIndex)
+                        }
+                        aria-label={`Details for ${song.name}`}
+                        aria-expanded={expandedLyrics === songIndex}
+                        className="p-1 hover:text-red-800 ml-2"
+                      >
+                        <Icon
+                          icon={expandedLyrics === songIndex ? faChevronUp : faChevronDown}
+                          className="text-red-600"
+                        />
+                      </button>
+                    </div>
 
-                  {expandedLyrics === songIndex && (
-                    <SongDetails songName={song.name} artistName={artistName} />
-                  )}
-                </li>
-              );
-            })}
-          </ol>
+                    {expandedLyrics === songIndex && (
+                      <SongDetails songName={song.name} artistName={artistName} />
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
 
-          {paginated && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={pageCount}
-              onPageChange={goToPage}
-              label="Setlist pages"
-            />
-          )}
+            {paginated && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={pageCount}
+                onPageChange={goToPage}
+                label="Setlist pages"
+              />
+            )}
 
-          <div className="flex justify-center mt-10 ml-6 px-2 sm:px-4">
-            <button
-              onClick={handleSpotifyPlaylist}
-              disabled={creatingPlaylist}
-              aria-busy={creatingPlaylist}
-              className={`w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
-              title="Create Spotify Playlist"
-            >
-              <Icon icon={faSpotify} />
-              {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
-            </button>
-          </div>
-        </>
-      )}
+            <div className="flex justify-center ml-6 bg-white px-2 py-3 sm:px-4">
+              <button
+                onClick={handleSpotifyPlaylist}
+                disabled={creatingPlaylist}
+                aria-busy={creatingPlaylist}
+                className={`w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
+                title="Create Spotify Playlist"
+              >
+                <Icon icon={faSpotify} />
+                {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
+              </button>
+            </div>
+          </>
+        )}
+      </>
 
       {/* native modal: focus trap, Esc to close and focus return come from the browser */}
       <dialog

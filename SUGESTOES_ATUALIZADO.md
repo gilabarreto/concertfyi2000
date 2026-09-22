@@ -8,6 +8,7 @@ ConcertFYI — Pendências e Decisões
 □ Conferir no painel do Render o que o log de acesso da plataforma guarda (IP? query?) e por quanto tempo — a promessa "sem IP e sem query" vale só para o nosso middleware.
 □ Sair do GitHub Pages (Netlify/Vercel/Cloudflare Pages). Resolve: página de artista responder 404 real, CSP via header em vez de <meta>, e Cache-Control dos assets.
 🟡 Decisões de produto/arquitetura
+□ Concert Times em Past Concerts — adiado por decisão do dono em 2026-09-21; prévia e dados fictícios removidos. Ideia: Doors, início/fim do show e lineup com horário de cada artista. A API pública documentada do setlist.fm não expõe campos estruturados para esses horários nem lineup com horários; o campo livre `info` pode conter observações, mas não garante esses dados. Retomar somente com uma fonte confiável ou suporte oficial da API. Referências: [modelo da API](https://api.setlist.fm/docs/1.0/json_Setlist.html) e [pedido de inclusão dos horários](https://www.setlist.fm/forum/setlistfm/setlistfm-api/feature-request-api-add-fields-to-responses-1bd705e8).
 □ Mapa estático ou mapa atrás de clique — o mapa é o LCP (7,3–7,5 s) e custa ~400 kB de JS de terceiro. Bloqueado pela chave acima.
 □ Token da Spotify no localStorage — risco aceito; trocar exige cookie httpOnly com servidor stateful.
 □ Foto não-16:9 é cortada (object-cover na caixa aspect-video). Alternativa: object-contain com letterbox.

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
 import {
@@ -9,7 +9,10 @@ import {
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
+import { getReviews } from "../../helpers/concertReviews";
 import MapDialog from "./MapDialog";
+import ConcertRatingDialog from "./ConcertRatingDialog";
+import ConcertComments from "./ConcertComments";
 
 const ATTENDED_KEY = "attendedConcertIds";
 
@@ -21,13 +24,22 @@ export default function LastConcert({ concert, setlist }) {
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
   const [attended, setAttended] = useState(getAttended);
+  const [reviews, setReviews] = useState(() => getReviews(concert.id));
   const mapRef = useRef(null);
+  const ratingRef = useRef(null);
+
+  // Prev/next arrows below swap `concert` without remounting this component — reload
+  // whichever concert's reviews we're now looking at instead of carrying the old ones.
+  useEffect(() => setReviews(getReviews(concert.id)), [concert.id]);
 
   const wasThere = attended.includes(concert.id);
   const toggleWasThere = () => {
     const next = wasThere ? attended.filter((id) => id !== concert.id) : [...attended, concert.id];
     setAttended(next);
     localStorage.setItem(ATTENDED_KEY, JSON.stringify(next));
+    // Just marked as attended: prompt for a rating right away rather than leaving it
+    // to be found later.
+    if (!wasThere) ratingRef.current.showModal();
   };
 
   const pastConcerts = getPastConcertsByArtist(setlist, artistId);
@@ -109,12 +121,30 @@ export default function LastConcert({ concert, setlist }) {
         </li>
       </ol>
 
+      {(reviews.length > 0 || wasThere) && (
+        <div className="pl-6">
+          {reviews.length > 0 ? (
+            <ConcertComments reviews={reviews} key={concert.id} />
+          ) : (
+            <button
+              type="button"
+              onClick={() => ratingRef.current.showModal()}
+              className="mt-2 text-xs text-red-600 hover:text-red-800 font-semibold"
+            >
+              Rate this concert
+            </button>
+          )}
+        </div>
+      )}
+
       <MapDialog
         dialogRef={mapRef}
         title={venue || "Venue location"}
         latitude={coords?.lat}
         longitude={coords?.long}
       />
+
+      <ConcertRatingDialog dialogRef={ratingRef} concertId={concert.id} onSaved={setReviews} />
     </>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import Icon from "./Icon";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons";
-import { faCirclePlay } from "@fortawesome/free-solid-svg-icons";
+import { faCirclePlay, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { faFileLines } from "@fortawesome/free-regular-svg-icons";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../helpers/spotifyAuth";
 import { useLyrics, useYoutubeVideo, useSpotifyTrack } from "../api/queries";
@@ -54,7 +54,7 @@ export default function SongDetails({ songName, artistName }) {
     }
   };
 
-  // Sem token não há o que tocar, então o convite vem antes de tudo. Com token e sem faixa
+  // Sem token, mostramos o convite para conectar. Com token e sem faixa
   // a busca ou está em curso, ou terminou sem achar a música no catálogo — neste último
   // caso não se mostra nada, porque não há erro nenhum a relatar ao ouvinte.
   const spotifyPanel = () => {
@@ -86,55 +86,59 @@ export default function SongDetails({ songName, artistName }) {
   };
 
   return (
-    <div className="bg-gray-50 border-b border-gray-300/50 p-2 space-y-4 sm:p-4">
-      {spotifyPanel()}
-
+    <div className="bg-gray-50 border-b border-gray-300/50">
       {/* Lyrics Section */}
-      <div ref={lyricsRef}>
-        <h3 className="text-base font-semibold text-gray-700 mb-2 text-center">
-          <Icon
-            icon={faFileLines}
-            className="text-sm text-red-600 hover:text-red-800"
-            title="Lyrics"
-          />{" "}
-          Lyrics
-        </h3>
-        {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
-        {lyricsError && <p className="text-sm text-red-600 italic">Could not load lyrics</p>}
-        {lyrics && !loading && (
-          <>
-            <pre
-              className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
-              style={{ maskImage: lyricsMask, WebkitMaskImage: lyricsMask }}
-            >
-              {showFullLyrics ? lyrics : previewLines}
-            </pre>
-            {hasMoreLyrics && (
-              <div className="flex justify-center">
-                <button
-                  onClick={toggleLyrics}
-                  className="text-base text-red-600 hover:text-red-800 font-semibold"
-                >
-                  {showFullLyrics ? "Show Less" : "View More"}
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+      <details ref={lyricsRef} className="group/lyrics border-b border-gray-300/50 p-2 sm:p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+          <span>
+            <Icon icon={faFileLines} className="mr-2 text-sm text-red-600" />
+            Lyrics
+          </span>
+          <span className="shrink-0 text-red-600">
+            <Icon icon={faPlus} className="group-open/lyrics:hidden" />
+            <Icon icon={faMinus} className="hidden group-open/lyrics:inline-block" />
+          </span>
+        </summary>
+        <div className="mt-3">
+          {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
+          {lyricsError && <p className="text-sm text-red-600 italic">Could not load lyrics</p>}
+          {lyrics && !loading && (
+            <>
+              <pre
+                className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
+                style={{ maskImage: lyricsMask, WebkitMaskImage: lyricsMask }}
+              >
+                {showFullLyrics ? lyrics : previewLines}
+              </pre>
+              {hasMoreLyrics && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={toggleLyrics}
+                    className="text-base text-red-600 hover:text-red-800 font-semibold"
+                  >
+                    {showFullLyrics ? "Show Less" : "View More"}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </details>
 
       {/* YouTube Video */}
       {videoId && (
-        <div>
-          <h3 className="text-base font-semibold text-gray-700 mb-2">
-            <Icon
-              icon={faCirclePlay}
-              className="text-sm text-red-600 hover:text-red-800"
-              title="YouTube"
-            />{" "}
-            Music Video
-          </h3>
-          <div className="rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
+        <details className="group/video border-b border-gray-300/50 p-2 sm:p-4">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+            <span>
+              <Icon icon={faCirclePlay} className="mr-2 text-sm text-red-600" />
+              Music Video
+            </span>
+            <span className="shrink-0 text-red-600">
+              <Icon icon={faPlus} className="group-open/video:hidden" />
+              <Icon icon={faMinus} className="hidden group-open/video:inline-block" />
+            </span>
+          </summary>
+          <div className="mt-3 rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
               height="100%"
@@ -145,8 +149,10 @@ export default function SongDetails({ songName, artistName }) {
               style={{ display: "block" }}
             />
           </div>
-        </div>
+        </details>
       )}
+
+      <div className="bg-white px-2 py-3 sm:px-4">{spotifyPanel()}</div>
     </div>
   );
 }
