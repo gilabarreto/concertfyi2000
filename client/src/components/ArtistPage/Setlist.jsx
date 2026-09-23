@@ -229,7 +229,7 @@ export default function Setlist({ concert }) {
                 onClick={handleSpotifyPlaylist}
                 disabled={creatingPlaylist}
                 aria-busy={creatingPlaylist}
-                className={`w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
+                className={`w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
                 title="Create Spotify Playlist"
               >
                 <Icon icon={faSpotify} />

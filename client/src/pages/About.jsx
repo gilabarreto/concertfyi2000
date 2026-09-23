@@ -33,10 +33,10 @@ export default function About() {
               © 2025 concertfyi. all rights reserved.
             </span>
             <div className="flex shrink-0 text-xs sm:text-sm items-center gap-2 sm:gap-3">
-              <a href="#" aria-label="Instagram">
+              <a href="#" aria-label="Instagram" className="hover:opacity-80 transition-opacity">
                 <Icon icon={faInstagram} size="2x" />
               </a>
-              <a href="#" aria-label="Facebook">
+              <a href="#" aria-label="Facebook" className="hover:opacity-80 transition-opacity">
                 <Icon icon={faFacebookF} size="2x" />
               </a>
               <Link

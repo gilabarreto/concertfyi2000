@@ -82,7 +82,7 @@ export default function ConcertReminder({ event, artistName }) {
           type="button"
           onClick={handleShare}
           title="Share"
-          className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors"
+          className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
         >
           <Icon icon={copied ? faCheck : faShareNodes} />
           {copied ? "Link copied" : "Share"}

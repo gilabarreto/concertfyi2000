@@ -111,7 +111,7 @@ export default function Footer() {
             to={link.path}
             aria-label={link.label}
             onClick={closeAndNavigate}
-            className="flex shrink-0 items-center gap-2 min-h-11 text-xl font-normal hover:underline hover:underline-offset-8 hover:opacity-90 transition"
+            className="flex shrink-0 items-center gap-2 min-h-11 text-xl font-normal hover:opacity-80 transition-opacity"
           >
             <Icon icon={link.icon} />
             <span className="hidden sm:inline">{link.label}</span>

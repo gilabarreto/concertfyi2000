@@ -121,7 +121,7 @@ export default function LocationSelector({
           e.preventDefault();
           setShowDropdown(!showDropdown);
         }}
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-zinc-500 hover:opacity-90 transition bg-none border-none active:opacity-70"
+        className="flex justify-center items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity bg-none border-none active:opacity-70"
         title="Change location"
       >
         <Icon icon={faLocationDot} className="shrink-0 text-xl" />

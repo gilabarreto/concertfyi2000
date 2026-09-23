@@ -23,8 +23,13 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 - Cinza é sempre `zinc-*`. `gray-*` não entra.
 - O vermelho fica em `red-600` e não no #FA2D48 do Apple Music: aquele dá 3,6:1 sobre
   branco e derruba a acessibilidade 100.
-- O vermelho continua em links, ações, setas de expandir e ícones das linhas; hover escurece
-  para `red-800`. Tirar vermelho das setas e ícones foi testado e recusado pelo dono em
+- O vermelho continua em links, ações, setas de expandir e ícones das linhas.
+- Hover, uma regra por fundo:
+  - na coluna branca, vermelho escurece para `red-800` (texto `hover:text-red-800`, botão
+    cheio `hover:bg-red-800`); ícone neutro que vira ação acende em `hover:text-red-600`;
+  - na moldura vermelha (Navbar, Footer, About, Contact), `hover:opacity-80`. Nada de
+    sublinhado nem troca de cor sobre o vermelho.
+  - Exceção: botão do Spotify fica no verde da marca deles. Tirar vermelho das setas e ícones foi testado e recusado pelo dono em
   2026-09-23.
 
 ## Tipografia

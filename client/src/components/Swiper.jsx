@@ -363,7 +363,7 @@ export default function Swiper() {
                   onClick={() => go(-1)}
                   aria-label="Previous"
                   disabled={active === 0}
-                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
                   {"{"}
                 </button>
@@ -386,7 +386,7 @@ export default function Swiper() {
                   onClick={() => go(1)}
                   aria-label="Next"
                   disabled={active === slides.length - 1}
-                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-zinc-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
                   {"}"}
                 </button>

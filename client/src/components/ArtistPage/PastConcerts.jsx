@@ -19,7 +19,7 @@ export default function PastConcerts(props) {
           <Link
             to={`/artists/${props.artistId}/concerts/${concert.id}`}
             state={{ scrollTo: "next-concert" }}
-            className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-700 rounded flex items-center justify-center gap-2 transition-colors"
+            className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
           >
             <Icon icon={faRotateLeft} />
             View concert

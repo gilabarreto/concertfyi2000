@@ -117,7 +117,7 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
               onClick={() => mapRef.current.showModal()}
               title="View on map"
               aria-haspopup="dialog"
-              className="inline align-baseline text-red-600 hover:text-red-800 hover:underline transition-colors"
+              className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
             >
               <Icon icon={faLocationDot} className="mr-2" />
               <span>
