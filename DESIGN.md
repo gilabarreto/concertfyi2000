@@ -78,6 +78,8 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
 - `tracking-tight` em display (ver Tipografia).
 - Máscara em gradiente no reflexo do Swiper (`Swiper.css`): o reflexo é o Cover Flow.
   Gradiente continua vetado em qualquer outro lugar.
+  Palco da página de artista tingido com as cores da foto (estilo Apple Music) foi
+  testado e recusado pelo dono em 2026-09-23: fica `zinc-100`.
 
 ## Ordem de entrega (um commit por passo)
 
