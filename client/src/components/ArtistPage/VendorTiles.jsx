@@ -9,8 +9,8 @@ export default function VendorTiles({ icon, title, vendors }) {
   const hasSubtitle = vendors.some((vendor) => vendor.subtitle);
 
   return (
-    <details className="group bg-gray-50 border-b border-gray-300/50 p-2 sm:p-4">
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+    <details className="group bg-zinc-50 border-b border-zinc-300/50 p-2 sm:p-4">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
         <span>
           <Icon icon={icon} className="mr-2 text-sm text-red-600" />
           {title}
@@ -26,7 +26,7 @@ export default function VendorTiles({ icon, title, vendors }) {
         {vendors.map((vendor) => (
           <li key={vendor.name} className="min-w-0 flex-1 max-w-28">
             <a
-              className="flex flex-col items-center gap-1 rounded px-1 py-2 hover:text-red-800 hover:bg-gray-100 sm:px-3"
+              className="flex flex-col items-center gap-1 rounded px-1 py-2 hover:text-red-800 hover:bg-zinc-100 sm:px-3"
               href={vendor.href}
               download={vendor.download}
               target={vendor.download ? undefined : "_blank"}

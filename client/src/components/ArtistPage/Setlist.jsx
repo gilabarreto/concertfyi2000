@@ -141,7 +141,7 @@ export default function Setlist({ concert }) {
           >
             <Icon
               icon={copied ? faCheck : faCopy}
-              className={copied ? "text-green-600" : "text-gray-500"}
+              className={copied ? "text-green-600" : "text-zinc-500"}
             />
           </button>
           <span role="status" aria-live="polite" className="sr-only">
@@ -158,16 +158,16 @@ export default function Setlist({ concert }) {
             aria-label="Disclaimer"
             aria-haspopup="dialog"
           >
-            <Icon icon={faCircleInfo} className="text-gray-500" />
+            <Icon icon={faCircleInfo} className="text-zinc-500" />
           </button>
         </div>
       </div>
 
-      <hr className="border-t border-gray-300 opacity-50 ml-6" />
+      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       <>
         {songs.length === 0 ? (
-          <span className="py-2 ml-6 block text-gray-500">
+          <span className="py-2 ml-6 block text-zinc-500">
             No songs in this setlist. Check back later.
           </span>
         ) : (
@@ -179,15 +179,15 @@ export default function Setlist({ concert }) {
                 return (
                   <li key={songIndex} className="flex flex-col">
                     {isEncoreStart && (
-                      <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                      <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
                         Encore
                       </span>
                     )}
-                    <div className="flex items-center justify-between border-b border-gray-300/50 py-2">
+                    <div className="flex items-center justify-between border-b border-zinc-300/50 py-2">
                       {/* the li is a flex container, which swallows the list marker, so the
                         position gets its own cell */}
                       <span className="flex flex-1 items-center gap-2">
-                        <span className="tabular-nums text-gray-500">{songIndex + 1}.</span>
+                        <span className="tabular-nums text-zinc-500">{songIndex + 1}.</span>
                         <span>{song.name}</span>
                       </span>
 
@@ -249,7 +249,7 @@ export default function Setlist({ concert }) {
         <h3 id="disclaimer-title" className="text-xl font-bold mb-4">
           Disclaimer
         </h3>
-        <div className="text-sm text-gray-700 space-y-3 mb-6">
+        <div className="text-sm text-zinc-700 space-y-3 mb-6">
           <p>
             ConcertFYI uses information from third-party sources. We don't own or control all of the
             content displayed here.

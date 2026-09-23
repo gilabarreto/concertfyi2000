@@ -121,7 +121,7 @@ export default function LocationSelector({
           e.preventDefault();
           setShowDropdown(!showDropdown);
         }}
-        className="flex justify-center items-center gap-2 cursor-pointer hover:text-gray-500 hover:opacity-90 transition bg-none border-none active:opacity-70"
+        className="flex justify-center items-center gap-2 cursor-pointer hover:text-zinc-500 hover:opacity-90 transition bg-none border-none active:opacity-70"
         title="Change location"
       >
         <Icon icon={faLocationDot} className="shrink-0 text-xl" />
@@ -137,8 +137,8 @@ export default function LocationSelector({
         <div
           className={
             placement === "top"
-              ? "absolute bottom-full left-0 w-full bg-red-600 text-gray-900 shadow-md border-b border-white/20 px-6 py-4 [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>ul]:bg-white [&>button]:bg-white [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
-              : "absolute top-full left-0 w-full bg-white text-gray-900 border-t border-gray-200 shadow-md z-50 px-6 py-4 max-h-[calc(100dvh-8rem)] overflow-y-auto [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
+              ? "absolute bottom-full left-0 w-full bg-red-600 text-zinc-900 shadow-md border-b border-white/20 px-6 py-4 [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>ul]:bg-white [&>button]:bg-white [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
+              : "absolute top-full left-0 w-full bg-white text-zinc-900 border-t border-zinc-200 shadow-md z-50 px-6 py-4 max-h-[calc(100dvh-8rem)] overflow-y-auto [&>div]:max-w-xl [&>div]:mx-auto [&>ul]:max-w-xl [&>ul]:mx-auto [&>button]:max-w-xl [&>button]:mx-auto [&>button]:block"
           }
         >
           <div className="relative">
@@ -148,7 +148,7 @@ export default function LocationSelector({
               placeholder="Search location..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="bg-white w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
+              className="bg-white w-full px-4 py-3 pr-10 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
               autoFocus
             />
             {searchInput && (
@@ -158,7 +158,7 @@ export default function LocationSelector({
                   setSearchInput("");
                   inputRef.current?.focus();
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
                 title="Clear search"
                 aria-label="Clear search"
               >
@@ -174,14 +174,14 @@ export default function LocationSelector({
                 setSearchInput("");
                 setShowDropdown(false);
               }}
-              className="w-full px-4 py-2 text-center text-sm text-red-600 hover:bg-red-50 border-b border-gray-200 transition-colors bg-none border-none"
+              className="w-full px-4 py-2 text-center text-sm text-red-600 hover:bg-red-50 border-b border-zinc-200 transition-colors bg-none border-none"
             >
               Reset to Original Location
             </button>
           )}
 
           {showResults && (isError || suggestions.length === 0) && (
-            <div className="bg-white px-4 py-3 text-center text-gray-500 text-sm">
+            <div className="bg-white px-4 py-3 text-center text-zinc-500 text-sm">
               {emptyMessage()}
             </div>
           )}
@@ -189,14 +189,14 @@ export default function LocationSelector({
           {showResults && !isError && suggestions.length > 0 && (
             <ul className="max-h-72 overflow-y-auto">
               {suggestions.map((loc) => (
-                <li key={loc.id} className="border-b border-gray-100 last:border-0">
+                <li key={loc.id} className="border-b border-zinc-100 last:border-0">
                   <button
                     type="button"
                     onClick={() => handleSelectLocation(loc)}
                     className="w-full px-4 py-3 text-left hover:bg-red-50 cursor-pointer transition-colors focus-visible:outline-none focus-visible:bg-red-50 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-red-600"
                   >
-                    <span className="block font-medium text-gray-800 text-sm">{loc.city}</span>
-                    <span className="block text-gray-500 text-xs">
+                    <span className="block font-medium text-zinc-800 text-sm">{loc.city}</span>
+                    <span className="block text-zinc-500 text-xs">
                       {[loc.state, loc.country].filter(Boolean).join(", ")}
                     </span>
                   </button>

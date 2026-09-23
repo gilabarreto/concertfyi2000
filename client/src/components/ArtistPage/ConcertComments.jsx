@@ -23,7 +23,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
 
   return (
     <>
-      <li className="border-b border-gray-300/50 py-2">
+      <li className="border-b border-zinc-300/50 py-2">
         <div className="flex items-center gap-2">
           {/* Clicking here edits the rating directly — no need to reopen the popup just
               because someone changed their mind about the stars. */}
@@ -33,7 +33,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
             onRate={(n) => onSaved(upsertReview(concertId, { rating: n }))}
             size="text-lg"
           />
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-zinc-500">
             {reviews.length > 0
               ? `${average.toFixed(1)} (${reviews.length} ${reviews.length === 1 ? "review" : "reviews"})`
               : "(no ratings yet)"}
@@ -41,7 +41,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
         </div>
       </li>
 
-      <li className="border-b border-gray-300/50 py-2">
+      <li className="border-b border-zinc-300/50 py-2">
         <div className="flex items-center gap-2">
           <span className="shrink-0">Review:&ensp;</span>
           {current ? (
@@ -94,7 +94,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
         aria-label="Review"
         className="bg-white rounded-lg p-6 w-[calc(100%-2rem)] max-w-md backdrop:bg-black/50"
       >
-        <p className="text-sm text-gray-700 mb-4 whitespace-pre-wrap">{current?.comment}</p>
+        <p className="text-sm text-zinc-700 mb-4 whitespace-pre-wrap">{current?.comment}</p>
         <button
           type="button"
           onClick={() => expandRef.current.close()}

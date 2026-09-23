@@ -85,15 +85,15 @@ export default function SongDetails({ songName, artistName }) {
         />
       );
 
-    if (playerLoading) return <p className="text-sm text-gray-500">Loading Spotify track...</p>;
+    if (playerLoading) return <p className="text-sm text-zinc-500">Loading Spotify track...</p>;
     return null;
   };
 
   return (
-    <div className="bg-gray-50 border-b border-gray-300/50">
+    <div className="bg-zinc-50 border-b border-zinc-300/50">
       {/* Lyrics Section */}
-      <details ref={lyricsRef} className="group/lyrics border-b border-gray-300/50 p-2 sm:p-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+      <details ref={lyricsRef} className="group/lyrics border-b border-zinc-300/50 p-2 sm:p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
           <span>
             <Icon icon={faFileLines} className="mr-2 text-sm text-red-600" />
             Lyrics
@@ -104,14 +104,14 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         <div className="mt-3">
-          {loading && <p className="text-sm text-gray-500">Loading lyrics...</p>}
+          {loading && <p className="text-sm text-zinc-500">Loading lyrics...</p>}
           {lyricsError && (
             <p className="text-sm text-red-600 italic text-center">Could not load lyrics</p>
           )}
           {lyrics && !loading && (
             <>
               <pre
-                className="text-base leading-relaxed font-sans text-gray-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
+                className="text-base leading-relaxed font-sans text-zinc-700 whitespace-pre-wrap break-words mb-2 overflow-y-auto text-center"
                 style={{ maskImage: lyricsMask, WebkitMaskImage: lyricsMask }}
               >
                 {showFullLyrics ? lyrics : previewLines}
@@ -132,8 +132,8 @@ export default function SongDetails({ songName, artistName }) {
       </details>
 
       {/* YouTube Video */}
-      <details className="group/video border-b border-gray-300/50 p-2 sm:p-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-gray-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+      <details className="group/video border-b border-zinc-300/50 p-2 sm:p-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
           <span>
             <Icon icon={faCirclePlay} className="mr-2 text-sm text-red-600" />
             Music Video
@@ -144,7 +144,7 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         {videoLoading ? (
-          <p className="mt-3 text-sm text-gray-500 text-center">Loading music video...</p>
+          <p className="mt-3 text-sm text-zinc-500 text-center">Loading music video...</p>
         ) : videoError ? (
           <p className="mt-3 text-sm text-red-600 italic text-center">
             Could not load music video.
@@ -162,7 +162,7 @@ export default function SongDetails({ songName, artistName }) {
             />
           </div>
         ) : (
-          <p className="mt-3 text-sm text-gray-500 text-center">
+          <p className="mt-3 text-sm text-zinc-500 text-center">
             No music video available for this song.
           </p>
         )}

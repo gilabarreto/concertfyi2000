@@ -45,7 +45,7 @@ const Home = () => {
             <Swiper />
           </div>
 
-          <hr className="w-[calc(100%+2rem)] -mx-4 border-gray-300" />
+          <hr className="w-[calc(100%+2rem)] -mx-4 border-zinc-300" />
         </div>
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">

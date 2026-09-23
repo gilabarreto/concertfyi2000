@@ -68,17 +68,17 @@ export default function LastConcert({ concert, setlist }) {
           className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors ${
             wasThere
               ? "border-red-600 text-red-600 hover:bg-red-50"
-              : "border-gray-300 text-gray-500 hover:border-red-600 hover:text-red-600"
+              : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
           }`}
         >
           <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
         </button>
       </div>
 
-      <hr className="border-t border-gray-300 opacity-50 ml-6" />
+      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       <ol className="pl-6">
-        <li className="border-b border-gray-300/50 py-2">
+        <li className="border-b border-zinc-300/50 py-2">
           Concert date:&ensp;
           {lastConcertId && (
             <Icon
@@ -96,9 +96,9 @@ export default function LastConcert({ concert, setlist }) {
             />
           )}
         </li>
-        <li className="border-b border-gray-300/50 py-2">Tour:&ensp;{tour}</li>
-        <li className="border-b border-gray-300/50 py-2">Venue:&ensp;{venue}</li>
-        <li className="border-b border-gray-300/50 py-2">
+        <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+        <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
+        <li className="border-b border-zinc-300/50 py-2">
           Location:&ensp;
           {coords ? (
             <button

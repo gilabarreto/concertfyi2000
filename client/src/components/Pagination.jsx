@@ -52,7 +52,7 @@ export default function Pagination({
           className={`px-2 py-1 rounded ${
             pageNum === currentPage
               ? "bg-red-600 text-white"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"
           }`}
           onClick={() => onPageChange(pageNum)}
           aria-current={pageNum === currentPage ? "page" : undefined}

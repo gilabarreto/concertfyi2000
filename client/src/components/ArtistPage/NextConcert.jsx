@@ -78,7 +78,7 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
           className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors ${
             imGoing
               ? "border-red-600 text-red-600 hover:bg-red-50"
-              : "border-gray-300 text-gray-500 hover:border-red-600 hover:text-red-600"
+              : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
           }`}
         >
           <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
@@ -86,10 +86,10 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
         </button>
       </div>
 
-      <hr className="border-t border-gray-300 opacity-50 ml-6" />
+      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       <ol className="pl-6">
-        <li className="border-b border-gray-300/50 py-2">
+        <li className="border-b border-zinc-300/50 py-2">
           Concert date:&ensp;
           {idx > 0 && (
             <Icon
@@ -107,9 +107,9 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
             />
           )}
         </li>
-        <li className="border-b border-gray-300/50 py-2">Tour:&ensp;{tour}</li>
-        <li className="border-b border-gray-300/50 py-2">Venue:&ensp;{venue?.name}</li>
-        <li className="border-b border-gray-300/50 py-2">
+        <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+        <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
+        <li className="border-b border-zinc-300/50 py-2">
           Location:&ensp;
           {coords ? (
             <button

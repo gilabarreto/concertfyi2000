@@ -57,7 +57,7 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
             <button
               type="button"
               onClick={() => dialogRef.current.close()}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded font-semibold text-gray-600 hover:border-red-600 hover:text-red-600"
+              className="flex-1 px-4 py-2 border border-zinc-300 rounded font-semibold text-zinc-600 hover:border-red-600 hover:text-red-600"
             >
               Not now
             </button>
@@ -81,16 +81,16 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
             onChange={(e) => setComment(e.target.value.slice(0, MAX_COMMENT))}
             rows={4}
             placeholder="Share your thoughts about this concert…"
-            className="w-full border border-gray-300 rounded p-2 text-sm resize-none"
+            className="w-full border border-zinc-300 rounded p-2 text-sm resize-none"
           />
-          <div className="text-xs text-gray-400 text-right mb-4">
+          <div className="text-xs text-zinc-400 text-right mb-4">
             {comment.length}/{MAX_COMMENT}
           </div>
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => saveComment(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded font-semibold text-gray-600 hover:border-red-600 hover:text-red-600"
+              className="flex-1 px-4 py-2 border border-zinc-300 rounded font-semibold text-zinc-600 hover:border-red-600 hover:text-red-600"
             >
               Skip
             </button>

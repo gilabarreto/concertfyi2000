@@ -59,7 +59,7 @@ export default function SearchBar() {
         value={searchValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="bg-white w-full px-4 py-3 pr-10 border-b border-gray-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm text-gray-900"
+        className="bg-white w-full px-4 py-3 pr-10 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm text-zinc-900"
       />
     </form>
   );

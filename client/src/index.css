@@ -83,7 +83,7 @@ body {
     top: 5%;
     height: 90%;
     width: 1px;
-    background: #d1d5db;
+    background: #d4d4d8;
     pointer-events: none;
   }
 }
@@ -92,7 +92,7 @@ body {
    segundo card preserva a separação visual que existe entre ArtistInfo e a primeira fileira. */
 @media (max-width: 1023px) {
   .artist-card-grid > div + div {
-    border-top: 1px solid #d1d5db;
+    border-top: 1px solid #d4d4d8;
   }
 
   .artist-card-grid > .spotify-player-card {

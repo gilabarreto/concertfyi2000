@@ -320,7 +320,7 @@ export default function Swiper() {
         <div className="w-full h-[250px] sm:h-[380px] flex flex-col items-center justify-center gap-2 text-center">
           <p className="text-lg text-zinc-800 text-pretty">No concerts found near</p>
           <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
-          <p className="text-sm text-gray-500 text-pretty">Pick another city to see what's on.</p>
+          <p className="text-sm text-zinc-500 text-pretty">Pick another city to see what's on.</p>
         </div>
       ) : (
         <div

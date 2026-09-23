@@ -38,10 +38,10 @@ export default function ConcertList({
   return (
     <>
       <h2 className="text-3xl font-bold mb-2 text-balance">{title}</h2>
-      <hr className="border-t border-gray-300 opacity-50 ml-6" />
+      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       {items.length === 0 ? (
-        <div className="py-2 ml-6 text-gray-500 text-pretty">
+        <div className="py-2 ml-6 text-zinc-500 text-pretty">
           <p>{empty}</p>
           <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
             Search another artist
@@ -56,7 +56,7 @@ export default function ConcertList({
               const label = (
                 <span className="flex min-w-0 items-center">
                   <span className="tabular-nums">{dateLabel(concert.dateObj)}</span>
-                  <span className="text-gray-500 ml-2 truncate">- {locationOf(concert)}</span>
+                  <span className="text-zinc-500 ml-2 truncate">- {locationOf(concert)}</span>
                 </span>
               );
               const className =
@@ -64,7 +64,7 @@ export default function ConcertList({
 
               if (expand) {
                 return (
-                  <li key={concert.id} className="border-b border-gray-300/50">
+                  <li key={concert.id} className="border-b border-zinc-300/50">
                     <button
                       type="button"
                       className={className}
@@ -87,7 +87,7 @@ export default function ConcertList({
               }
 
               return (
-                <li key={concert.id} className="border-b border-gray-300/50">
+                <li key={concert.id} className="border-b border-zinc-300/50">
                   <Link to={linkOf(concert)} className={className} title={iconTitle}>
                     {label}
                     {/* the row text already names the concert, so the icon is decoration */}

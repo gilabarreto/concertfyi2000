@@ -20,7 +20,7 @@ export default function MapDialog({ dialogRef, title, latitude, longitude }) {
         onClick={() => dialogRef.current.close()}
         title="Close"
         aria-label="Close"
-        className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-gray-600 shadow hover:text-red-600"
+        className="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-zinc-600 shadow hover:text-red-600"
       >
         <Icon icon={faXmark} />
       </button>

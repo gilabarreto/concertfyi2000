@@ -51,7 +51,7 @@ export default function ArtistInfo(props) {
         rel="noreferrer"
         aria-label={label}
       >
-        <Icon icon={icon} className="text-gray-500" size="2x" />
+        <Icon icon={icon} className="text-zinc-500" size="2x" />
       </a>
     ) : null,
   );
@@ -88,7 +88,7 @@ export default function ArtistInfo(props) {
             empurrando mapa, setlist e tudo abaixo — 0,17 de CLS, o pior número da página.
             16:9 é o formato que o getBestImage prefere e o que os cards da busca usam;
             quem não tem foto na Ticketmaster fica com a caixa vazia em vez do pulo. */}
-        <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-gray-100">
+        <div className="w-full sm:max-w-[520px] aspect-video rounded-md bg-zinc-100">
           {bestImageUrl && (
             <img
               src={bestImageUrl}
@@ -113,13 +113,13 @@ export default function ArtistInfo(props) {
             aria-pressed={isFavorite}
             title={isFavorite ? "Remove from favorites" : "Favorite this artist"}
             aria-label={isFavorite ? "Remove artist from favorites" : "Favorite this artist"}
-            className={isFavorite ? "text-red-600" : "text-gray-500 hover:text-red-600"}
+            className={isFavorite ? "text-red-600" : "text-zinc-500 hover:text-red-600"}
           >
             <Icon icon={isFavorite ? faHeartSolid : faHeartRegular} size="2x" />
           </button>
         </div>
 
-        <hr className="border-t border-gray-300 opacity-50 ml-6" />
+        <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
         {/* Estilo infobox da Wikipedia ("Background information"), mas só os campos que o
             MusicBrainz modela como dado estruturado. Discografia e spinoffs ficam de fora —
@@ -129,10 +129,10 @@ export default function ArtistInfo(props) {
           {/* isLoading (não isFetching) é só a primeira busca, sem cache ainda — troca de
               show do mesmo artista não reacende isto, já que o mbid não muda. */}
           {isBackgroundLoading && (
-            <li className="border-b border-gray-300/50 py-2 text-gray-400">Loading artist info…</li>
+            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading artist info…</li>
           )}
           {isBackgroundError && (
-            <li className="border-b border-gray-300/50 py-2 text-gray-400">
+            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">
               Something went wrong.{" "}
               <button
                 type="button"
@@ -143,21 +143,21 @@ export default function ArtistInfo(props) {
               </button>
             </li>
           )}
-          {origin && <li className="border-b border-gray-300/50 py-2">Origin:&ensp;{origin}</li>}
+          {origin && <li className="border-b border-zinc-300/50 py-2">Origin:&ensp;{origin}</li>}
           {displayGenres.length > 0 && (
-            <li className="border-b border-gray-300/50 py-2">
+            <li className="border-b border-zinc-300/50 py-2">
               Genres:&ensp;{displayGenres.join(", ")}
             </li>
           )}
           {currentMembers?.length > 0 && (
-            <li className="border-b border-gray-300/50 py-2">
+            <li className="border-b border-zinc-300/50 py-2">
               Members:&ensp;{currentMembers.join(", ")}
             </li>
           )}
           {/* Mesma borda que separa cada linha desta lista serve de divisor entre o socials
               e o Learn More logo abaixo, sem precisar de outro elemento só pra isso. */}
           {hasSocials && (
-            <li className="border-b border-gray-300/50 py-2">
+            <li className="border-b border-zinc-300/50 py-2">
               Socials:&ensp;
               <span className="inline-flex items-center gap-4 align-middle">{socialIcons}</span>
             </li>
@@ -171,7 +171,7 @@ export default function ArtistInfo(props) {
           type="button"
           disabled
           title="Coming soon"
-          className="block mx-auto mt-2 text-sm font-semibold text-gray-400 cursor-not-allowed"
+          className="block mx-auto mt-2 text-sm font-semibold text-zinc-400 cursor-not-allowed"
         >
           Learn More
         </button>
