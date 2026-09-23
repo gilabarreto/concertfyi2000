@@ -12,11 +12,20 @@
 }
 
 .swiper-photo-reflection {
+  --reflection-top-inset: 0%;
+  left: 50%;
+  width: 100%;
+  max-width: none;
   opacity: 0.2;
-  transform: perspective(320px) rotateX(58deg) scaleY(1.25);
+  transform: translateX(-50%);
   transform-origin: center top;
   filter: blur(1px);
-  clip-path: polygon(0 0, 100% 0, 79% 100%, 21% 100%);
+  clip-path: polygon(
+    var(--reflection-top-inset) 0,
+    calc(100% - var(--reflection-top-inset)) 0,
+    100% 100%,
+    0 100%
+  );
   -webkit-mask-image: linear-gradient(
     to bottom,
     black 0%,
@@ -24,6 +33,14 @@
     transparent 100%
   );
   mask-image: linear-gradient(to bottom, black 0%, rgba(0, 0, 0, 0.35) 35%, transparent 100%);
+}
+
+@media (min-width: 640px) {
+  .swiper-photo-reflection {
+    /* The photo is 76% of the scrollbar width at both larger breakpoints. */
+    --reflection-top-inset: 12%;
+    width: calc(100% / 0.76);
+  }
 }
 
 .original-swiper [data-active="true"],

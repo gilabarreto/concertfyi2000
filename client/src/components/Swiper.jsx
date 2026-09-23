@@ -250,7 +250,7 @@ export default function Swiper() {
         key={slide.eventId}
         data-active={index === active}
         className={`group ${index === active ? "relative" : "absolute top-0"} rounded-xl
-                transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[76%] lg:w-[60.8%] z-0`}
+                transition-[transform,opacity] duration-[180ms] ease-out motion-reduce:transition-none will-change-[transform,opacity] w-full sm:w-[60.8%] lg:w-[48.64%] z-0`}
         style={{
           ...style,
           background: undefined,
@@ -276,10 +276,8 @@ export default function Swiper() {
               src={image}
               alt=""
               aria-hidden="true"
-              // 116px/100px = pt-3 (12px) + swiper-artist-info's own height (104px/88px):
-              // the reflection fades to fully transparent right where the info row ends,
-              // so it never bleeds into whatever sits below the swiper.
-              className="swiper-photo-reflection absolute left-0 top-[calc(100%-1px)] h-[116px] sm:h-[100px] w-full rounded-b-xl object-fill pointer-events-none"
+              // Keep the reflection within the compact info row below the photo.
+              className="swiper-photo-reflection absolute top-[calc(100%-1px)] h-[72px] rounded-b-xl object-fill pointer-events-none"
             />
           )}
         </button>
@@ -344,7 +342,7 @@ export default function Swiper() {
               tabIndex={0}
               role="group"
               aria-label="Concert photos. Use left and right arrow keys to browse."
-              className="swiper-photo-stage relative w-full h-[calc((min(100vw,1012.44px)-2rem)*0.5625)] sm:h-[calc((min(100vw,1012.44px)-2rem)*0.4275)] lg:h-[calc((min(100vw,1012.44px)-2rem)*0.342)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+              className="swiper-photo-stage relative w-full h-[calc((min(100vw,1012.44px)-2rem)*0.5625)] sm:h-[calc((min(100vw,1012.44px)-2rem)*0.342)] lg:h-[calc((min(100vw,1012.44px)-2rem)*0.2736)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
               onPointerDown={startDrag}
               onPointerMove={moveDrag}
               onPointerUp={endDrag}
@@ -369,7 +367,7 @@ export default function Swiper() {
                 >
                   {"{"}
                 </button>
-                <div className="swiper-artist-info h-[104px] min-w-0 flex flex-col items-center gap-1 overflow-visible sm:h-[88px]">
+                <div className="swiper-artist-info min-h-[60px] min-w-0 flex flex-col items-center gap-1">
                   <h2 className="min-w-0 text-2xl font-bold text-balance text-center">
                     <button
                       type="button"
@@ -404,7 +402,7 @@ export default function Swiper() {
                 onChange={(event) => setActive(Number(event.target.value))}
                 aria-label="Scroll through concert photos"
                 aria-valuetext={activeSlide?.artistName}
-                className="swiper-scrollbar mx-auto mt-3 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                className="swiper-scrollbar mx-auto mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
               />
             )}
           </div>
