@@ -55,12 +55,9 @@ export default function Contact() {
       />
       <div className="w-full bg-red-600 flex flex-col items-center justify-evenly p-6">
         <div>
-          <Icon
-            icon={faEnvelope}
-            className="text-[180px] sm:text-[270px] [text-shadow:_0_2px_8px_rgba(0,0,0,0.5)] font-medium"
-          />
+          <Icon icon={faEnvelope} className="text-[10rem]" />
         </div>
-        <div className="w-[350px] sm:w-[600px] bg-red-600 rounded-2xl [filter:drop-shadow(0_2px_2px_rgba(0,0,0,0.5))] p-4 sm:p-6">
+        <div className="w-[350px] sm:w-[600px] p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="flex flex-col text-sm gap-2">
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="flex-1">

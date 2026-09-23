@@ -35,6 +35,11 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 - `tracking-tight` liberado só em display (`text-5xl` para cima) — exceção à
   baseline-ui, decidida em 2026-09-23 porque é o que dá o ar Apple ao título grande.
 - Sem `text-shadow`. Sem tamanho arbitrário (`text-[270px]`).
+- Exceção ao teto: a marca de página (`{fyi}` no About, envelope no Contact) usa
+  `text-[10rem]`, a pedido do dono em 2026-09-23. A escala de fonte do Tailwind
+  para no `text-9xl` (8rem); 10rem é o degrau `40` da escala de espaçamento, o primeiro
+  valor padrão acima dos 20% pedidos (9,6rem). É logo, não
+  texto; nada mais passa de `text-9xl`.
 - Parágrafo com `text-pretty` e no máximo ~65 caracteres por linha.
 - Número em lista, data e setlist com `tabular-nums`.
 
@@ -75,7 +80,7 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
 
 1. `gray-*` → `zinc-*`.
 2. Palco `zinc-100` no Swiper (feito).
-3. Escala tipográfica em About, Contact e SearchPage.
+3. Escala tipográfica em About, Contact e SearchPage (feito).
 4. Home em faixas no lugar do `<hr>` e da divisória.
 5. Página de artista no mesmo ritmo.
 6. Passada no acento: um vermelho de ação por tela.

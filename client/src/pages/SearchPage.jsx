@@ -56,7 +56,7 @@ export default function SearchPage() {
                   >
                     <span
                       aria-hidden="true"
-                      className="text-8xl sm:text-[110px] text-zinc-800 font-medium pr-4 -z-20"
+                      className="text-8xl sm:text-9xl text-zinc-800 font-medium pr-4 -z-20"
                     >
                       {"{"}
                     </span>
@@ -67,7 +67,7 @@ export default function SearchPage() {
 
                     <span
                       aria-hidden="true"
-                      className="text-8xl sm:text-[110px] text-zinc-800 font-medium pl-4"
+                      className="text-8xl sm:text-9xl text-zinc-800 font-medium pl-4"
                     >
                       {"}"}
                     </span>
