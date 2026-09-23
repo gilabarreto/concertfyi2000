@@ -85,5 +85,5 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
 3. Escala tipográfica em About, Contact e SearchPage (feito).
 4. Home em faixas — coberto pelo passo 2 (o `<hr>` saiu com o palco); a divisória entre
    colunas fica, ver Layout.
-5. Página de artista no mesmo ritmo.
+5. Página de artista no mesmo ritmo (feito: ArtistInfo no palco `zinc-100`).
 6. Passada no acento: um vermelho de ação por tela.
