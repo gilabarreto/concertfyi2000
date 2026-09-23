@@ -46,7 +46,9 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 ## Layout
 
 Faixas de largura total alternando `white` e `zinc-100`, conteúdo numa coluna central de
-até ~980 px. Seção se separa por fundo e espaço, não por `<hr>`, borda ou divisória.
+até ~980 px. Seção se separa por fundo e espaço, não por `<hr>`, borda de card ou sombra.
+Linha fina (1 px, `zinc-300`) entre colunas e entre itens de lista fica — é o que a Apple
+faz, e a do `.artist-card-grid` foi ajustada pelo dono em `d4acfc0`.
 
 ```
 HOME                                   ARTISTA
@@ -81,6 +83,7 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
 1. `gray-*` → `zinc-*`.
 2. Palco `zinc-100` no Swiper (feito).
 3. Escala tipográfica em About, Contact e SearchPage (feito).
-4. Home em faixas no lugar do `<hr>` e da divisória.
+4. Home em faixas — coberto pelo passo 2 (o `<hr>` saiu com o palco); a divisória entre
+   colunas fica, ver Layout.
 5. Página de artista no mesmo ritmo.
 6. Passada no acento: um vermelho de ação por tela.
