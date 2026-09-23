@@ -62,7 +62,7 @@
 .swiper-scrollbar::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 9999px;
-  background: rgb(228 228 231);
+  background: rgb(212 212 216);
 }
 
 .swiper-scrollbar::-webkit-slider-thumb {
@@ -79,7 +79,7 @@
 .swiper-scrollbar::-moz-range-track {
   height: 4px;
   border-radius: 9999px;
-  background: rgb(228 228 231);
+  background: rgb(212 212 216);
 }
 
 .swiper-scrollbar::-moz-range-thumb {

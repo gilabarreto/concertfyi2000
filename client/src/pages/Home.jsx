@@ -40,12 +40,11 @@ const Home = () => {
         url="/"
       />
       <div className="flex flex-col w-full flex-1 items-center gap-6 overflow-x-clip p-4">
-        <div className="flex flex-col w-full items-center gap-2">
+        {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
+        <div className="flex flex-col w-[calc(100%+2rem)] -mx-4 -mt-4 items-center bg-zinc-100 px-4 pt-4 pb-2">
           <div className="w-full shrink-0">
             <Swiper />
           </div>
-
-          <hr className="w-[calc(100%+2rem)] -mx-4 border-zinc-300" />
         </div>
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
