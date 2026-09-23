@@ -23,8 +23,9 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 - Cinza é sempre `zinc-*`. `gray-*` não entra.
 - O vermelho fica em `red-600` e não no #FA2D48 do Apple Music: aquele dá 3,6:1 sobre
   branco e derruba a acessibilidade 100.
-- Dentro da coluna branca, um vermelho de ação por tela; a moldura não conta. Hover e
-  link vão para `zinc-900`, não para vermelho.
+- O vermelho continua em links, ações, setas de expandir e ícones das linhas; hover escurece
+  para `red-800`. Tirar vermelho das setas e ícones foi testado e recusado pelo dono em
+  2026-09-23.
 
 ## Tipografia
 
@@ -86,4 +87,4 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
 4. Home em faixas — coberto pelo passo 2 (o `<hr>` saiu com o palco); a divisória entre
    colunas fica, ver Layout.
 5. Página de artista no mesmo ritmo (feito: ArtistInfo no palco `zinc-100`).
-6. Passada no acento: um vermelho de ação por tela.
+6. ~~Passada no acento: um vermelho de ação por tela.~~ Recusado pelo dono em 2026-09-23.
