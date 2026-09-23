@@ -44,6 +44,26 @@ export function getUpcomingConcertsByArtist(events = [], artistName) {
     .sort((a, b) => a.dateObj - b.dateObj);
 }
 
+// A mesma forma, para a home: filtra por cidade da venue em vez de nome do artista.
+// sameCity=false pega o resto do raio de 50km, pra "Concerts Near X" não repetir
+// as linhas de "Upcoming Concerts" de X.
+export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  return events
+    .filter((item) => {
+      const venueCity = item._embedded?.venues?.[0]?.city?.name;
+      return sameCity ? venueCity === cityName : venueCity !== cityName;
+    })
+    .map((item) => {
+      const [year, month, day] = item.dates.start.localDate.split("-");
+      return { ...item, dateObj: new Date(year, month - 1, day) };
+    })
+    .filter((item) => item.dateObj >= today)
+    .sort((a, b) => a.dateObj - b.dateObj);
+}
+
 // Os slides do carrossel da home, a partir da resposta de /ticketmaster/events.
 //
 // Estava dentro de um useEffect do Swiper, fora do alcance do node:test. É lógica que

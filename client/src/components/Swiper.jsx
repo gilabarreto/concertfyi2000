@@ -276,7 +276,10 @@ export default function Swiper() {
               src={image}
               alt=""
               aria-hidden="true"
-              className="swiper-photo-reflection absolute left-0 top-[calc(100%-1px)] h-[45dvh] w-full rounded-b-xl object-fill pointer-events-none"
+              // 116px/100px = pt-3 (12px) + swiper-artist-info's own height (104px/88px):
+              // the reflection fades to fully transparent right where the info row ends,
+              // so it never bleeds into whatever sits below the swiper.
+              className="swiper-photo-reflection absolute left-0 top-[calc(100%-1px)] h-[116px] sm:h-[100px] w-full rounded-b-xl object-fill pointer-events-none"
             />
           )}
         </button>
@@ -390,6 +393,19 @@ export default function Swiper() {
                   {"}"}
                 </button>
               </div>
+            )}
+            {slides.length > 1 && (
+              <input
+                type="range"
+                min={0}
+                max={slides.length - 1}
+                step={1}
+                value={active}
+                onChange={(event) => setActive(Number(event.target.value))}
+                aria-label="Scroll through concert photos"
+                aria-valuetext={activeSlide?.artistName}
+                className="swiper-scrollbar mx-auto mt-3 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+              />
             )}
           </div>
         </div>

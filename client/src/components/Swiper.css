@@ -31,3 +31,53 @@
   backface-visibility: hidden;
   transform-style: preserve-3d;
 }
+
+/* A range input styled as a horizontal scrollbar: thin track, wide flat thumb
+   instead of the round default knob. Thumb rules can't be grouped across
+   vendors — an invalid selector in the list drops the whole rule. */
+.swiper-scrollbar {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 10px;
+  background: transparent;
+}
+
+.swiper-scrollbar::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgb(229 231 235);
+}
+
+.swiper-scrollbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15%;
+  height: 8px;
+  margin-top: -2px;
+  border-radius: 9999px;
+  background: rgb(220 38 38);
+  cursor: grab;
+}
+
+.swiper-scrollbar::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgb(229 231 235);
+}
+
+.swiper-scrollbar::-moz-range-thumb {
+  width: 15%;
+  height: 8px;
+  border: none;
+  border-radius: 9999px;
+  background: rgb(220 38 38);
+  cursor: grab;
+}
+
+.swiper-scrollbar:active::-webkit-slider-thumb {
+  cursor: grabbing;
+}
+
+.swiper-scrollbar:active::-moz-range-thumb {
+  cursor: grabbing;
+}
