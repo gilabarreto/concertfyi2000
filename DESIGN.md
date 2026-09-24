@@ -46,6 +46,9 @@ Só tokens padrão do Tailwind. Nada de hex novo.
   para no `text-9xl` (8rem); 10rem é o degrau `40` da escala de espaçamento, o primeiro
   valor padrão acima dos 20% pedidos (9,6rem). É logo, não
   texto; nada mais passa de `text-9xl`.
+- A marca de página fica sem sombra. `drop-shadow-2xl` (a sombra larga da nota do Apple
+  Music) foi testado no `{fyi}` e no envelope e recusado pelo dono em 2026-09-23: no
+  texto sobre o vermelho vira mancha, não sombra de objeto.
 - Parágrafo com `text-pretty` e no máximo ~65 caracteres por linha.
 - Número em lista, data e setlist com `tabular-nums`.
 
