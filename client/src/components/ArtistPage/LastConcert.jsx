@@ -57,7 +57,7 @@ export default function LastConcert({ concert, setlist }) {
   return (
     <>
       <div className="flex items-center justify-between gap-3 mb-4">
-        <h2 className="text-3xl font-bold text-balance">Last Concert</h2>
+        <h2 className="text-2xl font-bold text-balance">Last Concert</h2>
         {/* Marca localmente que o usuário esteve neste show — sem conta de usuário ainda,
             guardado por navegador em vez de por pessoa. */}
         <button

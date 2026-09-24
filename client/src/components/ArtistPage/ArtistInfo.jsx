@@ -101,7 +101,7 @@ export default function ArtistInfo(props) {
 
       <div className="w-full lg:flex-1 lg:min-w-0">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-3xl font-bold text-balance">{artist}</h2>
+          <h2 className="text-2xl font-bold text-balance">{artist}</h2>
           {/* Favoritar guarda o mbid no localStorage — sem conta de usuário ainda, por
               navegador em vez de por pessoa. Sem `text-2xl` aqui de propósito: o `size="2x"`
               do Icon já é `2em` relativo ao font-size herdado — um `text-2xl` no botão dobra

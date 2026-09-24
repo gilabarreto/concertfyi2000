@@ -128,7 +128,7 @@ export default function Setlist({ concert }) {
   return (
     <>
       <div className="flex flex-1 justify-between items-center mb-2">
-        <h2 ref={titleRef} className="text-3xl font-bold">
+        <h2 ref={titleRef} className="text-2xl font-bold">
           Setlist
         </h2>
         <div className="flex items-center space-x-2">

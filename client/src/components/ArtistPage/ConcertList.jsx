@@ -37,7 +37,7 @@ export default function ConcertList({
 
   return (
     <>
-      <h2 className="text-3xl font-bold mb-2 text-balance">{title}</h2>
+      <h2 className="text-2xl font-bold mb-2 text-balance">{title}</h2>
       <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       {items.length === 0 ? (

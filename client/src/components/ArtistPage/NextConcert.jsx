@@ -69,7 +69,7 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
   return (
     <>
       <div className="flex items-center justify-between gap-3 mb-4">
-        <h2 className="text-3xl font-bold text-balance">Next Concert</h2>
+        <h2 className="text-2xl font-bold text-balance">Next Concert</h2>
         <button
           type="button"
           onClick={toggleGoing}
