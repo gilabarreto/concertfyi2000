@@ -367,17 +367,17 @@ export default function Swiper() {
                 >
                   {"{"}
                 </button>
-                <div className="swiper-artist-info h-36 sm:h-auto min-h-[60px] min-w-0 flex flex-col items-center gap-1">
+                <div className="swiper-artist-info h-[84px] sm:h-auto min-h-[60px] min-w-0 flex flex-col items-center gap-1">
                   <h2 className="min-w-0 shrink-0 text-2xl font-bold text-balance text-center">
                     <button
                       type="button"
                       onClick={() => setSelectedArtist(activeSlide)}
-                      className="line-clamp-2 sm:line-clamp-none break-words rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+                      className="line-clamp-1 sm:line-clamp-none break-words rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
                     >
                       {activeSlide.artistName}
                     </button>
                   </h2>
-                  <p className="line-clamp-3 sm:line-clamp-none break-words text-base font-normal text-center text-pretty">
+                  <p className="line-clamp-2 sm:line-clamp-none break-words text-base font-normal text-center text-pretty">
                     {concertDate} @ {activeSlide.venue || "Venue to be announced"}
                   </p>
                 </div>
@@ -402,7 +402,7 @@ export default function Swiper() {
                 onChange={(event) => setActive(Number(event.target.value))}
                 aria-label="Scroll through concert photos"
                 aria-valuetext={activeSlide?.artistName}
-                className="swiper-scrollbar mx-auto mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                className="swiper-scrollbar mx-auto mt-2 sm:mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
               />
             )}
           </div>
