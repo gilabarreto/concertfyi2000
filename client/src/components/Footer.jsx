@@ -123,7 +123,12 @@ export default function Footer() {
             ref={searchPanelRef}
             className={`${panelClass} [&_form]:max-w-xl`}
           >
-            <SearchBar />
+            <SearchBar
+              onClose={() => {
+                setOpenPanel(null);
+                searchButtonRef.current?.focus();
+              }}
+            />
           </div>
         )}
       </nav>

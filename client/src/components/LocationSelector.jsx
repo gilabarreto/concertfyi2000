@@ -148,7 +148,7 @@ export default function LocationSelector({
               placeholder="Search location..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="bg-white w-full px-4 py-3 pr-10 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
+              className="bg-white w-full px-4 py-3 pr-20 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
               autoFocus
             />
             {searchInput && (
@@ -158,13 +158,25 @@ export default function LocationSelector({
                   setSearchInput("");
                   inputRef.current?.focus();
                 }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
+                className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
                 title="Clear search"
                 aria-label="Clear search"
               >
                 <Icon icon={faXmark} size="sm" />
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => {
+                setShowDropdown(false);
+                toggleRef.current?.focus();
+              }}
+              aria-label="Close location"
+              title="Close location"
+              className="absolute right-0 top-0 flex h-full w-10 items-center justify-center text-zinc-500 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+            >
+              <Icon icon={faXmark} />
+            </button>
           </div>
 
           {selectedLocation && (
