@@ -67,11 +67,11 @@ export default function Footer() {
           <>
             <div
               aria-hidden="true"
-              className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_39.5px,_#dc2626_40px)]"
+              className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_19.5px,_#dc2626_20px)]"
             />
             <div
               aria-hidden="true"
-              className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-10 h-10 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_39.5px,_#dc2626_40px)]"
+              className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_19.5px,_#dc2626_20px)]"
             />
           </>
         )}

@@ -68,7 +68,7 @@ function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full bg-red-600 z-20">
       <nav
-        className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : "bg-white border-b border-zinc-200"}`}
+        className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : pathname === "/" ? "bg-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : "bg-white border-b border-zinc-200"}`}
       >
         <button
           type="button"

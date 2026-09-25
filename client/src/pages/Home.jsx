@@ -40,9 +40,12 @@ const Home = () => {
         url="/"
       />
       <div className="flex flex-col w-full flex-1 items-center gap-6 overflow-x-clip p-4">
-        {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
-        <div className="flex flex-col w-[calc(100%+2rem)] -mx-4 -mt-4 items-center bg-zinc-100 px-4 pt-4 pb-2">
-          <div className="w-full shrink-0">
+        <div className="flex flex-col w-[calc(100%+2rem)] -mx-4 -mt-4 items-center">
+          <p className="w-full bg-red-600 px-4 py-3 text-center text-sm sm:text-base text-white text-pretty">
+            Track your favorite artists, explore past performances and never miss a concert again.
+          </p>
+          {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
+          <div className="w-full shrink-0 bg-zinc-100 px-4 pt-4 pb-2">
             <Swiper />
           </div>
         </div>
