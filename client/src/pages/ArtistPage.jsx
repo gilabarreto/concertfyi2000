@@ -1,9 +1,8 @@
 import { useEffect, useContext } from "react";
-import { useParams, Link, useLocation } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
-import LastConcert from "../components/ArtistPage/LastConcert";
-import NextConcert from "../components/ArtistPage/NextConcert";
+import ConcertTabs from "../components/ArtistPage/ConcertTabs";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
@@ -14,7 +13,6 @@ import { SEOHead } from "../components/SEOHead";
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
-  const location = useLocation();
 
   const concert = setlist.find((result) => result.id === concertId);
 
@@ -28,15 +26,6 @@ export default function ArtistPage() {
     setSetlist(list.some((s) => s.id === urlConcert.id) ? list : [urlConcert, ...list]);
     setTicketmaster(artistData.ticketmaster);
   }, [urlConcert, artistData, setSetlist, setTicketmaster]);
-
-  useEffect(() => {
-    if (location.state?.scrollTo !== "next-concert" || !concert) return;
-    requestAnimationFrame(() =>
-      document
-        .getElementById("next-concert")
-        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-    );
-  }, [concert, location.state]);
 
   if (isError) {
     return (
@@ -73,15 +62,7 @@ export default function ArtistPage() {
           <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
         </div>
 
-        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div id="last-concert" className="min-w-0 scroll-mt-20 bg-white p-6 space-y-2">
-            <LastConcert concert={concert} setlist={setlist} />
-          </div>
-
-          <div id="next-concert" className="min-w-0 scroll-mt-20 bg-white p-6 space-y-2">
-            <NextConcert concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
-          </div>
-        </div>
+        <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
 
         <hr className="w-full sm:w-[95%] mx-auto border-zinc-300" />
 

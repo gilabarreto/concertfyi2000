@@ -14,6 +14,7 @@ import {
   dateLabel,
 } from "../../helpers/selectors";
 import MapDialog from "./MapDialog";
+import Map from "./Map";
 
 const GOING_KEY = "goingConcertIds";
 
@@ -21,7 +22,7 @@ function getGoing() {
   return JSON.parse(localStorage.getItem(GOING_KEY) || "[]");
 }
 
-export default function NextConcert({ concert, setlist, ticketmaster }) {
+export default function NextConcert({ concert, setlist, ticketmaster, hideTitle = false }) {
   const { artistId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [going, setGoing] = useState(getGoing);
@@ -43,7 +44,11 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
       return params;
     });
 
-  if (!upcomingConcert) return null;
+  if (!upcomingConcert) {
+    return hideTitle ? (
+      <p className="py-8 text-center text-zinc-500">No upcoming concerts. Check back later.</p>
+    ) : null;
+  }
 
   // Same idea as "I WAS THERE" on Last Concert, mirrored forward: mark locally that the
   // user plans to be at this one. Keyed by the Ticketmaster event id, so flipping between
@@ -68,69 +73,81 @@ export default function NextConcert({ concert, setlist, ticketmaster }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <h2 className="text-2xl font-bold text-balance">Next Concert</h2>
-        <button
-          type="button"
-          onClick={toggleGoing}
-          aria-pressed={imGoing}
-          title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
-          className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors ${
-            imGoing
-              ? "border-red-600 text-red-600 hover:bg-red-50"
-              : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-          }`}
-        >
-          <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
-          I'M GOING
-        </button>
-      </div>
+      {!hideTitle && <h2 className="text-2xl font-bold text-balance mb-4">Next Concert</h2>}
 
-      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
-
-      <ol className="pl-6">
-        <li className="border-b border-zinc-300/50 py-2">
-          Concert date:&ensp;
-          {idx > 0 && (
-            <Icon
-              icon={faBackward}
-              className="text-xs text-red-600 cursor-pointer mr-2"
-              onClick={() => select(upcomingConcerts[idx - 1].id)}
-            />
-          )}
-          {dateLabel(upcomingConcert.dateObj)}&ensp;
-          {idx < upcomingConcerts.length - 1 && (
-            <Icon
-              icon={faForward}
-              className="text-xs text-red-600 cursor-pointer"
-              onClick={() => select(upcomingConcerts[idx + 1].id)}
-            />
-          )}
-        </li>
-        <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-        <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
-        <li className="border-b border-zinc-300/50 py-2">
-          Location:&ensp;
-          {coords ? (
+      <div
+        className={
+          hideTitle && coords ? "grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6" : ""
+        }
+      >
+        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+          <li className="flex items-center justify-between gap-2 border-b border-zinc-300/50 py-2">
+            <span className="min-w-0">
+              Concert date:&ensp;
+              {idx > 0 && (
+                <Icon
+                  icon={faBackward}
+                  className="text-xs text-red-600 cursor-pointer mr-2"
+                  onClick={() => select(upcomingConcerts[idx - 1].id)}
+                />
+              )}
+              {dateLabel(upcomingConcert.dateObj)}&ensp;
+              {idx < upcomingConcerts.length - 1 && (
+                <Icon
+                  icon={faForward}
+                  className="text-xs text-red-600 cursor-pointer"
+                  onClick={() => select(upcomingConcerts[idx + 1].id)}
+                />
+              )}
+            </span>
             <button
               type="button"
-              onClick={() => mapRef.current.showModal()}
-              title="View on map"
-              aria-haspopup="dialog"
-              className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+              onClick={toggleGoing}
+              aria-pressed={imGoing}
+              title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
+                imGoing
+                  ? "border-red-600 text-red-600 hover:bg-red-50"
+                  : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              }`}
             >
-              <Icon icon={faLocationDot} className="mr-2" />
+              <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
+              I'M GOING
+            </button>
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
+          <li className="border-b border-zinc-300/50 py-2">
+            Location:&ensp;
+            {coords ? (
+              <button
+                type="button"
+                onClick={() => mapRef.current.showModal()}
+                title="View on map"
+                aria-haspopup="dialog"
+                className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+              >
+                <Icon icon={faLocationDot} className="mr-2" />
+                <span>
+                  {venue?.city?.name}, {venue?.country?.countryCode}
+                </span>
+              </button>
+            ) : (
               <span>
                 {venue?.city?.name}, {venue?.country?.countryCode}
               </span>
-            </button>
-          ) : (
-            <span>
-              {venue?.city?.name}, {venue?.country?.countryCode}
-            </span>
-          )}
-        </li>
-      </ol>
+            )}
+          </li>
+        </ol>
+        {hideTitle && coords && (
+          <div
+            className="min-h-[180px] overflow-hidden rounded-md bg-zinc-100"
+            aria-label="Concert location map"
+          >
+            <Map latitude={coords?.latitude} longitude={coords?.longitude} />
+          </div>
+        )}
+      </div>
 
       <MapDialog
         dialogRef={mapRef}

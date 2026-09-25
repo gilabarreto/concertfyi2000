@@ -11,6 +11,7 @@ import {
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import { getReviews } from "../../helpers/concertReviews";
 import MapDialog from "./MapDialog";
+import Map from "./Map";
 import ConcertRatingDialog from "./ConcertRatingDialog";
 import ConcertComments from "./ConcertComments";
 
@@ -20,7 +21,7 @@ function getAttended() {
   return JSON.parse(localStorage.getItem(ATTENDED_KEY) || "[]");
 }
 
-export default function LastConcert({ concert, setlist }) {
+export default function LastConcert({ concert, setlist, hideTitle = false }) {
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
   const [attended, setAttended] = useState(getAttended);
@@ -56,78 +57,88 @@ export default function LastConcert({ concert, setlist }) {
 
   return (
     <>
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <h2 className="text-2xl font-bold text-balance">Last Concert</h2>
-        {/* Marca localmente que o usuário esteve neste show — sem conta de usuário ainda,
-            guardado por navegador em vez de por pessoa. */}
-        <button
-          type="button"
-          onClick={toggleWasThere}
-          aria-pressed={wasThere}
-          title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
-          className={`flex shrink-0 items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs transition-colors ${
-            wasThere
-              ? "border-red-600 text-red-600 hover:bg-red-50"
-              : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-          }`}
-        >
-          <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
-        </button>
-      </div>
+      {!hideTitle && <h2 className="text-2xl font-bold text-balance mb-4">Last Concert</h2>}
 
-      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
-
-      <ol className="pl-6">
-        <li className="border-b border-zinc-300/50 py-2">
-          Concert date:&ensp;
-          {lastConcertId && (
-            <Icon
-              icon={faBackward}
-              className="text-xs text-red-600 cursor-pointer mr-2"
-              onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
-            />
-          )}
-          {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
-          {nextConcertId && (
-            <Icon
-              icon={faForward}
-              className="text-xs text-red-600 cursor-pointer"
-              onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
-            />
-          )}
-        </li>
-        <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-        <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
-        <li className="border-b border-zinc-300/50 py-2">
-          Location:&ensp;
-          {coords ? (
+      <div
+        className={
+          hideTitle && coords ? "grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6" : ""
+        }
+      >
+        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+          <li className="flex items-center justify-between gap-2 border-b border-zinc-300/50 py-2">
+            <span className="min-w-0">
+              Concert date:&ensp;
+              {lastConcertId && (
+                <Icon
+                  icon={faBackward}
+                  className="text-xs text-red-600 cursor-pointer mr-2"
+                  onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
+                />
+              )}
+              {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
+              {nextConcertId && (
+                <Icon
+                  icon={faForward}
+                  className="text-xs text-red-600 cursor-pointer"
+                  onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
+                />
+              )}
+            </span>
             <button
               type="button"
-              onClick={() => mapRef.current.showModal()}
-              title="View on map"
-              aria-haspopup="dialog"
-              className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+              onClick={toggleWasThere}
+              aria-pressed={wasThere}
+              title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
+                wasThere
+                  ? "border-red-600 text-red-600 hover:bg-red-50"
+                  : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              }`}
             >
-              <Icon icon={faLocationDot} className="mr-2" />
+              <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
+            </button>
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
+          <li className="border-b border-zinc-300/50 py-2">
+            Location:&ensp;
+            {coords ? (
+              <button
+                type="button"
+                onClick={() => mapRef.current.showModal()}
+                title="View on map"
+                aria-haspopup="dialog"
+                className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+              >
+                <Icon icon={faLocationDot} className="mr-2" />
+                <span>
+                  {city}, {country}
+                </span>
+              </button>
+            ) : (
               <span>
                 {city}, {country}
               </span>
-            </button>
-          ) : (
-            <span>
-              {city}, {country}
-            </span>
-          )}
-        </li>
+            )}
+          </li>
 
-        <ConcertComments
-          concertId={concert.id}
-          reviews={reviews}
-          onSaved={setReviews}
-          onLeaveReview={() => ratingRef.current.open("comment")}
-          key={concert.id}
-        />
-      </ol>
+          <ConcertComments
+            concertId={concert.id}
+            reviews={reviews}
+            onSaved={setReviews}
+            onLeaveReview={() => ratingRef.current.open("comment")}
+            key={concert.id}
+          />
+        </ol>
+        {hideTitle && coords && (
+          <div
+            className="min-h-[180px] overflow-hidden rounded-md bg-zinc-100"
+            aria-label="Concert location map"
+          >
+            <Map latitude={coords?.lat} longitude={coords?.long} />
+          </div>
+        )}
+      </div>
 
       <MapDialog
         dialogRef={mapRef}
