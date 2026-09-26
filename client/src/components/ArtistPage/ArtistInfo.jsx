@@ -75,9 +75,9 @@ export default function ArtistInfo(props) {
       ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
       : undefined;
   const displayGenres = getTicketmasterGenres(attraction);
-  // Com o texto inteiro à mostra, a fonte fecha o próprio parágrafo; recolhido, a máscara
-  // apagaria o fim do texto, então ela fica numa linha própria abaixo.
-  const showSourceInline = !hasMoreBiography || showFullBiography;
+  // A fonte só aparece com o texto inteiro à mostra (View Less aberto, ou bio curta sem
+  // botão — nessa a CC BY-SA ainda exige o crédito da Wikipedia).
+  const showSource = !hasMoreBiography || showFullBiography;
   const source = (
     <>
       Source:{" "}
@@ -153,12 +153,10 @@ export default function ArtistInfo(props) {
                     {hasMoreBiography && !showFullBiography
                       ? `${background.extract.slice(0, 300).replace(/\s+\S*$/, "")}…`
                       : background.extract}
-                    {showSourceInline && (
-                      <span className="text-xs text-zinc-500">&ensp;{source}</span>
-                    )}
                   </p>
-                  {!showSourceInline && (
-                    <p className="mt-6 mb-3 text-center text-xs text-zinc-500">{source}</p>
+                  {/* Afastada da bio por uma linha dela (text-base leading-relaxed = 1.625rem). */}
+                  {showSource && (
+                    <p className="mt-[1.625rem] mb-3 text-center text-xs text-zinc-500">{source}</p>
                   )}
                   {hasMoreBiography && (
                     <div className="flex justify-center">
