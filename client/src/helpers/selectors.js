@@ -143,13 +143,15 @@ export function formatArtistBackground(data = {}) {
   return { origin, genres, currentMembers };
 }
 
-// Tampão pro Genres enquanto o MusicBrainz não chega: a Ticketmaster já manda uma
-// classificação junto do mesmo `ticketmaster` que o ArtistInfo recebe como prop, sem
-// requisição nenhuma. Só um gênero e um subgênero — bem mais pobre que o top 4 do
-// MusicBrainz por contagem de tag — mas está pronto no primeiro render, e o MusicBrainz
-// não. "Undefined" é o valor da Ticketmaster pra "sem essa informação", não um gênero.
-export function getTicketmasterGenres(ticketmaster) {
-  const classification = ticketmaster?.attractions?.[0]?.classifications?.find((c) => c.primary);
+// Única fonte do Genres: gênero e subgênero da classificação primária da Ticketmaster, que já
+// vem na prop, sem requisição. O MusicBrainz (top 4 por tag) saiu em ae0abbf — mais rico, mas
+// lento, e o dono preferiu assim. "Undefined" é o "sem essa informação" da Ticketmaster.
+// A atração é casada pelo nome: o /suggest às vezes devolve um tributo ou banda de abertura
+// primeiro, e sem par é melhor não ter Genres do que mostrar o gênero de outro artista.
+export function getTicketmasterGenres(ticketmaster, artist) {
+  const classification = ticketmaster?.attractions
+    ?.find((a) => a.name === artist)
+    ?.classifications?.find((c) => c.primary);
 
   return [...new Set([classification?.genre?.name, classification?.subGenre?.name])].filter(
     (name) => name && name !== "Undefined",

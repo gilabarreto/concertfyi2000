@@ -74,7 +74,7 @@ export default function ArtistInfo(props) {
     hasMoreBiography && !showFullBiography
       ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
       : undefined;
-  const displayGenres = getTicketmasterGenres(ticketmaster);
+  const displayGenres = getTicketmasterGenres(ticketmaster, artist);
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row items-start gap-6">
