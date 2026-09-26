@@ -90,13 +90,13 @@ export default function ArtistPage() {
             {"{"}
           </span>
           {/* Sem barra de rolagem: no Windows ela ocupa espaço embaixo e empurra os títulos pra cima. */}
-          <div className="flex min-w-0 gap-4 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-0 gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {sections.map(([id, label]) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => scrollToSection(id)}
-                className="mx-1 shrink-0 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+                className="mx-2 shrink-0 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
               >
                 {label}
               </button>
