@@ -35,7 +35,7 @@ ConcertFYI — Pendências e Decisões
 □ Genius link como fallback em SongDetails.jsx.
 □ Ícone de loading na busca (SearchBar.jsx) — tentado em `01696ef` (spinner ao lado do X) e revertido a pedido do dono em 2026-09-26. Reabrir só com outro formato.
 ☑ Timeout próprio nas requisições — já existia (achado 2026-09-26): request.js aborta em 10 s desde a saída do axios e o erro vem como "Request timed out".
-□ Mensagem de erro na busca — a SearchBar ignora o isError das duas queries: com timeout ou API fora, o spinner some e a tela fica sem resultado nem aviso. As outras telas (página de artista, bio, fotos, cidades, letras/vídeo) já avisam. Toast descartado por opinião: mensagem inline como nas outras basta; o dono pode vetar.
+☑ Mensagem de erro na busca — resolvido em `4e06b7b` ("Search failed. Try again" abaixo do campo). Toast descartado por opinião: mensagem inline como nas outras telas basta; o dono pode vetar.
 □ Loading skeletons enquanto dados carregam — nenhum existe.
 □ Monitoramento contínuo de Core Web Vitals — Lighthouse só roda na mão.
 □ Testar com screen readers (NVDA, JAWS).
