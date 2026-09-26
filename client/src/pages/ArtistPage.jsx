@@ -85,11 +85,12 @@ export default function ArtistPage() {
         >
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-0.5 text-xl leading-none sm:text-[22px]"
+            className="shrink-0 -translate-y-px text-xl leading-none sm:text-[22px]"
           >
             {"{"}
           </span>
-          <div className="flex min-w-0 overflow-x-auto whitespace-nowrap">
+          {/* Sem barra de rolagem: no Windows ela ocupa espaço embaixo e empurra os títulos pra cima. */}
+          <div className="flex min-w-0 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {sections.map(([id, label]) => (
               <button
                 key={id}
@@ -103,7 +104,7 @@ export default function ArtistPage() {
           </div>
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-0.5 text-xl leading-none sm:text-[22px]"
+            className="shrink-0 -translate-y-px text-xl leading-none sm:text-[22px]"
           >
             {"}"}
           </span>
