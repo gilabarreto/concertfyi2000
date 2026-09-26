@@ -80,26 +80,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
         }
       >
-        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
-          <li className="flex items-center justify-between gap-2 border-b border-zinc-300/50 py-2">
-            <span className="min-w-0">
-              Concert date:&ensp;
-              {idx > 0 && (
-                <Icon
-                  icon={faBackward}
-                  className="text-xs text-red-600 cursor-pointer mr-2"
-                  onClick={() => select(upcomingConcerts[idx - 1].id)}
-                />
-              )}
-              {dateLabel(upcomingConcert.dateObj)}&ensp;
-              {idx < upcomingConcerts.length - 1 && (
-                <Icon
-                  icon={faForward}
-                  className="text-xs text-red-600 cursor-pointer"
-                  onClick={() => select(upcomingConcerts[idx + 1].id)}
-                />
-              )}
-            </span>
+        <div className="min-w-0">
+          <div className="mb-2 flex justify-end">
             <button
               type="button"
               onClick={toggleGoing}
@@ -114,31 +96,53 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
               <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
               I'M GOING
             </button>
-          </li>
-          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
-          <li className="border-b border-zinc-300/50 py-2">
-            Location:&ensp;
-            {coords ? (
-              <button
-                type="button"
-                onClick={() => mapRef.current.showModal()}
-                title="View on map"
-                aria-haspopup="dialog"
-                className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
-              >
-                <Icon icon={faLocationDot} className="mr-2" />
+          </div>
+          <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+            <li className="border-b border-zinc-300/50 py-2">
+              <span className="min-w-0">
+                Concert date:&ensp;
+                {idx > 0 && (
+                  <Icon
+                    icon={faBackward}
+                    className="text-xs text-red-600 cursor-pointer mr-2"
+                    onClick={() => select(upcomingConcerts[idx - 1].id)}
+                  />
+                )}
+                {dateLabel(upcomingConcert.dateObj)}&ensp;
+                {idx < upcomingConcerts.length - 1 && (
+                  <Icon
+                    icon={faForward}
+                    className="text-xs text-red-600 cursor-pointer"
+                    onClick={() => select(upcomingConcerts[idx + 1].id)}
+                  />
+                )}
+              </span>
+            </li>
+            <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+            <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
+            <li className="border-b border-zinc-300/50 py-2">
+              Location:&ensp;
+              {coords ? (
+                <button
+                  type="button"
+                  onClick={() => mapRef.current.showModal()}
+                  title="View on map"
+                  aria-haspopup="dialog"
+                  className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+                >
+                  <Icon icon={faLocationDot} className="mr-2" />
+                  <span>
+                    {venue?.city?.name}, {venue?.country?.countryCode}
+                  </span>
+                </button>
+              ) : (
                 <span>
                   {venue?.city?.name}, {venue?.country?.countryCode}
                 </span>
-              </button>
-            ) : (
-              <span>
-                {venue?.city?.name}, {venue?.country?.countryCode}
-              </span>
-            )}
-          </li>
-        </ol>
+              )}
+            </li>
+          </ol>
+        </div>
         {hideTitle && coords && (
           <div
             className="h-[240px] w-[400px] overflow-hidden rounded-md bg-zinc-100"

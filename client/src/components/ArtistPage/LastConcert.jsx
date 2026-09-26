@@ -82,83 +82,85 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
           hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
         }
       >
-        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
-          <li className="flex items-center justify-between gap-2 border-b border-zinc-300/50 py-2">
-            <span className="min-w-0">
-              Concert date:&ensp;
-              {lastConcertId && (
-                <Icon
-                  icon={faBackward}
-                  className="text-xs text-red-600 cursor-pointer mr-2"
-                  onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
-                />
-              )}
-              {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
-              {nextConcertId && (
-                <Icon
-                  icon={faForward}
-                  className="text-xs text-red-600 cursor-pointer"
-                  onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
-                />
-              )}
-            </span>
-            <span className="flex shrink-0 gap-1">
-              <button
-                type="button"
-                onClick={share}
-                title="Share this concert"
-                className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600`}
-              >
-                <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-                {linkCopied ? "LINK COPIED" : "SHARE"}
-              </button>
-              <button
-                type="button"
-                onClick={toggleWasThere}
-                aria-pressed={wasThere}
-                title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
-                className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
-                  wasThere
-                    ? "border-red-600 text-red-600 hover:bg-red-50"
-                    : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-                }`}
-              >
-                <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
-              </button>
-            </span>
-          </li>
-          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
-          <li className="border-b border-zinc-300/50 py-2">
-            Location:&ensp;
-            {coords ? (
-              <button
-                type="button"
-                onClick={() => mapRef.current.showModal()}
-                title="View on map"
-                aria-haspopup="dialog"
-                className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
-              >
-                <Icon icon={faLocationDot} className="mr-2" />
+        <div className="min-w-0">
+          <div className="mb-2 flex justify-end gap-1">
+            <button
+              type="button"
+              onClick={share}
+              title="Share this concert"
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600`}
+            >
+              <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
+              {linkCopied ? "LINK COPIED" : "SHARE"}
+            </button>
+            <button
+              type="button"
+              onClick={toggleWasThere}
+              aria-pressed={wasThere}
+              title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
+                wasThere
+                  ? "border-red-600 text-red-600 hover:bg-red-50"
+                  : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              }`}
+            >
+              <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
+            </button>
+          </div>
+          <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+            <li className="border-b border-zinc-300/50 py-2">
+              <span className="min-w-0">
+                Concert date:&ensp;
+                {lastConcertId && (
+                  <Icon
+                    icon={faBackward}
+                    className="text-xs text-red-600 cursor-pointer mr-2"
+                    onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
+                  />
+                )}
+                {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
+                {nextConcertId && (
+                  <Icon
+                    icon={faForward}
+                    className="text-xs text-red-600 cursor-pointer"
+                    onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
+                  />
+                )}
+              </span>
+            </li>
+            <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+            <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
+            <li className="border-b border-zinc-300/50 py-2">
+              Location:&ensp;
+              {coords ? (
+                <button
+                  type="button"
+                  onClick={() => mapRef.current.showModal()}
+                  title="View on map"
+                  aria-haspopup="dialog"
+                  className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+                >
+                  <Icon icon={faLocationDot} className="mr-2" />
+                  <span>
+                    {city}, {country}
+                  </span>
+                </button>
+              ) : (
                 <span>
                   {city}, {country}
                 </span>
-              </button>
-            ) : (
-              <span>
-                {city}, {country}
-              </span>
-            )}
-          </li>
+              )}
+            </li>
 
-          <ConcertComments
-            concertId={concert.id}
-            reviews={reviews}
-            onSaved={setReviews}
-            onLeaveReview={() => ratingRef.current.open("comment")}
-            key={concert.id}
-          />
-        </ol>
+            <ConcertComments
+              concertId={concert.id}
+              reviews={reviews}
+              onSaved={setReviews}
+              onLeaveReview={() => ratingRef.current.open("comment")}
+              key={concert.id}
+            />
+          </ol>
+        </div>
         {hideTitle && coords && (
           <div
             className="h-[240px] w-[400px] overflow-hidden rounded-md bg-zinc-100"
