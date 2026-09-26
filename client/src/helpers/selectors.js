@@ -119,30 +119,6 @@ export function getBestImage(images = [], minWidth = 640) {
   return pick.url;
 }
 
-// O card "Background information" da ArtistInfo, a partir da resposta crua do
-// MusicBrainz (ws/2/artist?inc=genres+artist-rels). Igual à infobox da Wikipedia,
-// resumida a poucas linhas: gêneros mais citados primeiro, ano de início junto do
-// lugar em vez de uma linha própria, só integrantes atuais (passados some — banda
-// dissolvida vira lista longa e o card é pra ser curto). O que a Wikipedia mostra e
-// o MusicBrainz não modela direito (discografia, spinoffs) fica de fora — puxar
-// isso exigiria raspar a infobox em si, não uma API estruturada.
-export function formatArtistBackground(data = {}) {
-  const place = [data["begin-area"]?.name, data.area?.name].filter(Boolean).join(", ");
-  const beginYear = data["life-span"]?.begin?.slice(0, 4);
-  const origin = place && beginYear ? `${place} (${beginYear})` : place;
-
-  const genres = [...(data.genres || [])]
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4)
-    .map((g) => g.name);
-
-  const currentMembers = (data.relations || [])
-    .filter((r) => r.type === "member of band" && r.artist?.name && !r.ended)
-    .map((r) => r.artist.name);
-
-  return { origin, genres, currentMembers };
-}
-
 // A atração do artista, casada pelo nome: o /suggest às vezes devolve um tributo ou banda de
 // abertura primeiro. Sem par, nada — foto, gênero, sociais e Spotify de outro artista são
 // piores que um card vazio.

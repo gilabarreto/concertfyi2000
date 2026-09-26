@@ -32,8 +32,6 @@ export const getLocalEvents = (lat, long) => API("/ticketmaster/events", { param
 export const getArtistBackground = (artist) =>
   API("/wikipedia", { params: { artist }, timeout: 30000 });
 
-export const getEventArt = (params) => API("/event-art", { params, timeout: 20000 });
-
 export const getArtistImages = (mbid) => API("/audiodb/artist-images", { params: { mbid } });
 
 export const getApiLabData = (source) => API("/api-lab", { params: { source }, timeout: 60000 });

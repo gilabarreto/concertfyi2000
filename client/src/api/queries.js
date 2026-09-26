@@ -8,22 +8,11 @@ import {
   getLyrics,
   getYoutubeVideo,
   getArtistBackground,
-  getEventArt,
   getArtistImages,
   getApiLabData,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
-
-export const useEventArt = ({ mbid, date, venue, city }) =>
-  useQuery({
-    queryKey: ["event-art", mbid, date, venue, city],
-    queryFn: () => getEventArt({ mbid, date, venue, city }),
-    enabled: !!mbid && !!date && !!venue,
-    staleTime: 60 * 60 * 1000,
-    gcTime: 6 * 60 * 60 * 1000,
-    retry: false,
-  });
 
 export const useArtistImages = (mbid) =>
   useQuery({

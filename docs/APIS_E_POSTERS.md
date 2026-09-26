@@ -46,7 +46,7 @@ O bloco fica ao lado do setlist no desktop e depois dele no mobile; o player Spo
 
 ## Integração e limites
 
-- Rota nova: `GET /api/event-art?mbid=...&date=YYYY-MM-DD&venue=...&city=...`.
+- Sem rota pública: o handler de `server/routes/eventArt.js` só é chamado pelo API Lab (dev). O client que o consumia (`useEventArt`, `concertArtwork.js`) foi removido por não ter uso.
 - Reutiliza os dados já presentes no setlist e Ticketmaster; não exige nova chave ou pacote npm.
 - O backend compartilha a fila MusicBrainz entre as consultas de eventos e o API Lab, espaça chamadas em pelo menos 1,1 s, deduplica consultas simultâneas e mantém caches limitados em memória. O cache desaparece ao reiniciar o processo. Mais de uma instância precisaria de orçamento compartilhado.
 - Pôster encontrado: cache de 24 h no processo; ausência: 1 h. Erro temporário não vira ausência no cache. Respostas públicas têm cache de 1 h.
