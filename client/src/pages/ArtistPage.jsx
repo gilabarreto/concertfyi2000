@@ -77,20 +77,29 @@ export default function ArtistPage() {
       {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
           vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
       <div className="w-full min-w-0">
+        {/* Mesma faixa vermelha da Home, com as chaves das miniaturas em volta (ArtistPhotos). */}
         <nav
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full overflow-x-auto whitespace-nowrap border-b border-zinc-300"
+          className="lg:hidden flex w-full items-center bg-red-600 px-2 text-white"
         >
-          {sections.map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => scrollToSection(id)}
-              className="shrink-0 px-3 py-3 text-sm font-semibold text-zinc-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600"
-            >
-              {label}
-            </button>
-          ))}
+          <span aria-hidden="true" className="shrink-0 text-3xl font-light leading-none">
+            {"{"}
+          </span>
+          <div className="flex min-w-0 flex-1 overflow-x-auto whitespace-nowrap">
+            {sections.map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => scrollToSection(id)}
+                className="shrink-0 px-2 py-3 text-sm sm:text-base text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <span aria-hidden="true" className="shrink-0 text-3xl font-light leading-none">
+            {"}"}
+          </span>
         </nav>
         <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
