@@ -75,6 +75,31 @@ export default function ArtistInfo(props) {
       ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
       : undefined;
   const displayGenres = getTicketmasterGenres(attraction);
+  // Com o texto inteiro à mostra, a fonte fecha o próprio parágrafo; recolhido, a máscara
+  // apagaria o fim do texto, então ela fica numa linha própria abaixo.
+  const showSourceInline = !hasMoreBiography || showFullBiography;
+  const source = (
+    <>
+      Source:{" "}
+      <a
+        href={httpOnly(background.pageUrl)}
+        target="_blank"
+        rel="noreferrer"
+        className="underline hover:text-red-600"
+      >
+        Wikipedia
+      </a>
+      {" · "}
+      <a
+        href="https://creativecommons.org/licenses/by-sa/4.0/"
+        target="_blank"
+        rel="noreferrer"
+        className="underline hover:text-red-600"
+      >
+        CC BY-SA 4.0
+      </a>
+    </>
+  );
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row items-start gap-6">
@@ -128,7 +153,13 @@ export default function ArtistInfo(props) {
                     {hasMoreBiography && !showFullBiography
                       ? `${background.extract.slice(0, 300).replace(/\s+\S*$/, "")}…`
                       : background.extract}
+                    {showSourceInline && (
+                      <span className="text-xs text-zinc-500">&ensp;{source}</span>
+                    )}
                   </p>
+                  {!showSourceInline && (
+                    <p className="mt-6 mb-3 text-center text-xs text-zinc-500">{source}</p>
+                  )}
                   {hasMoreBiography && (
                     <div className="flex justify-center">
                       <button
@@ -142,26 +173,6 @@ export default function ArtistInfo(props) {
                       </button>
                     </div>
                   )}
-                  <p className="mt-2 text-xs text-zinc-500">
-                    Source:{" "}
-                    <a
-                      href={httpOnly(background.pageUrl)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline hover:text-red-600"
-                    >
-                      Wikipedia
-                    </a>
-                    {" · "}
-                    <a
-                      href="https://creativecommons.org/licenses/by-sa/4.0/"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline hover:text-red-600"
-                    >
-                      CC BY-SA 4.0
-                    </a>
-                  </p>
                 </>
               ) : (
                 <p className="text-sm text-zinc-500">
