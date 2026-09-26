@@ -159,13 +159,14 @@ export default function Setlist({ concert }) {
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
-        <h2 id="setlist" ref={titleRef} className="text-2xl font-bold scroll-mt-20">
-          Setlist{" "}
-          <span className="text-base font-normal whitespace-nowrap">
-            · {dateLabel(parseSetlistDate(concertDate))}
-          </span>
-        </h2>
+      <h2 id="setlist" ref={titleRef} className="text-2xl font-bold scroll-mt-20 mb-2">
+        Setlist
+      </h2>
+
+      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
+
+      <div className="ml-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
+        <span>Concert date:&ensp;{dateLabel(parseSetlistDate(concertDate))}</span>
         <div className="flex items-center space-x-2">
           <button
             type="button"
@@ -197,8 +198,6 @@ export default function Setlist({ concert }) {
           </span>
         </div>
       </div>
-
-      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
 
       <>
         {songs.length === 0 ? (
