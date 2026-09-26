@@ -14,8 +14,16 @@ export default function SearchBar({ onClose }) {
 
   const term = useDebounce(searchValue, 700);
 
-  const { data: setlistData } = useSetlistSearch(term);
-  const { data: ticketmasterData } = useTicketmasterSearch(term);
+  const setlistSearch = useSetlistSearch(term);
+  const ticketmasterSearch = useTicketmasterSearch(term);
+  const setlistData = setlistSearch.data;
+  const ticketmasterData = ticketmasterSearch.data;
+  // Timeout ou API fora: sem isto a busca terminava calada, sem resultado nem aviso.
+  const searchFailed = setlistSearch.isError || ticketmasterSearch.isError;
+  const retry = () => {
+    setlistSearch.refetch();
+    ticketmasterSearch.refetch();
+  };
 
   useEffect(() => {
     if (setlistData) {
@@ -72,6 +80,21 @@ export default function SearchBar({ onClose }) {
       >
         <Icon icon={faXmark} />
       </button>
+      {searchFailed && (
+        <p
+          role="alert"
+          className="absolute left-0 top-full mt-1 w-full bg-white px-4 py-2 text-sm text-zinc-500 shadow"
+        >
+          Search failed.{" "}
+          <button
+            type="button"
+            onClick={retry}
+            className="font-semibold text-red-600 hover:text-red-800"
+          >
+            Try again
+          </button>
+        </p>
+      )}
     </form>
   );
 }
