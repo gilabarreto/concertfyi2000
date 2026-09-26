@@ -83,7 +83,7 @@ export default function ArtistPage() {
           aria-label="Artist page sections"
           className="lg:hidden flex w-full items-center justify-center bg-red-600 px-2 text-sm sm:text-base text-white"
         >
-          <span aria-hidden="true" className="shrink-0">
+          <span aria-hidden="true" className="shrink-0 text-base leading-none sm:text-lg">
             {"{"}
           </span>
           <div className="flex min-w-0 overflow-x-auto whitespace-nowrap">
@@ -92,13 +92,13 @@ export default function ArtistPage() {
                 key={id}
                 type="button"
                 onClick={() => scrollToSection(id)}
-                className="shrink-0 px-2 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+                className="shrink-0 px-1.5 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
               >
                 {label}
               </button>
             ))}
           </div>
-          <span aria-hidden="true" className="shrink-0">
+          <span aria-hidden="true" className="shrink-0 text-base leading-none sm:text-lg">
             {"}"}
           </span>
         </nav>
