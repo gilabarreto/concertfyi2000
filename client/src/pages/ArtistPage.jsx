@@ -85,7 +85,7 @@ export default function ArtistPage() {
         >
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-px text-lg leading-none sm:text-xl"
+            className="shrink-0 -translate-y-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"{"}
           </span>
@@ -95,7 +95,7 @@ export default function ArtistPage() {
                 key={id}
                 type="button"
                 onClick={() => scrollToSection(id)}
-                className="shrink-0 px-1.5 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+                className="shrink-0 px-0.5 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
               >
                 {label}
               </button>
@@ -103,7 +103,7 @@ export default function ArtistPage() {
           </div>
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-px text-lg leading-none sm:text-xl"
+            className="shrink-0 -translate-y-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"}"}
           </span>
