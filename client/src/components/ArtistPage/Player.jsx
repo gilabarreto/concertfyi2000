@@ -5,20 +5,26 @@ export default function Player({ attraction }) {
 
   if (!spotify) {
     return (
-      <div className="text-zinc-500 text-center">Spotify link not available for this artist.</div>
+      <section aria-label="Top tracks" className="space-y-3">
+        <h2 className="text-2xl font-bold">Top tracks</h2>
+        <p className="text-zinc-500 text-center">Spotify link not available for this artist.</p>
+      </section>
     );
   }
 
   return (
-    <iframe
-      className="w-full h-[500px] rounded-2xl"
-      src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
-      title="Artist on Spotify"
-      // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*
-      // piorou a medição. Este vem depois do mapa e da setlist inteira, sempre fora da
-      // primeira dobra, então aqui o adiamento tira concorrência de rede de quem está na tela.
-      loading="lazy"
-      allow="encrypted-media; clipboard-write"
-    />
+    <section aria-label="Top tracks" className="space-y-3">
+      <h2 className="text-2xl font-bold">Top tracks</h2>
+      <iframe
+        className="w-full h-[800px] rounded-2xl"
+        src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
+        title="Artist on Spotify"
+        // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*
+        // piorou a medição. Este vem depois do mapa e da setlist inteira, sempre fora da
+        // primeira dobra, então aqui o adiamento tira concorrência de rede de quem está na tela.
+        loading="lazy"
+        allow="encrypted-media; clipboard-write"
+      />
+    </section>
   );
 }
