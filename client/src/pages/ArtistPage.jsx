@@ -81,22 +81,22 @@ export default function ArtistPage() {
             miniaturas (ArtistPhotos). Centralizado; se não couber, só os títulos rolam. */}
         <nav
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full items-center justify-center bg-red-600 px-2 text-sm sm:text-base text-white"
+          className="lg:hidden flex w-full items-center justify-center bg-red-600 p-4 text-sm sm:text-base text-white"
         >
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-px text-xl leading-none sm:text-[22px]"
+            className="shrink-0 -translate-y-px px-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"{"}
           </span>
           {/* Sem barra de rolagem: no Windows ela ocupa espaço embaixo e empurra os títulos pra cima. */}
-          <div className="flex min-w-0 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-0 gap-0.5 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {sections.map(([id, label]) => (
               <button
                 key={id}
                 type="button"
                 onClick={() => scrollToSection(id)}
-                className="shrink-0 px-0.5 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
+                className="shrink-0 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
               >
                 {label}
               </button>
@@ -104,7 +104,7 @@ export default function ArtistPage() {
           </div>
           <span
             aria-hidden="true"
-            className="shrink-0 -translate-y-px text-xl leading-none sm:text-[22px]"
+            className="shrink-0 -translate-y-px px-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"}"}
           </span>
