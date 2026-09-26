@@ -14,12 +14,8 @@ export default function SearchBar({ onClose }) {
 
   const term = useDebounce(searchValue, 700);
 
-  const { data: setlistData, isFetching: isSetlistFetching } = useSetlistSearch(term);
-  const { data: ticketmasterData, isFetching: isTicketmasterFetching } =
-    useTicketmasterSearch(term);
-  // Cobre também os 700 ms do debounce: sem isso a busca parecia não ter ouvido a digitação.
-  const isSearching =
-    !!searchValue.trim() && (searchValue !== term || isSetlistFetching || isTicketmasterFetching);
+  const { data: setlistData } = useSetlistSearch(term);
+  const { data: ticketmasterData } = useTicketmasterSearch(term);
 
   useEffect(() => {
     if (setlistData) {
@@ -65,15 +61,8 @@ export default function SearchBar({ onClose }) {
         value={searchValue}
         onChange={handleChange}
         placeholder={placeholder}
-        className="bg-white w-full px-4 py-3 pr-16 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm text-zinc-900"
+        className="bg-white w-full px-4 py-3 pr-10 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm text-zinc-900"
       />
-      {isSearching && (
-        <div
-          role="status"
-          aria-label="Searching"
-          className="absolute right-10 top-1/2 size-4 -translate-y-1/2 animate-spin motion-reduce:animate-none rounded-full border-2 border-red-600 border-t-transparent"
-        />
-      )}
       <button
         type="button"
         onClick={onClose}

@@ -33,7 +33,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Botão "Compartilhar" — resolvido em `5f881a0` (2026-09-26). ConcertInfo.jsx não existe mais; entrou ao lado do "I WAS THERE" em LastConcert.jsx. Share sheet nativo no celular, cópia do link no desktop.
 □ Loading skeleton em ConcertInfo.jsx.
 □ Genius link como fallback em SongDetails.jsx.
-☑ Ícone de loading na busca — resolvido em `01696ef`. Cobre o debounce de 700 ms e as duas buscas em andamento.
+□ Ícone de loading na busca (SearchBar.jsx) — tentado em `01696ef` (spinner ao lado do X) e revertido a pedido do dono em 2026-09-26. Reabrir só com outro formato.
 ☑ Timeout próprio nas requisições — já existia (achado 2026-09-26): request.js aborta em 10 s desde a saída do axios e o erro vem como "Request timed out".
 □ Mensagem de erro na busca — a SearchBar ignora o isError das duas queries: com timeout ou API fora, o spinner some e a tela fica sem resultado nem aviso. As outras telas (página de artista, bio, fotos, cidades, letras/vídeo) já avisam. Toast descartado por opinião: mensagem inline como nas outras basta; o dono pode vetar.
 □ Loading skeletons enquanto dados carregam — nenhum existe.
