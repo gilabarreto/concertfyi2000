@@ -83,7 +83,10 @@ export default function ArtistPage() {
           aria-label="Artist page sections"
           className="lg:hidden flex w-full items-center justify-center bg-red-600 px-2 text-sm sm:text-base text-white"
         >
-          <span aria-hidden="true" className="shrink-0 text-base leading-none sm:text-lg">
+          <span
+            aria-hidden="true"
+            className="shrink-0 -translate-y-px text-lg leading-none sm:text-xl"
+          >
             {"{"}
           </span>
           <div className="flex min-w-0 overflow-x-auto whitespace-nowrap">
@@ -98,7 +101,10 @@ export default function ArtistPage() {
               </button>
             ))}
           </div>
-          <span aria-hidden="true" className="shrink-0 text-base leading-none sm:text-lg">
+          <span
+            aria-hidden="true"
+            className="shrink-0 -translate-y-px text-lg leading-none sm:text-xl"
+          >
             {"}"}
           </span>
         </nav>
