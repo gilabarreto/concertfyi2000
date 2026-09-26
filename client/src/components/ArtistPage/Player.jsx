@@ -1,7 +1,7 @@
 // Spotify's own embed is an iframe; the wrapper packages that used to be here added a
 // dependency for the same markup. The artist link only needs "/embed" spliced into it.
-export default function Player({ ticketmaster }) {
-  const spotify = ticketmaster.attractions?.[0]?.externalLinks?.spotify?.[0]?.url;
+export default function Player({ attraction }) {
+  const spotify = attraction?.externalLinks?.spotify?.[0]?.url;
 
   if (!spotify) {
     return (

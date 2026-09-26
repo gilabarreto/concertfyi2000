@@ -8,6 +8,7 @@ import Player from "../components/ArtistPage/Player";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
 import PastConcerts from "../components/ArtistPage/PastConcerts";
 import { AppContext } from "../context/AppContext";
+import { getArtistAttraction } from "../helpers/selectors";
 import { SEOHead } from "../components/SEOHead";
 
 export default function ArtistPage() {
@@ -42,7 +43,7 @@ export default function ArtistPage() {
     return <div className="p-8 w-full text-center text-zinc-400">Loading concert info…</div>;
   }
 
-  const attraction = ticketmaster.attractions?.find((a) => a.name === concert.artist.name);
+  const attraction = getArtistAttraction(ticketmaster, concert.artist.name);
   const artistImage = attraction?.images?.[0]?.url || "";
   const artistName = concert.artist.name;
   const concertDate = concert.eventDate;
@@ -59,12 +60,7 @@ export default function ArtistPage() {
       <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
         {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
         <div className="min-w-0 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2">
-          <ArtistInfo
-            key={artistId}
-            concert={concert}
-            setlist={setlist}
-            ticketmaster={ticketmaster}
-          />
+          <ArtistInfo key={artistId} concert={concert} setlist={setlist} attraction={attraction} />
         </div>
 
         <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
@@ -77,7 +73,7 @@ export default function ArtistPage() {
           </div>
 
           <div className="min-w-0 p-2 sm:p-6 before:hidden spotify-player-card">
-            <Player ticketmaster={ticketmaster} />
+            <Player attraction={attraction} />
           </div>
         </div>
 

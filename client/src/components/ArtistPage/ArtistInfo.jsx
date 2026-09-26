@@ -32,7 +32,7 @@ const SOCIALS = [
 ];
 
 export default function ArtistInfo(props) {
-  const { concert, ticketmaster } = props;
+  const { concert, attraction } = props;
   const { artistId } = useParams();
   const [favoriteArtists, setFavoriteArtists] = useState(getFavoriteArtists);
   const [showFullBiography, setShowFullBiography] = useState(false);
@@ -46,7 +46,7 @@ export default function ArtistInfo(props) {
     localStorage.setItem(FAVORITE_ARTISTS_KEY, JSON.stringify(next));
   };
 
-  const links = ticketmaster.attractions?.[0]?.externalLinks || {};
+  const links = attraction?.externalLinks || {};
   const hasSocials = SOCIALS.some(({ key }) => links[key]);
   const socialIcons = SOCIALS.map(({ key, icon, label }) =>
     links[key] ? (
@@ -74,12 +74,12 @@ export default function ArtistInfo(props) {
     hasMoreBiography && !showFullBiography
       ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
       : undefined;
-  const displayGenres = getTicketmasterGenres(ticketmaster, artist);
+  const displayGenres = getTicketmasterGenres(attraction);
 
   return (
     <div className="flex-1 flex flex-col lg:flex-row items-start gap-6">
       <div className="flex flex-col items-center w-full lg:flex-1 lg:min-w-0">
-        <ArtistPhotos artistId={artistId} artist={artist} ticketmaster={ticketmaster} />
+        <ArtistPhotos artistId={artistId} artist={artist} attraction={attraction} />
       </div>
 
       <div className="w-full lg:flex-1 lg:min-w-0">

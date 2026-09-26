@@ -2,12 +2,10 @@ import { useState } from "react";
 import { useArtistImages } from "../../api/queries";
 import { getBestImage } from "../../helpers/selectors";
 
-export default function ArtistPhotos({ artistId, artist, ticketmaster }) {
+export default function ArtistPhotos({ artistId, artist, attraction }) {
   const { data, isLoading, isError, refetch } = useArtistImages(artistId);
   const [selectedUrl, setSelectedUrl] = useState(null);
   const [failed, setFailed] = useState([]);
-  const attraction =
-    ticketmaster.attractions?.find((item) => item.name === artist) || ticketmaster.attractions?.[0];
   const mainImage = getBestImage(attraction?.images || []);
   const images = mainImage
     ? [

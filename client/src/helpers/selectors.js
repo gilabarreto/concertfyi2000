@@ -143,15 +143,18 @@ export function formatArtistBackground(data = {}) {
   return { origin, genres, currentMembers };
 }
 
+// A atração do artista, casada pelo nome: o /suggest às vezes devolve um tributo ou banda de
+// abertura primeiro. Sem par, nada — foto, gênero, sociais e Spotify de outro artista são
+// piores que um card vazio.
+export function getArtistAttraction(ticketmaster, artist) {
+  return ticketmaster?.attractions?.find((a) => a.name === artist);
+}
+
 // Única fonte do Genres: gênero e subgênero da classificação primária da Ticketmaster, que já
 // vem na prop, sem requisição. O MusicBrainz (top 4 por tag) saiu em ae0abbf — mais rico, mas
 // lento, e o dono preferiu assim. "Undefined" é o "sem essa informação" da Ticketmaster.
-// A atração é casada pelo nome: o /suggest às vezes devolve um tributo ou banda de abertura
-// primeiro, e sem par é melhor não ter Genres do que mostrar o gênero de outro artista.
-export function getTicketmasterGenres(ticketmaster, artist) {
-  const classification = ticketmaster?.attractions
-    ?.find((a) => a.name === artist)
-    ?.classifications?.find((c) => c.primary);
+export function getTicketmasterGenres(attraction) {
+  const classification = attraction?.classifications?.find((c) => c.primary);
 
   return [...new Set([classification?.genre?.name, classification?.subGenre?.name])].filter(
     (name) => name && name !== "Undefined",
