@@ -68,11 +68,11 @@ export default function ArtistPage() {
         <hr className="w-full sm:w-[95%] mx-auto border-zinc-300" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="min-w-0 bg-white p-6 space-y-2">
+          <div className="min-w-0 bg-white p-4 space-y-2">
             <Setlist concert={concert} />
           </div>
 
-          <div className="min-w-0 p-2 sm:p-6 before:hidden spotify-player-card">
+          <div className="min-w-0 p-4 before:hidden spotify-player-card">
             <Player attraction={attraction} />
           </div>
         </div>
@@ -80,11 +80,11 @@ export default function ArtistPage() {
         <hr className="w-full sm:w-[95%] mx-auto border-zinc-300 past-section-divider" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="min-w-0 bg-white p-6 space-y-2">
+          <div className="min-w-0 bg-white p-4 space-y-2">
             <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
           </div>
 
-          <div className="min-w-0 bg-white p-6 space-y-2">
+          <div className="min-w-0 bg-white p-4 space-y-2">
             <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
           </div>
         </div>

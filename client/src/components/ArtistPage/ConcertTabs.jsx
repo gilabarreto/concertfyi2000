@@ -94,7 +94,7 @@ export default function ConcertTabs({ concert, setlist, ticketmaster }) {
             aria-hidden={desktop && active !== index ? true : undefined}
             inert={desktop && active !== index ? "" : undefined}
             tabIndex={desktop && active === index ? 0 : undefined}
-            className="concert-tab-panel min-w-0 scroll-mt-20 bg-white p-6 space-y-2"
+            className="concert-tab-panel min-w-0 scroll-mt-20 bg-white p-4 space-y-2"
             data-active={active === index}
             style={{ "--panel-index": index }}
           >
