@@ -50,7 +50,14 @@ app.use("/api/setlist", require("./routes/setlist"));
 app.use("/api/spotify", require("./routes/spotify"));
 app.get("/api/lyrics", require("./routes/lyrics"));
 app.get("/api/youtube", require("./routes/youtube"));
+app.get("/api/wikipedia", require("./routes/wikipedia"));
 app.get("/api/musicbrainz", require("./routes/musicbrainz"));
+app.get("/api/event-art", require("./routes/eventArt"));
+app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
+if (process.env.API_LAB_ENABLED === "true") {
+  // Expensive/quota-consuming comparison calls are available only when explicitly enabled by npm run dev.
+  app.get("/api/api-lab", require("./routes/apiLab"));
+}
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

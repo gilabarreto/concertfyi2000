@@ -28,5 +28,12 @@ export const searchCities = (q) =>
 
 export const getLocalEvents = (lat, long) => API("/ticketmaster/events", { params: { lat, long } });
 
-// :artistId na URL já é o mbid do MusicBrainz — Setlist.fm casa por ele.
-export const getArtistBackground = (mbid) => API("/musicbrainz", { params: { mbid } });
+// Biography uses the artist name to resolve the Wikipedia summary.
+export const getArtistBackground = (artist) =>
+  API("/wikipedia", { params: { artist }, timeout: 30000 });
+
+export const getEventArt = (params) => API("/event-art", { params, timeout: 20000 });
+
+export const getArtistImages = (mbid) => API("/audiodb/artist-images", { params: { mbid } });
+
+export const getApiLabData = (source) => API("/api-lab", { params: { source }, timeout: 60000 });

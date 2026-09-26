@@ -8,6 +8,8 @@ ConcertFYI — Pendências e Decisões
 □ Conferir no painel do Render o que o log de acesso da plataforma guarda (IP? query?) e por quanto tempo — a promessa "sem IP e sem query" vale só para o nosso middleware.
 □ Sair do GitHub Pages (Netlify/Vercel/Cloudflare Pages). Resolve: página de artista responder 404 real, CSP via header em vez de <meta>, e Cache-Control dos assets.
 🟡 Decisões de produto/arquitetura
+□ Pôster oficial por tour — pesquisa de 25/09/2026: Event Art Archive fornece arte por MBID de evento, sem endpoint documentado por nome de tour. Experimento retirado da ArtistPage por decisão do dono em 26/09/2026; consultas mantidas no API Lab. Retomar associação à tour somente com fonte explícita; não tratar pôster de outra data como o show atual. Resumo e fontes em `docs/APIS_E_POSTERS.md`.
+□ Enriquecimento visual e descoberta — Miniaturas TheAudioDB via MBID aprovadas pelo dono em 26/09/2026, com Ticketmaster como foto inicial. A revisão dos termos do provedor segue pendente. Cover Art Archive para capas de álbuns e ListenBrainz/Last.fm para recomendações seguem como candidatos pesquisados em 25/09/2026. Ver `docs/APIS_E_POSTERS.md`.
 □ Concert Times em Past Concerts — adiado por decisão do dono em 2026-09-21; prévia e dados fictícios removidos. Ideia: Doors, início/fim do show e lineup com horário de cada artista. A API pública documentada do setlist.fm não expõe campos estruturados para esses horários nem lineup com horários; o campo livre `info` pode conter observações, mas não garante esses dados. Retomar somente com uma fonte confiável ou suporte oficial da API. Referências: [modelo da API](https://api.setlist.fm/docs/1.0/json_Setlist.html) e [pedido de inclusão dos horários](https://www.setlist.fm/forum/setlistfm/setlistfm-api/feature-request-api-add-fields-to-responses-1bd705e8).
 □ Mapa estático ou mapa atrás de clique — o mapa é o LCP (7,3–7,5 s) e custa ~400 kB de JS de terceiro. Bloqueado pela chave acima.
 □ Token da Spotify no localStorage — risco aceito; trocar exige cookie httpOnly com servidor stateful.
@@ -64,4 +66,3 @@ Formulário de contato inline com role="status" e botão desabilitado durante en
 Botão de perfil do Navbar removido (não tinha onClick).
 
 Tooltips nos ícones de Spotify e YouTube em SongDetails.jsx e Setlist.jsx (achado 2026-09-20, revisando o item — já existiam via `title`). Genius ainda não é feature no app; ver item de fallback do Genius, separado.
-

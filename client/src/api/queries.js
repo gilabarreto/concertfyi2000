@@ -1,4 +1,4 @@
-import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, useMutation, keepPreviousData } from "@tanstack/react-query";
 import {
   getSetlist,
   getSetlistById,
@@ -8,10 +8,40 @@ import {
   getLyrics,
   getYoutubeVideo,
   getArtistBackground,
+  getEventArt,
+  getArtistImages,
+  getApiLabData,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
-import { formatArtistBackground } from "../helpers/selectors";
+
+export const useEventArt = ({ mbid, date, venue, city }) =>
+  useQuery({
+    queryKey: ["event-art", mbid, date, venue, city],
+    queryFn: () => getEventArt({ mbid, date, venue, city }),
+    enabled: !!mbid && !!date && !!venue,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 6 * 60 * 60 * 1000,
+    retry: false,
+  });
+
+export const useArtistImages = (mbid) =>
+  useQuery({
+    queryKey: ["artist-images", mbid],
+    queryFn: () => getArtistImages(mbid),
+    enabled: !!mbid,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 7 * 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+
+export const useApiLab = (onSuccess) =>
+  useMutation({
+    mutationFn: getApiLabData,
+    onSuccess,
+    retry: false,
+    gcTime: 0,
+  });
 
 // Song details don't change: cache for the session instead of the 1s global gcTime,
 // so reopening a song is instant (and saves YouTube API quota). "Not found" is a normal answer, no retry.
@@ -95,13 +125,12 @@ export const useLocalEvents = (lat, long) => {
   });
 };
 
-// mbid é o :artistId da URL. Biografia não muda dentro de uma sessão — mesmo preset
-// de cache que letra/vídeo, e 404 (artista sem entrada no MusicBrainz) não tenta de novo.
-export const useArtistBackground = (mbid) => {
+// Keep Wikipedia summaries cached while navigating between concerts of the same artist.
+export const useArtistBackground = (artist) => {
   return useQuery({
-    queryKey: ["artist-background", mbid],
-    queryFn: () => getArtistBackground(mbid).then(formatArtistBackground),
-    enabled: !!mbid,
+    queryKey: ["artist-wikipedia", artist],
+    queryFn: () => getArtistBackground(artist),
+    enabled: !!artist,
     ...songCache,
   });
 };

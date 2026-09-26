@@ -77,7 +77,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
       <div
         className={
-          hideTitle && coords ? "grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-6" : ""
+          hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
         }
       >
         <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
@@ -141,7 +141,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         </ol>
         {hideTitle && coords && (
           <div
-            className="min-h-[180px] overflow-hidden rounded-md bg-zinc-100"
+            className="h-[240px] w-[400px] overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
             <Map latitude={coords?.latitude} longitude={coords?.longitude} />

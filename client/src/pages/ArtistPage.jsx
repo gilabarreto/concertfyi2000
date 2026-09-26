@@ -59,7 +59,12 @@ export default function ArtistPage() {
       <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
         {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
         <div className="min-w-0 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2">
-          <ArtistInfo concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+          <ArtistInfo
+            key={artistId}
+            concert={concert}
+            setlist={setlist}
+            ticketmaster={ticketmaster}
+          />
         </div>
 
         <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />

@@ -15,6 +15,7 @@ const ArtistPage = lazy(() => import("./pages/ArtistPage"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const SpotifyCallback = lazy(() => import("./pages/SpotifyCallback"));
+const ApiLab = import.meta.env.DEV ? lazy(() => import("./pages/ApiLab")) : null;
 
 function App() {
   const appState = useAppState();
@@ -83,6 +84,7 @@ function App() {
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/callback" element={<SpotifyCallback />} />
+                    {import.meta.env.DEV && <Route path="/api-lab" element={<ApiLab />} />}
                   </Routes>
                 </Suspense>
               </ErrorBoundary>
