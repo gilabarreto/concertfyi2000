@@ -23,6 +23,9 @@ ConcertFYI — Pendências e Decisões
 ⚪ Itens abertos no repositório (sem decisão sua pendente)
 ☑ Atualizar DOSSIE_TECNICO_ATUALIZADO.md — resolvido em `b0619a48` (2026-09-19): incorpora testes/CI, React Query, fetch, imagens/bundle, CSP, fontes locais e contato; separa entregue de propostas futuras.
 ☑ Paginação no Setlist.jsx se >20 músicas — resolvido em `7156262`.
+☑ Atração da Ticketmaster casada pelo nome do artista (achado do /code-review de `ae0abbf`, 2026-09-26) — gênero em `84db691`; foto, sociais e Spotify em `7ca76af`. Antes liam `attractions[0]`, que às vezes é tributo ou banda de abertura. Sem par por nome, os cards ficam vazios.
+☑ Gêneros só da Ticketmaster — decisão do dono em 2026-09-26: não voltar o top 4 do MusicBrainz que saiu em `ae0abbf`.
+☑ Código sem uso após `ae0abbf` (useEventArt, concertArtwork.js, formatArtistBackground, rotas /api/musicbrainz e /api/event-art) — removido em `836ee41`; o API Lab segue usando musicbrainzClient e eventArt.js pelo servidor.
 □ Tempo estimado do show no Setlist.jsx.
 ☑ Sinalizar onde começa o "encore" no Setlist.jsx — resolvido em `c9f4f5e` (pedido original era expandir/recolher; o dono preferiu só sinalizar, sem esconder nada).
 ☑ Botão "Copiar setlist" (clipboard) — resolvido em `8a5a94c`.
