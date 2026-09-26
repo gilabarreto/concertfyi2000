@@ -8,7 +8,7 @@ import Player from "../components/ArtistPage/Player";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
 import PastConcerts from "../components/ArtistPage/PastConcerts";
 import { AppContext } from "../context/AppContext";
-import { getArtistAttraction } from "../helpers/selectors";
+import { getArtistAttraction, getUpcomingConcertsByArtist } from "../helpers/selectors";
 import { SEOHead } from "../components/SEOHead";
 
 export default function ArtistPage() {
@@ -48,6 +48,23 @@ export default function ArtistPage() {
   const artistName = concert.artist.name;
   const concertDate = concert.eventDate;
   const concertVenue = concert.venue?.name || "Concert";
+  const hasNextConcert = getUpcomingConcertsByArtist(ticketmaster.events, artistName).length > 0;
+  // Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
+  // Next Concert some sem show futuro, porque o card dele fica vazio.
+  const sections = [
+    ["artist", "Artist"],
+    ["last-concert", "Last Concert"],
+    hasNextConcert && ["next-concert", "Next Concert"],
+    ["setlist", "Setlist"],
+    ["top-tracks", "Top Tracks"],
+    ["past-concerts", "Past"],
+    ["upcoming-concerts", "Upcoming"],
+  ].filter(Boolean);
+  const scrollToSection = (id) =>
+    document.getElementById(id)?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      block: "start",
+    });
 
   return (
     <>
@@ -57,9 +74,27 @@ export default function ArtistPage() {
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
+      <nav
+        aria-label="Artist page sections"
+        className="lg:hidden flex w-full overflow-x-auto whitespace-nowrap border-b border-zinc-300"
+      >
+        {sections.map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => scrollToSection(id)}
+            className="shrink-0 px-3 py-3 text-sm font-semibold text-zinc-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600"
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
       <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
         {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
-        <div className="min-w-0 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2">
+        <div
+          id="artist"
+          className="min-w-0 scroll-mt-16 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
+        >
           <ArtistInfo key={artistId} concert={concert} setlist={setlist} attraction={attraction} />
         </div>
 
@@ -72,7 +107,10 @@ export default function ArtistPage() {
             <Setlist concert={concert} />
           </div>
 
-          <div className="min-w-0 p-4 before:hidden spotify-player-card">
+          <div
+            id="top-tracks"
+            className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
+          >
             <Player attraction={attraction} />
           </div>
         </div>
@@ -80,11 +118,11 @@ export default function ArtistPage() {
         <hr className="w-full sm:w-[95%] mx-auto border-zinc-300 past-section-divider" />
 
         <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="min-w-0 bg-white p-4 space-y-2">
+          <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
             <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
           </div>
 
-          <div className="min-w-0 bg-white p-4 space-y-2">
+          <div id="upcoming-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
             <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
           </div>
         </div>
