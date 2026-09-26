@@ -74,56 +74,65 @@ export default function ArtistPage() {
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}
       />
-      <nav
-        aria-label="Artist page sections"
-        className="lg:hidden flex w-full overflow-x-auto whitespace-nowrap border-b border-zinc-300"
-      >
-        {sections.map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            onClick={() => scrollToSection(id)}
-            className="shrink-0 px-3 py-3 text-sm font-semibold text-zinc-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600"
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
-      <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
-        {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
-        <div
-          id="artist"
-          className="min-w-0 scroll-mt-16 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
+      {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
+          vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
+      <div className="w-full min-w-0">
+        <nav
+          aria-label="Artist page sections"
+          className="lg:hidden flex w-full overflow-x-auto whitespace-nowrap border-b border-zinc-300"
         >
-          <ArtistInfo key={artistId} concert={concert} setlist={setlist} attraction={attraction} />
-        </div>
-
-        <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
-
-        <hr className="w-full sm:w-[95%] mx-auto border-zinc-300" />
-
-        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="min-w-0 bg-white p-4 space-y-2">
-            <Setlist concert={concert} />
-          </div>
-
+          {sections.map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => scrollToSection(id)}
+              className="shrink-0 px-3 py-3 text-sm font-semibold text-zinc-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-red-600"
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+        <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
+          {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
           <div
-            id="top-tracks"
-            className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
+            id="artist"
+            className="min-w-0 scroll-mt-16 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
           >
-            <Player attraction={attraction} />
-          </div>
-        </div>
-
-        <hr className="w-full sm:w-[95%] mx-auto border-zinc-300 past-section-divider" />
-
-        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
-            <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+            <ArtistInfo
+              key={artistId}
+              concert={concert}
+              setlist={setlist}
+              attraction={attraction}
+            />
           </div>
 
-          <div id="upcoming-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
-            <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
+          <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+
+          <hr className="w-full sm:w-[95%] mx-auto border-zinc-300" />
+
+          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="min-w-0 bg-white p-4 space-y-2">
+              <Setlist concert={concert} />
+            </div>
+
+            <div
+              id="top-tracks"
+              className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
+            >
+              <Player attraction={attraction} />
+            </div>
+          </div>
+
+          <hr className="w-full sm:w-[95%] mx-auto border-zinc-300 past-section-divider" />
+
+          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
+              <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
+            </div>
+
+            <div id="upcoming-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
+              <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
+            </div>
           </div>
         </div>
       </div>
