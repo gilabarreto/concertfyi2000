@@ -77,30 +77,21 @@ export default function ArtistPage() {
       {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
           vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
       <div className="w-full min-w-0">
-        {/* Mesma faixa vermelha da Home, com as chaves das miniaturas em volta (ArtistPhotos).
-            Centralizada: as chaves colam nos títulos; se não couberem, só os títulos rolam. */}
+        {/* Cores e fonte da faixa da Home; cada título entre chaves, como as das miniaturas. */}
         <nav
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full items-center justify-center bg-red-600 px-2 text-base sm:text-lg text-white"
+          className="lg:hidden flex w-full flex-wrap justify-center gap-x-3 gap-y-1 bg-red-600 px-4 py-3 text-sm sm:text-base text-white"
         >
-          <span aria-hidden="true" className="shrink-0">
-            {"{"}
-          </span>
-          <div className="flex min-w-0 overflow-x-auto whitespace-nowrap">
-            {sections.map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() => scrollToSection(id)}
-                className="shrink-0 px-2 py-3 text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-          <span aria-hidden="true" className="shrink-0">
-            {"}"}
-          </span>
+          {sections.map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => scrollToSection(id)}
+              className="whitespace-nowrap hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {`{${label}}`}
+            </button>
+          ))}
         </nav>
         <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
