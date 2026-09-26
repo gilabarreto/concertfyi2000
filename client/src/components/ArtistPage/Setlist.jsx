@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import Icon from "../Icon";
 import {
   faChevronDown,
   faChevronUp,
-  faCircleInfo,
+  faShareNodes,
   faCopy,
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
@@ -18,16 +17,49 @@ import { parseSetlistDate, dateLabel } from "../../helpers/selectors";
 const PAGE_SIZE = 10;
 
 export default function Setlist({ concert }) {
-  const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
   const [copied, setCopied] = useState(false);
-  const disclaimerRef = useRef(null);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const shareTimerRef = useRef(null);
   const titleRef = useRef(null);
   const copyTimerRef = useRef(null);
 
-  useEffect(() => () => clearTimeout(copyTimerRef.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(copyTimerRef.current);
+      clearTimeout(shareTimerRef.current);
+    },
+    [],
+  );
+
+  const shareSetlist = async () => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("next");
+    url.hash = "setlist";
+    try {
+      if (navigator.share)
+        await navigator.share({
+          title: `${concert.artist.name} — Setlist ${concert.eventDate}`,
+          url: url.href,
+        });
+      else {
+        await navigator.clipboard.writeText(url.href);
+        setLinkCopied(true);
+        clearTimeout(shareTimerRef.current);
+        shareTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
+      }
+    } catch {
+      /* Share cancellation leaves the setlist unchanged. */
+    }
+  };
+
+  useEffect(() => {
+    if (window.location.hash !== "#setlist") return;
+    const frame = requestAnimationFrame(() => titleRef.current?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, [concert.id]);
 
   // setlist.fm marks a set as an encore with `set.encore` (unset on the main sets). mainSongs'
   // length is where the encore starts, kept apart just to draw a divider before it below —
@@ -127,39 +159,42 @@ export default function Setlist({ concert }) {
 
   return (
     <>
-      <div className="flex flex-1 justify-between items-center mb-2">
-        <h2 ref={titleRef} className="text-2xl font-bold">
-          Setlist
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
+        <h2 id="setlist" ref={titleRef} className="text-2xl font-bold scroll-mt-20">
+          Setlist{" "}
+          <span className="text-base font-normal whitespace-nowrap">
+            · {dateLabel(parseSetlistDate(concertDate))}
+          </span>
         </h2>
         <div className="flex items-center space-x-2">
           <button
             type="button"
             onClick={handleCopySetlist}
-            className="p-1 hover:text-red-800 active:opacity-70 transition-opacity"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
             title="Copy setlist"
             aria-label="Copy setlist"
           >
             <Icon
               icon={copied ? faCheck : faCopy}
-              className={copied ? "text-green-600" : "text-zinc-500"}
+              className={copied ? "text-green-600 text-[0.65rem]" : "text-[0.65rem]"}
             />
+            {copied ? "COPIED" : "COPY"}
           </button>
           <span role="status" aria-live="polite" className="sr-only">
             {copied ? "Setlist copied to clipboard" : ""}
           </span>
           <button
-            onClick={() => disclaimerRef.current.showModal()}
-            onTouchEnd={(e) => {
-              e.preventDefault();
-              disclaimerRef.current.showModal();
-            }}
-            className="p-1 hover:text-red-800 active:opacity-70 transition-opacity"
-            title="Disclaimer"
-            aria-label="Disclaimer"
-            aria-haspopup="dialog"
+            type="button"
+            onClick={shareSetlist}
+            title="Share setlist"
+            className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
           >
-            <Icon icon={faCircleInfo} className="text-zinc-500" />
+            <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
+            {linkCopied ? "LINK COPIED" : "SHARE"}
           </button>
+          <span role="status" className="sr-only">
+            {linkCopied ? "Setlist link copied" : ""}
+          </span>
         </div>
       </div>
 
@@ -239,42 +274,6 @@ export default function Setlist({ concert }) {
           </>
         )}
       </>
-
-      {/* native modal: focus trap, Esc to close and focus return come from the browser */}
-      <dialog
-        ref={disclaimerRef}
-        aria-labelledby="disclaimer-title"
-        className="bg-white rounded-lg p-8 w-[calc(100%-2rem)] max-w-md backdrop:bg-black/50"
-      >
-        <h3 id="disclaimer-title" className="text-xl font-bold mb-4">
-          Disclaimer
-        </h3>
-        <div className="text-sm text-zinc-700 space-y-3 mb-6">
-          <p>
-            ConcertFYI uses information from third-party sources. We don't own or control all of the
-            content displayed here.
-          </p>
-          <p>
-            Found something missing or incorrect?{" "}
-            <button
-              onClick={() => {
-                disclaimerRef.current.close();
-                navigate("/contact");
-              }}
-              className="text-red-600 hover:text-red-800 font-semibold cursor-pointer bg-none border-none p-0"
-            >
-              Please contact us
-            </button>{" "}
-            and let us know.
-          </p>
-        </div>
-        <button
-          onClick={() => disclaimerRef.current.close()}
-          className="w-full px-4 py-2 bg-red-600 hover:bg-red-800 text-white font-semibold rounded transition-colors"
-        >
-          Close
-        </button>
-      </dialog>
     </>
   );
 }
