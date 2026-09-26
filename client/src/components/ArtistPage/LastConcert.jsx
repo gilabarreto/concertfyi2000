@@ -15,6 +15,7 @@ import MapDialog from "./MapDialog";
 import Map from "./Map";
 import ConcertRatingDialog from "./ConcertRatingDialog";
 import ConcertComments from "./ConcertComments";
+import { shareOrCopy } from "../../helpers/share";
 
 const ATTENDED_KEY = "attendedConcertIds";
 
@@ -45,19 +46,10 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
     if (!wasThere) ratingRef.current.open("rate");
   };
 
-  // Share sheet nativo no celular; no desktop, onde quase nenhum browser tem, copia o link.
   const share = async () => {
-    const url = window.location.href;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: document.title, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        setLinkCopied(true);
-        setTimeout(() => setLinkCopied(false), 2000);
-      }
-    } catch {
-      // usuário fechou o share sheet ou o clipboard foi negado — nada a recuperar
+    if (await shareOrCopy(window.location.href)) {
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     }
   };
 
@@ -82,8 +74,8 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
           hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
         }
       >
-        <div className="min-w-0">
-          <div className="mb-2 flex justify-end gap-1">
+        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+          <li className="flex gap-1 border-b border-zinc-300/50 py-2">
             <button
               type="button"
               onClick={share}
@@ -106,61 +98,59 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
             >
               <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
             </button>
-          </div>
-          <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
-            <li className="border-b border-zinc-300/50 py-2">
-              <span className="min-w-0">
-                Concert date:&ensp;
-                {lastConcertId && (
-                  <Icon
-                    icon={faBackward}
-                    className="text-xs text-red-600 cursor-pointer mr-2"
-                    onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
-                  />
-                )}
-                {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
-                {nextConcertId && (
-                  <Icon
-                    icon={faForward}
-                    className="text-xs text-red-600 cursor-pointer"
-                    onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
-                  />
-                )}
-              </span>
-            </li>
-            <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-            <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
-            <li className="border-b border-zinc-300/50 py-2">
-              Location:&ensp;
-              {coords ? (
-                <button
-                  type="button"
-                  onClick={() => mapRef.current.showModal()}
-                  title="View on map"
-                  aria-haspopup="dialog"
-                  className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
-                >
-                  <Icon icon={faLocationDot} className="mr-2" />
-                  <span>
-                    {city}, {country}
-                  </span>
-                </button>
-              ) : (
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <span className="min-w-0">
+              Concert date:&ensp;
+              {lastConcertId && (
+                <Icon
+                  icon={faBackward}
+                  className="text-xs text-red-600 cursor-pointer mr-2"
+                  onClick={() => navigate(`/artists/${artistId}/concerts/${lastConcertId}`)}
+                />
+              )}
+              {dateLabel(parseSetlistDate(concert.eventDate))}&ensp;
+              {nextConcertId && (
+                <Icon
+                  icon={faForward}
+                  className="text-xs text-red-600 cursor-pointer"
+                  onClick={() => navigate(`/artists/${artistId}/concerts/${nextConcertId}`)}
+                />
+              )}
+            </span>
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
+          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue}</li>
+          <li className="border-b border-zinc-300/50 py-2">
+            Location:&ensp;
+            {coords ? (
+              <button
+                type="button"
+                onClick={() => mapRef.current.showModal()}
+                title="View on map"
+                aria-haspopup="dialog"
+                className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
+              >
+                <Icon icon={faLocationDot} className="mr-2" />
                 <span>
                   {city}, {country}
                 </span>
-              )}
-            </li>
+              </button>
+            ) : (
+              <span>
+                {city}, {country}
+              </span>
+            )}
+          </li>
 
-            <ConcertComments
-              concertId={concert.id}
-              reviews={reviews}
-              onSaved={setReviews}
-              onLeaveReview={() => ratingRef.current.open("comment")}
-              key={concert.id}
-            />
-          </ol>
-        </div>
+          <ConcertComments
+            concertId={concert.id}
+            reviews={reviews}
+            onSaved={setReviews}
+            onLeaveReview={() => ratingRef.current.open("comment")}
+            key={concert.id}
+          />
+        </ol>
         {hideTitle && coords && (
           <div
             className="h-[240px] w-[400px] overflow-hidden rounded-md bg-zinc-100"
