@@ -30,11 +30,12 @@ ConcertFYI — Pendências e Decisões
 ☑ Sinalizar onde começa o "encore" no Setlist.jsx — resolvido em `c9f4f5e` (pedido original era expandir/recolher; o dono preferiu só sinalizar, sem esconder nada).
 ☑ Botão "Copiar setlist" (clipboard) — resolvido em `8a5a94c`.
 ☑ Favoritar — resolvido em `3e8398d`. Pedido original era favoritar o show em ConcertInfo.jsx; o dono não curtiu, preferiu favoritar o artista (coração em ArtistInfo.jsx) e marcar presença no show ("I WAS THERE" em ConcertInfo.jsx) — os dois já existiam desabilitados na UI, agora ligados em localStorage.
-□ Botão "Compartilhar" em ConcertInfo.jsx.
+☑ Botão "Compartilhar" — resolvido em `5f881a0` (2026-09-26). ConcertInfo.jsx não existe mais; entrou ao lado do "I WAS THERE" em LastConcert.jsx. Share sheet nativo no celular, cópia do link no desktop.
 □ Loading skeleton em ConcertInfo.jsx.
 □ Genius link como fallback em SongDetails.jsx.
-□ Ícone de loading na busca (SearchBar.jsx) — hoje o debounce de 700 ms não avisa nada.
-□ Toast/mensagens amigáveis para timeouts — parcial; falta timeout próprio no request.js (hoje espera o navegador desistir).
+☑ Ícone de loading na busca — resolvido em `01696ef`. Cobre o debounce de 700 ms e as duas buscas em andamento.
+☑ Timeout próprio nas requisições — já existia (achado 2026-09-26): request.js aborta em 10 s desde a saída do axios e o erro vem como "Request timed out".
+□ Mensagem de erro na busca — a SearchBar ignora o isError das duas queries: com timeout ou API fora, o spinner some e a tela fica sem resultado nem aviso. As outras telas (página de artista, bio, fotos, cidades, letras/vídeo) já avisam. Toast descartado por opinião: mensagem inline como nas outras basta; o dono pode vetar.
 □ Loading skeletons enquanto dados carregam — nenhum existe.
 □ Monitoramento contínuo de Core Web Vitals — Lighthouse só roda na mão.
 □ Testar com screen readers (NVDA, JAWS).
