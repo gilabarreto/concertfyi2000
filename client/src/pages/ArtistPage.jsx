@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
@@ -14,6 +14,7 @@ import { SEOHead } from "../components/SEOHead";
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
+  const sectionsRef = useRef(null);
 
   const concert = setlist.find((result) => result.id === concertId);
 
@@ -60,6 +61,12 @@ export default function ArtistPage() {
     ["past-concerts", "Past"],
     ["upcoming-concerts", "Upcoming"],
   ].filter(Boolean);
+  // As chaves só rolam a faixa, como as das miniaturas; ir até o card é clicar no título.
+  const scrollSections = (direction) =>
+    sectionsRef.current?.scrollBy({
+      left: (direction * sectionsRef.current.clientWidth) / 2,
+      behavior: "smooth",
+    });
   const scrollToSection = (id) =>
     document.getElementById(id)?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -83,14 +90,19 @@ export default function ArtistPage() {
           aria-label="Artist page sections"
           className="lg:hidden flex w-full items-center justify-center bg-red-600 p-4 text-sm sm:text-base text-white"
         >
-          <span
-            aria-hidden="true"
+          <button
+            type="button"
+            onClick={() => scrollSections(-1)}
+            aria-label="Scroll sections left"
             className="shrink-0 -translate-y-px px-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"{"}
-          </span>
+          </button>
           {/* Sem barra de rolagem: no Windows ela ocupa espaço embaixo e empurra os títulos pra cima. */}
-          <div className="flex min-w-0 gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div
+            ref={sectionsRef}
+            className="flex min-w-0 gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {sections.map(([id, label]) => (
               <button
                 key={id}
@@ -102,12 +114,14 @@ export default function ArtistPage() {
               </button>
             ))}
           </div>
-          <span
-            aria-hidden="true"
+          <button
+            type="button"
+            onClick={() => scrollSections(1)}
+            aria-label="Scroll sections right"
             className="shrink-0 -translate-y-px px-0.5 text-xl leading-none sm:text-[22px]"
           >
             {"}"}
-          </span>
+          </button>
         </nav>
         <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
