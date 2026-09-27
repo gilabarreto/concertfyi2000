@@ -161,7 +161,7 @@ export default function Setlist({ concert }) {
   return (
     <>
       <CardTitle id="setlist" ref={titleRef} className="scroll-mt-20">
-        Setlist
+        Setlists
       </CardTitle>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">

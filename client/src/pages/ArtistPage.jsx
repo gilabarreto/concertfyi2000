@@ -16,7 +16,7 @@ const SECTIONS = [
   ["artist", "Artist"],
   ["last-concert", "Last Concert"],
   ["next-concert", "Next Concert"],
-  ["setlist", "Setlist"],
+  ["setlist", "Setlists"],
   ["top-tracks", "Top Tracks"],
   ["past-concerts", "Past Concerts"],
   ["upcoming-concerts", "Upcoming Concerts"],
