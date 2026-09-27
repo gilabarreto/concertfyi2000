@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
@@ -11,9 +11,36 @@ import { AppContext } from "../context/AppContext";
 import { getArtistAttraction, getUpcomingConcertsByArtist } from "../helpers/selectors";
 import { SEOHead } from "../components/SEOHead";
 
+// Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
+const SECTIONS = [
+  ["artist", "Artist"],
+  ["last-concert", "Last Concert"],
+  ["next-concert", "Next Concert"],
+  ["setlist", "Setlist"],
+  ["top-tracks", "Top Tracks"],
+  ["past-concerts", "Past"],
+  ["upcoming-concerts", "Upcoming"],
+];
+
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
+  const [activeId, setActiveId] = useState("artist");
+
+  // Seção atual = a última cujo topo já passou do navbar (64px) + o scroll-mt-20 dos cards.
+  // No fim da página os cards curtos nunca chegam lá em cima, então vale o último.
+  useEffect(() => {
+    const onScroll = () => {
+      const present = SECTIONS.map(([id]) => document.getElementById(id)).filter(Boolean);
+      const atBottom =
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      const passed = present.filter((el) => el.getBoundingClientRect().top <= 96);
+      const current = atBottom ? present.at(-1) : passed.at(-1);
+      setActiveId(current?.id ?? "artist");
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   const concert = setlist.find((result) => result.id === concertId);
 
@@ -49,17 +76,8 @@ export default function ArtistPage() {
   const concertDate = concert.eventDate;
   const concertVenue = concert.venue?.name || "Concert";
   const hasNextConcert = getUpcomingConcertsByArtist(ticketmaster.events, artistName).length > 0;
-  // Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
   // Next Concert some sem show futuro, porque o card dele fica vazio.
-  const sections = [
-    ["artist", "Artist"],
-    ["last-concert", "Last Concert"],
-    hasNextConcert && ["next-concert", "Next Concert"],
-    ["setlist", "Setlist"],
-    ["top-tracks", "Top Tracks"],
-    ["past-concerts", "Past"],
-    ["upcoming-concerts", "Upcoming"],
-  ].filter(Boolean);
+  const sections = SECTIONS.filter(([id]) => hasNextConcert || id !== "next-concert");
   const scrollToSection = (id) =>
     document.getElementById(id)?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -81,7 +99,7 @@ export default function ArtistPage() {
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full flex-col items-center justify-center gap-2 bg-red-600 p-4 text-sm sm:text-base text-white"
+          className="lg:hidden flex w-full flex-col items-center justify-center gap-2 bg-red-600 p-2 text-base text-white"
         >
           {[
             sections.slice(0, Math.ceil(sections.length / 2)),
@@ -93,7 +111,8 @@ export default function ArtistPage() {
                   key={id}
                   type="button"
                   onClick={() => scrollToSection(id)}
-                  className="mx-2 whitespace-nowrap text-white hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  aria-current={id === activeId ? "true" : undefined}
+                  className="mx-2 whitespace-nowrap text-white hover:underline aria-[current]:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {label}
                 </button>
