@@ -18,8 +18,8 @@ const SECTIONS = [
   ["next-concert", "Next Concert"],
   ["setlist", "Setlist"],
   ["top-tracks", "Top Tracks"],
-  ["past-concerts", "Past"],
-  ["upcoming-concerts", "Upcoming"],
+  ["past-concerts", "Past Concerts"],
+  ["upcoming-concerts", "Upcoming Concerts"],
 ];
 
 export default function ArtistPage() {
@@ -112,7 +112,7 @@ export default function ArtistPage() {
                   type="button"
                   onClick={() => scrollToSection(id)}
                   aria-current={id === activeId ? "true" : undefined}
-                  className="mx-2 whitespace-nowrap text-white hover:underline aria-[current]:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="mx-2 whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 aria-[current]:underline aria-[current]:underline-offset-8 aria-[current]:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {label}
                 </button>
