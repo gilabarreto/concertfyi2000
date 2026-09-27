@@ -199,6 +199,38 @@ export default function Setlist({ concert, setlist }) {
             />
           )}
         </span>
+        {songs.length > 0 && (
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={handleCopySetlist}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              title="Copy setlist"
+              aria-label="Copy setlist"
+            >
+              <Icon
+                icon={copied ? faCheck : faCopy}
+                className={copied ? "text-green-600 text-[0.65rem]" : "text-[0.65rem]"}
+              />
+              {copied ? "COPIED" : "COPY"}
+            </button>
+            <span role="status" aria-live="polite" className="sr-only">
+              {copied ? "Setlist copied to clipboard" : ""}
+            </span>
+            <button
+              type="button"
+              onClick={shareSetlist}
+              title="Share setlist"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
+            >
+              <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
+              {linkCopied ? "LINK COPIED" : "SHARE"}
+            </button>
+            <span role="status" className="sr-only">
+              {linkCopied ? "Setlist link copied" : ""}
+            </span>
+          </div>
+        )}
       </div>
 
       <>
@@ -287,36 +319,6 @@ export default function Setlist({ concert, setlist }) {
                 <Icon icon={faSpotify} />
                 {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
               </button>
-            </div>
-            <div className="flex justify-center items-center space-x-2 py-2">
-              <button
-                type="button"
-                onClick={handleCopySetlist}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
-                title="Copy setlist"
-                aria-label="Copy setlist"
-              >
-                <Icon
-                  icon={copied ? faCheck : faCopy}
-                  className={copied ? "text-green-600 text-[0.65rem]" : "text-[0.65rem]"}
-                />
-                {copied ? "COPIED" : "COPY"}
-              </button>
-              <span role="status" aria-live="polite" className="sr-only">
-                {copied ? "Setlist copied to clipboard" : ""}
-              </span>
-              <button
-                type="button"
-                onClick={shareSetlist}
-                title="Share setlist"
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
-              >
-                <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-                {linkCopied ? "LINK COPIED" : "SHARE"}
-              </button>
-              <span role="status" className="sr-only">
-                {linkCopied ? "Setlist link copied" : ""}
-              </span>
             </div>
           </>
         )}
