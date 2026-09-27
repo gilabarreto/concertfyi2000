@@ -155,7 +155,7 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
         </ol>
         {hideTitle && coords && (
           <div
-            className="h-[240px] w-[90%] self-center justify-self-center overflow-hidden rounded-md bg-zinc-100"
+            className="h-[240px] w-[90%] self-start justify-self-center overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
             <Map latitude={coords?.lat} longitude={coords?.long} />
