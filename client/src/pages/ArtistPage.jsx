@@ -127,7 +127,7 @@ export default function ArtistPage() {
 
             <div
               id="top-tracks"
-              className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
+              className="min-w-0 scroll-mt-20 p-4 lg:flex lg:flex-col lg:pb-7 before:hidden spotify-player-card"
             >
               <Player attraction={attraction} />
               <Albums artistId={artistId} artist={artistName} className="pt-4 lg:hidden" />

@@ -15,11 +15,13 @@ export default function Player({ attraction }) {
   }
 
   return (
-    <section aria-label="Top tracks" className="space-y-3">
+    <section aria-label="Top tracks" className="space-y-3 lg:flex lg:flex-1 lg:flex-col">
       <CardTitle>Top tracks</CardTitle>
       <iframe
         // Iframe de outra origem: a altura é o único controle. 470px mostra as 5 primeiras.
-        className="w-full h-[470px] rounded-2xl"
+        // No desktop estica até a altura do card do Setlists; o lg:pb-7 do card em
+        // ArtistPage.jsx casa o fundo com o do botão Create Spotify Playlist.
+        className="w-full h-[470px] rounded-2xl lg:h-auto lg:min-h-[470px] lg:flex-1"
         src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
         title="Artist on Spotify"
         // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*
