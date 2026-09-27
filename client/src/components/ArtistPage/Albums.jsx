@@ -43,8 +43,10 @@ export default function Albums({ artistId, artist, className = "" }) {
                 onError={() => setMissing((ids) => [...ids, album.id])}
                 className="aspect-square w-full rounded-md object-cover bg-zinc-100 transition-opacity group-hover:opacity-80"
               />
-              <span className="block truncate group-hover:text-red-600">{album.title}</span>
-              <span className="block text-zinc-500">{album.year}</span>
+              <span className="block truncate text-sm group-hover:text-red-800">{album.title}</span>
+              <span className="block text-sm font-semibold group-hover:text-red-800">
+                {album.year}
+              </span>
             </a>
           </li>
         ))}
