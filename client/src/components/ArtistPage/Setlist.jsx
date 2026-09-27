@@ -197,9 +197,9 @@ export default function Setlist({ concert, setlist }) {
             />
           )}
         </span>
-        {/* Linha própria e centralizada no mobile; à direita, na linha da data, a partir de lg. */}
+        {/* Mobile: linha própria acima da data, centralizada, como no Last/Next Concert. A partir de lg: à direita, na linha da data. */}
         {songs.length > 0 && (
-          <div className="flex w-full items-center justify-center space-x-2 lg:ml-auto lg:w-auto lg:justify-end">
+          <div className="order-first flex w-full items-center justify-center space-x-2 border-b border-zinc-300/50 pb-2 lg:order-none lg:ml-auto lg:w-auto lg:justify-end lg:border-0 lg:pb-0">
             <button
               type="button"
               onClick={handleCopySetlist}
