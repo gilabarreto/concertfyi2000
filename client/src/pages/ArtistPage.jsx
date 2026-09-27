@@ -130,8 +130,15 @@ export default function ArtistPage() {
               className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
             >
               <Player attraction={attraction} />
-              <Albums artistId={artistId} artist={artistName} />
+              <Albums artistId={artistId} artist={artistName} className="pt-4 lg:hidden" />
             </div>
+
+            {/* Desktop: uma fileira só, abaixo de Setlists e Top Tracks. No mobile fica sob o player. */}
+            <Albums
+              artistId={artistId}
+              artist={artistName}
+              className="hidden px-4 lg:col-span-2 lg:block"
+            />
           </div>
 
           {/* Sem artist-card-grid: nem divisória entre Past e Upcoming, nem linha em cima. */}

@@ -15,7 +15,7 @@ const amazonSearchUrl = (artist, title) => {
   return url.href;
 };
 
-export default function Albums({ artistId, artist }) {
+export default function Albums({ artistId, artist, className = "" }) {
   const { data } = useArtistAlbums(artistId);
   // Capa que o Cover Art Archive não tem: some o disco, em vez de um quadrado quebrado.
   const [missing, setMissing] = useState([]);
@@ -24,8 +24,8 @@ export default function Albums({ artistId, artist }) {
   if (!albums.length) return null;
 
   return (
-    <div className="space-y-2 pt-4">
-      <ul className="grid grid-cols-3 gap-3">
+    <div className={`space-y-2 ${className}`}>
+      <ul className="grid grid-cols-3 gap-3 lg:grid-cols-6">
         {albums.map((album) => (
           <li key={album.id}>
             <a
