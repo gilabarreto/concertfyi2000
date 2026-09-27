@@ -17,9 +17,11 @@ async function musicbrainzRequest(path, params = {}) {
   if (pending.size >= 4) throw Object.assign(new Error("MusicBrainz busy"), { status: 503 });
 
   const task = queue.then(async () => {
-    const delay = nextStart - Date.now();
+    // Relógio monotônico: o Date.now segue o relógio de parede, que o sync de horário pode
+    // atrasar no meio da espera (medido no WSL: -813 ms) e encurtar o intervalo real.
+    const delay = nextStart - performance.now();
     if (delay > 0) await new Promise((resolve) => setTimeout(resolve, delay));
-    nextStart = Date.now() + 1100;
+    nextStart = performance.now() + 1100;
     const data = await request(`https://musicbrainz.org/ws/2/${path}`, {
       params: { fmt: "json", ...params },
       headers: { "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)" },

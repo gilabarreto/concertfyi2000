@@ -5,7 +5,7 @@ const { musicbrainzRequest } = require("./musicbrainzClient");
 test("MusicBrainz requests share cache, deduplicate and start at most once per second", async (t) => {
   const starts = [];
   t.mock.method(global, "fetch", async (url, init) => {
-    starts.push(Date.now());
+    starts.push(performance.now());
     assert.match(init.headers["User-Agent"], /concertfyi/);
     return { ok: true, json: async () => ({ url }) };
   });
