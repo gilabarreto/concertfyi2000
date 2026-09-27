@@ -59,7 +59,6 @@
 @media (max-width: 1023px) {
   .concert-tab-panel + .concert-tab-panel {
     margin-top: 1.5rem;
-    border-top: 1px solid #d4d4d8;
   }
 }
 

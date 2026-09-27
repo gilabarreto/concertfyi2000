@@ -89,7 +89,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
       <div
         className={
-          hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
+          // Colunas iguais com o mx-2: a lista fica da largura do sublinhado da aba.
+          hideTitle ? "mx-2 grid grid-cols-2 items-start" : ""
         }
       >
         <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
@@ -164,7 +165,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         </ol>
         {hideTitle && coords && (
           <div
-            className="h-[240px] w-[400px] overflow-hidden rounded-md bg-zinc-100"
+            className="h-[240px] w-[400px] justify-self-end overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
             <Map latitude={coords?.latitude} longitude={coords?.longitude} />
