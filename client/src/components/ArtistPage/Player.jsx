@@ -1,11 +1,9 @@
-import { useState } from "react";
 import CardTitle from "./CardTitle";
 
 // Spotify's own embed is an iframe; the wrapper packages that used to be here added a
 // dependency for the same markup. The artist link only needs "/embed" spliced into it.
 export default function Player({ attraction }) {
   const spotify = attraction?.externalLinks?.spotify?.[0]?.url;
-  const [expanded, setExpanded] = useState(false);
 
   if (!spotify) {
     return (
@@ -20,9 +18,8 @@ export default function Player({ attraction }) {
     <section aria-label="Top tracks" className="space-y-3">
       <CardTitle>Top tracks</CardTitle>
       <iframe
-        // O embed é iframe de outra origem: não dá pra mexer na lista, só na altura.
-        // Medido no mobile: 470px mostra as 5 primeiras, 730px as 10 que o Spotify manda.
-        className={`w-full rounded-2xl ${expanded ? "h-[730px]" : "h-[470px]"}`}
+        // Iframe de outra origem: a altura é o único controle. 470px mostra as 5 primeiras.
+        className="w-full h-[470px] rounded-2xl"
         src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
         title="Artist on Spotify"
         // O card do mapa começa a 592 px num viewport de 823 px — por isso adiar *ele*
@@ -31,16 +28,6 @@ export default function Player({ attraction }) {
         loading="lazy"
         allow="encrypted-media; clipboard-write"
       />
-      <div className="flex justify-center">
-        <button
-          type="button"
-          onClick={() => setExpanded((value) => !value)}
-          aria-expanded={expanded}
-          className="text-base text-red-600 hover:text-red-800 font-semibold"
-        >
-          {expanded ? "View Less" : "View More"}
-        </button>
-      </div>
     </section>
   );
 }
