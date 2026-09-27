@@ -173,7 +173,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         </ol>
         {hideTitle && coords && (
           <div
-            className="h-[240px] w-[90%] self-start justify-self-center overflow-hidden rounded-md bg-zinc-100"
+            className="aspect-[103/60] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
             <Map latitude={coords?.latitude} longitude={coords?.longitude} />
