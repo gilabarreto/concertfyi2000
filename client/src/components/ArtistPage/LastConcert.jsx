@@ -106,7 +106,9 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
       >
         <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
           {!hideTitle && (
-            <li className="flex justify-end gap-1 border-b border-zinc-300/50 py-2">{actions}</li>
+            <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
+              {actions}
+            </li>
           )}
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
