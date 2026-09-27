@@ -118,8 +118,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
       <div
         className={
-          // Colunas iguais com o mx-2: cada uma tem a largura do sublinhado de uma aba.
-          hideTitle ? "mx-2 grid grid-cols-2 items-start" : ""
+          // Mesmas colunas da fileira Setlists/Top Tracks: o gap-6 do grid mais o p-4 dos dois cards.
+          hideTitle ? "grid grid-cols-2 items-start gap-x-14" : ""
         }
       >
         <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
