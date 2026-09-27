@@ -45,6 +45,8 @@ app.use(
 // 60/min é folgado para uso de verdade (uma sessão ativa faz ~15) e fecha o laço.
 app.use("/api", rateLimit({ windowMs: 60_000, max: 60 }));
 
+app.use("/share", require("./routes/share"));
+
 app.use("/api/ticketmaster", require("./routes/ticketmaster"));
 app.use("/api/setlist", require("./routes/setlist"));
 app.use("/api/spotify", require("./routes/spotify"));

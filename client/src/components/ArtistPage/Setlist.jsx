@@ -17,11 +17,12 @@ import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotif
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
+import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
 
 // Páginas de 10, com paginação só acima disso.
 const PAGE_SIZE = 10;
 
-export default function Setlist({ concert, setlist }) {
+export default function Setlist({ concert, setlist, ticketmaster }) {
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
@@ -44,20 +45,22 @@ export default function Setlist({ concert, setlist }) {
     const url = new URL(window.location.href);
     url.searchParams.delete("next");
     url.hash = "setlist";
-    try {
-      if (navigator.share)
-        await navigator.share({
-          title: `${concert.artist.name} — Setlist ${concert.eventDate}`,
-          url: url.href,
-        });
-      else {
-        await navigator.clipboard.writeText(url.href);
-        setLinkCopied(true);
-        clearTimeout(shareTimerRef.current);
-        shareTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
-      }
-    } catch {
-      /* Share cancellation leaves the setlist unchanged. */
+    const city = concert.venue?.city?.name;
+    const place = [concert.venue?.name, city].filter(Boolean).join(", ");
+    const localDate = concert.eventDate.split("-").reverse().join("-");
+    const imageUrl = getTicketmasterEventImage(
+      ticketmaster?.events,
+      concert.artist.name,
+      localDate,
+      concert.venue?.name,
+    );
+    const text = `Check out ${concert.artist.name}'s setlist from their concert at ${place || "the concert venue"} on ${dateLabel(parseSetlistDate(concert.eventDate))}.`;
+    const title = `${concert.artist.name} setlist`;
+
+    if (await shareOrCopy(url.href, title, { text, imageUrl })) {
+      setLinkCopied(true);
+      clearTimeout(shareTimerRef.current);
+      shareTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
     }
   };
 

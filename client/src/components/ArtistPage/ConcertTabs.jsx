@@ -99,7 +99,12 @@ export default function ConcertTabs({ concert, setlist, ticketmaster }) {
             style={{ "--panel-index": index }}
           >
             {index === 0 ? (
-              <LastConcert concert={concert} setlist={setlist} hideTitle={desktop} />
+              <LastConcert
+                concert={concert}
+                setlist={setlist}
+                ticketmaster={ticketmaster}
+                hideTitle={desktop}
+              />
             ) : (
               <NextConcert
                 concert={concert}

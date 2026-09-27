@@ -13,6 +13,7 @@ import {
   getUpcomingConcertsByArtist,
   getPastConcertsByArtist,
   dateLabel,
+  getBestImage,
 } from "../../helpers/selectors";
 import MapDialog from "./MapDialog";
 import Map from "./Map";
@@ -60,8 +61,15 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const toggleGoing = () => toggleGoingConcert(upcomingConcert.id);
 
   // A URL já leva o ?next deste show, então quem abre cai nesta mesma data.
+  const shareText = `${concert.artist.name} are playing ${upcomingConcert._embedded?.venues?.[0]?.city?.name || "near you"} on ${dateLabel(upcomingConcert.dateObj)}${upcomingConcert._embedded?.venues?.[0]?.name ? ` at ${upcomingConcert._embedded.venues[0].name}` : ""}. Are you going?`;
+  const eventImage = getBestImage(upcomingConcert.images);
   const share = async () => {
-    if (await shareOrCopy(window.location.href)) {
+    if (
+      await shareOrCopy(window.location.href, `${concert.artist.name} concert`, {
+        text: shareText,
+        imageUrl: eventImage,
+      })
+    ) {
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     }

@@ -124,7 +124,12 @@ export default function ArtistPage() {
 
           <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="min-w-0 bg-white p-4 space-y-2">
-              <Setlist key={concert.id} concert={concert} setlist={setlist} />
+              <Setlist
+                key={concert.id}
+                concert={concert}
+                setlist={setlist}
+                ticketmaster={ticketmaster}
+              />
             </div>
 
             <div
