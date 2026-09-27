@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useArtistAlbums } from "../../api/queries";
 
-// Tag de afiliado da Amazon Associates. Sem ela o link funciona igual, só não comissiona.
+// Tag de afiliado da Amazon Associates Canadá (só vale na amazon.ca). Sem ela o link funciona igual, só não comissiona.
 const AMAZON_TAG = "";
 
 // Link de busca, não de produto: link direto para um ASIN precisa da Product Advertising
 // API, que a Amazon só libera depois das primeiras vendas qualificadas. A busca já cai
 // na página do disco e vale a comissão de qualquer compra na sessão.
 const amazonSearchUrl = (artist, title) => {
-  const url = new URL("https://www.amazon.com/s");
+  const url = new URL("https://www.amazon.ca/s");
   url.searchParams.set("k", `${artist} ${title}`);
   url.searchParams.set("i", "popular");
   if (AMAZON_TAG) url.searchParams.set("tag", AMAZON_TAG);
