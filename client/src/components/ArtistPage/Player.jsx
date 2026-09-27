@@ -1,3 +1,5 @@
+import CardTitle from "./CardTitle";
+
 // Spotify's own embed is an iframe; the wrapper packages that used to be here added a
 // dependency for the same markup. The artist link only needs "/embed" spliced into it.
 export default function Player({ attraction }) {
@@ -6,7 +8,7 @@ export default function Player({ attraction }) {
   if (!spotify) {
     return (
       <section aria-label="Top tracks" className="space-y-3">
-        <h2 className="text-2xl font-bold">Top tracks</h2>
+        <CardTitle>Top tracks</CardTitle>
         <p className="text-zinc-500 text-center">Spotify link not available for this artist.</p>
       </section>
     );
@@ -14,7 +16,7 @@ export default function Player({ attraction }) {
 
   return (
     <section aria-label="Top tracks" className="space-y-3">
-      <h2 className="text-2xl font-bold">Top tracks</h2>
+      <CardTitle>Top tracks</CardTitle>
       <iframe
         className="w-full h-[800px] rounded-2xl"
         src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}

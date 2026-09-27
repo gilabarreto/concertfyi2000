@@ -12,6 +12,7 @@ import {
 import { getTicketmasterGenres } from "../../helpers/selectors";
 import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";
+import CardTitle from "./CardTitle";
 
 const FAVORITE_ARTISTS_KEY = "favoriteArtistIds";
 
@@ -108,23 +109,24 @@ export default function ArtistInfo(props) {
       </div>
 
       <div className="w-full lg:flex-1 lg:min-w-0">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-balance">{artist}</h2>
-          <button
-            type="button"
-            onClick={toggleFavorite}
-            aria-pressed={isFavorite}
-            title={isFavorite ? "Remove from favorites" : "Favorite this artist"}
-            aria-label={isFavorite ? "Remove artist from favorites" : "Favorite this artist"}
-            className={isFavorite ? "text-red-600" : "text-zinc-500 hover:text-red-600"}
-          >
-            <Icon icon={isFavorite ? faHeartSolid : faHeartRegular} className="text-2xl" />
-          </button>
-        </div>
+        <CardTitle
+          action={
+            <button
+              type="button"
+              onClick={toggleFavorite}
+              aria-pressed={isFavorite}
+              title={isFavorite ? "Remove from favorites" : "Favorite this artist"}
+              aria-label={isFavorite ? "Remove artist from favorites" : "Favorite this artist"}
+              className={isFavorite ? "text-red-600" : "text-zinc-500 hover:text-red-600"}
+            >
+              <Icon icon={isFavorite ? faHeartSolid : faHeartRegular} className="text-2xl" />
+            </button>
+          }
+        >
+          {artist}
+        </CardTitle>
 
-        <hr className="border-t border-zinc-300 opacity-50 ml-6" />
-
-        <ol className="pl-6">
+        <ol>
           {isBackgroundLoading && (
             <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading artist info…</li>
           )}

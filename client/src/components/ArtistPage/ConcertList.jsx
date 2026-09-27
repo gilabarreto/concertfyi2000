@@ -4,6 +4,7 @@ import Icon from "../Icon";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../Pagination";
 import { dateLabel } from "../../helpers/selectors";
+import CardTitle from "./CardTitle";
 
 const PAGE_SIZE = 5;
 
@@ -37,11 +38,10 @@ export default function ConcertList({
 
   return (
     <>
-      <h2 className="text-2xl font-bold mb-2 text-balance">{title}</h2>
-      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
+      <CardTitle>{title}</CardTitle>
 
       {items.length === 0 ? (
-        <div className="py-2 ml-6 text-zinc-500 text-pretty">
+        <div className="py-2 text-zinc-500 text-pretty">
           <p>{empty}</p>
           <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
             Search another artist
@@ -49,7 +49,7 @@ export default function ConcertList({
         </div>
       ) : (
         <>
-          <ol className="pl-6">
+          <ol>
             {currentPage.map((concert) => {
               const open = openId === concert.id;
               // the date never truncates; a long city name does, so the icon keeps its place
@@ -98,7 +98,7 @@ export default function ConcertList({
             })}
           </ol>
 
-          <div className="ml-6">
+          <div>
             <Pagination currentPage={page} totalPages={pageCount} onPageChange={goToPage} />
           </div>
         </>

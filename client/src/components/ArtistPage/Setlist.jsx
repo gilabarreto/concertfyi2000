@@ -13,6 +13,7 @@ import Pagination from "../Pagination";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 import { parseSetlistDate, dateLabel } from "../../helpers/selectors";
+import CardTitle from "./CardTitle";
 
 const PAGE_SIZE = 10;
 
@@ -159,13 +160,11 @@ export default function Setlist({ concert }) {
 
   return (
     <>
-      <h2 id="setlist" ref={titleRef} className="text-2xl font-bold scroll-mt-20 mb-2">
+      <CardTitle id="setlist" ref={titleRef} className="scroll-mt-20">
         Setlist
-      </h2>
+      </CardTitle>
 
-      <hr className="border-t border-zinc-300 opacity-50 ml-6" />
-
-      <div className="ml-6 flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
         <span>Concert date:&ensp;{dateLabel(parseSetlistDate(concertDate))}</span>
         <div className="flex items-center space-x-2">
           <button
@@ -201,12 +200,12 @@ export default function Setlist({ concert }) {
 
       <>
         {songs.length === 0 ? (
-          <span className="py-2 ml-6 block text-zinc-500">
+          <span className="py-2 block text-zinc-500">
             No songs in this setlist. Check back later.
           </span>
         ) : (
           <>
-            <ol className="pl-6">
+            <ol>
               {displaySongs.map((song, i) => {
                 const songIndex = offset + i;
                 const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;
@@ -258,7 +257,7 @@ export default function Setlist({ concert }) {
               />
             )}
 
-            <div className="flex justify-center ml-6 bg-white px-2 py-3 sm:px-4">
+            <div className="flex justify-center bg-white px-2 py-3 sm:px-4">
               <button
                 onClick={handleSpotifyPlaylist}
                 disabled={creatingPlaylist}

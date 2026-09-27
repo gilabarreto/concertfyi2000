@@ -16,6 +16,7 @@ import Map from "./Map";
 import ConcertRatingDialog from "./ConcertRatingDialog";
 import ConcertComments from "./ConcertComments";
 import { shareOrCopy } from "../../helpers/share";
+import CardTitle from "./CardTitle";
 
 const ATTENDED_KEY = "attendedConcertIds";
 
@@ -67,14 +68,14 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
 
   return (
     <>
-      {!hideTitle && <h2 className="text-2xl font-bold text-balance mb-4">Last Concert</h2>}
+      {!hideTitle && <CardTitle>Last Concert</CardTitle>}
 
       <div
         className={
           hideTitle && coords ? "grid grid-cols-[minmax(0,1fr)_400px] items-start gap-6" : ""
         }
       >
-        <ol className="min-w-0 pl-6 border-t border-zinc-300/50">
+        <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
           <li className="flex gap-1 border-b border-zinc-300/50 py-2">
             <button
               type="button"
