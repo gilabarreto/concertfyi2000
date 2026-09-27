@@ -25,9 +25,10 @@ export default function Albums({ artistId, artist, className = "" }) {
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <ul className="grid grid-cols-3 gap-3 lg:grid-cols-6">
+      {/* Flex em vez de grid: fileira incompleta (artista com 4 ou 5 discos) fica no centro. */}
+      <ul className="flex flex-wrap justify-center gap-3">
         {albums.map((album) => (
-          <li key={album.id}>
+          <li key={album.id} className="w-[calc((100%-1.5rem)/3)] lg:w-[calc((100%-3.75rem)/6)]">
             <a
               href={amazonSearchUrl(artist, album.title)}
               target="_blank"
