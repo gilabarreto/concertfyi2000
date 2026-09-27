@@ -99,20 +99,20 @@ export default function ArtistPage() {
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full flex-col items-center justify-center gap-2 bg-red-600 p-2 text-base text-white"
+          className="lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-red-600 px-4 py-3 text-sm sm:text-base text-white"
         >
           {[
             sections.slice(0, Math.ceil(sections.length / 2)),
             sections.slice(Math.ceil(sections.length / 2)),
           ].map((row, rowIndex) => (
-            <div key={rowIndex} className="flex justify-center gap-2">
+            <div key={rowIndex} className="flex justify-center gap-3">
               {row.map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => scrollToSection(id)}
                   aria-current={id === activeId ? "true" : undefined}
-                  className="mx-2 whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 aria-[current]:underline aria-[current]:underline-offset-8 aria-[current]:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 aria-[current]:underline aria-[current]:underline-offset-8 aria-[current]:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {label}
                 </button>
