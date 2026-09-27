@@ -18,12 +18,15 @@ import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 
+// Fechada mostra 5; o View More abre páginas de 10, com paginação só acima disso.
+const COLLAPSED_SIZE = 5;
 const PAGE_SIZE = 10;
 
 export default function Setlist({ concert, setlist }) {
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
+  const [expanded, setExpanded] = useState(false);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -155,13 +158,13 @@ export default function Setlist({ concert, setlist }) {
     }
   };
 
-  const paginated = songs.length > PAGE_SIZE;
+  const paginated = expanded && songs.length > PAGE_SIZE;
   const pageCount = Math.ceil(songs.length / PAGE_SIZE);
   // clamps a page left stale from a longer setlist (e.g. switching concerts) instead of
   // rendering a blank page past the end
   const currentPage = Math.min(page, Math.max(pageCount - 1, 0));
   const offset = paginated ? currentPage * PAGE_SIZE : 0;
-  const displaySongs = songs.slice(offset, offset + PAGE_SIZE);
+  const displaySongs = songs.slice(offset, offset + (expanded ? PAGE_SIZE : COLLAPSED_SIZE));
 
   const goToPage = (next) => {
     setExpandedLyrics(null);
@@ -287,6 +290,22 @@ export default function Setlist({ concert, setlist }) {
                 onPageChange={goToPage}
                 label="Setlist pages"
               />
+            )}
+
+            {songs.length > COLLAPSED_SIZE && (
+              <div className="flex justify-center pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExpanded((value) => !value);
+                    setPage(0);
+                  }}
+                  aria-expanded={expanded}
+                  className="text-base text-red-600 hover:text-red-800 font-semibold"
+                >
+                  {expanded ? "View Less" : "View More"}
+                </button>
+              </div>
             )}
 
             <div className="flex justify-center bg-white px-2 py-3 sm:px-4">
