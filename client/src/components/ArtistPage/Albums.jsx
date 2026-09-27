@@ -26,7 +26,7 @@ export default function Albums({ artistId, artist, className = "" }) {
   return (
     <div className={`space-y-2 ${className}`}>
       {/* Exigência do Operating Agreement da Amazon Associates: aviso visível junto aos links. */}
-      <p className="text-center text-[10px] text-zinc-500">
+      <p className="text-center text-sm text-zinc-500">
         As an Amazon Associate, ConcertFYI earns from qualifying purchases.
       </p>
       {/* Flex em vez de grid: fileira incompleta (artista com 4 ou 5 discos) fica no centro. */}
