@@ -50,7 +50,8 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        {/* Sem artist-card-grid: sem divisória entre as duas listas. */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
           <div className="min-w-0 bg-white p-6 space-y-2">
             <ConcertList
               title="Upcoming Concerts"
