@@ -282,13 +282,16 @@ export default function Setlist({ concert, setlist }) {
               })}
             </ol>
 
+            {/* O space-y-2 do card vence o mt-4 da Pagination; o wrapper devolve o respiro. */}
             {paginated && (
-              <Pagination
-                currentPage={currentPage}
-                totalPages={pageCount}
-                onPageChange={goToPage}
-                label="Setlist pages"
-              />
+              <div className="pt-2">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={pageCount}
+                  onPageChange={goToPage}
+                  label="Setlist pages"
+                />
+              </div>
             )}
 
             <div className="flex justify-center bg-white px-2 py-3 sm:px-4">
