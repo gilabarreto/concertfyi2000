@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import Icon from "../Icon";
 import {
+  faBackward,
+  faForward,
   faChevronDown,
   faChevronUp,
   faShareNodes,
@@ -12,12 +15,13 @@ import SongDetails from "../SongDetails";
 import Pagination from "../Pagination";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
-import { parseSetlistDate, dateLabel } from "../../helpers/selectors";
+import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 
 const PAGE_SIZE = 10;
 
-export default function Setlist({ concert }) {
+export default function Setlist({ concert, setlist }) {
+  const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
@@ -65,6 +69,15 @@ export default function Setlist({ concert }) {
   // setlist.fm marks a set as an encore with `set.encore` (unset on the main sets). mainSongs'
   // length is where the encore starts, kept apart just to draw a divider before it below —
   // every set in order, encore included, so the numbering stays the order actually played.
+  // Mesmas setas do Last Concert: as duas trocam o show da URL, então os dois cards andam
+  // juntos. O #setlist mantém a tela no card de onde veio o clique.
+  const artistId = concert.artist.mbid;
+  const pastConcerts = getPastConcertsByArtist(setlist, artistId);
+  const idx = pastConcerts.findIndex((c) => String(c.id) === String(concert.id));
+  const olderId = pastConcerts[idx + 1]?.id;
+  const newerId = pastConcerts[idx - 1]?.id;
+  const goTo = (id) => navigate(`/artists/${artistId}/concerts/${id}#setlist`);
+
   const sets = concert.sets?.set || [];
   const mainSongs = sets.filter((set) => set.encore == null).flatMap((set) => set.song || []);
   const encoreSongs = sets.filter((set) => set.encore != null).flatMap((set) => set.song || []);
@@ -165,7 +178,24 @@ export default function Setlist({ concert }) {
       </CardTitle>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
-        <span>Concert date:&ensp;{dateLabel(parseSetlistDate(concertDate))}</span>
+        <span>
+          Concert date:&ensp;
+          {olderId && (
+            <Icon
+              icon={faBackward}
+              className="text-xs text-red-600 cursor-pointer mr-2"
+              onClick={() => goTo(olderId)}
+            />
+          )}
+          {dateLabel(parseSetlistDate(concertDate))}&ensp;
+          {newerId && (
+            <Icon
+              icon={faForward}
+              className="text-xs text-red-600 cursor-pointer"
+              onClick={() => goTo(newerId)}
+            />
+          )}
+        </span>
         <div className="flex items-center space-x-2">
           <button
             type="button"
