@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
@@ -25,22 +25,6 @@ const SECTIONS = [
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
-  const [activeId, setActiveId] = useState("artist");
-
-  // Seção atual = a última cujo topo já passou do navbar (64px) + o scroll-mt-20 dos cards.
-  // No fim da página os cards curtos nunca chegam lá em cima, então vale o último.
-  useEffect(() => {
-    const onScroll = () => {
-      const present = SECTIONS.map(([id]) => document.getElementById(id)).filter(Boolean);
-      const atBottom =
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
-      const passed = present.filter((el) => el.getBoundingClientRect().top <= 96);
-      const current = atBottom ? present.at(-1) : passed.at(-1);
-      setActiveId(current?.id ?? "artist");
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const concert = setlist.find((result) => result.id === concertId);
 
@@ -111,8 +95,7 @@ export default function ArtistPage() {
                   key={id}
                   type="button"
                   onClick={() => scrollToSection(id)}
-                  aria-current={id === activeId ? "true" : undefined}
-                  className="whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 aria-[current]:underline aria-[current]:underline-offset-8 aria-[current]:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   {label}
                 </button>
