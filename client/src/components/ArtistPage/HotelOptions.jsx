@@ -12,7 +12,7 @@ const nextDay = (localDate) => {
 // Booking has its own affiliate program; Expedia and Vrbo share one, so these three are
 // the ones worth monetising. None publishes a nightly rate without an affiliate key, so
 // every tile falls back to "Check price". The links do land on the right city and dates.
-export default function HotelOptions({ event }) {
+export default function HotelOptions({ event, iconOnly = false }) {
   const venue = event._embedded?.venues?.[0];
   const checkin = event.dates?.start?.localDate;
 
@@ -46,5 +46,5 @@ export default function HotelOptions({ event }) {
     },
   ];
 
-  return <VendorTiles icon={faBed} title="Book a hotel" vendors={vendors} />;
+  return <VendorTiles icon={faBed} title="Book a hotel" vendors={vendors} iconOnly={iconOnly} />;
 }

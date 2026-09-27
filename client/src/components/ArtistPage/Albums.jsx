@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useArtistAlbums } from "../../api/queries";
+import CardTitle from "./CardTitle";
 
 // Tag de afiliado da Amazon Associates Canadá (só vale na amazon.ca). Sem ela o link funciona igual, só não comissiona.
 const AMAZON_TAG = "";
@@ -25,6 +26,7 @@ export default function Albums({ artistId, artist, className = "" }) {
 
   return (
     <div className={`space-y-2 ${className}`}>
+      <CardTitle>Keep Listening</CardTitle>
       {/* Exigência do Operating Agreement da Amazon Associates: aviso visível junto aos links. */}
       <p className="text-center text-sm text-zinc-500">
         As an Amazon Associate, ConcertFYI earns from qualifying purchases.

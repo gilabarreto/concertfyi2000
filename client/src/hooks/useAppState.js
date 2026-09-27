@@ -1,6 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function useAppState() {
+  const [goingConcertIds, setGoingConcertIds] = useState(() =>
+    JSON.parse(localStorage.getItem("goingConcertIds") || "[]"),
+  );
+  useEffect(() => {
+    localStorage.setItem("goingConcertIds", JSON.stringify(goingConcertIds));
+  }, [goingConcertIds]);
+  const toggleGoingConcert = (concertId) => {
+    setGoingConcertIds((ids) =>
+      ids.includes(concertId) ? ids.filter((id) => id !== concertId) : [...ids, concertId],
+    );
+  };
+  const [concertReminder, setConcertReminder] = useState(null);
+  const [reminderInteracted, setReminderInteracted] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [setlist, setSetlist] = useState([]);
   const [ticketmaster, setTicketmaster] = useState({});
@@ -15,6 +29,14 @@ export function useAppState() {
   };
 
   return {
+    goingConcertIds,
+    toggleGoingConcert,
+    concertReminder,
+    setConcertReminder,
+    reminderInteracted,
+    setReminderInteracted,
+    reminderOpen,
+    setReminderOpen,
     searchValue,
     setSearchValue,
     setlist,

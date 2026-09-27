@@ -11,7 +11,7 @@ import {
 
 // Apple publishes no template URL, so its tile hands over the .ics file — the same
 // file any other calendar app imports, which is why it names it on the second line.
-export default function ConcertReminder({ event, artistName }) {
+export default function ConcertReminder({ event, artistName, iconOnly = false }) {
   const google = googleCalendarUrl(event, artistName);
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef(null);
@@ -74,23 +74,30 @@ export default function ConcertReminder({ event, artistName }) {
 
   return (
     <>
-      <VendorTiles icon={faCalendarPlus} title="Add to calendar" vendors={vendors} />
-      <div className="flex justify-center px-2 py-3 sm:px-4">
-        {/* Same visual weight as "Create Spotify Playlist" below the setlist — both are
+      <VendorTiles
+        icon={faCalendarPlus}
+        title="Add to calendar"
+        vendors={vendors}
+        iconOnly={iconOnly}
+      />
+      {!iconOnly && (
+        <div className="flex justify-center px-2 py-3 sm:px-4">
+          {/* Same visual weight as "Create Spotify Playlist" below the setlist — both are
             the one committing action on their card, everything else on this row is a link. */}
-        <button
-          type="button"
-          onClick={handleShare}
-          title="Share"
-          className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
-        >
-          <Icon icon={copied ? faCheck : faShareNodes} />
-          {copied ? "Link copied" : "Share"}
-        </button>
-        <span role="status" aria-live="polite" className="sr-only">
-          {copied ? "Concert details copied to clipboard" : ""}
-        </span>
-      </div>
+          <button
+            type="button"
+            onClick={handleShare}
+            title="Share"
+            className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
+          >
+            <Icon icon={copied ? faCheck : faShareNodes} />
+            {copied ? "Link copied" : "Share"}
+          </button>
+          <span role="status" aria-live="polite" className="sr-only">
+            {copied ? "Concert details copied to clipboard" : ""}
+          </span>
+        </div>
+      )}
     </>
   );
 }

@@ -14,7 +14,7 @@ const money = (amount, currency) =>
 // event id to deep link, so they opened a search page and dropped out.
 // Ticketmaster only publishes priceRanges for TicketWeb-ticketed shows; the rest of
 // its inventory is dynamically priced and carries no range at all.
-export default function TicketOptions({ event, artistName }) {
+export default function TicketOptions({ event, artistName, iconOnly = false }) {
   const city = event._embedded?.venues?.[0]?.city?.name;
   const range = event.priceRanges?.find((item) => item.currency);
 
@@ -33,5 +33,7 @@ export default function TicketOptions({ event, artistName }) {
     },
   ];
 
-  return <VendorTiles icon={faTicketSimple} title="Get tickets" vendors={vendors} />;
+  return (
+    <VendorTiles icon={faTicketSimple} title="Get tickets" vendors={vendors} iconOnly={iconOnly} />
+  );
 }

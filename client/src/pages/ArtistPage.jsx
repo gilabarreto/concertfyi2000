@@ -5,6 +5,7 @@ import ArtistInfo from "../components/ArtistPage/ArtistInfo";
 import ConcertTabs from "../components/ArtistPage/ConcertTabs";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
+import NearbyConcertBanner from "../components/ArtistPage/NearbyConcertBanner";
 import Albums from "../components/ArtistPage/Albums";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
 import PastConcerts from "../components/ArtistPage/PastConcerts";
@@ -80,6 +81,7 @@ export default function ArtistPage() {
       {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
           vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
       <div className="w-full min-w-0">
+        <NearbyConcertBanner artist={artistName} events={ticketmaster.events} />
         {/* Cores e fonte da faixa da Home. Duas linhas fixas, sem rolagem: metade de cima
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav

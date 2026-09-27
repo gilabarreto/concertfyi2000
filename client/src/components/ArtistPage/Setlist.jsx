@@ -203,7 +203,7 @@ export default function Setlist({ concert, setlist }) {
             <button
               type="button"
               onClick={handleCopySetlist}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
               title="Copy setlist"
               aria-label="Copy setlist"
             >
@@ -220,7 +220,7 @@ export default function Setlist({ concert, setlist }) {
               type="button"
               onClick={shareSetlist}
               title="Share setlist"
-              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[10px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 hover:border-red-600 hover:text-red-600"
             >
               <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
               {linkCopied ? "LINK COPIED" : "SHARE"}

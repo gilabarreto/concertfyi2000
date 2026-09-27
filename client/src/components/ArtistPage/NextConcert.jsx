@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import Icon from "../Icon";
 import {
@@ -18,17 +18,16 @@ import MapDialog from "./MapDialog";
 import Map from "./Map";
 import { shareOrCopy } from "../../helpers/share";
 import CardTitle from "./CardTitle";
+import TicketOptions from "./TicketOptions";
+import HotelOptions from "./HotelOptions";
+import ConcertReminder from "./ConcertReminder";
 
-const GOING_KEY = "goingConcertIds";
-
-function getGoing() {
-  return JSON.parse(localStorage.getItem(GOING_KEY) || "[]");
-}
+import { AppContext } from "../../context/AppContext";
 
 export default function NextConcert({ concert, setlist, ticketmaster, hideTitle = false }) {
   const { artistId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [going, setGoing] = useState(getGoing);
+  const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
   const [linkCopied, setLinkCopied] = useState(false);
   const mapRef = useRef(null);
 
@@ -57,14 +56,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   // Same idea as "I WAS THERE" on Last Concert, mirrored forward: mark locally that the
   // user plans to be at this one. Keyed by the Ticketmaster event id, so flipping between
   // upcoming dates with the arrows above keeps each date's mark separate.
-  const imGoing = going.includes(upcomingConcert.id);
-  const toggleGoing = () => {
-    const next = imGoing
-      ? going.filter((id) => id !== upcomingConcert.id)
-      : [...going, upcomingConcert.id];
-    setGoing(next);
-    localStorage.setItem(GOING_KEY, JSON.stringify(next));
-  };
+  const imGoing = goingConcertIds.includes(upcomingConcert.id);
+  const toggleGoing = () => toggleGoingConcert(upcomingConcert.id);
 
   // A URL já leva o ?next deste show, então quem abre cai nesta mesma data.
   const share = async () => {
@@ -90,7 +83,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         type="button"
         onClick={share}
         title="Share this concert"
-        className="flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+        className="flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[12px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
       >
         <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
         {linkCopied ? "LINK COPIED" : "SHARE"}
@@ -100,7 +93,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         onClick={toggleGoing}
         aria-pressed={imGoing}
         title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
-        className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
+        className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[12px] leading-4 whitespace-nowrap transition-colors ${
           imGoing
             ? "border-red-600 text-red-600 hover:bg-red-50"
             : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
@@ -171,6 +164,15 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 {venue?.city?.name}, {venue?.country?.countryCode}
               </span>
             )}
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <TicketOptions event={upcomingConcert} artistName={concert.artist.name} iconOnly />
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <HotelOptions event={upcomingConcert} iconOnly />
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <ConcertReminder event={upcomingConcert} artistName={concert.artist.name} iconOnly />
           </li>
         </ol>
         {hideTitle && coords && (

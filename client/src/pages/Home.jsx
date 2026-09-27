@@ -1,3 +1,6 @@
+import { useContext, useEffect } from "react";
+import { AppContext } from "../context/AppContext";
+import ReminderClose from "../components/ReminderClose";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
 import { useLocalEvents } from "../api/queries";
@@ -27,6 +30,33 @@ const expandConcert = (concert) => {
 };
 
 const Home = () => {
+  const {
+    setConcertReminder,
+    reminderOpen,
+    setReminderOpen,
+    reminderInteracted,
+    setReminderInteracted,
+  } = useContext(AppContext);
+  useEffect(() => {
+    setConcertReminder({ id: "home-intro", pathname: "/", targetId: "home-reminder" });
+    setReminderOpen(false);
+    setReminderInteracted(false);
+    return () => setConcertReminder(null);
+  }, [setConcertReminder, setReminderOpen, setReminderInteracted]);
+
+  useEffect(() => {
+    if (reminderInteracted) return;
+    let closeTimer;
+    const openTimer = setTimeout(() => {
+      setReminderOpen(true);
+      closeTimer = setTimeout(() => setReminderOpen(false), 5000);
+    }, 10000);
+    return () => {
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+    };
+  }, [reminderInteracted, setReminderOpen]);
+
   const { data: localEventsData } = useLocalEvents(CALGARY.lat, CALGARY.long);
   const events = localEventsData?._embedded?.events || [];
   const inCity = getUpcomingConcertsByCity(events, CALGARY.name);
@@ -41,9 +71,22 @@ const Home = () => {
       />
       <div className="flex flex-col w-full flex-1 items-center gap-6 overflow-x-clip p-4">
         <div className="flex flex-col w-[calc(100%+2rem)] -mx-4 -mt-4 items-center">
-          <p className="w-full bg-red-600 px-4 py-3 text-center text-sm sm:text-base text-white text-pretty">
-            Track your favorite artists, explore past performances and never miss a concert again.
-          </p>
+          <div
+            id="home-reminder"
+            aria-hidden={!reminderOpen}
+            inert={!reminderOpen ? "" : undefined}
+            className={`grid w-full scroll-mt-16 transition-[grid-template-rows] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${reminderOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
+          >
+            <div className="min-h-0 overflow-hidden">
+              <div className="relative bg-red-600">
+                <p className="w-full bg-red-600 px-12 py-3 text-center text-sm sm:text-base text-white text-pretty">
+                  Track your favorite artists, explore past performances and never miss a concert
+                  again.
+                </p>
+                <ReminderClose />
+              </div>
+            </div>
+          </div>
           {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
           <div className="w-full shrink-0 bg-zinc-100 px-4 pt-4 pb-2">
             <Swiper />
