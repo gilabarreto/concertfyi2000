@@ -77,30 +77,6 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
         }
       >
         <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
-          <li className="flex gap-1 border-b border-zinc-300/50 py-2">
-            <button
-              type="button"
-              onClick={share}
-              title="Share this concert"
-              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600`}
-            >
-              <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-              {linkCopied ? "LINK COPIED" : "SHARE"}
-            </button>
-            <button
-              type="button"
-              onClick={toggleWasThere}
-              aria-pressed={wasThere}
-              title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
-              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
-                wasThere
-                  ? "border-red-600 text-red-600 hover:bg-red-50"
-                  : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-              }`}
-            >
-              <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
-            </button>
-          </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
               Concert date:&ensp;
@@ -152,6 +128,30 @@ export default function LastConcert({ concert, setlist, hideTitle = false }) {
             onLeaveReview={() => ratingRef.current.open("comment")}
             key={concert.id}
           />
+          <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
+            <button
+              type="button"
+              onClick={share}
+              title="Share this concert"
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600`}
+            >
+              <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
+              {linkCopied ? "LINK COPIED" : "SHARE"}
+            </button>
+            <button
+              type="button"
+              onClick={toggleWasThere}
+              aria-pressed={wasThere}
+              title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
+              className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] leading-4 whitespace-nowrap transition-colors ${
+                wasThere
+                  ? "border-red-600 text-red-600 hover:bg-red-50"
+                  : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+              }`}
+            >
+              <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
+            </button>
+          </li>
         </ol>
         {hideTitle && coords && (
           <div
