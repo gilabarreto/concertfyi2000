@@ -199,8 +199,9 @@ export default function Setlist({ concert, setlist }) {
             />
           )}
         </span>
+        {/* À direita: linha própria no mobile, na linha da data a partir de lg. */}
         {songs.length > 0 && (
-          <div className="flex items-center space-x-2">
+          <div className="flex w-full items-center justify-end space-x-2 lg:ml-auto lg:w-auto">
             <button
               type="button"
               onClick={handleCopySetlist}
