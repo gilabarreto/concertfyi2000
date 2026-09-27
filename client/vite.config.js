@@ -24,7 +24,7 @@ const csp = [
   // estava aqui, então a entrada específica saiu.
   // Event Art Archive redirects to archive.org and then an archive.org storage host.
   // TheAudioDB and Wikimedia Commons are image-only sources for ArtistInfo and the local API lab.
-  "img-src 'self' data: blob: https://s1.ticketm.net https://r2.theaudiodb.com https://upload.wikimedia.org https://maps.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com https://www.google.com https://eventartarchive.org https://archive.org https://*.archive.org",
+  "img-src 'self' data: blob: https://s1.ticketm.net https://r2.theaudiodb.com https://upload.wikimedia.org https://maps.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com https://www.google.com https://eventartarchive.org https://coverartarchive.org https://archive.org https://*.archive.org",
   "connect-src 'self' https://concertfyi2000.onrender.com https://maps.googleapis.com https://api.spotify.com https://formspree.io https://photon.komoot.io https://nominatim.openstreetmap.org",
   "frame-src https://open.spotify.com https://www.youtube.com",
   "worker-src 'self' blob:",

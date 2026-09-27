@@ -52,6 +52,7 @@ app.get("/api/lyrics", require("./routes/lyrics"));
 app.get("/api/youtube", require("./routes/youtube"));
 app.get("/api/wikipedia", require("./routes/wikipedia"));
 app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
+app.get("/api/albums", require("./routes/albums"));
 if (process.env.API_LAB_ENABLED === "true") {
   // Expensive/quota-consuming comparison calls are available only when explicitly enabled by npm run dev.
   app.get("/api/api-lab", require("./routes/apiLab"));

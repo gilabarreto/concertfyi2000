@@ -9,6 +9,7 @@ import {
   getYoutubeVideo,
   getArtistBackground,
   getArtistImages,
+  getArtistAlbums,
   getApiLabData,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
@@ -18,6 +19,17 @@ export const useArtistImages = (mbid) =>
   useQuery({
     queryKey: ["artist-images", mbid],
     queryFn: () => getArtistImages(mbid),
+    enabled: !!mbid,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 7 * 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+
+// Discografia muda uma vez por ano; o servidor segura 24 h e aqui também.
+export const useArtistAlbums = (mbid) =>
+  useQuery({
+    queryKey: ["artist-albums", mbid],
+    queryFn: () => getArtistAlbums(mbid),
     enabled: !!mbid,
     staleTime: 24 * 60 * 60 * 1000,
     gcTime: 7 * 24 * 60 * 60 * 1000,

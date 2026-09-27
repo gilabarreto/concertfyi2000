@@ -5,6 +5,7 @@ import ArtistInfo from "../components/ArtistPage/ArtistInfo";
 import ConcertTabs from "../components/ArtistPage/ConcertTabs";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
+import Albums from "../components/ArtistPage/Albums";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
 import PastConcerts from "../components/ArtistPage/PastConcerts";
 import { AppContext } from "../context/AppContext";
@@ -129,6 +130,7 @@ export default function ArtistPage() {
               className="min-w-0 scroll-mt-20 p-4 before:hidden spotify-player-card"
             >
               <Player attraction={attraction} />
+              <Albums artistId={artistId} artist={artistName} />
             </div>
           </div>
 
