@@ -151,7 +151,7 @@ export default function ArtistInfo(props) {
                     className="whitespace-pre-line text-base leading-relaxed text-zinc-700 mb-2"
                     style={{ maskImage: biographyMask, WebkitMaskImage: biographyMask }}
                   >
-                    Bio:&ensp;
+                    <span className="font-semibold">Bio:</span>&ensp;
                     {hasMoreBiography && !showFullBiography
                       ? `${background.extract.slice(0, 300).replace(/\s+\S*$/, "")}…`
                       : background.extract}
@@ -183,7 +183,7 @@ export default function ArtistInfo(props) {
           )}
           {displayGenres.length > 0 && (
             <li className="border-b border-zinc-300/50 py-2">
-              Genres:&ensp;{displayGenres.join(", ")}
+              <span className="font-semibold">Genres:</span>&ensp;{displayGenres.join(", ")}
             </li>
           )}
         </ol>

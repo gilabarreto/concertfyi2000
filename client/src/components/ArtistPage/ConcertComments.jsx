@@ -27,7 +27,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
         <div className="flex items-center gap-2">
           {/* Clicking here edits the rating directly — no need to reopen the popup just
               because someone changed their mind about the stars. */}
-          <span>Rating:&ensp;</span>
+          <span className="font-semibold">Rating:</span>&ensp;
           <StarRating
             value={average}
             onRate={(n) => onSaved(upsertReview(concertId, { rating: n }))}
@@ -43,7 +43,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
 
       <li className="border-b border-zinc-300/50 py-2">
         <div className="flex items-center gap-2">
-          <span className="shrink-0">Review:&ensp;</span>
+          <span className="shrink-0 font-semibold">Review:&ensp;</span>
           {current ? (
             <>
               {withComments.length > 1 && (

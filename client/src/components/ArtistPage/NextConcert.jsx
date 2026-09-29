@@ -131,7 +131,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           )}
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
-              Concert date:&ensp;
+              <span className="font-semibold">Concert date:</span>&ensp;
               {idx > 0 && (
                 <Icon
                   icon={faBackward}
@@ -150,10 +150,14 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             </span>
             {hideTitle && <span className="ml-auto flex gap-1">{actions}</span>}
           </li>
-          <li className="border-b border-zinc-300/50 py-2">Tour:&ensp;{tour}</li>
-          <li className="border-b border-zinc-300/50 py-2">Venue:&ensp;{venue?.name}</li>
           <li className="border-b border-zinc-300/50 py-2">
-            Location:&ensp;
+            <span className="font-semibold">Tour:</span>&ensp;{tour}
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <span className="font-semibold">Venue:</span>&ensp;{venue?.name}
+          </li>
+          <li className="border-b border-zinc-300/50 py-2">
+            <span className="font-semibold">Location:</span>&ensp;
             {coords ? (
               <button
                 type="button"
