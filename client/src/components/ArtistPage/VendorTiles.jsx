@@ -11,7 +11,7 @@ export default function VendorTiles({ icon, title, vendors, iconOnly = false }) 
   if (iconOnly) {
     return (
       <div className="flex items-center gap-2">
-        <span className="shrink-0">{title}:&ensp;</span>
+        <span className="shrink-0 font-semibold">{title}:&ensp;</span>
         <ul className="flex min-w-0 flex-wrap items-center gap-3">
           {vendors.map((vendor) => (
             <li key={vendor.name}>

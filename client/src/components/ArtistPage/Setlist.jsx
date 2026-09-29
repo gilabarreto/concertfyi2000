@@ -183,7 +183,7 @@ export default function Setlist({ concert, setlist, ticketmaster }) {
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
         <span>
-          Concert date:&ensp;
+          <span className="font-semibold">Concert date:</span>&ensp;
           {olderId && (
             <Icon
               icon={faBackward}
