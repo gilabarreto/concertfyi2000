@@ -19,8 +19,7 @@ export default function Player({ attraction }) {
       <CardTitle>Top tracks</CardTitle>
       <iframe
         // Iframe de outra origem: a altura é o único controle. 470px mostra as 5 primeiras.
-        // No desktop estica até a altura do card do Setlists; o lg:pb-7 do card em
-        // ArtistPage.jsx casa o fundo com o do botão Create Spotify Playlist.
+        // No desktop estica até a altura do card do Setlists.
         className="w-full h-[470px] rounded-2xl lg:h-auto lg:min-h-[470px] lg:flex-1"
         src={spotify.replace("open.spotify.com/", "open.spotify.com/embed/")}
         title="Artist on Spotify"

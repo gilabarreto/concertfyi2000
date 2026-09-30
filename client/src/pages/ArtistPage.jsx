@@ -123,7 +123,7 @@ export default function ArtistPage() {
           <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
 
           <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="min-w-0 bg-white p-4 space-y-2">
+            <div className="min-w-0 bg-white px-4 space-y-2">
               <Setlist
                 key={concert.id}
                 concert={concert}
@@ -134,7 +134,7 @@ export default function ArtistPage() {
 
             <div
               id="top-tracks"
-              className="min-w-0 scroll-mt-20 p-4 lg:flex lg:flex-col lg:pb-7 before:hidden spotify-player-card"
+              className="min-w-0 scroll-mt-20 px-4 lg:flex lg:flex-col before:hidden spotify-player-card"
             >
               <Player attraction={attraction} />
               <Albums artistId={artistId} artist={artistName} className="pt-4 lg:hidden" />
@@ -150,11 +150,14 @@ export default function ArtistPage() {
 
           {/* Sem artist-card-grid: nem divisória entre Past e Upcoming, nem linha em cima. */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
+            <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white px-4 space-y-2">
               <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
             </div>
 
-            <div id="upcoming-concerts" className="min-w-0 scroll-mt-20 bg-white p-4 space-y-2">
+            <div
+              id="upcoming-concerts"
+              className="min-w-0 scroll-mt-20 bg-white px-4 pb-4 space-y-2"
+            >
               <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
             </div>
           </div>
