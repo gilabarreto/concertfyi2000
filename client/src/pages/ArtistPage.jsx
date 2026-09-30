@@ -110,7 +110,7 @@ export default function ArtistPage() {
                   key={id}
                   type="button"
                   onClick={() => scrollToSection(id)}
-                  className="flex shrink-0 items-center justify-center px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
+                  className="flex shrink-0 items-center justify-center px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-600 whitespace-nowrap transition-colors hover:border-red-700 hover:text-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
                 >
                   {label}
                 </button>
