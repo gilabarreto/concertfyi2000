@@ -18,6 +18,8 @@ ConcertFYI — Pendências e Decisões
 □ Pre-render/SSR para páginas de artista — só vale depois de haver tráfego para medir. Opções: pre-render dos N artistas mais buscados (precisa de métrica), SSR Next.js/Remix (muda hospedagem), Prerender.io (pago).
 □ Diferencial de mercado — definir proposta de valor única (curadoria? cenas locais? social? setlists/lyrics?) e documentar no /about.
 □ Dark mode — Tailwind suporta; falta toggle + localStorage.
+□ PDF de 5,3 MB no repositório (review de 2026-09-29) — `APIs De Posters Recentes.pdf` entrou em `1bcb841` junto com o código do share e já está no origin. Não vai para a gh-pages (só client/dist é publicado), mas pesa em todo clone para sempre. Opções: `git rm --cached` + `*.pdf` e `*:Zone.Identifier` no .gitignore (tira da árvore, fica no histórico), ou reescrever o histórico com force push em main (tira de vez, mas exige force push — decisão sua).
+□ Share no iPhone depois do `await` da compressão (review de 2026-09-29) — desde `1bcb841`, `shareOrCopy` comprime o payload antes de chamar `navigator.share`. O Safari do iOS exige gesto do usuário "fresco" e pode recusar com NotAllowedError depois de um `await`; o catch engole e o botão parece não fazer nada. Não reproduzido — testar no iPhone. Se falhar, a correção é gerar o token antes do clique (no render), não no handler.
 🟢 Tarefas minhas, aguardando seu "pode fazer"
 ☑ Normalizar id no log de acesso — resolvido em `41a0e3d`.
 ☑ Lint quebrado em SearchBar.jsx:11 (`setPlaceholder` não usado) — resolvido em `5ce7c2a`. Achado e já corrigido revisando o Swiper em 2026-09-20.
@@ -71,3 +73,5 @@ Formulário de contato inline com role="status" e botão desabilitado durante en
 Botão de perfil do Navbar removido (não tinha onClick).
 
 Tooltips nos ícones de Spotify e YouTube em SongDetails.jsx e Setlist.jsx (achado 2026-09-20, revisando o item — já existiam via `title`). Genius ainda não é feature no app; ver item de fallback do Genius, separado.
+
+Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG AA (eb92be3); rota `/share/:token` ganhou teste, incluindo a bomba de deflate (5adf0a3).
