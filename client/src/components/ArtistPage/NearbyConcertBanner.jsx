@@ -75,7 +75,7 @@ export default function NearbyConcertBanner({ artist, events }) {
               onClick={handleGoing}
               aria-pressed={imGoing}
               title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
-              className={`inline-flex items-center gap-1 rounded-full border border-white px-2 py-0.5 text-[12px] leading-4 whitespace-nowrap align-middle transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${imGoing ? "bg-white text-red-600" : "text-white hover:bg-white/10"}`}
+              className={`inline-flex items-center gap-1 ml-2 rounded-full border border-white px-2 py-0.5 text-[12px] leading-4 whitespace-nowrap align-middle transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${imGoing ? "bg-white text-red-600" : "text-white hover:bg-white/10"}`}
             >
               <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
               I'M GOING
