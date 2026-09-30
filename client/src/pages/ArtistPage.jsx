@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useSetlistById, useArtistData } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
@@ -27,6 +27,7 @@ const SECTIONS = [
 export default function ArtistPage() {
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
+  const menuRef = useRef(null);
 
   const concert = setlist.find((result) => result.id === concertId);
 
@@ -40,6 +41,16 @@ export default function ArtistPage() {
     setSetlist(list.some((s) => s.id === urlConcert.id) ? list : [urlConcert, ...list]);
     setTicketmaster(artistData.ticketmaster);
   }, [urlConcert, artistData, setSetlist, setTicketmaster]);
+
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    const observer = new ResizeObserver(() => {
+      menu.parentElement.style.setProperty("--section-menu-height", `${menu.offsetHeight}px`);
+    });
+    observer.observe(menu);
+    return () => observer.disconnect();
+  }, [concert]);
 
   if (isError) {
     return (
@@ -80,25 +91,26 @@ export default function ArtistPage() {
       />
       {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
           vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
-      <div className="w-full min-w-0">
+      <div className="artist-page w-full min-w-0">
         <NearbyConcertBanner artist={artistName} events={ticketmaster.events} />
-        {/* Cores e fonte da faixa da Home. Duas linhas fixas, sem rolagem: metade de cima
+        {/* Dois grupos que podem quebrar linha em telas estreitas: metade de cima
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav
+          ref={menuRef}
           aria-label="Artist page sections"
-          className="lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-red-600 px-4 py-3 text-sm sm:text-base text-white"
+          className="sticky top-16 z-10 lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-zinc-100 p-4 text-sm sm:text-base text-zinc-800"
         >
           {[
             sections.slice(0, Math.ceil(sections.length / 2)),
             sections.slice(Math.ceil(sections.length / 2)),
           ].map((row, rowIndex) => (
-            <div key={rowIndex} className="flex justify-center gap-3">
+            <div key={rowIndex} className="flex w-full flex-wrap justify-center gap-1">
               {row.map(([id, label]) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => scrollToSection(id)}
-                  className="whitespace-nowrap text-white transition hover:underline hover:underline-offset-8 hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="flex shrink-0 items-center justify-center px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-800"
                 >
                   {label}
                 </button>
@@ -110,7 +122,7 @@ export default function ArtistPage() {
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
           <div
             id="artist"
-            className="min-w-0 scroll-mt-16 bg-zinc-100 p-6 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
+            className="min-w-0 scroll-mt-16 bg-zinc-100 px-6 pb-4 pt-0 lg:pt-4 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
           >
             <ArtistInfo
               key={artistId}
