@@ -40,3 +40,7 @@ server/public/stylesheets/
 # do Windows e falha ao convertê-lo — o mkdir vira uma pasta única com barras
 # invertidas no nome, no diretório de onde o Lighthouse foi chamado.
 C:\\Users\\*
+# === DOCUMENTOS LOCAIS ===
+# Material de pesquisa do dono; fica no disco, fora do repositório.
+*.pdf
+*:Zone.Identifier
