@@ -9,7 +9,7 @@ const tabs = [
   { id: "next-concert", label: "Next Concert" },
 ];
 
-export default function ConcertTabs({ concert, setlist, ticketmaster }) {
+export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackImage }) {
   const location = useLocation();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [active, setActive] = useState(() =>
@@ -103,6 +103,7 @@ export default function ConcertTabs({ concert, setlist, ticketmaster }) {
                 concert={concert}
                 setlist={setlist}
                 ticketmaster={ticketmaster}
+                fallbackImage={fallbackImage}
                 hideTitle={desktop}
               />
             ) : (

@@ -20,11 +20,28 @@ const SHARE_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onre
 
 export async function shareOrCopy(url, title = document.title, { text = "", imageUrl } = {}) {
   const description = `${text} Learn more at concertfyi.com.`;
-  const preview = new URL("/share", SHARE_BASE);
-  preview.searchParams.set("target", url);
-  preview.searchParams.set("title", title);
-  preview.searchParams.set("description", description);
-  if (imageUrl) preview.searchParams.set("image", imageUrl);
+  const payload = JSON.stringify({ target: url, title, description, image: imageUrl || "" });
+  let preview;
+  try {
+    if (typeof CompressionStream !== "function") throw new Error("Compression unavailable");
+    const compressed = await new Response(
+      new Blob([payload]).stream().pipeThrough(new CompressionStream("deflate")),
+    ).arrayBuffer();
+    const bytes = new Uint8Array(compressed);
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+    }
+    const token = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+    preview = new URL(`/share/${token}`, SHARE_BASE);
+  } catch {
+    // Older browsers can still use the original query-based share URL.
+    preview = new URL("/share", SHARE_BASE);
+    preview.searchParams.set("target", url);
+    preview.searchParams.set("title", title);
+    preview.searchParams.set("description", description);
+    if (imageUrl) preview.searchParams.set("image", imageUrl);
+  }
 
   try {
     if (navigator.share) {

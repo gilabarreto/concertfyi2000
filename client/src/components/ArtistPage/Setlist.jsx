@@ -22,7 +22,7 @@ import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
 // Páginas de 10, com paginação só acima disso.
 const PAGE_SIZE = 10;
 
-export default function Setlist({ concert, setlist, ticketmaster }) {
+export default function Setlist({ concert, setlist, ticketmaster, fallbackImage }) {
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
@@ -48,12 +48,13 @@ export default function Setlist({ concert, setlist, ticketmaster }) {
     const city = concert.venue?.city?.name;
     const place = [concert.venue?.name, city].filter(Boolean).join(", ");
     const localDate = concert.eventDate.split("-").reverse().join("-");
-    const imageUrl = getTicketmasterEventImage(
-      ticketmaster?.events,
-      concert.artist.name,
-      localDate,
-      concert.venue?.name,
-    );
+    const imageUrl =
+      getTicketmasterEventImage(
+        ticketmaster?.events,
+        concert.artist.name,
+        localDate,
+        concert.venue?.name,
+      ) || fallbackImage;
     const text = `Check out ${concert.artist.name}'s setlist from their concert at ${place || "the concert venue"} on ${dateLabel(parseSetlistDate(concert.eventDate))}.`;
     const title = `${concert.artist.name} setlist`;
 

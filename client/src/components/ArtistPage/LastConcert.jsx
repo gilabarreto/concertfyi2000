@@ -24,7 +24,13 @@ function getAttended() {
   return JSON.parse(localStorage.getItem(ATTENDED_KEY) || "[]");
 }
 
-export default function LastConcert({ concert, setlist, ticketmaster, hideTitle = false }) {
+export default function LastConcert({
+  concert,
+  setlist,
+  ticketmaster,
+  fallbackImage,
+  hideTitle = false,
+}) {
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
   const [attended, setAttended] = useState(getAttended);
@@ -71,12 +77,9 @@ export default function LastConcert({ concert, setlist, ticketmaster, hideTitle 
   const country = concert.venue.city?.country.code;
   const coords = concert.venue.city?.coords;
   const localDate = concert.eventDate.split("-").reverse().join("-");
-  const eventImage = getTicketmasterEventImage(
-    ticketmaster?.events,
-    concert.artist.name,
-    localDate,
-    venue,
-  );
+  const eventImage =
+    getTicketmasterEventImage(ticketmaster?.events, concert.artist.name, localDate, venue) ||
+    fallbackImage;
   const shareText = `${concert.artist.name} played ${city || "near you"} on ${dateLabel(parseSetlistDate(concert.eventDate))}${venue ? ` at ${venue}` : ""}. Were you there?`;
 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.

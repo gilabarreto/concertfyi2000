@@ -1,4 +1,5 @@
 const express = require("express");
+const { inflateSync } = require("node:zlib");
 
 const router = express.Router();
 const SITE_URL = "https://concertfyi.com";
@@ -14,11 +15,11 @@ const escapeHtml = (value) =>
 const boundedText = (value, maxLength) =>
   (typeof value === "string" ? value.trim().slice(0, maxLength) : "");
 
-router.get("/", (req, res) => {
-  const targetParam = boundedText(req.query.target, 2048);
-  const title = boundedText(req.query.title, 160) || "ConcertFYI";
-  const description = boundedText(req.query.description, 400) || "Discover concerts and setlists on ConcertFYI.";
-  const imageParam = boundedText(req.query.image, 2048);
+function renderShare(req, res, data) {
+  const targetParam = boundedText(data.target, 2048);
+  const title = boundedText(data.title, 160) || "ConcertFYI";
+  const description = boundedText(data.description, 400) || "Discover concerts and setlists on ConcertFYI.";
+  const imageParam = boundedText(data.image, 2048);
 
   let target;
   try {
@@ -74,6 +75,21 @@ router.get("/", (req, res) => {
 <script>window.location.replace(document.getElementById("continue").href)</script>
 </body>
 </html>`);
+}
+
+router.get("/", (req, res) => renderShare(req, res, req.query));
+
+router.get("/:token", (req, res) => {
+  const { token } = req.params;
+  if (!/^[A-Za-z0-9_-]{1,8192}$/.test(token)) return res.status(400).send("Invalid share token");
+
+  try {
+    const compressed = Buffer.from(token, "base64url");
+    const payload = JSON.parse(inflateSync(compressed, { maxOutputLength: 12000 }).toString("utf8"));
+    return renderShare(req, res, payload);
+  } catch {
+    return res.status(400).send("Invalid share token");
+  }
 });
 
 module.exports = router;

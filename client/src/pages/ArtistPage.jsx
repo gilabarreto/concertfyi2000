@@ -120,7 +120,12 @@ export default function ArtistPage() {
             />
           </div>
 
-          <ConcertTabs concert={concert} setlist={setlist} ticketmaster={ticketmaster} />
+          <ConcertTabs
+            concert={concert}
+            setlist={setlist}
+            ticketmaster={ticketmaster}
+            fallbackImage={artistImage}
+          />
 
           <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="min-w-0 bg-white px-4 space-y-2">
@@ -129,6 +134,7 @@ export default function ArtistPage() {
                 concert={concert}
                 setlist={setlist}
                 ticketmaster={ticketmaster}
+                fallbackImage={artistImage}
               />
             </div>
 
