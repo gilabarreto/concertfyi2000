@@ -123,7 +123,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           hideTitle ? "grid grid-cols-2 items-start gap-x-14" : ""
         }
       >
-        <ol className={`min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
+        <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
           {!hideTitle && (
             <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
               {actions}
@@ -189,7 +189,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         </ol>
         {hideTitle && coords && (
           <div
-            className="aspect-[103/60] w-full self-start overflow-hidden rounded-md bg-zinc-100"
+            className="mt-[12px] aspect-[103/60] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
             <Map latitude={coords?.latitude} longitude={coords?.longitude} />

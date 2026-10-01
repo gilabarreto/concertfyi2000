@@ -182,7 +182,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
         Setlists
       </CardTitle>
 
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
+      <div className="mx-[12px] flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
         <span>
           <span className="font-semibold">Concert date:</span>&ensp;
           {olderId && (
@@ -238,12 +238,12 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
 
       <>
         {songs.length === 0 ? (
-          <span className="py-2 block text-zinc-500">
+          <span className="px-[12px] py-2 block text-zinc-500">
             No songs in this setlist. Check back later.
           </span>
         ) : (
           <>
-            <ol>
+            <ol className="px-[12px]">
               {displaySongs.map((song, i) => {
                 const songIndex = offset + i;
                 const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;

@@ -126,7 +126,7 @@ export default function ArtistInfo(props) {
           {artist}
         </CardTitle>
 
-        <ol>
+        <ol className="px-[12px]">
           {isBackgroundLoading && (
             <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading artist info…</li>
           )}

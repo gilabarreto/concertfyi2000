@@ -41,7 +41,7 @@ export default function ConcertList({
       <CardTitle>{title}</CardTitle>
 
       {items.length === 0 ? (
-        <div className="py-2 text-zinc-500 text-pretty">
+        <div className="px-[12px] py-2 text-zinc-500 text-pretty">
           <p>{empty}</p>
           <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
             Search another artist
@@ -49,7 +49,7 @@ export default function ConcertList({
         </div>
       ) : (
         <>
-          <ol>
+          <ol className="px-[12px]">
             {currentPage.map((concert) => {
               const open = openId === concert.id;
               // the date never truncates; a long city name does, so the icon keeps its place
