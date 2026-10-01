@@ -1,4 +1,5 @@
 import CardTitle from "./CardTitle";
+import CardNotice from "./CardNotice";
 
 // Spotify's own embed is an iframe; the wrapper packages that used to be here added a
 // dependency for the same markup. The artist link only needs "/embed" spliced into it.
@@ -7,9 +8,9 @@ export default function Player({ attraction }) {
 
   if (!spotify) {
     return (
-      <section aria-label="Top tracks" className="space-y-3">
+      <section aria-label="Top tracks" className="space-y-3 lg:flex lg:flex-1 lg:flex-col">
         <CardTitle>Top tracks</CardTitle>
-        <p className="text-zinc-500 text-center">Spotify link not available for this artist.</p>
+        <CardNotice>Spotify link not available for this artist.</CardNotice>
       </section>
     );
   }

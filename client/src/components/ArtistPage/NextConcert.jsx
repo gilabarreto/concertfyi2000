@@ -19,6 +19,7 @@ import MapDialog from "./MapDialog";
 import Map from "./Map";
 import { shareOrCopy } from "../../helpers/share";
 import CardTitle from "./CardTitle";
+import CardNotice from "./CardNotice";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
@@ -49,9 +50,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
     });
 
   if (!upcomingConcert) {
-    return hideTitle ? (
-      <p className="py-8 text-center text-zinc-500">No upcoming concerts. Check back later.</p>
-    ) : null;
+    return hideTitle ? <CardNotice>No upcoming concerts. Check back later.</CardNotice> : null;
   }
 
   // Same idea as "I WAS THERE" on Last Concert, mirrored forward: mark locally that the
@@ -119,8 +118,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
       <div
         className={
-          // Mesmas colunas da fileira Setlists/Top Tracks: o gap-6 do grid mais o p-4 dos dois cards.
-          hideTitle ? "grid grid-cols-2 items-start gap-x-14" : ""
+          // Mesmas colunas da fileira Setlists/Top Tracks: o gap-4 do grid mais o px-4 dos dois cards.
+          hideTitle ? "grid grid-cols-2 items-start gap-x-12" : ""
         }
       >
         <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>

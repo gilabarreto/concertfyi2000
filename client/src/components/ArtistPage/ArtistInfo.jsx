@@ -103,7 +103,7 @@ export default function ArtistInfo(props) {
   );
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row items-start gap-6">
+    <div className="flex-1 flex flex-col lg:flex-row items-start gap-4">
       <div className="flex flex-col items-center w-full lg:flex-1 lg:min-w-0">
         <ArtistPhotos artistId={artistId} artist={artist} attraction={attraction} />
       </div>

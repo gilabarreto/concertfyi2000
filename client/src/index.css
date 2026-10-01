@@ -79,7 +79,7 @@ body {
   .artist-card-grid > div:nth-child(even)::before {
     content: "";
     position: absolute;
-    left: -0.75rem;
+    left: -0.5rem;
     top: 5%;
     height: 90%;
     width: 1px;

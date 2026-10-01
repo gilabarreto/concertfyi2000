@@ -17,6 +17,7 @@ import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotif
 import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
+import CardNotice from "./CardNotice";
 import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
 
 // Páginas de 10, com paginação só acima disso.
@@ -238,9 +239,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
 
       <>
         {songs.length === 0 ? (
-          <span className="px-[12px] py-2 block text-zinc-500">
-            No songs in this setlist. Check back later.
-          </span>
+          <CardNotice>No songs in this setlist. Check back later.</CardNotice>
         ) : (
           <>
             <ol className="px-[12px]">

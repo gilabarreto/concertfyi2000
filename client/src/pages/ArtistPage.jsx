@@ -139,8 +139,8 @@ export default function ArtistPage() {
             fallbackImage={artistImage}
           />
 
-          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="min-w-0 bg-white px-4 space-y-2">
+          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="min-w-0 bg-white px-4 space-y-2 lg:flex lg:flex-col">
               <Setlist
                 key={concert.id}
                 concert={concert}
@@ -167,14 +167,17 @@ export default function ArtistPage() {
           </div>
 
           {/* Sem artist-card-grid: nem divisória entre Past e Upcoming, nem linha em cima. */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div id="past-concerts" className="min-w-0 scroll-mt-20 bg-white px-4 space-y-2">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div
+              id="past-concerts"
+              className="min-w-0 scroll-mt-20 bg-white px-4 space-y-2 lg:flex lg:flex-col"
+            >
               <PastConcerts concert={concert} setlist={setlist} artistId={artistId} />
             </div>
 
             <div
               id="upcoming-concerts"
-              className="min-w-0 scroll-mt-20 bg-white px-4 pb-4 space-y-2"
+              className="min-w-0 scroll-mt-20 bg-white px-4 pb-4 space-y-2 lg:flex lg:flex-col"
             >
               <UpcomingConcerts ticketmaster={ticketmaster} setlist={setlist} concert={concert} />
             </div>

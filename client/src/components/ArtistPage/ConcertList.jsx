@@ -5,6 +5,7 @@ import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import Pagination from "../Pagination";
 import { dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
+import CardNotice from "./CardNotice";
 
 const PAGE_SIZE = 5;
 
@@ -41,12 +42,12 @@ export default function ConcertList({
       <CardTitle>{title}</CardTitle>
 
       {items.length === 0 ? (
-        <div className="px-[12px] py-2 text-zinc-500 text-pretty">
+        <CardNotice>
           <p>{empty}</p>
           <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
             Search another artist
           </Link>
-        </div>
+        </CardNotice>
       ) : (
         <>
           <ol className="px-[12px]">
