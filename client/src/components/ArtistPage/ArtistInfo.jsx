@@ -175,9 +175,7 @@ export default function ArtistInfo(props) {
                   )}
                 </>
               ) : (
-                <p className="text-sm text-zinc-500">
-                  No Wikipedia biography available for this artist.
-                </p>
+                <p className="text-sm text-zinc-500">No biography available for this artist.</p>
               )}
             </li>
           )}

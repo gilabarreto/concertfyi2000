@@ -105,6 +105,10 @@ body {
     scroll-margin-top: calc(4rem + var(--section-menu-height, 6rem) + 0.5rem);
   }
 
+  .artist-page #last-concert {
+    scroll-margin-top: calc(4rem + var(--section-menu-height, 6rem) + 1.5rem);
+  }
+
   .artist-card-grid > div + div {
     border-top: 1px solid #d4d4d8;
   }

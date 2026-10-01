@@ -18,6 +18,7 @@ const PAGE_SIZE = 5;
 export default function ConcertList({
   title,
   empty,
+  showSearch = true,
   items,
   locationOf,
   linkOf,
@@ -44,9 +45,11 @@ export default function ConcertList({
       {items.length === 0 ? (
         <CardNotice>
           <p>{empty}</p>
-          <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
-            Search another artist
-          </Link>
+          {showSearch && (
+            <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
+              Search another artist
+            </Link>
+          )}
         </CardNotice>
       ) : (
         <>

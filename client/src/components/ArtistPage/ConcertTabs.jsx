@@ -28,11 +28,13 @@ export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackIm
   }, []);
 
   useEffect(() => {
-    const scrollToNext = location.state?.scrollTo === "next-concert";
-    if (scrollToNext || new URLSearchParams(location.search).has("next")) setActive(1);
-    if (!scrollToNext) return;
+    const scrollTo = location.state?.scrollTo;
+    const targetIndex = tabs.findIndex((tab) => tab.id === scrollTo);
+    if (targetIndex !== -1) setActive(targetIndex);
+    else if (new URLSearchParams(location.search).has("next")) setActive(1);
+    if (targetIndex === -1) return;
     const frame = requestAnimationFrame(() => {
-      const target = desktop ? sectionRef.current : document.getElementById("next-concert");
+      const target = desktop ? sectionRef.current : document.getElementById(scrollTo);
       target?.scrollIntoView({
         behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
         block: "start",

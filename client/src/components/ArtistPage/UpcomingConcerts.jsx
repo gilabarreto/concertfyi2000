@@ -13,6 +13,7 @@ export default function UpcomingConcerts(props) {
     <ConcertList
       title="Upcoming Concerts"
       empty="No upcoming concerts. Check back later."
+      showSearch={false}
       items={events}
       locationOf={(concert) => {
         // Parte dos eventos internacionais da Ticketmaster vem com venue sem city.
