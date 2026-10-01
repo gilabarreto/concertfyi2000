@@ -5,8 +5,8 @@ Escrito em 2026-10-01 a partir do que está no ar. Este arquivo diz **o quê e p
 qualidade no `CONSTRAINTS.md`, a direção visual no `DESIGN.md` e o backlog com o motivo de cada
 item no `SUGESTOES_ATUALIZADO.md`. O que já está nesses arquivos não é repetido aqui.
 
-`docs/user-stories.md` é o documento de origem (2025). Ele descreve contas, login e rede social,
-mas nada disso foi construído. Quando os dois divergirem, vale este PRD.
+Substitui o `docs/user-stories.md` de 2025, removido em 2026-10-01 (continua no histórico do git).
+Ele descrevia contas, login e rede social, e nada disso foi construído.
 
 ---
 
@@ -63,6 +63,8 @@ receita por link de afiliado (ingresso, hotel, discos).
 - **Pôster oficial da turnê.** Sem fonte que associe um pôster à turnê certa. Experimento retirado
   em 2026-09-26.
 - **Página de artista indexável (SSR/pre-render).** Só vale a pena quando houver tráfego medido.
+- **Widget para outros sites** ("onde [artista] toca a seguir?"). Ideia do documento de 2025,
+  nunca priorizada.
 
 ## Requisitos não funcionais
 
