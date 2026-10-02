@@ -112,8 +112,8 @@ test("test all retains every source including unavailable sources", async () => 
   const handler = createApiLabHandler({ env: {}, fetchJson: async () => ({}), mbRequest: async () => ({}) });
   const res = responseRecorder();
   await handler({ query: {} }, res);
-  assert.equal(res.body.results.length, 20);
-  assert.equal(new Set(res.body.results.map((item) => item.id)).size, 20);
+  assert.equal(res.body.results.length, 37);
+  assert.equal(new Set(res.body.results.map((item) => item.id)).size, 37);
 });
 
 test("with API_LAB_TOKEN set, a missing or wrong password is rejected before any upstream call", async () => {

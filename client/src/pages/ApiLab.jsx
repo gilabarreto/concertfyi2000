@@ -1,37 +1,10 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useApiLab } from "../api/apiLabQuery";
+import catalog from "../data/apiCatalog.json";
+import provenance from "../data/apiProvenance.json";
 
-const API_SOURCES = [
-  ["setlistfm", "setlist.fm", "https://api.setlist.fm/docs/1.0/index.html"],
-  ["musicbrainz", "MusicBrainz", "https://musicbrainz.org/doc/MusicBrainz_API"],
-  ["eventart", "Event Art Archive", "https://musicbrainz.org/doc/Event_Art_Archive/API"],
-  ["coverart", "Cover Art Archive", "https://musicbrainz.org/doc/Cover_Art_Archive/API"],
-  [
-    "ticketmaster",
-    "Ticketmaster Discovery",
-    "https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/",
-  ],
-  ["audiodb", "TheAudioDB", "https://www.theaudiodb.com/free_music_api"],
-  ["lastfm", "Last.fm", "https://www.last.fm/api"],
-  [
-    "listenbrainz",
-    "ListenBrainz",
-    "https://listenbrainz.readthedocs.io/en/latest/users/api/index.html",
-  ],
-  ["youtube", "YouTube Data API", "https://developers.google.com/youtube/v3"],
-  ["acoustid", "AcoustID", "https://acoustid.org/webservice"],
-  ["apple", "Apple Music / MusicKit", "https://developer.apple.com/documentation/applemusicapi"],
-  ["spotify", "Spotify Web API", "https://developer.spotify.com/documentation/web-api"],
-  ["songkick", "Songkick", "https://app.songkick.com/developer"],
-  ["myshowposter", "My Show Poster", "https://myshowposter.com/"],
-  ["concertcollect", "Concert Collect", "https://concertcollect.com/"],
-  ["commons", "Wikimedia Commons", "https://commons.wikimedia.org/wiki/Commons:API"],
-  ["wikidata", "Wikidata", "https://www.wikidata.org/wiki/Wikidata:Data_access"],
-  ["wikipedia", "Wikipedia REST API", "https://www.mediawiki.org/wiki/Wikimedia_REST_API"],
-  ["archive", "Internet Archive", "https://archive.org/developers/"],
-  ["github", "GitHub / datasets", "https://docs.github.com/en/rest/search/search"],
-];
+const API_SOURCES = catalog.map(({ id, name, docsUrl }) => [id, name, docsUrl]);
 
 const asText = (value) => (typeof value === "string" ? value : "");
 
@@ -183,6 +156,7 @@ export default function ApiLab() {
       // storage bloqueado: a senha vale só enquanto a página estiver aberta
     }
   };
+  const [filter, setFilter] = useState("");
   const {
     mutate,
     data,
@@ -204,7 +178,7 @@ export default function ApiLab() {
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="space-y-2">
           <p className="text-sm font-semibold uppercase tracking-wide text-red-600">Test page</p>
-          <h1 className="text-3xl font-bold">API lab · Foo Fighters</h1>
+          <h1 className="text-3xl font-bold">API lab · fontes e oportunidades</h1>
           <p className="max-w-3xl text-zinc-600">
             Esta tela faz chamadas ao vivo e mostra o que cada fonte devolve. Algumas usam as chaves
             locais já configuradas; fontes que precisam de credenciais adicionais, arquivo de áudio
@@ -250,13 +224,67 @@ export default function ApiLab() {
 
         {data && (
           <p className="text-sm text-zinc-500">
-            Artist MBID: <code>{data.mbid}</code> · This page does not change ArtistInfo or save the
-            results.
+            {data.mbid ? (
+              <>
+                Artist MBID: <code>{data.mbid}</code>
+              </>
+            ) : (
+              "Consulta experimental isolada"
+            )}{" "}
+            · This page does not change ArtistInfo or save the results.
           </p>
         )}
 
+        <section aria-label="Origem das informações" className="space-y-3">
+          <h2 className="text-2xl font-bold">Árvore de dados do ConcertFYI</h2>
+          <p className="text-sm text-zinc-600">
+            Revisão: 01/10/2026. Sugestões ainda não são fallbacks implementados. Testes legados:
+            Foo Fighters; novos testes de shows: Brasil. Test all inclui chamadas com custo ou
+            quota; prefira testes individuais.
+          </p>
+          {provenance.map((node) => (
+            <details key={node.area} className="rounded border border-zinc-200 p-3">
+              <summary className="cursor-pointer font-semibold">
+                {node.area} → {node.source}
+              </summary>
+              <dl className="mt-3 space-y-2 text-sm">
+                <div>
+                  <dt className="font-semibold">Informações</dt>
+                  <dd>{node.fields}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold">Fallback atual</dt>
+                  <dd>{node.fallback}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold">Opção a avaliar</dt>
+                  <dd>{node.proposal}</dd>
+                </div>
+                <div>
+                  <dt className="font-semibold">Código</dt>
+                  <dd className="break-words">{node.code}</dd>
+                </div>
+              </dl>
+            </details>
+          ))}
+        </section>
+        <label className="block text-sm font-semibold">
+          Filtrar fontes, país ou ideias
+          <input
+            type="search"
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+            className="mt-2 block w-full rounded border border-zinc-300 p-3"
+            placeholder="Brasil, biografia, gratuito…"
+          />
+        </label>
         <section aria-label="API results" className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          {API_SOURCES.map(([id, name, docsUrl]) => {
+          {API_SOURCES.filter(([id]) =>
+            JSON.stringify(catalog.find((item) => item.id === id))
+              .toLowerCase()
+              .includes(filter.toLowerCase()),
+          ).map(([id, name, docsUrl]) => {
+            const info = catalog.find((item) => item.id === id);
             const result = results.get(id);
             const status = result?.status;
             const badge =
@@ -281,7 +309,7 @@ export default function ApiLab() {
                       rel="noreferrer"
                       className="text-xs text-zinc-500 underline hover:text-red-600"
                     >
-                      API documentation
+                      {info.probe ? "API documentation" : "Official source / access research"}
                     </a>
                   </div>
                   <span
@@ -290,17 +318,33 @@ export default function ApiLab() {
                     {badge}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => mutate({ source: id, token })}
-                  disabled={isFetching}
-                  aria-label={`Test ${name}`}
-                  className="mt-3 rounded bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
-                >
-                  {isFetching && (!variables?.source || variables.source === id)
-                    ? "Calling API…"
-                    : "Test API"}
-                </button>
+                <div className="mt-3 space-y-2 text-sm text-zinc-600">
+                  <p>
+                    <strong>Uso:</strong> {info.state}
+                  </p>
+                  <p>
+                    <strong>Acesso/custo:</strong> {info.cost}
+                  </p>
+                  <p>
+                    <strong>Cobertura:</strong> {info.coverage}
+                  </p>
+                  <p>
+                    <strong>Ideia:</strong> {info.suggestion}
+                  </p>
+                </div>
+                {info.probe && (
+                  <button
+                    type="button"
+                    onClick={() => mutate({ source: id, token })}
+                    disabled={isFetching}
+                    aria-label={`Test ${name}`}
+                    className="mt-3 rounded bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
+                  >
+                    {isFetching && (!variables?.source || variables.source === id)
+                      ? "Calling API…"
+                      : "Test API"}
+                  </button>
+                )}
                 {result ? (
                   <div className="mt-3 space-y-2 text-sm">
                     <p className="break-words text-zinc-700">{result.note}</p>
@@ -349,7 +393,11 @@ export default function ApiLab() {
                     </button>
                   </div>
                 ) : (
-                  <p className="mt-3 text-sm text-zinc-500">Waiting for the test run.</p>
+                  <p className="mt-3 text-sm text-zinc-500">
+                    {info.probe
+                      ? "Waiting for the test run."
+                      : "Pesquisa documental: nenhum endpoint será chamado."}
+                  </p>
                 )}
               </article>
             );

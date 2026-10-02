@@ -1,3 +1,5 @@
+> Documento histórico de experimentos em setembro/2026. Para origem atual, fallbacks, custos e novas fontes, consulte [APIS_E_FONTES.md](APIS_E_FONTES.md). As descrições de layout abaixo podem estar superadas.
+
 # APIs e pôsteres para o ConcertFYI
 
 Revisão em 25/09/2026 do PDF `APIs De Posters Recentes.pdf`, com consulta às fontes oficiais. Acesso gratuito a uma API não significa licença irrestrita para reutilizar as imagens.

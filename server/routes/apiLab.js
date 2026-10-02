@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { providers, probeProvider, redactResults } = require("./apiLabProviders");
 const { request } = require("../http");
 const { musicbrainzRequest } = require("../musicbrainzClient");
 const { artistImagesFrom } = require("./audiodb");
@@ -88,8 +89,15 @@ function createApiLabHandler({ fetchJson = request, mbRequest = musicbrainzReque
     }
     const source = req.query?.source;
     const sources = ["setlistfm", "musicbrainz", "eventart", "coverart", "ticketmaster", "audiodb", "lastfm", "listenbrainz", "youtube", "acoustid", "apple", "spotify", "songkick", "myshowposter", "concertcollect", "commons", "wikidata", "wikipedia", "archive", "github"];
+    sources.push(...providers.map(({ id }) => id));
     if (source !== undefined && !sources.includes(source)) {
       return res.status(400).json({ error: "Unknown API source" });
+    }
+    if (providers.some(({ id }) => id === source)) {
+      const info = providers.find(({ id }) => id === source);
+      const result = await probeProvider(info, { fetchJson: fetchWithTimeout, env });
+      res.set("Cache-Control", "no-store");
+      return res.json(redactResults({ results: [result] }, env));
     }
     const selected = (id) => !source || source === id;
     // Event artwork needs a concert from setlist.fm to identify the event.
@@ -300,13 +308,14 @@ function createApiLabHandler({ fetchJson = request, mbRequest = musicbrainzReque
     }
     results[2] = eventPoster;
 
+    if (!source) results.push(...await Promise.all(providers.map((info) => probeProvider(info, { fetchJson: fetchWithTimeout, env }))));
     const selectedResults = results.filter((item) => item && selected(item.id));
     selectedResults.forEach((item) => {
       if (item.id === "commons") item.name = "Wikimedia Commons";
       if (item.id === "wikidata") item.name = "Wikidata";
     });
     res.set("Cache-Control", "no-store");
-    return res.json({ artist: ARTIST, mbid: MBID, results: selectedResults });
+    return res.json(redactResults({ artist: ARTIST, mbid: MBID, results: selectedResults }, env));
   };
 }
 
