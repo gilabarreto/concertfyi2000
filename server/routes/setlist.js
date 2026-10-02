@@ -125,6 +125,38 @@ router.get("/city", (req, res) => {
   sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { cityName, countryCode, year }, 3);
 });
 
+// Home's Recently Added: setlists from yesterday's shows that people have already filled
+// in. The global lastUpdated feed alone is sorted by show date, so its first pages are all
+// empty future shows; pinning date to yesterday leaves about half with songs. Same answer
+// for every visitor, so one copy is kept for 30 min instead of 2 calls per Home view.
+// ponytail: in-memory, lost on restart and per instance; fine for one Render instance.
+let recent = { key: null, at: 0, data: null };
+
+router.get("/recent", async (req, res) => {
+  const day = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const pad = (n) => String(n).padStart(2, "0");
+  const [d, m, y] = [pad(day.getUTCDate()), pad(day.getUTCMonth() + 1), day.getUTCFullYear()];
+  const key = `${d}-${m}-${y}`;
+
+  if (recent.key !== key || Date.now() - recent.at > 30 * 60 * 1000) {
+    try {
+      const { setlist } = await allPages(
+        "https://api.setlist.fm/rest/1.0/search/setlists",
+        { date: key, lastUpdated: `${y}${m}${d}000000` },
+        2
+      );
+      const filled = setlist
+        .filter((show) => show.sets?.set?.length)
+        .sort((a, b) => b.lastUpdated.localeCompare(a.lastUpdated));
+      recent = { key, at: Date.now(), data: { setlist: filled } };
+    } catch (error) {
+      console.error("Setlist.fm API error:", error.status, error.message);
+      if (!recent.data) return res.status(error.status || 500).json({ error: "Setlist.fm fetch failed" });
+    }
+  }
+  res.json(recent.data);
+});
+
 // single setlist, used when a concert page is opened directly (new tab, refresh, shared link)
 router.get("/:id", async (req, res) => {
   try {

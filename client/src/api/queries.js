@@ -7,6 +7,7 @@ import {
   getVenueSetlists,
   getVenueEvents,
   getCitySetlists,
+  getRecentSetlists,
   getLocalEvents,
   getTicketmaster,
   searchCities,
@@ -153,6 +154,15 @@ export const useCitySetlists = (cityName, countryCode, year) => {
     enabled: !!cityName,
     staleTime: 60 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
+  });
+};
+
+// The server already holds this for 30 min; same here so Home doesn't ask again on every visit.
+export const useRecentSetlists = () => {
+  return useQuery({
+    queryKey: ["recent-setlists"],
+    queryFn: getRecentSetlists,
+    staleTime: 30 * 60 * 1000,
   });
 };
 

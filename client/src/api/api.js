@@ -23,6 +23,8 @@ export const getVenueEvents = (name, lat, long) =>
 export const getCitySetlists = (cityName, countryCode, year) =>
   API("/setlist/city", { params: { cityName, countryCode, year } });
 
+export const getRecentSetlists = () => API("/setlist/recent");
+
 export const getSetlistById = (id) => API(`/setlist/${encodeURIComponent(id)}`);
 
 export const getTicketmaster = (artistName) =>

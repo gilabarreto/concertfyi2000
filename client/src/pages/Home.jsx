@@ -4,8 +4,9 @@ import ReminderClose from "../components/ReminderClose";
 import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
-import { useLocalEvents } from "../api/queries";
-import { getUpcomingConcertsByCity } from "../helpers/selectors";
+import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import { useLocalEvents, useRecentSetlists } from "../api/queries";
+import { getUpcomingConcertsByCity, parseSetlistDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
 import HotelOptions from "../components/ArtistPage/HotelOptions";
@@ -64,6 +65,11 @@ const Home = () => {
   const events = localEventsData?._embedded?.events || [];
   const inCity = getUpcomingConcertsByCity(events, CALGARY.name);
   const nearby = getUpcomingConcertsByCity(events, CALGARY.name, false);
+  const { data: recentData, isLoading: recentLoading } = useRecentSetlists();
+  const recent = (recentData?.setlist || []).map((show) => ({
+    ...show,
+    dateObj: parseSetlistDate(show.eventDate),
+  }));
 
   return (
     <>
@@ -122,6 +128,24 @@ const Home = () => {
               }}
               iconTitle="Get tickets"
               expand={expandConcert}
+            />
+          </div>
+
+          {/* Setlists from yesterday's shows, newest posted first (server/routes/setlist.js). */}
+          <div className="min-w-0 bg-white p-6 space-y-2">
+            <ConcertList
+              title="Recently Added"
+              empty={recentLoading ? "Loading…" : "No new setlists yet today."}
+              showSearch={false}
+              items={recent}
+              locationOf={(show) => {
+                const city = show.venue?.city;
+                const place = [city?.name, city?.country?.code].filter(Boolean).join(", ");
+                return place ? `${show.artist.name} - ${place}` : show.artist.name;
+              }}
+              linkOf={(show) => `/artists/${show.artist.mbid}/concerts/${show.id}`}
+              icon={faMusic}
+              iconTitle="View setlist"
             />
           </div>
         </div>
