@@ -2,6 +2,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   getSetlist,
   getSetlistById,
+  getArtistSetlists,
   getLocalEvents,
   getTicketmaster,
   searchCities,
@@ -96,6 +97,16 @@ export const useSetlistById = (id) => {
     enabled: !!id,
     staleTime: 10 * 60 * 1000,
     retry: false,
+  });
+};
+
+// Search by name is for finding artists; once the page knows the mbid, this is the exact list.
+export const useArtistSetlists = (mbid) => {
+  return useQuery({
+    queryKey: ["artist-setlists", mbid],
+    queryFn: () => getArtistSetlists(mbid),
+    enabled: !!mbid,
+    staleTime: 10 * 60 * 1000,
   });
 };
 

@@ -1,6 +1,6 @@
 import { useEffect, useContext, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useSetlistById, useArtistData } from "../api/queries";
+import { useSetlistById, useArtistSetlists, useTicketmasterSearch } from "../api/queries";
 import ArtistInfo from "../components/ArtistPage/ArtistInfo";
 import ConcertTabs from "../components/ArtistPage/ConcertTabs";
 import Setlist from "../components/ArtistPage/Setlist";
@@ -33,14 +33,25 @@ export default function ArtistPage() {
 
   // Opened directly (new tab, refresh, shared link): context is empty, so load by URL
   const { data: urlConcert, isError } = useSetlistById(concert ? null : concertId);
-  const { data: artistData } = useArtistData(urlConcert?.artist?.name);
+  const { data: ticketmasterData } = useTicketmasterSearch(urlConcert?.artist?.name);
+  const { data: artistSetlists, isError: listFailed } = useArtistSetlists(artistId);
 
   useEffect(() => {
-    if (!urlConcert || !artistData) return;
-    const list = artistData.setlist;
-    setSetlist(list.some((s) => s.id === urlConcert.id) ? list : [urlConcert, ...list]);
-    setTicketmaster(artistData.ticketmaster);
-  }, [urlConcert, artistData, setSetlist, setTicketmaster]);
+    if (ticketmasterData) setTicketmaster(ticketmasterData._embedded || {});
+  }, [ticketmasterData, setTicketmaster]);
+
+  // The list in context came from a name search (mixed artists) or is empty on a cold start;
+  // swap in the exact one, keeping the open concert in case it's older than page 1. If the
+  // list fails, keep what's there — a cold start then shows the URL concert on its own.
+  useEffect(() => {
+    const list = artistSetlists?.setlist;
+    if (!list && !listFailed) return;
+    setSetlist((prev) => {
+      const current = prev.find((s) => s.id === concertId) || urlConcert;
+      if (!list) return prev.length || !current ? prev : [current];
+      return !current || list.some((s) => s.id === current.id) ? list : [current, ...list];
+    });
+  }, [artistSetlists, listFailed, urlConcert, concertId, setSetlist]);
 
   useEffect(() => {
     const menu = menuRef.current;

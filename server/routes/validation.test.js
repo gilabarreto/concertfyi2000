@@ -50,3 +50,10 @@ test("a busca de setlist exige o nome do artista", async () => {
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 40)}`);
   }
 });
+
+test("a lista do artista exige um mbid", async () => {
+  for (const mbid of ["abc", "67f66c07-6e61-4026-ade5-7e782fad3a5", "../venue/53d61ff5"]) {
+    const { status } = await call(setlist, `/artist/${encodeURIComponent(mbid)}`, {});
+    assert.strictEqual(status, 400, `aceitou ${mbid}`);
+  }
+});

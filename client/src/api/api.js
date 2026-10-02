@@ -10,6 +10,8 @@ const API = (path, options) => request(`${API_BASE}/api${path}`, options);
 
 export const getSetlist = (artistName) => API("/setlist/search", { params: { artistName } });
 
+export const getArtistSetlists = (mbid) => API(`/setlist/artist/${encodeURIComponent(mbid)}`);
+
 export const getSetlistById = (id) => API(`/setlist/${encodeURIComponent(id)}`);
 
 export const getTicketmaster = (artistName) =>
