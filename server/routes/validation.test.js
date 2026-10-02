@@ -79,3 +79,10 @@ test("/venue-events exige nome e coordenada", async () => {
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
   }
 });
+
+test("a cidade exige nome e ano, e país só com duas letras", async () => {
+  for (const query of [{ year: "2026" }, { cityName: "Calgary" }, { cityName: "Calgary", year: "abc" }, { cityName: "Calgary", year: "2026", countryCode: "Canada" }]) {
+    const { status } = await call(setlist, "/city", query);
+    assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query)}`);
+  }
+});

@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const ArtistPage = lazy(() => import("./pages/ArtistPage"));
 const VenuePage = lazy(() => import("./pages/VenuePage"));
+const CityPage = lazy(() => import("./pages/CityPage"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const SpotifyCallback = lazy(() => import("./pages/SpotifyCallback"));
@@ -84,6 +85,7 @@ function App() {
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/artists/:artistId/concerts/:concertId" element={<ArtistPage />} />
                     <Route path="/venues/:venueId" element={<VenuePage />} />
+                    <Route path="/city" element={<CityPage />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/callback" element={<SpotifyCallback />} />

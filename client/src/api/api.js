@@ -20,6 +20,9 @@ export const getVenueSetlists = (venueId) => API(`/setlist/venue/${encodeURIComp
 export const getVenueEvents = (name, lat, long) =>
   API("/ticketmaster/venue-events", { params: { name, lat, long } });
 
+export const getCitySetlists = (cityName, countryCode, year) =>
+  API("/setlist/city", { params: { cityName, countryCode, year } });
+
 export const getSetlistById = (id) => API(`/setlist/${encodeURIComponent(id)}`);
 
 export const getTicketmaster = (artistName) =>

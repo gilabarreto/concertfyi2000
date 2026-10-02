@@ -112,6 +112,19 @@ router.get("/venue/:venueId", (req, res) => {
   sendPages(res, `https://api.setlist.fm/rest/1.0/venue/${req.params.venueId}/setlists`, {}, 3);
 });
 
+// My City page: this year's setlists in one city, any artist. countryCode is optional
+// (geolocation only knows the country's name) and keeps same-named cities apart.
+router.get("/city", (req, res) => {
+  const { cityName, countryCode } = req.query;
+  const year = Number(req.query.year);
+  if (typeof cityName !== "string" || !cityName.trim() || cityName.length > 200 ||
+      !Number.isInteger(year) || year < 1900 || year > 2100 ||
+      (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))) {
+    return res.status(400).json({ error: "Missing or invalid cityName/year/countryCode" });
+  }
+  sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { cityName, countryCode, year }, 3);
+});
+
 // single setlist, used when a concert page is opened directly (new tab, refresh, shared link)
 router.get("/:id", async (req, res) => {
   try {

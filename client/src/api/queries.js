@@ -6,6 +6,7 @@ import {
   getTourSetlists,
   getVenueSetlists,
   getVenueEvents,
+  getCitySetlists,
   getLocalEvents,
   getTicketmaster,
   searchCities,
@@ -141,6 +142,17 @@ export const useVenueEvents = (name, lat, long) => {
     queryFn: () => getVenueEvents(name, lat, long),
     enabled: !!name && lat != null && long != null,
     staleTime: 10 * 60 * 1000,
+  });
+};
+
+// My City page: up to 3 setlist.fm calls, held like the tour and the venue.
+export const useCitySetlists = (cityName, countryCode, year) => {
+  return useQuery({
+    queryKey: ["city-setlists", cityName, countryCode, year],
+    queryFn: () => getCitySetlists(cityName, countryCode, year),
+    enabled: !!cityName,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 };
 
