@@ -1,7 +1,7 @@
 const { request } = require("../http");
 
 // Reject disambiguation pages and non-musical namesakes (e.g. Phoenix the city).
-const MUSIC_DESCRIPTION = /\b(band|singer|musician|rapper|songwriter|musical|music duo|music group|DJ|disc jockey|composer|record producer|rock duo|pop duo)\b/i;
+const MUSIC_DESCRIPTION = /\b(band|singer|musician|rapper|songwriter|musical|music duo|music group|DJ|disc jockey|composer|record producer|rock duo|pop duo|rock group|pop group)\b/i;
 
 function createWikipediaHandler({ fetchJson = request } = {}) {
   return async (req, res) => {

@@ -33,6 +33,23 @@ test("non-musical namesake is skipped in favor of band article", async () => {
   assert.equal(res.body.extract, "Correct artist");
 });
 
+test("Air Supply biography accepts Wikipedia's soft rock group description", async () => {
+  let calls = 0;
+  const res = await call(async (url) => {
+    calls++;
+    assert.ok(url.endsWith("/Air_Supply"));
+    return { title: "Air Supply", description: "Australian-English soft rock group", extract: "Air Supply are a soft rock duo formed in Melbourne." };
+  }, "Air Supply");
+  assert.equal(calls, 1);
+  assert.equal(res.body.title, "Air Supply");
+  assert.ok(res.body.extract);
+});
+
+test("a non-musical group description does not pass the artist filter", async () => {
+  const res = await call(async () => ({ title: "Example", description: "Group of islands", extract: "Not a musical artist." }), "Example");
+  assert.equal(res.body.extract, "");
+});
+
 test("disambiguation and missing pages produce an explicit empty biography", async () => {
   let count = 0;
   const res = await call(async () => {
