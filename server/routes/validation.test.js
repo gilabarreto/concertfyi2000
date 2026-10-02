@@ -86,3 +86,17 @@ test("a cidade exige nome e ano, e país só com duas letras", async () => {
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query)}`);
   }
 });
+
+test("os detalhes do venue exigem id do setlist.fm", async () => {
+  for (const id of ["x", "53d61ff5zz", "../artist"]) {
+    const { status } = await call(setlist, `/venue-details/${encodeURIComponent(id)}`, {});
+    assert.strictEqual(status, 400, `aceitou ${id}`);
+  }
+});
+
+test("/recent exige cidade, e país só com duas letras", async () => {
+  for (const query of [{}, { cityName: "  " }, { cityName: "a".repeat(201) }, { cityName: "Vancouver", countryCode: "Canada" }]) {
+    const { status } = await call(setlist, "/recent", query);
+    assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
+  }
+});

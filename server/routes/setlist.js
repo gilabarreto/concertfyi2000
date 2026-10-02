@@ -127,8 +127,7 @@ router.get("/tour", (req, res) => {
   sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { artistMbid, tourName }, 5);
 });
 
-// Venue page. Newest first and future dates included, so on a busy venue (a festival
-// lineup is one setlist per act) page 1 can be all upcoming — 3 pages leave room for the past.
+// Venue page header: the venue on its own (name, city, coords), without its setlists.
 router.get("/venue-details/:venueId", async (req, res) => {
   if (!/^[0-9a-f]{6,10}$/i.test(req.params.venueId)) return res.status(400).json({ error: "Invalid venue id" });
   try {
@@ -139,6 +138,8 @@ router.get("/venue-details/:venueId", async (req, res) => {
   }
 });
 
+// Venue page. Newest first and future dates included, so on a busy venue (a festival
+// lineup is one setlist per act) page 1 can be all upcoming — 3 pages leave room for the past.
 router.get("/venue/:venueId", (req, res) => {
   if (!/^[0-9a-f]{6,10}$/i.test(req.params.venueId)) {
     return res.status(400).json({ error: "Invalid venue id" });
