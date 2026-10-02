@@ -6,7 +6,7 @@ import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
 import { useCurrentCity } from "../hooks/useCurrentCity";
-import { useRecentSetlists } from "../api/queries";
+import { useCitySetlists, useLocalEvents, useRecentSetlists } from "../api/queries";
 import { dateLabel, getRecentUpcomingSetlists } from "../helpers/selectors";
 
 // Below the fold, and it pulls the ticket/hotel/reminder panels in with it: loading it on
@@ -16,6 +16,10 @@ const HomeDiscovery = lazy(() => import("../components/HomeDiscovery"));
 const Home = () => {
   const location = useCurrentCity();
   const { data: recentData } = useRecentSetlists(location.city, location.countryCode);
+  // HomeDiscovery's two queries, started here with the same keys so they load alongside its
+  // lazy chunk instead of after it; React Query hands HomeDiscovery the same requests.
+  useLocalEvents(location.lat, location.long);
+  useCitySetlists(location.city, location.countryCode, new Date().getFullYear());
   const recent = getRecentUpcomingSetlists(
     recentData?.setlist,
     location.city,

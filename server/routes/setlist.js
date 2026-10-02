@@ -102,6 +102,9 @@ function cachedPages(url, params, maxPages) {
   const hit = pageCache.get(key);
   if (hit?.expires > Date.now()) return hit.promise;
   const promise = allPages(url, params, maxPages);
+  // An expired key is re-inserted at the end, so the size cap evicts the oldest data,
+  // not this fresh copy (Map.set on an existing key keeps its old position).
+  pageCache.delete(key);
   if (pageCache.size >= 200) pageCache.delete(pageCache.keys().next().value);
   pageCache.set(key, { promise, expires: Date.now() + PAGE_TTL });
   // A partial answer isn't kept either: the next visitor gets a fresh try at every page.
