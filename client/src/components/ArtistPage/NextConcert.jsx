@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import Icon from "../Icon";
 import {
@@ -9,14 +9,11 @@ import {
   faCheck,
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  getUpcomingConcertsByArtist,
-  getPastConcertsByArtist,
-  dateLabel,
-  getBestImage,
-} from "../../helpers/selectors";
+import { getPastConcertsByArtist, dateLabel, getBestImage } from "../../helpers/selectors";
 import MapDialog from "./MapDialog";
 import Map from "./Map";
+import TourMapPanel from "./TourMapPanel";
+import { getTourUpcomingConcerts } from "../../helpers/tourStats";
 import { shareOrCopy } from "../../helpers/share";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
@@ -32,16 +29,23 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
   const [linkCopied, setLinkCopied] = useState(false);
   const mapRef = useRef(null);
+  const [tourMapOpen, setTourMapOpen] = useState(false);
 
   // ?next picks which upcoming show this card previews, same idea as :concertId for the
   // Last Concert side — a URL, not local state, because the Share button in the Upcoming
   // Concerts list below just hands out the current URL and expects it to land here.
-  const upcomingConcerts = getUpcomingConcertsByArtist(ticketmaster.events, concert.artist.name);
+  const upcomingConcerts = getTourUpcomingConcerts(
+    ticketmaster.events,
+    concert.artist.name,
+    [...setlist, concert],
+    searchParams.get("next"),
+  );
   const idx = Math.max(
     upcomingConcerts.findIndex((e) => e.id === searchParams.get("next")),
     0,
   );
   const upcomingConcert = upcomingConcerts[idx];
+  useEffect(() => setTourMapOpen(false), [upcomingConcert?.id]);
   const select = (id) =>
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
@@ -76,12 +80,9 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
   const venue = upcomingConcert._embedded?.venues?.[0];
   const coords = venue?.location;
-  // Ticketmaster has no tour field — and what event.name carries instead isn't standardized,
-  // each vendor/venue titles its own listing, so it's not a fact worth showing as one. And
-  // setlist.fm has no future shows to ask (a concert only gets an entry once someone reports
-  // its setlist). So: guess from the artist's most recent past tour, on the bet a tour still
-  // running is the one this next date belongs to. No history at all → nothing to guess from.
-  const tour = getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || "N/A";
+  // Prefer the selected show's tour; Ticketmaster dates use the most recent known tour.
+  const tour =
+    upcomingConcert.tourName || getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || "N/A";
 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
@@ -145,7 +146,22 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             </span>
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Tour:</span>&ensp;{tour}
+            <span className="font-semibold">Tour:</span>&ensp;
+            {tour !== "N/A" ? (
+              <button
+                type="button"
+                className="text-red-600 hover:text-red-800 transition-colors"
+                aria-pressed={tourMapOpen}
+                onClick={() => {
+                  setTourMapOpen(hideTitle ? !tourMapOpen : true);
+                  if (!hideTitle) mapRef.current.showModal();
+                }}
+              >
+                {tour}
+              </button>
+            ) : (
+              tour
+            )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Venue:</span>&ensp;{venue?.name}
@@ -155,7 +171,10 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             {coords ? (
               <button
                 type="button"
-                onClick={() => mapRef.current.showModal()}
+                onClick={() => {
+                  setTourMapOpen(false);
+                  mapRef.current.showModal();
+                }}
                 title="View on map"
                 aria-haspopup="dialog"
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
@@ -172,27 +191,54 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             )}
           </li>
           <li className="flex flex-wrap items-center justify-center gap-2 border-b border-zinc-300/50 py-2">
-            <TicketOptions event={upcomingConcert} artistName={concert.artist.name} iconOnly />
+            {upcomingConcert.source !== "setlistfm" && (
+              <TicketOptions event={upcomingConcert} artistName={concert.artist.name} iconOnly />
+            )}
             <HotelOptions event={upcomingConcert} iconOnly />
             <ConcertReminder event={upcomingConcert} artistName={concert.artist.name} iconOnly />
           </li>
         </ol>
-        {hideTitle && coords && (
+        {hideTitle && (coords || tourMapOpen) && (
           <div
-            className="mt-[12px] aspect-[103/60] w-full self-start overflow-hidden rounded-md bg-zinc-100"
+            className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
-            <Map latitude={coords?.latitude} longitude={coords?.longitude} />
+            {tourMapOpen ? (
+              <TourMapPanel
+                artistId={artistId}
+                tourName={tour}
+                onNavigate={() => {
+                  mapRef.current?.close();
+                  setTourMapOpen(false);
+                }}
+              />
+            ) : (
+              <div className="aspect-[103/60] w-full">
+                <Map latitude={coords?.latitude} longitude={coords?.longitude} />
+              </div>
+            )}
           </div>
         )}
       </div>
 
       <MapDialog
         dialogRef={mapRef}
-        title={venue?.name || "Venue location"}
+        title={tourMapOpen ? tour : venue?.name || "Venue location"}
         latitude={coords?.latitude}
         longitude={coords?.longitude}
-      />
+      >
+        {tourMapOpen && !hideTitle && (
+          <TourMapPanel
+            popup
+            artistId={artistId}
+            tourName={tour}
+            onNavigate={() => {
+              mapRef.current?.close();
+              setTourMapOpen(false);
+            }}
+          />
+        )}
+      </MapDialog>
     </>
   );
 }

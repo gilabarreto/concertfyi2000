@@ -8,12 +8,12 @@ import Map from "./Map";
 //
 // 80% of the white content area, not 80% of the viewport: that area is App.jsx's
 // max-w-[1012.44px] div, full-width below that breakpoint — hence min(80vw, 810px).
-export default function MapDialog({ dialogRef, title, latitude, longitude }) {
+export default function MapDialog({ dialogRef, title, latitude, longitude, children }) {
   return (
     <dialog
       ref={dialogRef}
       aria-label={title}
-      className="map-dialog fixed inset-0 m-auto bg-white rounded-lg p-0 w-[min(80vw,810px)] aspect-video overflow-hidden backdrop:bg-black/50"
+      className={`map-dialog fixed inset-0 m-auto bg-white rounded-lg p-0 w-[min(80vw,810px)] ${children ? "" : "aspect-video"} overflow-hidden backdrop:bg-black/50`}
     >
       <button
         type="button"
@@ -24,7 +24,7 @@ export default function MapDialog({ dialogRef, title, latitude, longitude }) {
       >
         <Icon icon={faXmark} />
       </button>
-      <Map latitude={latitude} longitude={longitude} />
+      {children || <Map latitude={latitude} longitude={longitude} />}
     </dialog>
   );
 }

@@ -32,7 +32,7 @@ function ArtistMap({ latitude, longitude }) {
 
 // Tour Statistics: many points instead of one. Past shows are solid red, upcoming ones
 // hollow, and the map frames all of them instead of a fixed zoom.
-export function TourMap({ points }) {
+export function TourMap({ points, onSelect }) {
   const { isLoaded } = useLoadScript(mapsOptions);
 
   if (!points.length) return null;
@@ -60,6 +60,7 @@ export function TourMap({ points }) {
           key={i}
           position={point}
           title={point.label}
+          onClick={onSelect ? () => onSelect(point) : undefined}
           icon={{
             path: window.google.maps.SymbolPath.CIRCLE,
             scale: 6,

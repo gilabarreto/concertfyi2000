@@ -13,6 +13,7 @@ import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../help
 import { getReviews } from "../../helpers/concertReviews";
 import MapDialog from "./MapDialog";
 import Map from "./Map";
+import TourMapPanel from "./TourMapPanel";
 import ConcertRatingDialog from "./ConcertRatingDialog";
 import ConcertComments from "./ConcertComments";
 import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
@@ -37,11 +38,15 @@ export default function LastConcert({
   const [linkCopied, setLinkCopied] = useState(false);
   const [reviews, setReviews] = useState(() => getReviews(concert.id));
   const mapRef = useRef(null);
+  const [tourMapOpen, setTourMapOpen] = useState(false);
   const ratingRef = useRef(null);
 
   // Prev/next arrows below swap `concert` without remounting this component — reload
   // whichever concert's reviews we're now looking at instead of carrying the old ones.
-  useEffect(() => setReviews(getReviews(concert.id)), [concert.id]);
+  useEffect(() => {
+    setReviews(getReviews(concert.id));
+    setTourMapOpen(false);
+  }, [concert.id]);
 
   const wasThere = attended.includes(concert.id);
   const toggleWasThere = () => {
@@ -143,7 +148,22 @@ export default function LastConcert({
             </span>
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Tour:</span>&ensp;{tour}
+            <span className="font-semibold">Tour:</span>&ensp;
+            {tour !== "N/A" ? (
+              <button
+                type="button"
+                className="text-red-600 hover:text-red-800 transition-colors"
+                aria-pressed={tourMapOpen}
+                onClick={() => {
+                  setTourMapOpen(hideTitle ? !tourMapOpen : true);
+                  if (!hideTitle) mapRef.current.showModal();
+                }}
+              >
+                {tour}
+              </button>
+            ) : (
+              tour
+            )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Venue:</span>&ensp;{venue}
@@ -153,7 +173,10 @@ export default function LastConcert({
             {coords ? (
               <button
                 type="button"
-                onClick={() => mapRef.current.showModal()}
+                onClick={() => {
+                  setTourMapOpen(false);
+                  mapRef.current.showModal();
+                }}
                 title="View on map"
                 aria-haspopup="dialog"
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
@@ -178,22 +201,47 @@ export default function LastConcert({
             key={concert.id}
           />
         </ol>
-        {hideTitle && coords && (
+        {hideTitle && (coords || tourMapOpen) && (
           <div
-            className="mt-[12px] aspect-[103/60] w-full self-start overflow-hidden rounded-md bg-zinc-100"
+            className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
-            <Map latitude={coords?.lat} longitude={coords?.long} />
+            {tourMapOpen ? (
+              <TourMapPanel
+                artistId={artistId}
+                tourName={tour}
+                onNavigate={() => {
+                  mapRef.current?.close();
+                  setTourMapOpen(false);
+                }}
+              />
+            ) : (
+              <div className="aspect-[103/60] w-full">
+                <Map latitude={coords?.lat} longitude={coords?.long} />
+              </div>
+            )}
           </div>
         )}
       </div>
 
       <MapDialog
         dialogRef={mapRef}
-        title={venue || "Venue location"}
+        title={tourMapOpen ? tour : venue || "Venue location"}
         latitude={coords?.lat}
         longitude={coords?.long}
-      />
+      >
+        {tourMapOpen && !hideTitle && (
+          <TourMapPanel
+            popup
+            artistId={artistId}
+            tourName={tour}
+            onNavigate={() => {
+              mapRef.current?.close();
+              setTourMapOpen(false);
+            }}
+          />
+        )}
+      </MapDialog>
 
       <ConcertRatingDialog ref={ratingRef} concertId={concert.id} onSaved={setReviews} />
     </>
