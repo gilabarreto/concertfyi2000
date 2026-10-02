@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
 import { useAppState } from "./hooks/useAppState";
 import { AppContext } from "./context/AppContext";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -35,7 +34,7 @@ function App() {
   const isSpotifyPopup = window.location.pathname === "/callback" && window.opener !== null;
 
   return (
-    <HelmetProvider>
+    <>
       <AppContext.Provider value={appState}>
         <Router basename="/">
           {!isSpotifyPopup && <Navbar />}
@@ -97,7 +96,7 @@ function App() {
           {!isSpotifyPopup && <Footer />}
         </Router>
       </AppContext.Provider>
-    </HelmetProvider>
+    </>
   );
 }
 
