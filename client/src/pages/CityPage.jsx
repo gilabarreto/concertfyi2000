@@ -60,7 +60,7 @@ export default function CityPage() {
       />
       <div className="w-full min-w-0 mx-auto p-0 sm:px-6 sm:py-4 space-y-4 lg:space-y-3">
         {/* Mesmo palco zinc do topo do venue e da página de artista (DESIGN.md). */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-3 lg:px-6 py-4 sm:-mx-6 sm:-mt-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 stage px-3 lg:px-6 py-4 sm:-mx-6 sm:-mt-4">
           <div className="flex flex-col justify-center text-center lg:text-left">
             <h1 className="text-3xl font-bold text-balance">{focused ? title : city}</h1>
             <p className="text-zinc-500">

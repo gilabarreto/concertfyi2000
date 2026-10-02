@@ -30,7 +30,7 @@ export default function VenuesPage() {
         url="/venues"
       />
       <div className="w-full min-w-0 mx-auto p-0 sm:px-6 sm:py-4 space-y-4 lg:space-y-3">
-        <div className="bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-3 lg:px-6 py-4 sm:-mx-6 sm:-mt-4 text-center">
+        <div className="stage px-3 lg:px-6 py-4 sm:-mx-6 sm:-mt-4 text-center">
           <h1 className="text-3xl font-bold text-balance">Venues in {city}</h1>
           <p className="text-zinc-500">{country}</p>
         </div>

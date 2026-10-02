@@ -15,7 +15,7 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 | ----------------- | ---------- | ------- | --------------------- |
 | Moldura (marca)   | `red-600`  | #DC2626 | —                     |
 | Página            | `white`    | #FFFFFF | apple.com             |
-| Palco / faixa     | `zinc-100` | #F4F4F5 | #F5F5F7               |
+| Palco / faixa     | `zinc-100` (classe `.stage` no index.css, com a sombra) | #F4F4F5 | #F5F5F7 |
 | Texto             | `zinc-900` | #18181B | #1D1D1F               |
 | Texto secundário  | `zinc-500` | #71717A | #6E6E73               |
 | Acento            | `red-600`  | #DC2626 | vermelho Apple Music  |

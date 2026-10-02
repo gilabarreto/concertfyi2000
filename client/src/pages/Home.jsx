@@ -93,7 +93,7 @@ const Home = () => {
             </div>
           </div>
           {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
-          <div className="w-full shrink-0 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-4 pt-4 pb-2">
+          <div className="w-full shrink-0 stage px-4 pt-4 pb-2">
             <Swiper />
           </div>
         </div>

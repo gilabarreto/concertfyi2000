@@ -137,7 +137,7 @@ export default function ArtistPage() {
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
           <div
             id="artist"
-            className="min-w-0 scroll-mt-16 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-3 lg:px-6 pb-4 pt-0 lg:pt-4 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
+            className="min-w-0 scroll-mt-16 stage px-3 lg:px-6 pb-4 pt-0 lg:pt-4 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
           >
             <ArtistInfo
               key={artistId}

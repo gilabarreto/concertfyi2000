@@ -53,6 +53,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Palco zinc do topo das páginas (DESIGN.md): fundo e sombra interna embaixo. Layout e
+   espaçamento ficam em cada página, porque variam. */
+@layer components {
+  .stage {
+    @apply bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)];
+  }
+}
+
 @layer base {
   html {
     font-size: medium;
