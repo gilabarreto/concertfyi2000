@@ -26,7 +26,7 @@ Revisão em 25/09/2026 do PDF `APIs De Posters Recentes.pdf`, com consulta às f
 
 ## Escolha e comportamento implementado
 
-Para comparação manual, `/api-lab` abre uma página local com chamadas reais de Foo Fighters para as fontes da tabela. Execute client e server em modo dev; a rota agregadora só é montada com `API_LAB_ENABLED=true` pelo script `npm run dev` do servidor. Chaves ficam no backend. O botão chama APIs com cotas, inclusive YouTube, então não é executado automaticamente ao abrir a página. Fontes sem chave local, sem entrada pública ou que precisam de áudio aparecem como indisponíveis com o motivo.
+Para comparação manual, `/api-lab` abre uma página com chamadas reais de Foo Fighters para as fontes da tabela. Local, com client e server em modo dev, a rota agregadora é montada por `API_LAB_ENABLED=true` (script `npm run dev` do servidor) e não pede senha. No site no ar, a rota só existe se `API_LAB_TOKEN` estiver definida no Render, e toda chamada precisa mandar esse valor no header `x-api-lab-token` (campo Password da página); sem ele, 401 antes de qualquer chamada a terceiro. Chaves ficam no backend. O botão chama APIs com cotas, inclusive YouTube, então não é executado automaticamente ao abrir a página. Fontes sem chave local, sem entrada pública ou que precisam de áudio aparecem como indisponíveis com o motivo.
 
 1. Buscar eventos do MusicBrainz pelo **MBID do artista + data do setlist**.
 2. Conferir artista como performer, dia e local. Não aceitar evento cancelado, festival com vários dias ou duas apresentações indistinguíveis no mesmo dia/local.

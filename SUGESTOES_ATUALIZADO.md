@@ -8,6 +8,7 @@ ConcertFYI — Pendências e Decisões
 □ Conferir no painel do Render o que o log de acesso da plataforma guarda (IP? query?) e por quanto tempo — a promessa "sem IP e sem query" vale só para o nosso middleware.
 □ Sair do GitHub Pages (Netlify/Vercel/Cloudflare Pages). Resolve: página de artista responder 404 real, CSP via header em vez de <meta>, e Cache-Control dos assets.
 □ Tag de afiliado da Amazon Associates Canadá — os discos abaixo do player (`03a9664`, no ar em 2026-09-27) linkam para busca na amazon.ca sem tag, então não comissionam. Pegar a tag (formato `xxxx-20`) no painel do Associates e preencher `AMAZON_TAG` em `client/src/components/ArtistPage/Albums.jsx`.
+□ Definir `API_LAB_TOKEN` no painel do Render (Environment) com uma senha longa, para o `/api-lab` funcionar no site no ar (código em `1ca0e4a` e `bdf1c60`, 2026-10-02). Sem a variável a rota continua não existindo em produção.
 🟡 Decisões de produto/arquitetura
 □ Pôster oficial por tour — pesquisa de 25/09/2026: Event Art Archive fornece arte por MBID de evento, sem endpoint documentado por nome de tour. Experimento retirado da ArtistPage por decisão do dono em 26/09/2026; consultas mantidas no API Lab. Retomar associação à tour somente com fonte explícita; não tratar pôster de outra data como o show atual. Resumo e fontes em `docs/APIS_E_POSTERS.md`.
 □ Enriquecimento visual e descoberta — Miniaturas TheAudioDB via MBID aprovadas pelo dono em 26/09/2026, com Ticketmaster como foto inicial. A revisão dos termos do provedor segue pendente. Cover Art Archive para capas de álbuns e ListenBrainz/Last.fm para recomendações seguem como candidatos pesquisados em 25/09/2026. Ver `docs/APIS_E_POSTERS.md`.
@@ -43,6 +44,7 @@ ConcertFYI — Pendências e Decisões
 □ Monitoramento contínuo de Core Web Vitals — Lighthouse só roda na mão.
 □ Testar com screen readers (NVDA, JAWS).
 □ osv-scanner semanal — rodar em workflow agendado (não no deploy), abrindo issue.
+□ Bundle de entrada acima do teto de 270 kB — achado em 2026-10-02: a `main` em `6951817` já buildava 282,66 kB (o build avisa, mas não trava). Não veio do API Lab (que soma 0,3 kB). Falta achar qual commit passou do teto e cortar, ou subir o teto em commit próprio com motivo.
 □ Workflow em pull_request — hoje o CI é sempre pós-fato (todo commit vai direto para main).
 ⚪ Descartado (registro, decisão reversível)
 TypeScript · Storybook · reorganização de pastas (common/, layout/, services/, constants/) · extrair ArtistCard/EmptyState/Logo/SongItem · cobertura mínima de 80% · LogRocket · Service Worker/offline · Vitest + jsdom + Testing Library (reabrir só com bug que só teste de hook pegaria — candidato: useGeolocation) · Playwright (120 MB de Chromium) · aria-current="page" no Navbar (achado 2026-09-20: item ficou obsoleto — o Navbar de hoje não tem link de navegação nenhum, só 4 botões de ícone, 3 deles disabled como placeholder; os links existiram no passado, `31da572`, e saíram depois; reabrir se o Navbar ganhar links de novo).
