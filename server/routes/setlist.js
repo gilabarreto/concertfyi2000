@@ -62,6 +62,41 @@ router.get("/artist/:mbid", async (req, res) => {
   }
 });
 
+// Every show of one tour, for the Tour Statistics card. setlist.fm pages by 20 and allows
+// 2 requests/s, so pages go one at a time with a gap; 5 pages (100 shows) covers most tours.
+// ponytail: no server cache, each card view costs up to 5 calls of the daily quota.
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+router.get("/tour", async (req, res) => {
+  const { artistMbid, tourName } = req.query;
+  if (!MBID.test(artistMbid || "") || typeof tourName !== "string" || !tourName.trim() || tourName.length > 200) {
+    return res.status(400).json({ error: "Missing or invalid artistMbid/tourName" });
+  }
+
+  let setlist = [];
+  let total = 0;
+  for (let p = 1; p <= 5; p++) {
+    try {
+      if (p > 1) await sleep(600);
+      const data = await request("https://api.setlist.fm/rest/1.0/search/setlists", {
+        headers,
+        params: { artistMbid, tourName, p },
+      });
+      total = data.total || 0;
+      setlist = setlist.concat(data.setlist || []);
+      if (setlist.length >= total) break;
+    } catch (error) {
+      // 404 is setlist.fm's "no results"; anything else after page 1 keeps what came.
+      if (p === 1 && error.status !== 404) {
+        console.error("Setlist.fm API error:", error.status, error.message);
+        return res.status(error.status || 500).json({ error: "Setlist.fm fetch failed" });
+      }
+      break;
+    }
+  }
+  res.json({ total, setlist });
+});
+
 // single setlist, used when a concert page is opened directly (new tab, refresh, shared link)
 router.get("/:id", async (req, res) => {
   try {

@@ -57,3 +57,11 @@ test("a lista do artista exige um mbid", async () => {
     assert.strictEqual(status, 400, `aceitou ${mbid}`);
   }
 });
+
+test("a turnê exige mbid e nome da turnê", async () => {
+  const artistMbid = "67f66c07-6e61-4026-ade5-7e782fad3a5d";
+  for (const query of [{ artistMbid }, { tourName: "Take Cover" }, { artistMbid: "x", tourName: "Take Cover" }, { artistMbid, tourName: "a".repeat(201) }]) {
+    const { status } = await call(setlist, "/tour", query);
+    assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
+  }
+});

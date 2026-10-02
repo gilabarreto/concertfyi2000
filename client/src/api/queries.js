@@ -3,6 +3,7 @@ import {
   getSetlist,
   getSetlistById,
   getArtistSetlists,
+  getTourSetlists,
   getLocalEvents,
   getTicketmaster,
   searchCities,
@@ -107,6 +108,17 @@ export const useArtistSetlists = (mbid) => {
     queryFn: () => getArtistSetlists(mbid),
     enabled: !!mbid,
     staleTime: 10 * 60 * 1000,
+  });
+};
+
+// A tour's past only grows by a show every few days, and the route spends up to 5 calls.
+export const useTourSetlists = (artistMbid, tourName) => {
+  return useQuery({
+    queryKey: ["tour-setlists", artistMbid, tourName],
+    queryFn: () => getTourSetlists(artistMbid, tourName),
+    enabled: !!artistMbid && !!tourName,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
   });
 };
 

@@ -12,6 +12,9 @@ export const getSetlist = (artistName) => API("/setlist/search", { params: { art
 
 export const getArtistSetlists = (mbid) => API(`/setlist/artist/${encodeURIComponent(mbid)}`);
 
+export const getTourSetlists = (artistMbid, tourName) =>
+  API("/setlist/tour", { params: { artistMbid, tourName } });
+
 export const getSetlistById = (id) => API(`/setlist/${encodeURIComponent(id)}`);
 
 export const getTicketmaster = (artistName) =>

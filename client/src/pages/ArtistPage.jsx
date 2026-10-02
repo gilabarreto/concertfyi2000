@@ -6,6 +6,7 @@ import ConcertTabs from "../components/ArtistPage/ConcertTabs";
 import Setlist from "../components/ArtistPage/Setlist";
 import Player from "../components/ArtistPage/Player";
 import NearbyConcertBanner from "../components/ArtistPage/NearbyConcertBanner";
+import TourStats from "../components/ArtistPage/TourStats";
 import Albums from "../components/ArtistPage/Albums";
 import UpcomingConcerts from "../components/ArtistPage/UpcomingConcerts";
 import PastConcerts from "../components/ArtistPage/PastConcerts";
@@ -16,6 +17,7 @@ import { SEOHead } from "../components/SEOHead";
 // Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
 const SECTIONS = [
   ["artist", "Artist"],
+  ["tour-stats", "Tour Stats"],
   ["last-concert", "Last Concert"],
   ["next-concert", "Next Concert"],
   ["setlist", "Setlists"],
@@ -105,7 +107,7 @@ export default function ArtistPage() {
       <div className="artist-page w-full min-w-0">
         <NearbyConcertBanner artist={artistName} events={ticketmaster.events} />
         {/* Dois grupos que podem quebrar linha em telas estreitas: metade de cima
-            arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
+            arredondada pra cima (8 títulos → 4 + 4; sem Next Concert, 4 + 3). */}
         <nav
           ref={menuRef}
           aria-label="Artist page sections"
@@ -141,6 +143,10 @@ export default function ArtistPage() {
               setlist={setlist}
               attraction={attraction}
             />
+          </div>
+
+          <div className="min-w-0 bg-white px-4 space-y-2">
+            <TourStats concert={concert} ticketmaster={ticketmaster} />
           </div>
 
           <ConcertTabs
