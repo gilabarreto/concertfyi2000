@@ -3,7 +3,7 @@ ConcertFYI — Pendências e Decisões
 □ Liberar Maps Static API na chave VITE_GOOGLE_MAPS_KEY (Google Cloud Console). Hoje retorna 403: "This API key is not authorized to use this service or API." Sem isso, não dá para trocar o mapa interativo por imagem estática.
 □ Restringir a mesma chave por referrer (mesma visita ao console). Vence 2026-10-15.
 □ Rotacionar a SETLISTFM_API_KEY (vazou em bundle público na gh-pages em julho/2025). Abrir chamado no setlist.fm. Vence 2026-10-15.
-□ A SETLISTFM_API_KEY do server/.env local responde 403 — cópia velha; apontar para produção ou renovar.
+☑ A SETLISTFM_API_KEY do server/.env local responde 403 — resolvido sozinho: respondeu 200 em 2026-10-01, testando o API Lab.
 □ Sentry e/ou Google Analytics — contas suas; ~20 linhas cada. Hoje erros de produção só aparecem no console do visitante.
 □ Conferir no painel do Render o que o log de acesso da plataforma guarda (IP? query?) e por quanto tempo — a promessa "sem IP e sem query" vale só para o nosso middleware.
 □ Sair do GitHub Pages (Netlify/Vercel/Cloudflare Pages). Resolve: página de artista responder 404 real, CSP via header em vez de <meta>, e Cache-Control dos assets.
@@ -44,8 +44,19 @@ ConcertFYI — Pendências e Decisões
 □ Monitoramento contínuo de Core Web Vitals — Lighthouse só roda na mão.
 □ Testar com screen readers (NVDA, JAWS).
 □ osv-scanner semanal — rodar em workflow agendado (não no deploy), abrindo issue.
-□ Bundle de entrada acima do teto de 270 kB — achado em 2026-10-02: a `main` em `6951817` já buildava 282,66 kB (o build avisa, mas não trava). Não veio do API Lab (que soma 0,3 kB). Falta achar qual commit passou do teto e cortar, ou subir o teto em commit próprio com motivo.
+□ Bundle de entrada acima do teto de 270 kB — achado em 2026-10-02: a `main` em `6951817` já buildava 282,66 kB (o build avisa, mas não trava). Não veio do API Lab (que soma 0,3 kB). Falta achar qual commit passou do teto e cortar, ou subir o teto em commit próprio com motivo. Em 2026-10-01 as seções novas do setlist.fm somaram ~5 kB (286,20 → 290,94 kB): `queries.js` e `api.js` entram na entrada pela Home, então cada hook novo pesa ali mesmo com as páginas em lazy.
 □ Workflow em pull_request — hoje o CI é sempre pós-fato (todo commit vai direto para main).
+☑ Seções novas a partir da resposta do setlist.fm (rodada de 2026-10-01, pedido do dono):
+  - lista da página de artista pelo mbid em vez do nome (a busca por nome trazia ~17% de outros artistas) — `5e2a264`;
+  - cover, convidado, tape, nota da música, nome do set e nota do show no Setlist — `9c75099`;
+  - card Tour Statistics com mapa da turnê abaixo do Artist Info — `ceab820`;
+  - página do venue + botão VENUE acima da lista de Upcoming Concerts — `d9caf59`;
+  - página My City + botão MY CITY — `3764d1f`;
+  - card Recently Added na Home — `9d56540`.
+□ Cota do setlist.fm nas seções novas — Tour Statistics gasta até 5 chamadas por turnê, Venue e My City até 3 cada, todas sem cache no servidor (só o React Query, por navegador). O Recently Added tem cache em memória de 30 min no servidor, que se perde a cada restart do Render. Se a cota diária estourar, o próximo passo é o mesmo cache em memória nas outras rotas.
+□ Venue: o Ticketmaster é casado pelo nome do venue a até 50 km das coordenadas da cidade no setlist.fm (os dois não compartilham id). É a mesma costura frágil do nome do artista: um nome diferente nas duas APIs deixa os Upcoming do venue vazios.
+□ My City usa só o ano corrente do setlist.fm: em janeiro a lista de passados fica quase vazia. Trocar por "últimos 12 meses" custa uma segunda busca com o ano anterior.
+
 ⚪ Descartado (registro, decisão reversível)
 TypeScript · Storybook · reorganização de pastas (common/, layout/, services/, constants/) · extrair ArtistCard/EmptyState/Logo/SongItem · cobertura mínima de 80% · LogRocket · Service Worker/offline · Vitest + jsdom + Testing Library (reabrir só com bug que só teste de hook pegaria — candidato: useGeolocation) · Playwright (120 MB de Chromium) · aria-current="page" no Navbar (achado 2026-09-20: item ficou obsoleto — o Navbar de hoje não tem link de navegação nenhum, só 4 botões de ícone, 3 deles disabled como placeholder; os links existiram no passado, `31da572`, e saíram depois; reabrir se o Navbar ganhar links de novo).
 
