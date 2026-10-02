@@ -62,3 +62,12 @@ test('provider HTTP and payload errors are errors rather than empty successful c
     assert.ok(!JSON.stringify(res.body).includes('private-key'));
   }
 });
+
+
+test('organizer payload errors and missing catalog are not successful empty event lists', async () => {
+  for (const data of [{ error: 'Access denied' }, {}, null]) {
+    const handler = createApiLabHandler({ env: { SYMPLA_API_TOKEN: 'private-token' }, fetchJson: async () => data });
+    const res = recorder(); await handler({ query: { source: 'sympla' } }, res);
+    assert.equal(res.body.results[0].status, 'error');
+  }
+});

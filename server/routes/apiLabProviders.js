@@ -4,7 +4,9 @@ const providers = catalog.filter(({ id }) => !legacyIds.has(id));
 
 // Only public event fields are returned from authenticated organizer catalogs.
 function publicEvents(data, provider) {
-  const events = Array.isArray(data) ? data : data.events || data.data || [];
+  if (data?.error || data?.errors) throw new Error('Provider returned an error');
+  const events = Array.isArray(data) ? data : data?.events || data?.data;
+  if (!Array.isArray(events)) throw new Error('Unexpected organizer catalog response');
   return { provider, events: events.filter((event) => event.private_event !== true && event.private_event !== 1 && event.private_event !== '1' && event.listed !== false).slice(0, 5).map((event) => ({
     id: event.id, name: event.name?.text || event.name || event.title,
     start: event.start?.local || event.start_date, end: event.end?.local || event.end_date,
@@ -50,6 +52,7 @@ async function probeProvider(info, { fetchJson, env }) {
   try {
     const data = await call();
     // Some providers return errors inside a successful HTTP response.
+    if (data === null || data === undefined) throw new Error('Empty provider response');
     if (data?.error || data?.errors) return { ...result, status: 'error', note: 'O provedor retornou um erro. Confira credenciais, permissões e cobertura contratada.' };
     return { ...result, status: 'ok', note: info.suggestion, data };
   } catch (error) {

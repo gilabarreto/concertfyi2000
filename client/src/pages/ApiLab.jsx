@@ -80,6 +80,29 @@ function highlight(result) {
   if (result.id === "archive") return `${data.length || 0} itens encontrados.`;
   if (result.id === "github") return `${data.total || 0} repositórios encontrados.`;
   if (result.id === "youtube") return `${data.length || 0} vídeos encontrados.`;
+  if (
+    [
+      "jambase",
+      "bandsintown",
+      "predicthq",
+      "seatgeek",
+      "sympla",
+      "eventbrite",
+      "ticketmaster-events",
+    ].includes(result.id)
+  ) {
+    const events = Array.isArray(data)
+      ? data
+      : data.events || data.results || data._embedded?.events || data.data?.events || data.data;
+    return Array.isArray(events)
+      ? `${events.length} eventos nesta resposta; conferir identidade, período e cobertura contratada no JSON.`
+      : "Resposta de eventos disponível; conferir estrutura e cobertura no JSON.";
+  }
+  if (result.id === "lrclib")
+    return data.plainLyrics
+      ? "Letra disponível para a faixa consultada."
+      : "Resposta sem letra não sincronizada.";
+  if (result.id === "photon") return `${data.features?.length || 0} resultados para São Paulo.`;
   return "Resposta disponível abaixo.";
 }
 
