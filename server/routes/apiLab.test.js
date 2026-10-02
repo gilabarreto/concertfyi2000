@@ -115,3 +115,30 @@ test("test all retains every source including unavailable sources", async () => 
   assert.equal(res.body.results.length, 20);
   assert.equal(new Set(res.body.results.map((item) => item.id)).size, 20);
 });
+
+test("with API_LAB_TOKEN set, a missing or wrong password is rejected before any upstream call", async () => {
+  let calls = 0;
+  const handler = createApiLabHandler({
+    env: { API_LAB_TOKEN: "s3cret" },
+    fetchJson: async () => { calls++; return {}; },
+    mbRequest: async () => { calls++; return {}; },
+  });
+  for (const headers of [{}, { "x-api-lab-token": "wrong" }, { "x-api-lab-token": "s3cre" }]) {
+    const res = responseRecorder();
+    await handler({ query: { source: "wikipedia" }, headers }, res);
+    assert.equal(res.statusCode, 401);
+  }
+  assert.equal(calls, 0);
+});
+
+test("with API_LAB_TOKEN set, the right password runs the lab", async () => {
+  const handler = createApiLabHandler({
+    env: { API_LAB_TOKEN: "s3cret" },
+    fetchJson: async () => ({ title: "Foo Fighters" }),
+    mbRequest: async () => ({}),
+  });
+  const res = responseRecorder();
+  await handler({ query: { source: "wikipedia" }, headers: { "x-api-lab-token": "s3cret" } }, res);
+  assert.equal(res.statusCode, 200);
+  assert.equal(res.body.results[0].status, "ok");
+});

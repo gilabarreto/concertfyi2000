@@ -55,8 +55,9 @@ app.get("/api/youtube", require("./routes/youtube"));
 app.get("/api/wikipedia", require("./routes/wikipedia"));
 app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
 app.get("/api/albums", require("./routes/albums"));
-if (process.env.API_LAB_ENABLED === "true") {
-  // Expensive/quota-consuming comparison calls are available only when explicitly enabled by npm run dev.
+// Chamadas de comparação gastam cota: a rota só existe com npm run dev (API_LAB_ENABLED)
+// ou, em produção, com API_LAB_TOKEN — e aí o handler exige a senha em cada chamada.
+if (process.env.API_LAB_ENABLED === "true" || process.env.API_LAB_TOKEN) {
   app.get("/api/api-lab", require("./routes/apiLab"));
 }
 
