@@ -16,6 +16,19 @@ export const getTourSetlists = (artistMbid, tourName) =>
   API("/setlist/tour", { params: { artistMbid, tourName } });
 
 export const getVenueSetlists = (venueId) => API(`/setlist/venue/${encodeURIComponent(venueId)}`);
+export const getVenueDetails = (venueId) =>
+  API(`/setlist/venue-details/${encodeURIComponent(venueId)}`);
+export const getVenueInfo = (name, lat, long) =>
+  API("/venue-info", { params: { name, lat, long }, timeout: 30000 });
+
+export const getVenueServices = (identity) =>
+  API("/venue-services", { params: identity, timeout: 45000 });
+
+export const getVenueReviews = (identity) =>
+  API("/venue-reviews", { params: identity, timeout: 30000 });
+
+export const getVenuePhotos = (identity, offset, limit) =>
+  API("/venue-photos", { params: { ...identity, offset, limit }, timeout: 45000 });
 
 export const getVenueEvents = (name, lat, long) =>
   API("/ticketmaster/venue-events", { params: { name, lat, long } });
@@ -23,7 +36,8 @@ export const getVenueEvents = (name, lat, long) =>
 export const getCitySetlists = (cityName, countryCode, year) =>
   API("/setlist/city", { params: { cityName, countryCode, year } });
 
-export const getRecentSetlists = () => API("/setlist/recent");
+export const getRecentSetlists = (cityName, countryCode) =>
+  API("/setlist/recent", { params: { cityName, countryCode } });
 
 export const getSetlistById = (id) => API(`/setlist/${encodeURIComponent(id)}`);
 

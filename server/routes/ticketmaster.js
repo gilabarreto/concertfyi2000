@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { request } = require("../http");
+const { findTicketmasterVenue } = require("../venueIdentity");
 
 const TM_BASE = "https://app.ticketmaster.com/discovery/v2";
 const headers = { "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)" };
@@ -104,6 +105,9 @@ router.get("/events", async (req, res) => {
         locale: "*",
         classificationName: "Music",
         size: 50,
+        includeTBA: "no",
+        includeTBD: "no",
+        sort: "date,asc",
       },
       headers,
     });
@@ -137,14 +141,17 @@ router.get("/venue-events", async (req, res) => {
       params: { apikey: process.env.TICKETMASTER_API_KEY, keyword: name, latlong: `${lat},${long}`, radius: 50, unit: "km", size: 5 },
       headers,
     });
-    const venue = venues._embedded?.venues?.[0];
+    const venue = findTicketmasterVenue(venues._embedded?.venues, name, lat, long);
     if (!venue) return res.json({ venue: null, events: [] });
 
     const data = await request(`${TM_BASE}/events.json`, {
       params: { apikey: process.env.TICKETMASTER_API_KEY, venueId: venue.id, classificationName: "Music", sort: "date,asc", size: 50 },
       headers,
+    }).catch(error => {
+      console.error("Ticketmaster venue events unavailable:", error.status || error.message);
+      return { _embedded: { events: [] } };
     });
-    res.json({ venue: { id: venue.id, name: venue.name }, events: data._embedded?.events || [] });
+    res.json({ venue, events: data._embedded?.events || [] });
   } catch (error) {
     console.error("Ticketmaster venue error:", error.message);
     res.status(error.status || 500).json({ error: error.data || "Ticketmaster venue fetch failed" });

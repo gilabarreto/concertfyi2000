@@ -96,3 +96,6 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 □ Localização divergente — Home configura Calgary nas listas e o hook usa Vancouver como fallback; carrossel pode usar seleção manual. Revisar unificação em tarefa própria.
 
 □ Estatísticas adicionais de tour — card retirado da ArtistPage por decisão do dono; países, cidades, músicas por show, músicas mais tocadas, abertura/encerramento e raridades preservados para futura avaliação em `docs/TOUR_STATISTICS.md`. Mapa e legenda ficam acessíveis pelo nome da tour em Last/Next Concert.
+
+☑ Perfil de venues — implementado localmente com dados do setlist.fm/Ticketmaster e fallback Wikidata/Wikipedia; sem nova chave. Endereço, inauguração, links, descrição e serviços aparecem apenas quando confirmados. Fontes, limites e comportamento em falhas documentados em `docs/APIS_E_FONTES.md`.
+☑ Complemento de venues — Google Places API (New) e OpenStreetMap/Overpass implementados localmente e validados ao vivo com Wembley. `GOOGLE_PLACES_API_KEY` configurada no servidor local; configurar também no Render quando publicar. Phone/Opening hours separados da bilheteria; Reviews consulta somente ao abrir o popup. Fontes e configuração em `docs/APIS_E_FONTES.md`; Yelp fica para outra etapa.

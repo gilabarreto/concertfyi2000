@@ -160,8 +160,6 @@ export default function Swiper() {
   }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster]);
 
   useEffect(() => {
-    if (!localEventsData) return;
-
     const list = getCarouselSlides(localEventsData);
     setSlides(list);
     setActive(Math.floor(list.length / 2));

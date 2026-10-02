@@ -47,14 +47,45 @@ export function getUpcomingConcertsByArtist(events = [], artistName) {
 // A mesma forma, para a home: filtra por cidade da venue em vez de nome do artista.
 // sameCity=false pega o resto do raio de 50km, pra "Concerts Near X" não repetir
 // as linhas de "Upcoming Concerts" de X.
-export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true) {
+export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true, center) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   return events
     .filter((item) => {
+      const start = item.dates?.start;
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(start?.localDate || "") ||
+        start.dateTBD ||
+        start.dateTBA ||
+        item.dates?.status?.code === "cancelled"
+      )
+        return false;
       const venueCity = item._embedded?.venues?.[0]?.city?.name;
-      return sameCity ? venueCity === cityName : venueCity !== cityName;
+      if (!venueCity || !cityName) return false;
+      if (!sameCity && center) {
+        const location = item._embedded?.venues?.[0]?.location;
+        if (location?.latitude == null || location?.longitude == null) return false;
+        const lat = Number(location.latitude),
+          long = Number(location.longitude);
+        if (![lat, long, center.lat, center.long].every(Number.isFinite)) return false;
+        const radians = (value) => (value * Math.PI) / 180;
+        const distance =
+          Math.sin(radians(lat - center.lat) / 2) ** 2 +
+          Math.cos(radians(center.lat)) *
+            Math.cos(radians(lat)) *
+            Math.sin(radians(long - center.long) / 2) ** 2;
+        if (6371 * 2 * Math.asin(Math.sqrt(Math.min(distance, 1))) > 50) return false;
+      }
+      const normalize = (value) =>
+        value
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .toLowerCase();
+      return sameCity
+        ? normalize(venueCity) === normalize(cityName)
+        : normalize(venueCity) !== normalize(cityName);
     })
     .map((item) => {
       const [year, month, day] = item.dates.start.localDate.split("-");
@@ -135,4 +166,26 @@ export function getTicketmasterGenres(attraction) {
   return [...new Set([classification?.genre?.name, classification?.subGenre?.name])].filter(
     (name) => name && name !== "Undefined",
   );
+}
+
+// A future show can be listed before anybody adds songs to its setlist.
+export function getRecentUpcomingSetlists(shows = [], city, countryCode, now = new Date()) {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  const normalize = (value) =>
+    (value || "")
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLowerCase();
+  return shows
+    .filter((show) => /^\d{2}-\d{2}-\d{4}$/.test(show.eventDate || ""))
+    .map((show) => ({ ...show, dateObj: parseSetlistDate(show.eventDate) }))
+    .filter(
+      (show) =>
+        show.dateObj >= today &&
+        normalize(show.venue?.city?.name) === normalize(city) &&
+        (!countryCode || normalize(show.venue?.city?.country?.code) === normalize(countryCode)),
+    )
+    .sort((a, b) => (b.lastUpdated || "").localeCompare(a.lastUpdated || ""));
 }

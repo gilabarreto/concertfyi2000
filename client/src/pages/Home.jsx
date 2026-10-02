@@ -5,37 +5,13 @@ import ReminderClose from "../components/ReminderClose";
 import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
-import { faBuilding, faCity, faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faBuilding, faCity, faLocationDot, faClock } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../components/Icon";
-import { useLocalEvents, useRecentSetlists } from "../api/queries";
-import { getUpcomingConcertsByCity, parseSetlistDate } from "../helpers/selectors";
-import ConcertList from "../components/ArtistPage/ConcertList";
-import TicketOptions from "../components/ArtistPage/TicketOptions";
-import HotelOptions from "../components/ArtistPage/HotelOptions";
-import ConcertReminder from "../components/ArtistPage/ConcertReminder";
-
-// Hardcoded enquanto o layout assenta — trocar por geolocation/busca depois.
-const CALGARY = { lat: 51.0447, long: -114.0719, name: "Calgary" };
-
-// Local/TicketWeb shows often carry no attraction entity at all — just the event's own
-// name (e.g. "Gedfest Yeg"). That's still a real name, so it beats "Unknown artist".
-const artistOf = (concert) =>
-  concert._embedded?.attractions?.[0]?.name || concert.name || "Unknown artist";
-
-const expandConcert = (concert) => {
-  const artistName = artistOf(concert);
-  return (
-    <>
-      <TicketOptions event={concert} artistName={artistName} />
-      <HotelOptions event={concert} />
-      <ConcertReminder event={concert} artistName={artistName} />
-    </>
-  );
-};
+import { useCurrentCity } from "../hooks/useCurrentCity";
 
 // Same pill as SHARE / I WAS THERE on the artist page.
 const pill =
-  "flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600";
+  "flex shrink-0 items-center gap-[4.8px] px-[9.6px] py-[2.4px] rounded-full border border-zinc-300 text-[14.4px] leading-[19.2px] text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600";
 
 const Home = () => {
   const {
@@ -67,15 +43,7 @@ const Home = () => {
     };
   }, [reminderInteracted, setReminderOpen]);
 
-  const { data: localEventsData } = useLocalEvents(CALGARY.lat, CALGARY.long);
-  const events = localEventsData?._embedded?.events || [];
-  const inCity = getUpcomingConcertsByCity(events, CALGARY.name);
-  const nearby = getUpcomingConcertsByCity(events, CALGARY.name, false);
-  const { data: recentData, isLoading: recentLoading } = useRecentSetlists();
-  const recent = (recentData?.setlist || []).map((show) => ({
-    ...show,
-    dateObj: parseSetlistDate(show.eventDate),
-  }));
+  const { city } = useCurrentCity();
 
   return (
     <>
@@ -109,62 +77,35 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Sem artist-card-grid: sem divisória entre as duas listas. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-3 w-full">
-          <div className="min-w-0 bg-white p-6 space-y-2">
-            <div className="flex items-center justify-center gap-2">
-              <Link to="/venues" title="Venues in your city" className={pill}>
-                <Icon icon={faBuilding} className="text-[0.65rem]" />
-                VENUE
-              </Link>
-              <Link to="/city" title="Past and upcoming concerts in your city" className={pill}>
-                <Icon icon={faCity} className="text-[0.65rem]" />
-                MY CITY
-              </Link>
-            </div>
-            <ConcertList
-              title="Upcoming Concerts"
-              empty={`No upcoming concerts in ${CALGARY.name} right now.`}
-              items={inCity}
-              locationOf={artistOf}
-              iconTitle="Get tickets"
-              expand={expandConcert}
-            />
-          </div>
-
-          <div className="min-w-0 bg-white p-6 space-y-2">
-            <ConcertList
-              title="Concerts Near You"
-              empty="No concerts found nearby."
-              items={nearby}
-              locationOf={(concert) => {
-                const venue = concert._embedded?.venues?.[0];
-                const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
-                return `${artistOf(concert)} - ${parts.join(", ") || "Unknown location"}`;
-              }}
-              iconTitle="Get tickets"
-              expand={expandConcert}
-            />
-          </div>
-
-          {/* Setlists from yesterday's shows, newest posted first (server/routes/setlist.js). */}
-          <div className="min-w-0 bg-white p-6 space-y-2">
-            <ConcertList
-              title="Recently Added"
-              empty={recentLoading ? "Loading…" : "No new setlists yet today."}
-              showSearch={false}
-              items={recent}
-              locationOf={(show) => {
-                const city = show.venue?.city;
-                const place = [city?.name, city?.country?.code].filter(Boolean).join(", ");
-                return place ? `${show.artist.name} - ${place}` : show.artist.name;
-              }}
-              linkOf={(show) => `/artists/${show.artist.mbid}/concerts/${show.id}`}
-              icon={faMusic}
-              iconTitle="View setlist"
-            />
-          </div>
-        </div>
+        <nav
+          aria-label="Explore concerts"
+          className="flex flex-wrap items-center justify-center gap-2 w-full"
+        >
+          <Link to="/venues" title={`Venues in ${city}`} className={pill}>
+            <Icon icon={faBuilding} className="text-[0.78rem]" />
+            VENUES
+          </Link>
+          <Link to="/city?view=upcoming" title={`Upcoming concerts in ${city}`} className={pill}>
+            <Icon icon={faCity} className="text-[0.78rem]" />
+            UPCOMING CONCERTS
+          </Link>
+          <Link
+            to="/city?view=nearby"
+            title={`Concerts in neighboring cities within 50 km of ${city}`}
+            className={pill}
+          >
+            <Icon icon={faLocationDot} className="text-[0.78rem]" />
+            CONCERTS NEAR {city.toUpperCase()}
+          </Link>
+          <Link
+            to="/city?view=recent"
+            title={`Upcoming concerts in ${city} announced for sale in the last 30 days}`}
+            className={pill}
+          >
+            <Icon icon={faClock} className="text-[0.78rem]" />
+            RECENTLY ADDED
+          </Link>
+        </nav>
       </div>
     </>
   );

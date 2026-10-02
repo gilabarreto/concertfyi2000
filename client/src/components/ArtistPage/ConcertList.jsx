@@ -59,7 +59,9 @@ export default function ConcertList({
               // the date never truncates; a long city name does, so the icon keeps its place
               const label = (
                 <span className="flex min-w-0 items-center">
-                  <span className="tabular-nums">{dateLabel(concert.dateObj)}</span>
+                  <span className="tabular-nums whitespace-nowrap shrink-0">
+                    {dateLabel(concert.dateObj)}
+                  </span>
                   <span className="text-zinc-500 ml-2 truncate">- {locationOf(concert)}</span>
                 </span>
               );

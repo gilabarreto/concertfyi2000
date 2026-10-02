@@ -53,6 +53,10 @@ app.use("/api/spotify", require("./routes/spotify"));
 app.get("/api/lyrics", require("./routes/lyrics"));
 app.get("/api/youtube", require("./routes/youtube"));
 app.get("/api/wikipedia", require("./routes/wikipedia"));
+app.get("/api/venue-info", require("./routes/venueInfo"));
+app.get("/api/venue-services", require("./routes/venueServices").services);
+app.get("/api/venue-reviews", require("./routes/venueServices").reviews);
+app.get("/api/venue-photos", require("./routes/venueServices").photos);
 app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
 app.get("/api/albums", require("./routes/albums"));
 // Chamadas de comparação gastam cota: a rota só existe com npm run dev (API_LAB_ENABLED)

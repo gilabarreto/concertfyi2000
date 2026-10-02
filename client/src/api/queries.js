@@ -5,6 +5,11 @@ import {
   getArtistSetlists,
   getTourSetlists,
   getVenueSetlists,
+  getVenueDetails,
+  getVenueInfo,
+  getVenueServices,
+  getVenueReviews,
+  getVenuePhotos,
   getVenueEvents,
   getCitySetlists,
   getRecentSetlists,
@@ -19,6 +24,40 @@ import {
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
+
+// Places content is retained only while displayed; reviews load on opening their dialog.
+export const useVenueServices = (identity, enabled) =>
+  useQuery({
+    queryKey: ["venue-services", identity],
+    queryFn: () => getVenueServices(identity),
+    enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+export const useVenueReviews = (identity, enabled) =>
+  useQuery({
+    queryKey: ["venue-reviews", identity],
+    queryFn: () => getVenueReviews(identity),
+    enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+export const useVenuePhotos = (identity, enabled, offset, limit) =>
+  useQuery({
+    queryKey: ["venue-photos", identity, offset, limit],
+    queryFn: () => getVenuePhotos(identity, offset, limit),
+    enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
+    staleTime: 0,
+    gcTime: 0,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
 export const useArtistImages = (mbid) =>
   useQuery({
@@ -146,6 +185,24 @@ export const useVenueEvents = (name, lat, long) => {
   });
 };
 
+export const useVenueDetails = (venueId, enabled) =>
+  useQuery({
+    queryKey: ["venue-details", venueId],
+    queryFn: () => getVenueDetails(venueId),
+    enabled: !!venueId && enabled,
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+
+export const useVenueInfo = (name, lat, long) =>
+  useQuery({
+    queryKey: ["venue-info", name, lat, long],
+    queryFn: () => getVenueInfo(name, lat, long),
+    enabled: !!name && lat != null && long != null,
+    staleTime: 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+
 // My City page: up to 3 setlist.fm calls, held like the tour and the venue.
 export const useCitySetlists = (cityName, countryCode, year) => {
   return useQuery({
@@ -158,10 +215,11 @@ export const useCitySetlists = (cityName, countryCode, year) => {
 };
 
 // The server already holds this for 30 min; same here so Home doesn't ask again on every visit.
-export const useRecentSetlists = () => {
+export const useRecentSetlists = (cityName, countryCode) => {
   return useQuery({
-    queryKey: ["recent-setlists"],
-    queryFn: getRecentSetlists,
+    queryKey: ["recent-setlists", cityName, countryCode],
+    queryFn: () => getRecentSetlists(cityName, countryCode),
+    enabled: !!cityName,
     staleTime: 30 * 60 * 1000,
   });
 };

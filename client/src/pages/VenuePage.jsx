@@ -1,6 +1,16 @@
 import { useParams, Link } from "react-router-dom";
-import { faMusic } from "@fortawesome/free-solid-svg-icons";
-import { useVenueSetlists, useVenueEvents } from "../api/queries";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../components/Icon";
+import {
+  useVenueSetlists,
+  useVenueEvents,
+  useVenueDetails,
+  useVenueInfo,
+  useVenueServices,
+} from "../api/queries";
+import VenueInfo from "../components/VenuePage/VenueInfo";
+import VenueActions from "../components/VenuePage/VenueActions";
+import VenuePhotos from "../components/VenuePage/VenuePhotos";
 import { parseSetlistDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
@@ -17,15 +27,47 @@ const artistOf = (event) =>
 // every setlist, so it costs no call of its own.
 export default function VenuePage() {
   const { venueId } = useParams();
-  const { data, isLoading, isError } = useVenueSetlists(venueId);
-  const venue = data?.setlist?.[0]?.venue;
+  const { data, isLoading } = useVenueSetlists(venueId);
+  const listVenue = data?.setlist?.[0]?.venue;
+  const { data: directVenue, isLoading: detailsLoading } = useVenueDetails(
+    venueId,
+    !isLoading && !listVenue,
+  );
+  const venue = listVenue || directVenue;
   const coords = venue?.city?.coords;
-  const { data: upcomingData } = useVenueEvents(venue?.name, coords?.lat, coords?.long);
+  const { data: upcomingData, isLoading: eventsLoading } = useVenueEvents(
+    venue?.name,
+    coords?.lat,
+    coords?.long,
+  );
+  const {
+    data: info = {},
+    isLoading: infoLoading,
+    isError: infoFailed,
+    refetch: retryInfo,
+  } = useVenueInfo(venue?.name, coords?.lat, coords?.long);
+  const location = upcomingData?.venue?.location;
+  const exactCoords = location
+    ? { lat: Number(location.latitude), long: Number(location.longitude) }
+    : info.coordinates;
+  const mapCoords = exactCoords || coords;
+  const identity = {
+    name: venue?.name,
+    lat: mapCoords?.lat,
+    long: mapCoords?.long,
+    exact: !!exactCoords,
+  };
+  const {
+    data: services = {},
+    isLoading: servicesLoading,
+    isError: servicesFailed,
+    refetch: retryServices,
+  } = useVenueServices(identity, !!venue && !infoLoading && !eventsLoading);
 
-  if (isLoading) {
+  if (isLoading || detailsLoading) {
     return <div className="p-8 w-full text-center text-zinc-400">Loading venue…</div>;
   }
-  if (isError || !venue) {
+  if (!venue) {
     return (
       <div className="p-8 w-full text-center text-zinc-500">
         Venue not found.{" "}
@@ -37,12 +79,18 @@ export default function VenuePage() {
   }
 
   const now = new Date();
-  const past = data.setlist
+  const past = (data?.setlist || [])
     .map((show) => ({ ...show, dateObj: parseSetlistDate(show.eventDate) }))
     .filter((show) => show.dateObj <= now);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const upcoming = (upcomingData?.events || [])
+    .filter(
+      (event) =>
+        /^\d{4}-\d{2}-\d{2}$/.test(event.dates?.start?.localDate || "") &&
+        !event.dates.start.dateTBD &&
+        !event.dates.start.dateTBA,
+    )
     .map((event) => {
       const [year, month, day] = event.dates.start.localDate.split("-");
       return { ...event, dateObj: new Date(year, month - 1, day) };
@@ -60,17 +108,46 @@ export default function VenuePage() {
       <div className="w-full min-w-0 mx-auto p-0 sm:px-6 sm:py-4 space-y-4 lg:space-y-3">
         {/* Mesmo palco zinc do topo da página de artista (DESIGN.md). */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-3 lg:px-6 py-4 sm:-mx-6 sm:-mt-4">
-          <div className="flex flex-col justify-center text-center lg:text-left">
-            <h1 className="text-3xl font-bold text-balance">{venue.name}</h1>
-            <p className="text-zinc-500">{place}</p>
+          <div className="w-full min-w-0">
+            <VenueInfo
+              key={venueId}
+              venue={venue}
+              ticketmaster={upcomingData?.venue}
+              info={info}
+              services={services}
+              identity={identity}
+              reviewsEnabled={!!services.fields?.rating}
+              loading={infoLoading || servicesLoading}
+              failed={infoFailed || servicesFailed || services.partial}
+              onRetry={() => {
+                retryInfo();
+                retryServices();
+              }}
+            />
           </div>
-          {coords && (
-            <div className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100">
-              <Map latitude={coords.lat} longitude={coords.long} />
-            </div>
-          )}
+          <div className="w-full self-start">
+            {mapCoords && (
+              <>
+                <div className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100">
+                  <Map latitude={mapCoords.lat} longitude={mapCoords.long} />
+                </div>
+                {!exactCoords && (
+                  <p className="mt-1 text-center text-xs text-zinc-500">
+                    City location · exact venue location unavailable
+                  </p>
+                )}
+              </>
+            )}
+            <VenueActions ticketmaster={upcomingData?.venue} services={services} />
+          </div>
         </div>
 
+        <VenuePhotos
+          key={venueId}
+          identity={identity}
+          enabled={!!services.fields?.rating || services.providers?.google === "ok"}
+          name={venue.name}
+        />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
           <div className="min-w-0 bg-white px-4 space-y-2">
             <ConcertList
@@ -79,9 +156,19 @@ export default function VenuePage() {
               showSearch={false}
               items={past}
               locationOf={(show) => show.artist.name}
-              linkOf={(show) => `/artists/${show.artist.mbid}/concerts/${show.id}`}
-              icon={faMusic}
-              iconTitle="View setlist"
+              iconTitle="Show concert options"
+              expand={(show) => (
+                <div className="px-2 py-3 sm:px-4">
+                  <Link
+                    to={`/artists/${show.artist.mbid}/concerts/${show.id}`}
+                    state={{ scrollTo: "last-concert" }}
+                    className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <Icon icon={faEye} />
+                    View concert
+                  </Link>
+                </div>
+              )}
             />
           </div>
           <div className="min-w-0 bg-white px-4 pb-4 space-y-2">

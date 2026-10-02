@@ -15,6 +15,8 @@ import {
   parseSetlistDate,
   getTicketmasterGenres,
   getArtistAttraction,
+  getUpcomingConcertsByCity,
+  getRecentUpcomingSetlists,
 } from "./selectors.js";
 
 // Setlist.fm: DD-MM-YYYY
@@ -282,4 +284,70 @@ test("getArtistAttraction: casa pelo nome, não pega a primeira", () => {
   assert.strictEqual(getArtistAttraction(ticketmaster, "Band"), band);
   assert.strictEqual(getArtistAttraction(ticketmaster, "Other"), undefined);
   assert.strictEqual(getArtistAttraction({}, "Band"), undefined);
+});
+
+test("local lists require confirmed upcoming dates and distinguish neighboring cities", () => {
+  const event = (id, city, start = {}) => ({
+    id,
+    dates: { start: { localDate: "2099-10-03", ...start } },
+    _embedded: { venues: [{ city: { name: city } }] },
+  });
+  const events = [
+    event("city", "São Paulo"),
+    event("neighbor", "Santos"),
+    event("tbd", "São Paulo", { dateTBD: true }),
+    event("missing", "São Paulo", { localDate: undefined }),
+    event("past", "São Paulo", { localDate: "2000-01-01" }),
+    event("unknown"),
+  ];
+  assert.deepEqual(
+    getUpcomingConcertsByCity(events, "Sao Paulo").map((e) => e.id),
+    ["city"],
+  );
+  assert.deepEqual(
+    getUpcomingConcertsByCity(events, "São Paulo", false).map((e) => e.id),
+    ["neighbor"],
+  );
+});
+
+test("recent local entries include empty future setlists and exclude past or other locations", () => {
+  const show = (id, eventDate, city = "Calgary", code = "CA") => ({
+    id,
+    eventDate,
+    artist: { name: "Artist" },
+    venue: { city: { name: city, country: { code } } },
+    sets: { set: [] },
+    lastUpdated: "2026-10-01T10:00:00Z",
+  });
+  const shows = [
+    show("future", "03-10-2026"),
+    show("past", "30-09-2026"),
+    show("elsewhere", "03-10-2026", "Edmonton"),
+    show("other-country", "03-10-2026", "Calgary", "US"),
+    show("undated"),
+  ];
+  assert.deepEqual(
+    getRecentUpcomingSetlists(shows, "Calgary", "CA", new Date(2026, 9, 1)).map((s) => s.id),
+    ["future"],
+  );
+});
+
+test("nearby concerts stay within 50 km of the selected location", () => {
+  const event = (id, city, latitude, longitude) => ({
+    id,
+    dates: { start: { localDate: "2099-10-03" } },
+    _embedded: { venues: [{ city: { name: city }, location: { latitude, longitude } }] },
+  });
+  const events = [
+    event("near", "Airdrie", 51.2917, -114.0144),
+    event("far", "Edmonton", 53.5461, -113.4938),
+    event("city", "Calgary", 51.0447, -114.0719),
+    event("unknown", "Unknown"),
+  ];
+  assert.deepEqual(
+    getUpcomingConcertsByCity(events, "Calgary", false, { lat: 51.0447, long: -114.0719 }).map(
+      (e) => e.id,
+    ),
+    ["near"],
+  );
 });
