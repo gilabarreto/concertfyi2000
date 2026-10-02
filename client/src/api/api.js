@@ -36,4 +36,10 @@ export const getArtistImages = (mbid) => API("/audiodb/artist-images", { params:
 
 export const getArtistAlbums = (mbid) => API("/albums", { params: { mbid } });
 
-export const getApiLabData = (source) => API("/api-lab", { params: { source }, timeout: 60000 });
+// A senha vai em header, não na querystring: querystring acaba em log de acesso.
+export const getApiLabData = ({ source, token } = {}) =>
+  API("/api-lab", {
+    params: { source },
+    headers: token ? { "x-api-lab-token": token } : undefined,
+    timeout: 60000,
+  });

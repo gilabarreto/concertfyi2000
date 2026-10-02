@@ -15,7 +15,7 @@ const TIMEOUT_MS = 10_000;
 // como sucesso, então o erro é montado aqui.
 const failure = (message, extra) => Object.assign(new Error(message), extra);
 
-export async function request(url, { params, timeout = TIMEOUT_MS } = {}) {
+export async function request(url, { params, headers, timeout = TIMEOUT_MS } = {}) {
   // Parâmetro sem valor some da URL, como no axios. Sem isso um `undefined` vira a
   // string "undefined" e a busca sai errada em vez de sair vazia.
   const query = new URLSearchParams(
@@ -25,6 +25,7 @@ export async function request(url, { params, timeout = TIMEOUT_MS } = {}) {
   let response;
   try {
     response = await fetch(query ? `${url}?${query}` : url, {
+      headers,
       signal: AbortSignal.timeout(timeout),
     });
   } catch (err) {

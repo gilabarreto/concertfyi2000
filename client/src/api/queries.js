@@ -1,4 +1,4 @@
-import { useQuery, useMutation, keepPreviousData } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   getSetlist,
   getSetlistById,
@@ -10,7 +10,6 @@ import {
   getArtistBackground,
   getArtistImages,
   getArtistAlbums,
-  getApiLabData,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
@@ -34,14 +33,6 @@ export const useArtistAlbums = (mbid) =>
     staleTime: 24 * 60 * 60 * 1000,
     gcTime: 7 * 24 * 60 * 60 * 1000,
     retry: false,
-  });
-
-export const useApiLab = (onSuccess) =>
-  useMutation({
-    mutationFn: getApiLabData,
-    onSuccess,
-    retry: false,
-    gcTime: 0,
   });
 
 // Song details don't change: cache for the session instead of the 1s global gcTime,
