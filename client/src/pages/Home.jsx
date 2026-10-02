@@ -5,15 +5,20 @@ import ReminderClose from "../components/ReminderClose";
 import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
-import { faBuilding, faCity, faLocationDot, faClock } from "@fortawesome/free-solid-svg-icons";
-import Icon from "../components/Icon";
 import { useCurrentCity } from "../hooks/useCurrentCity";
-
-// Same pill as SHARE / I WAS THERE on the artist page.
-const pill =
-  "flex shrink-0 items-center gap-[4.8px] px-[9.6px] py-[2.4px] rounded-full border border-zinc-300 text-[14.4px] leading-[19.2px] text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600";
+import HomeDiscovery from "../components/HomeDiscovery";
+import { useRecentSetlists } from "../api/queries";
+import { dateLabel, getRecentUpcomingSetlists } from "../helpers/selectors";
 
 const Home = () => {
+  const location = useCurrentCity();
+  const { data: recentData } = useRecentSetlists(location.city, location.countryCode);
+  const recent = getRecentUpcomingSetlists(
+    recentData?.setlist,
+    location.city,
+    location.countryCode,
+  )[0];
+  const reminderId = recent ? `home-recent-${recent.id}` : null;
   const {
     setConcertReminder,
     reminderOpen,
@@ -23,15 +28,17 @@ const Home = () => {
     setReminderSeen,
   } = useContext(AppContext);
   useEffect(() => {
-    setConcertReminder({ id: "home-intro", pathname: "/", targetId: "home-reminder" });
+    setConcertReminder(
+      reminderId ? { id: reminderId, pathname: "/", targetId: "home-reminder" } : null,
+    );
     setReminderOpen(false);
     setReminderSeen(false);
     setReminderInteracted(false);
     return () => setConcertReminder(null);
-  }, [setConcertReminder, setReminderOpen, setReminderInteracted, setReminderSeen]);
+  }, [reminderId, setConcertReminder, setReminderOpen, setReminderInteracted, setReminderSeen]);
 
   useEffect(() => {
-    if (reminderInteracted) return;
+    if (reminderInteracted || !reminderId) return;
     let closeTimer;
     const openTimer = setTimeout(() => {
       setReminderOpen(true);
@@ -41,9 +48,7 @@ const Home = () => {
       clearTimeout(openTimer);
       clearTimeout(closeTimer);
     };
-  }, [reminderInteracted, setReminderOpen]);
-
-  const { city } = useCurrentCity();
+  }, [reminderId, reminderInteracted, setReminderOpen]);
 
   return (
     <>
@@ -63,8 +68,17 @@ const Home = () => {
             <div className="min-h-0 overflow-hidden">
               <div className="relative bg-red-600">
                 <p className="w-full bg-red-600 pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
-                  Track your favorite artists, explore past performances and never miss a concert
-                  again.
+                  {recent && (
+                    <Link
+                      to={`/artists/${recent.artist.mbid}/concerts/${recent.id}`}
+                      className="hover:opacity-80"
+                    >
+                      <span className="font-semibold">Recently added:</span> {recent.artist.name},{" "}
+                      {dateLabel(recent.dateObj)}
+                      {" at "}
+                      {recent.venue?.name || "Venue to be announced"}
+                    </Link>
+                  )}
                 </p>
                 <ReminderDelete />
                 <ReminderClose />
@@ -77,35 +91,7 @@ const Home = () => {
           </div>
         </div>
 
-        <nav
-          aria-label="Explore concerts"
-          className="flex flex-wrap items-center justify-center gap-2 w-full"
-        >
-          <Link to="/venues" title={`Venues in ${city}`} className={pill}>
-            <Icon icon={faBuilding} className="text-[0.78rem]" />
-            VENUES
-          </Link>
-          <Link to="/city?view=upcoming" title={`Upcoming concerts in ${city}`} className={pill}>
-            <Icon icon={faCity} className="text-[0.78rem]" />
-            UPCOMING CONCERTS
-          </Link>
-          <Link
-            to="/city?view=nearby"
-            title={`Concerts in neighboring cities within 50 km of ${city}`}
-            className={pill}
-          >
-            <Icon icon={faLocationDot} className="text-[0.78rem]" />
-            CONCERTS NEAR {city.toUpperCase()}
-          </Link>
-          <Link
-            to="/city?view=recent"
-            title={`Upcoming concerts in ${city} announced for sale in the last 30 days}`}
-            className={pill}
-          >
-            <Icon icon={faClock} className="text-[0.78rem]" />
-            RECENTLY ADDED
-          </Link>
-        </nav>
+        <HomeDiscovery location={location} />
       </div>
     </>
   );

@@ -188,6 +188,10 @@ test("photo pages fetch fresh resources and only requested images, keeping autho
   assert.ok(!JSON.stringify(result.body).includes("test-placeholder"));
   await call(handlers.photos, { ...query, offset: "6", limit: "3" });
   assert.equal(calls.filter(item => item.url.endsWith("places/venue")).length, 2, "photo references are never cached");
+  const before = calls.filter(item => item.url.endsWith("/media")).length;
+  const thumbnail = await call(handlers.photos, { ...query, offset: "0", limit: "1" });
+  assert.equal(thumbnail.body.photos.length, 1);
+  assert.equal(calls.filter(item => item.url.endsWith("/media")).length - before, 1, "Home fetches only one image per venue");
   assert.equal((await call(handlers.photos, { ...query, offset: "10" })).code, 400);
 });
 

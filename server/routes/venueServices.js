@@ -106,7 +106,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     if (typeof name !== "string" || !name.trim() || name.length > 200 || typeof req.query.lat !== "string" || !req.query.lat.trim() || typeof req.query.long !== "string" || !req.query.long.trim() || !Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) return res.status(400).json({ error: "Missing or invalid name/coordinates" });
     const identity = { name: name.trim(), lat, long, radius: req.query.exact === "true" ? 1.5 : 30 };
     const photoOptions = { offset: Number(req.query.offset ?? 0), limit: Number(req.query.limit ?? 3) };
-    if (mode === "photos" && (!Number.isInteger(photoOptions.offset) || photoOptions.offset < 0 || photoOptions.offset > 9 || ![3, 6].includes(photoOptions.limit))) return res.status(400).json({ error: "Invalid photo page" });
+    if (mode === "photos" && (!Number.isInteger(photoOptions.offset) || photoOptions.offset < 0 || photoOptions.offset > 9 || ![1, 3, 6].includes(photoOptions.limit))) return res.status(400).json({ error: "Invalid photo page" });
     const key = JSON.stringify(identity);
     const pendingKey = `${mode}:${key}:${mode === "photos" ? JSON.stringify(photoOptions) : ""}`;
     if (!pending.has(pendingKey)) {
