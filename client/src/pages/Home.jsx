@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { lazy, Suspense, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import ReminderClose from "../components/ReminderClose";
@@ -6,9 +6,12 @@ import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
 import { useCurrentCity } from "../hooks/useCurrentCity";
-import HomeDiscovery from "../components/HomeDiscovery";
 import { useRecentSetlists } from "../api/queries";
 import { dateLabel, getRecentUpcomingSetlists } from "../helpers/selectors";
+
+// Below the fold, and it pulls the ticket/hotel/reminder panels in with it: loading it on
+// demand keeps those out of the entry chunk (CONSTRAINTS.md, 270 kB ceiling).
+const HomeDiscovery = lazy(() => import("../components/HomeDiscovery"));
 
 const Home = () => {
   const location = useCurrentCity();
@@ -91,7 +94,9 @@ const Home = () => {
           </div>
         </div>
 
-        <HomeDiscovery location={location} />
+        <Suspense fallback={null}>
+          <HomeDiscovery location={location} />
+        </Suspense>
       </div>
     </>
   );
