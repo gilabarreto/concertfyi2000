@@ -1,10 +1,12 @@
 import { useContext, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import ReminderClose from "../components/ReminderClose";
 import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
-import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faBuilding, faCity, faMusic } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../components/Icon";
 import { useLocalEvents, useRecentSetlists } from "../api/queries";
 import { getUpcomingConcertsByCity, parseSetlistDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
@@ -30,6 +32,10 @@ const expandConcert = (concert) => {
     </>
   );
 };
+
+// Same pill as SHARE / I WAS THERE on the artist page.
+const pill =
+  "flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600";
 
 const Home = () => {
   const {
@@ -106,6 +112,16 @@ const Home = () => {
         {/* Sem artist-card-grid: sem divisória entre as duas listas. */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-3 w-full">
           <div className="min-w-0 bg-white p-6 space-y-2">
+            <div className="flex items-center justify-center gap-2">
+              <Link to="/venues" title="Venues in your city" className={pill}>
+                <Icon icon={faBuilding} className="text-[0.65rem]" />
+                VENUE
+              </Link>
+              <Link to="/city" title="Past and upcoming concerts in your city" className={pill}>
+                <Icon icon={faCity} className="text-[0.65rem]" />
+                MY CITY
+              </Link>
+            </div>
             <ConcertList
               title="Upcoming Concerts"
               empty={`No upcoming concerts in ${CALGARY.name} right now.`}

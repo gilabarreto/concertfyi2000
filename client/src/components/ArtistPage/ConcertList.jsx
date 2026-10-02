@@ -14,8 +14,7 @@ const PAGE_SIZE = 5;
 // disclosure wins. Rows used to be able to point at an outside URL too; since the next
 // concerts opened a seller list instead of a single ticket link, nothing passes one.
 // onSelect is optional and only fires on a disclosure row — UpcomingConcerts uses it to
-// mirror the click into the URL, so the Next Concert card above stays in sync. actions is a
-// row of pill buttons under the title, like the SHARE / I WAS THERE row in Last Concert.
+// mirror the click into the URL, so the Next Concert card above stays in sync.
 export default function ConcertList({
   title,
   empty,
@@ -27,7 +26,6 @@ export default function ConcertList({
   iconTitle,
   expand,
   onSelect,
-  actions,
 }) {
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
@@ -43,11 +41,6 @@ export default function ConcertList({
   return (
     <>
       <CardTitle>{title}</CardTitle>
-      {actions && (
-        <div className="mx-[12px] flex items-center justify-center gap-2 border-b border-zinc-300/50 pb-2">
-          {actions}
-        </div>
-      )}
 
       {items.length === 0 ? (
         <CardNotice>

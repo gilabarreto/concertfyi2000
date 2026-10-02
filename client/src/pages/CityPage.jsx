@@ -1,7 +1,5 @@
-import { useContext } from "react";
 import { faMusic } from "@fortawesome/free-solid-svg-icons";
-import { AppContext } from "../context/AppContext";
-import { useGeolocation } from "../hooks/useGeolocation";
+import { useCurrentCity } from "../hooks/useCurrentCity";
 import { useCitySetlists, useLocalEvents } from "../api/queries";
 import { getUpcomingConcertsByCity, parseSetlistDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
@@ -14,21 +12,11 @@ import { SEOHead } from "../components/SEOHead";
 const artistOf = (event) =>
   event._embedded?.attractions?.[0]?.name || event.name || "Unknown artist";
 
-// My City: the city picked in the location menu, or the browser's own (same order as the
-// Home carousel). This year's setlists there from setlist.fm, what's on sale from Ticketmaster.
+// My City: this year's setlists in the current city from setlist.fm, what's on sale there
+// from Ticketmaster.
 export default function CityPage() {
-  const { selectedLocation } = useContext(AppContext);
-  const geo = useGeolocation();
-  const city = selectedLocation?.city || geo.city;
-  const country = selectedLocation?.country || geo.country;
-  const lat = selectedLocation?.lat ?? geo.coords.lat;
-  const long = selectedLocation?.lon ?? geo.coords.long;
-
-  const { data, isLoading } = useCitySetlists(
-    city,
-    selectedLocation?.countryCode,
-    new Date().getFullYear(),
-  );
+  const { city, country, countryCode, lat, long } = useCurrentCity();
+  const { data, isLoading } = useCitySetlists(city, countryCode, new Date().getFullYear());
   const { data: localEvents } = useLocalEvents(lat, long);
 
   const now = new Date();
