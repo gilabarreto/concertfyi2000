@@ -1,3 +1,5 @@
+> O API Lab (`/api-lab`) saiu do app em 2026-10-02: cumpriu o papel de comparar fontes. O código continua no git — `git show 5445fdc` mostra a última versão, e `git checkout 5445fdc -- client/src/pages/ApiLab.jsx server/routes/apiLab.js` traz de volta. As menções a `/api-lab` abaixo são históricas.
+
 # APIs, origem dos dados e oportunidades do ConcertFYI
 
 Revisão: **01/10/2026**. Documento de trabalho para comparar fontes, revisar decisões e propor integrações. A conversa com outra IA e o PDF de pôsteres são referências de pesquisa, não confirmação de acesso, preço ou cobertura. O código atual define a origem dos dados; documentação oficial define as condições externas, que devem ser conferidas novamente antes de contratar/publicar uma integração.

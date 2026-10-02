@@ -125,7 +125,7 @@ test("o timeout chega ao fetch como AbortSignal, não como opção ignorada em s
 test("repassa headers ao fetch", async () => {
   respondWith();
 
-  await request("https://api.test/api-lab", { headers: { "x-api-lab-token": "s3cret" } });
+  await request("https://api.test/setlist", { headers: { "x-custom": "s3cret" } });
 
-  assert.deepStrictEqual(calls[0].options.headers, { "x-api-lab-token": "s3cret" });
+  assert.deepStrictEqual(calls[0].options.headers, { "x-custom": "s3cret" });
 });

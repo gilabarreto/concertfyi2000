@@ -99,4 +99,4 @@ Ou seja: um push no `main` publica os dois. Não existe ambiente de staging.
 
 ## APIs e fontes de dados
 
-Consulte [o inventário de APIs, origem dos campos e fallbacks](docs/APIS_E_FONTES.md) para revisar integrações e ideias. A página `/api-lab` exibe o mesmo catálogo e árvore de dados; no site publicado, as consultas são protegidas por senha.
+Consulte [o inventário de APIs, origem dos campos e fallbacks](docs/APIS_E_FONTES.md) para revisar integrações e ideias. O API Lab (`/api-lab`) saiu do app em 2026-10-02: cumpriu o papel de comparar fontes. O código continua no git — `git show 5445fdc` mostra a última versão, e `git checkout 5445fdc -- client/src/pages/ApiLab.jsx server/routes/apiLab.js` traz de volta.

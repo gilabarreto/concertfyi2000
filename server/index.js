@@ -60,11 +60,6 @@ app.get("/api/venue-reviews", require("./routes/venueServices").reviews);
 app.get("/api/venue-photos", require("./routes/venueServices").photos);
 app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
 app.get("/api/albums", require("./routes/albums"));
-// Chamadas de comparação gastam cota: a rota só existe com npm run dev (API_LAB_ENABLED)
-// ou, em produção, com API_LAB_TOKEN — e aí o handler exige a senha em cada chamada.
-if (process.env.API_LAB_ENABLED === "true" || process.env.API_LAB_TOKEN) {
-  app.get("/api/api-lab", require("./routes/apiLab"));
-}
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);

@@ -58,7 +58,6 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
-      // Match API endpoints only; /api-lab is a client-side page.
       "/api/": {
         target: "http://localhost:4000",
         changeOrigin: true,
