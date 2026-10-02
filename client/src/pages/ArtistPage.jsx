@@ -98,7 +98,7 @@ export default function ArtistPage() {
         <nav
           ref={menuRef}
           aria-label="Artist page sections"
-          className="sticky top-16 z-10 lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-zinc-100 p-4 text-sm sm:text-base text-zinc-800"
+          className="sticky top-16 z-10 lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-zinc-100/60 backdrop-blur p-4 text-sm sm:text-base text-zinc-800"
         >
           {[
             sections.slice(0, Math.ceil(sections.length / 2)),
