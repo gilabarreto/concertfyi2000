@@ -41,11 +41,15 @@ receita por link de afiliado (ingresso, hotel, discos).
 | Área | O que a pessoa faz | Fonte |
 |---|---|---|
 | Home | Vê shows próximos num carrossel (Cover Flow); troca a cidade | Ticketmaster + geolocalização |
+| Recently Added (Home) | Setlists dos shows de ontem que acabaram de ser postados | setlist.fm |
 | Busca | Procura artista por nome | Ticketmaster (suggest) |
 | Página do show | Data, turnê, local, mapa, foto e informações do artista | Setlist.fm + Ticketmaster |
 | Setlist | Lista de músicas com encore sinalizado, paginação, copiar, letra, prévia no Spotify/YouTube | Setlist.fm, LRCLib, Spotify, YouTube |
 | Playlist | Cria no Spotify da pessoa uma playlist com o setlist | Spotify (OAuth via popup) |
+| Tour Statistics | Números da turnê (shows, países, música mais tocada, abertura, encerramento) e mapa com shows passados e futuros | Setlist.fm + Ticketmaster |
 | Shows passados | Lista navegável dos shows anteriores do artista | Setlist.fm |
+| Venue | Página do local: o que foi tocado lá (qualquer artista) e o que está à venda | Setlist.fm + Ticketmaster |
+| My City | Setlists do ano na cidade escolhida e shows à venda nela | Setlist.fm + Ticketmaster |
 | Próximos shows | Lista com ingresso, hotel e lembrete `.ics` | Ticketmaster + afiliados |
 | Show perto de você | Faixa avisando quando o artista toca perto da cidade escolhida | Ticketmaster |
 | Pessoal | Favoritar artista, "I WAS THERE", nota e comentário no show | `localStorage` |
