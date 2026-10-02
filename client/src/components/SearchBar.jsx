@@ -4,7 +4,7 @@ import useDebounce from "../hooks/useDebounce";
 import { useSetlistSearch, useTicketmasterSearch } from "../api/queries";
 import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
 export default function SearchBar({ onClose }) {
   const { searchValue, setSearchValue, setSetlist, setTicketmaster } = useContext(AppContext);

@@ -2,7 +2,9 @@ import { useState, useRef, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
-import { faBell, faMoon, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
+import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
+import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 
 const phrases = [
   "Find Your Inspiration",

@@ -1,11 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState, useContext, useRef, useEffect } from "react";
-import {
-  faHouse,
-  faCircleInfo,
-  faEnvelope,
-  faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
+import { faHouse } from "@fortawesome/free-solid-svg-icons/faHouse";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons/faMagnifyingGlass";
 import Icon from "./Icon";
 import SearchBar from "./SearchBar";
 import LocationSelector from "./LocationSelector";

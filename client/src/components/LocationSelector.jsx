@@ -1,11 +1,9 @@
 import { useState, useContext, useRef, useEffect } from "react";
 import Icon from "./Icon";
-import {
-  faXmark,
-  faChevronDown,
-  faChevronUp,
-  faLocationDot,
-} from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import { AppContext } from "../context/AppContext";
 import { useCitySearch } from "../api/queries";
 import useDebounce from "../hooks/useDebounce";

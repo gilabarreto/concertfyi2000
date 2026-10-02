@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
 
