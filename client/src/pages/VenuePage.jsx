@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import Icon from "../components/Icon";
 import {
   useVenueSetlists,

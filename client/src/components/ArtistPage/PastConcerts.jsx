@@ -1,4 +1,4 @@
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { Link } from "react-router-dom";
 import Icon from "../Icon";
 import { getPastConcertsByArtist } from "../../helpers/selectors";

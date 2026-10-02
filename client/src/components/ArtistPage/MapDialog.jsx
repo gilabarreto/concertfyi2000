@@ -1,5 +1,5 @@
 import Icon from "../Icon";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import Map from "./Map";
 
 // Same native <dialog> as Setlist's disclaimer (Esc closes it for free, no key handler

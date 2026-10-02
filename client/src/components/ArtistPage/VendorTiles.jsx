@@ -1,6 +1,7 @@
 import VendorPopup from "./VendorPopup";
 import Icon from "../Icon";
-import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
 
 // Collapsible options for tickets, hotels and calendars inside an expanded concert.
 // Each section opens independently and starts collapsed. Logos come from Google's favicon service,

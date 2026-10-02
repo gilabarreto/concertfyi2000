@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { faCalendarPlus, faShareNodes, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCalendarPlus } from "@fortawesome/free-solid-svg-icons/faCalendarPlus";
+import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import Icon from "../Icon";
 import VendorTiles from "./VendorTiles";
 import {

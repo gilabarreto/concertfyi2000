@@ -1,16 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../Icon";
-import {
-  faBackward,
-  faForward,
-  faChevronDown,
-  faChevronUp,
-  faShareNodes,
-  faCopy,
-  faCheck,
-} from "@fortawesome/free-solid-svg-icons";
-import { faSpotify } from "@fortawesome/free-brands-svg-icons";
+import { faBackward } from "@fortawesome/free-solid-svg-icons/faBackward";
+import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
+import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
+import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
+import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
+import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faSpotify } from "@fortawesome/free-brands-svg-icons/faSpotify";
 import SongDetails from "../SongDetails";
 import Pagination from "../Pagination";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../../helpers/spotifyAuth";

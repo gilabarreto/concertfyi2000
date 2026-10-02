@@ -6,9 +6,10 @@
 // troca de `<i class="fa-...">` no DOM, máscaras, transformações) este app nunca usou.
 //
 // Os pacotes de ícones continuam: são 8,8 kB para os vinte usados, e o Vite descarta o resto.
-// Os arquivos do bundle de entrada (Navbar, Footer, SearchBar, LocationSelector, Reminder*)
-// importam cada ícone pelo caminho próprio (`free-solid-svg-icons/faXmark`). Pelo índice do
-// pacote, que é um módulo só, o Rollup juntava na entrada os ícones de todas as páginas lazy.
+// Cada ícone é importado pelo caminho próprio (`free-solid-svg-icons/faXmark`), nunca pelo
+// índice do pacote — o eslint.config.mjs barra. O índice é um módulo só, e o Rollup não
+// divide um módulo entre chunks: bastava um arquivo da entrada usá-lo para os ícones de
+// todas as páginas lazy irem para o bundle inicial. Misturar os dois jeitos duplica o ícone.
 
 // As duas únicas que aparecem no app. Os valores são os do CSS do próprio FontAwesome —
 // e, como lá, mexem no `font-size`, não na altura. É o que faz a altura (1em) e o

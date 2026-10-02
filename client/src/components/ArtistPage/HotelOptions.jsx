@@ -1,4 +1,4 @@
-import { faBed } from "@fortawesome/free-solid-svg-icons";
+import { faBed } from "@fortawesome/free-solid-svg-icons/faBed";
 import VendorTiles from "./VendorTiles";
 
 // localDate is a plain "YYYY-MM-DD", so parsing it as UTC keeps the night of the show

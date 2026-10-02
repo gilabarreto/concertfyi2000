@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { getSetlist, getTicketmaster } from "../../api/api";
 import { getConcertTarget } from "../../helpers/concertTarget";
 import { AppContext } from "../../context/AppContext";

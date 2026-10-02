@@ -1,5 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import { faMusic } from "@fortawesome/free-solid-svg-icons/faMusic";
 import { useCurrentCity } from "../hooks/useCurrentCity";
 import { useCitySetlists, useLocalEvents, useRecentSetlists } from "../api/queries";
 import {

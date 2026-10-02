@@ -1,6 +1,6 @@
 import { useId, useRef } from "react";
 import Icon from "../Icon";
-import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
 export default function VendorPopup({ icon, title, vendors }) {
   const dialogRef = useRef(null);

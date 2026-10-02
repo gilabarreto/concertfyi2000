@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { faBuilding } from "@fortawesome/free-solid-svg-icons";
+import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
 import { getUpcomingConcertsByCity } from "../helpers/selectors";
 import CardTitle from "./ArtistPage/CardTitle";

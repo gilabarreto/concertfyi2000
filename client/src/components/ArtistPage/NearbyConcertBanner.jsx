@@ -7,7 +7,8 @@ import { dateLabel } from "../../helpers/selectors";
 import ReminderClose from "../ReminderClose";
 import ReminderDelete from "../ReminderDelete";
 import Icon from "../Icon";
-import { faCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import "./NearbyConcertBanner.css";
 
 export default function NearbyConcertBanner({ artist, events }) {

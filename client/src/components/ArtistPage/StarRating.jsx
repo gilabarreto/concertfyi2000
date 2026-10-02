@@ -1,6 +1,7 @@
 import Icon from "../Icon";
-import { faStar as faStarFull, faStarHalfStroke } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faStarEmpty } from "@fortawesome/free-regular-svg-icons";
+import { faStar as faStarFull } from "@fortawesome/free-solid-svg-icons/faStar";
+import { faStarHalfStroke } from "@fortawesome/free-solid-svg-icons/faStarHalfStroke";
+import { faStar as faStarEmpty } from "@fortawesome/free-regular-svg-icons/faStar";
 
 // Read-only (no onRate) for display; interactive for the rating dialog. One button per
 // star, not a left/right split — a split needs pixel-precise aim for the half; clicking

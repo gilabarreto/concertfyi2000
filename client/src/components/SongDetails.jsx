@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import Icon from "./Icon";
-import { faSpotify } from "@fortawesome/free-brands-svg-icons";
-import { faCirclePlay, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
-import { faFileLines } from "@fortawesome/free-regular-svg-icons";
+import { faSpotify } from "@fortawesome/free-brands-svg-icons/faSpotify";
+import { faCirclePlay } from "@fortawesome/free-solid-svg-icons/faCirclePlay";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faMinus } from "@fortawesome/free-solid-svg-icons/faMinus";
+import { faFileLines } from "@fortawesome/free-regular-svg-icons/faFileLines";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../helpers/spotifyAuth";
 import { useLyrics, useYoutubeVideo, useSpotifyTrack } from "../api/queries";
 

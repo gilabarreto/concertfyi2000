@@ -1,5 +1,5 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import Icon from "../Icon";
 import { getUpcomingConcertsByArtist } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";

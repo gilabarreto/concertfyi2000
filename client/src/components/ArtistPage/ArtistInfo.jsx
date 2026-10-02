@@ -1,14 +1,12 @@
 import { useState } from "react";
 import Icon from "../Icon";
 import ArtistPhotos from "./ArtistPhotos";
-import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
-import {
-  faInstagram,
-  faXTwitter,
-  faYoutube,
-  faWikipediaW,
-} from "@fortawesome/free-brands-svg-icons";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons/faHeart";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons/faHeart";
+import { faInstagram } from "@fortawesome/free-brands-svg-icons/faInstagram";
+import { faXTwitter } from "@fortawesome/free-brands-svg-icons/faXTwitter";
+import { faYoutube } from "@fortawesome/free-brands-svg-icons/faYoutube";
+import { faWikipediaW } from "@fortawesome/free-brands-svg-icons/faWikipediaW";
 import { getTicketmasterGenres } from "../../helpers/selectors";
 import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";

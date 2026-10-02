@@ -1,17 +1,15 @@
 import { useRef, useState } from "react";
 import Icon from "../Icon";
 import VenueSource from "./VenueSource";
-import {
-  faXmark,
-  faSquareParking,
-  faWheelchair,
-  faPhone,
-  faClock,
-  faCreditCard,
-  faTicketSimple,
-  faCircleInfo,
-  faChild,
-} from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
+import { faSquareParking } from "@fortawesome/free-solid-svg-icons/faSquareParking";
+import { faWheelchair } from "@fortawesome/free-solid-svg-icons/faWheelchair";
+import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faCreditCard } from "@fortawesome/free-solid-svg-icons/faCreditCard";
+import { faTicketSimple } from "@fortawesome/free-solid-svg-icons/faTicketSimple";
+import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
+import { faChild } from "@fortawesome/free-solid-svg-icons/faChild";
 
 export default function VenueActions({ ticketmaster, services = {} }) {
   const [selectedDetail, setSelectedDetail] = useState(null);

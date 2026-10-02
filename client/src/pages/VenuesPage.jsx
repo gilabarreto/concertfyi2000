@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons/faChevronRight";
 import { useCurrentCity } from "../hooks/useCurrentCity";
 import { useCitySetlists } from "../api/queries";
 import CardTitle from "../components/ArtistPage/CardTitle";

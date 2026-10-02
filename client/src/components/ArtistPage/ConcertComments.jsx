@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import Icon from "../Icon";
-import { faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
+import { faBackward } from "@fortawesome/free-solid-svg-icons/faBackward";
+import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
 import StarRating from "./StarRating";
 import { upsertReview } from "../../helpers/concertReviews";
 

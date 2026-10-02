@@ -1,5 +1,5 @@
 import Icon from "../components/Icon";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
 import { useState } from "react";
 import { SEOHead } from "../components/SEOHead";
 

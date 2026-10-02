@@ -2,8 +2,10 @@ import { useState } from "react";
 import CardTitle from "../ArtistPage/CardTitle";
 import VenueSource from "./VenueSource";
 import Icon from "../Icon";
-import { faGlobe, faPhone, faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
-import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
+import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
+import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons/faHeart";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons/faHeart";
 import StarRating from "../ArtistPage/StarRating";
 import VenueReviewSummary from "./VenueReviewSummary";
 

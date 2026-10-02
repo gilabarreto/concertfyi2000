@@ -1,4 +1,4 @@
-import { faTicketSimple } from "@fortawesome/free-solid-svg-icons";
+import { faTicketSimple } from "@fortawesome/free-solid-svg-icons/faTicketSimple";
 import VendorTiles from "./VendorTiles";
 
 const term = (...parts) => encodeURIComponent(parts.filter(Boolean).join(" "));

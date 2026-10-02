@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
-import {
-  faBackward,
-  faForward,
-  faPlus,
-  faCheck,
-  faLocationDot,
-  faShareNodes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBackward } from "@fortawesome/free-solid-svg-icons/faBackward";
+import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
+import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import { getReviews } from "../../helpers/concertReviews";
 import Map from "./Map";

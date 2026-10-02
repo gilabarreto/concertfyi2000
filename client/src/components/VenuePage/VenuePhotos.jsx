@@ -3,7 +3,7 @@ import { useVenuePhotos } from "../../api/queries";
 import CardTitle from "../ArtistPage/CardTitle";
 import VenueSource from "./VenueSource";
 import Icon from "../Icon";
-import { faCamera } from "@fortawesome/free-solid-svg-icons";
+import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
 
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 

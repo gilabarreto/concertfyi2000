@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import { faInstagram, faFacebookF } from "@fortawesome/free-brands-svg-icons";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
+import { faInstagram } from "@fortawesome/free-brands-svg-icons/faInstagram";
+import { faFacebookF } from "@fortawesome/free-brands-svg-icons/faFacebookF";
 import Icon from "../components/Icon";
 import { SEOHead } from "../components/SEOHead";
 
