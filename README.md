@@ -99,4 +99,4 @@ Ou seja: um push no `main` publica os dois. Não existe ambiente de staging.
 
 ## APIs e fontes de dados
 
-Consulte [o inventário de APIs, origem dos campos e fallbacks](docs/APIS_E_FONTES.md) para revisar integrações e ideias. A página local `/api-lab` exibe o mesmo catálogo e árvore de dados.
+Consulte [o inventário de APIs, origem dos campos e fallbacks](docs/APIS_E_FONTES.md) para revisar integrações e ideias. A página `/api-lab` exibe o mesmo catálogo e árvore de dados; no site publicado, as consultas são protegidas por senha.

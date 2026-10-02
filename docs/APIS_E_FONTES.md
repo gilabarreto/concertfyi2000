@@ -17,7 +17,7 @@ cd client
 npm run dev
 ```
 
-Abra `/api-lab` na URL **Local** impressa pelo Vite (configurada inicialmente em `http://localhost:3000/api-lab`; se a porta estiver ocupada, use a porta realmente impressa). Express atende `http://localhost:4000/api/api-lab?source=jambase`, somente com `API_LAB_ENABLED=true`; `/api-lab` não é uma página do Express. Vite deve manter proxy `/api/`. O Lab usa sempre esse proxy local, mesmo se `VITE_API_BASE` apontar para Render nas páginas públicas.
+Abra `/api-lab` na URL **Local** impressa pelo Vite (configurada inicialmente em `http://localhost:3000/api-lab`; se a porta estiver ocupada, use a porta realmente impressa). Express atende `http://localhost:4000/api/api-lab?source=jambase`, somente com `API_LAB_ENABLED=true`; `/api-lab` não é uma página do Express. Vite deve manter proxy `/api/`. O Lab usa a base configurada em `VITE_API_BASE`; sem ela, usa o proxy local. No site publicado, a página `/api-lab` também está disponível, mas as consultas exigem `API_LAB_TOKEN` no servidor e a senha correspondente no campo Password, enviada pelo header `x-api-lab-token`.
 
 Nenhuma consulta de música/eventos é disparada ao abrir o Lab. Test API consulta somente a fonte selecionada, salvo dependência identificada (Event Art precisa do setlist para achar o evento; Cover Art precisa do release group). Test all pode consumir cotas e gerar cobrança nos planos contratados. Inspect response abre o JSON já recebido em outra aba, sem nova consulta. Resultados ficam apenas na sessão da página. Chaves de servidor não são retornadas no JSON e URLs com credenciais são mascaradas.
 
