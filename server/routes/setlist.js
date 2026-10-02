@@ -63,12 +63,14 @@ router.get("/artist/:mbid", async (req, res) => {
 });
 
 // setlist.fm pages by 20 and allows 2 requests/s, so pages go one at a time with a gap.
-// A 404 on page 1 is setlist.fm's "no results"; any failure after page 1 keeps what came.
+// A 404 on page 1 is setlist.fm's "no results". A failure after page 1 keeps what came but
+// says so: a 429 on page 2 would otherwise read as a 34-show tour that only had 20.
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function allPages(url, params, maxPages) {
   let setlist = [];
   let total = 0;
+  let partial = false;
   for (let p = 1; p <= maxPages; p++) {
     try {
       if (p > 1) await sleep(600);
@@ -78,15 +80,19 @@ async function allPages(url, params, maxPages) {
       if (setlist.length >= total) break;
     } catch (error) {
       if (p === 1 && error.status !== 404) throw error;
+      if (p > 1) {
+        console.error(`Setlist.fm page ${p} failed (${error.status || error.message}), returning ${setlist.length} of ${total}`);
+        partial = true;
+      }
       break;
     }
   }
-  return { total, setlist };
+  return { total, setlist, partial };
 }
 
 // Every route below answers the same for every visitor (a tour, a venue, a city), and Home
 // alone fires two of them per visit, so one copy per query is kept for 30 min. The promise
-// is what's stored, so concurrent visitors share one fetch; a failure is dropped at once.
+// is what's stored, so concurrent visitors share one fetch.
 // ponytail: in-memory, per instance and lost on restart; fine for one Render instance.
 const PAGE_TTL = 30 * 60 * 1000;
 const pageCache = new Map();
@@ -98,7 +104,8 @@ function cachedPages(url, params, maxPages) {
   const promise = allPages(url, params, maxPages);
   if (pageCache.size >= 200) pageCache.delete(pageCache.keys().next().value);
   pageCache.set(key, { promise, expires: Date.now() + PAGE_TTL });
-  promise.catch(() => pageCache.delete(key));
+  // A partial answer isn't kept either: the next visitor gets a fresh try at every page.
+  promise.then((data) => data.partial && pageCache.delete(key), () => pageCache.delete(key));
   return promise;
 }
 

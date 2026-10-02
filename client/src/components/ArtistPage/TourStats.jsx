@@ -14,6 +14,8 @@ export default function TourStats({ concert, ticketmaster }) {
   const tourName = concert.tour?.name;
   const { data, isLoading } = useTourSetlists(concert.artist.mbid, tourName);
   const shows = data?.setlist || [];
+  // The server got page 1 but not the rest (rate limit): the numbers cover part of the tour.
+  const partial = data?.partial && data.total > shows.length;
   const stats = getTourStats(shows);
   const value = (v) => (isLoading ? "…" : (v ?? NA));
 
@@ -79,6 +81,11 @@ export default function TourStats({ concert, ticketmaster }) {
               <span className="font-semibold">{label}:</span>&ensp;{text}
             </li>
           ))}
+          {partial && (
+            <li className="py-2 text-xs text-zinc-500">
+              Only {shows.length} of {data.total} tour dates loaded; numbers may be incomplete.
+            </li>
+          )}
         </ol>
         <div className="flex min-h-72 flex-col">
           {points.length ? (

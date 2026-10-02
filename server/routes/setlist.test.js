@@ -10,6 +10,8 @@ const calls = [];
 http.request = async (url, { params }) => {
   calls.push({ url, params });
   if (params.cityName === "Falha") throw Object.assign(new Error("boom"), { status: 503 });
+  if (params.tourName === "Meia" && params.p === 2) throw Object.assign(new Error("slow down"), { status: 429 });
+  if (params.tourName === "Meia") return { total: 34, setlist: Array.from({ length: 20 }, (_, i) => ({ id: `m${i}` })) };
   return { total: 1, setlist: [{ id: "a" }] };
 };
 const setlist = require("./setlist");
@@ -51,4 +53,15 @@ test("falha não fica no cache", async () => {
   assert.strictEqual((await call("/recent", { cityName: "Falha" })).status, 503);
   assert.strictEqual((await call("/recent", { cityName: "Falha" })).status, 503);
   assert.strictEqual(calls.filter((c) => c.params.cityName === "Falha").length, 2);
+});
+
+test("página 2 falhando devolve o que veio, marcado como parcial e fora do cache", async () => {
+  const query = { artistMbid: "67f66c07-6e61-4026-ade5-7e782fad3a5d", tourName: "Meia" };
+  const { status, body } = await call("/tour", query);
+  assert.strictEqual(status, 200);
+  assert.strictEqual(body.setlist.length, 20);
+  assert.strictEqual(body.total, 34);
+  assert.strictEqual(body.partial, true);
+  await call("/tour", query);
+  assert.strictEqual(calls.filter((c) => c.params.tourName === "Meia" && c.params.p === 1).length, 2);
 });
