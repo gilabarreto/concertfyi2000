@@ -88,6 +88,8 @@ Título de seção e palco centralizados; lista, setlist e data alinhados à esq
   Gradiente continua vetado em qualquer outro lugar.
   Palco da página de artista tingido com as cores da foto (estilo Apple Music) foi
   testado e recusado pelo dono em 2026-09-23: fica `zinc-100`.
+- Sombra interna na base dos palcos `zinc-100` (Home e ArtistPage), em `zinc-400`:
+  dá profundidade ao palco. Pedido do dono em 2026-10-02. Sombra continua vetada no resto.
 
 ## Ordem de entrega (um commit por passo)
 
