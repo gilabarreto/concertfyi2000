@@ -23,6 +23,12 @@ export function parseSetlistDate(eventDate) {
   return new Date(year, month - 1, day);
 }
 
+// The Ticketmaster side: YYYY-MM-DD in dates.start.localDate, built from parts for the same reason.
+export function withTicketmasterDate(event) {
+  const [year, month, day] = event.dates.start.localDate.split("-");
+  return { ...event, dateObj: new Date(year, month - 1, day) };
+}
+
 // en-GB is the locale that shortens September to "Sept" (en-US stops at "Sep"); the
 // other eleven months are identical, and the month-day-year order stays ours. Shared by
 // every card that shows a concert date, so past/upcoming/last concert all read the same.
@@ -57,10 +63,7 @@ export function getUpcomingConcertsByArtist(events = [], artistName) {
 
   return events
     .filter((item) => item._embedded?.attractions?.some((a) => a.name === artistName))
-    .map((item) => {
-      const [year, month, day] = item.dates.start.localDate.split("-");
-      return { ...item, dateObj: new Date(year, month - 1, day) };
-    })
+    .map(withTicketmasterDate)
     .filter((item) => item.dateObj >= today)
     .sort((a, b) => a.dateObj - b.dateObj);
 }
@@ -99,10 +102,7 @@ export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true
         ? normalize(venueCity) === normalize(cityName)
         : normalize(venueCity) !== normalize(cityName);
     })
-    .map((item) => {
-      const [year, month, day] = item.dates.start.localDate.split("-");
-      return { ...item, dateObj: new Date(year, month - 1, day) };
-    })
+    .map(withTicketmasterDate)
     .filter((item) => item.dateObj >= today)
     .sort((a, b) => a.dateObj - b.dateObj);
 }

@@ -12,7 +12,7 @@ import {
 import VenueInfo from "../components/VenuePage/VenueInfo";
 import VenueActions from "../components/VenuePage/VenueActions";
 import VenuePhotos from "../components/VenuePage/VenuePhotos";
-import { artistOf, parseSetlistDate } from "../helpers/selectors";
+import { artistOf, parseSetlistDate, withTicketmasterDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
 import HotelOptions from "../components/ArtistPage/HotelOptions";
@@ -95,10 +95,7 @@ export default function VenuePage() {
         !event.dates.start.dateTBD &&
         !event.dates.start.dateTBA,
     )
-    .map((event) => {
-      const [year, month, day] = event.dates.start.localDate.split("-");
-      return { ...event, dateObj: new Date(year, month - 1, day) };
-    })
+    .map(withTicketmasterDate)
     .filter((event) => event.dateObj >= today);
   const place = [venue.city?.name, venue.city?.country?.name].filter(Boolean).join(", ");
 
