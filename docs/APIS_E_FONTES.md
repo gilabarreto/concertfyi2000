@@ -1,4 +1,4 @@
-> O API Lab (`/api-lab`) saiu do app em 2026-10-02: cumpriu o papel de comparar fontes. O código continua no git — `git show 5445fdc` mostra a última versão, e `git checkout 5445fdc -- client/src/pages/ApiLab.jsx server/routes/apiLab.js` traz de volta. As menções a `/api-lab` abaixo são históricas.
+> O API Lab (`/api-lab`) saiu do app em 2026-10-02: cumpriu o papel de comparar fontes. O código continua no git — `git show 5445fdc` mostra a última versão, e `git checkout 5445fdc -- client/src/pages/ApiLab.jsx server/routes/apiLab.js` traz de volta. Catálogo e receitas de cada chamada em [docs/API_LAB_REFERENCIA.md](API_LAB_REFERENCIA.md). As menções a `/api-lab` abaixo são históricas.
 
 # APIs, origem dos dados e oportunidades do ConcertFYI
 
