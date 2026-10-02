@@ -93,12 +93,12 @@ export default function SongDetails({ songName, artistName }) {
     <div className="bg-zinc-50 border-b border-zinc-300/50">
       {/* Lyrics Section */}
       <details ref={lyricsRef} className="group/lyrics border-b border-zinc-300/50 p-2 sm:p-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
-          <span>
+        <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+          <span className="px-6">
             <Icon icon={faFileLines} className="mr-2 text-sm text-red-600" />
             Lyrics
           </span>
-          <span className="shrink-0 text-red-600">
+          <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
             <Icon icon={faPlus} className="group-open/lyrics:hidden" />
             <Icon icon={faMinus} className="hidden group-open/lyrics:inline-block" />
           </span>
@@ -133,12 +133,12 @@ export default function SongDetails({ songName, artistName }) {
 
       {/* YouTube Video */}
       <details className="group/video border-b border-zinc-300/50 p-2 sm:p-4">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
-          <span>
+        <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+          <span className="px-6">
             <Icon icon={faCirclePlay} className="mr-2 text-sm text-red-600" />
             Music Video
           </span>
-          <span className="shrink-0 text-red-600">
+          <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
             <Icon icon={faPlus} className="group-open/video:hidden" />
             <Icon icon={faMinus} className="hidden group-open/video:inline-block" />
           </span>
