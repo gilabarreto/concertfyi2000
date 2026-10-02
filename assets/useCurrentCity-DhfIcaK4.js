@@ -1,1 +1,0 @@
-import{r as o,A as y,U as n}from"./index-8_nycZwn.js";function C(){const{selectedLocation:r}=o.useContext(y),u=n();return{city:(r==null?void 0:r.city)||u.city,country:(r==null?void 0:r.country)||u.country,countryCode:r==null?void 0:r.countryCode,lat:(r==null?void 0:r.lat)??u.coords.lat,long:(r==null?void 0:r.lon)??u.coords.long}}export{C as u};
