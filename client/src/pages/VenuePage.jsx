@@ -12,7 +12,7 @@ import {
 import VenueInfo from "../components/VenuePage/VenueInfo";
 import VenueActions from "../components/VenuePage/VenueActions";
 import VenuePhotos from "../components/VenuePage/VenuePhotos";
-import { parseSetlistDate } from "../helpers/selectors";
+import { artistOf, parseSetlistDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
 import HotelOptions from "../components/ArtistPage/HotelOptions";
@@ -20,9 +20,6 @@ import ConcertReminder from "../components/ArtistPage/ConcertReminder";
 import ViewConcertButton from "../components/ArtistPage/ViewConcertButton";
 import Map from "../components/ArtistPage/Map";
 import { SEOHead } from "../components/SEOHead";
-
-const artistOf = (event) =>
-  event._embedded?.attractions?.[0]?.name || event.name || "Unknown artist";
 
 // One venue, both sides of the timeline: setlist.fm for what was played there (any artist),
 // Ticketmaster for what's on sale. The venue itself (name, city, coords) rides along on

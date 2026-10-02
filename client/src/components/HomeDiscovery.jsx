@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
-import { getUpcomingConcertsByCity } from "../helpers/selectors";
+import { artistOf, getUpcomingConcertsByCity } from "../helpers/selectors";
 import CardTitle from "./ArtistPage/CardTitle";
 import Icon from "./Icon";
 import ConcertList from "./ArtistPage/ConcertList";
@@ -18,8 +18,6 @@ const normalize = (value = "") =>
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
-const artistOf = (event) => event._embedded?.attractions?.[0]?.name || event.name;
-
 function VenueTile({ venue, ticketmaster }) {
   const [failed, setFailed] = useState(false);
   const [googleFailed, setGoogleFailed] = useState(false);

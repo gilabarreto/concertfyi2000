@@ -3,6 +3,7 @@ import { faMusic } from "@fortawesome/free-solid-svg-icons/faMusic";
 import { useCurrentCity } from "../hooks/useCurrentCity";
 import { useCitySetlists, useLocalEvents, useRecentSetlists } from "../api/queries";
 import {
+  artistOf,
   getUpcomingConcertsByCity,
   getRecentUpcomingSetlists,
   parseSetlistDate,
@@ -13,9 +14,6 @@ import HotelOptions from "../components/ArtistPage/HotelOptions";
 import ConcertReminder from "../components/ArtistPage/ConcertReminder";
 import Map from "../components/ArtistPage/Map";
 import { SEOHead } from "../components/SEOHead";
-
-const artistOf = (event) =>
-  event._embedded?.attractions?.[0]?.name || event.name || "Unknown artist";
 
 // My City: this year's setlists in the current city from setlist.fm, what's on sale there
 // from Ticketmaster.

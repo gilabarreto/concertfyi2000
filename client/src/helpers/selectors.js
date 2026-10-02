@@ -40,6 +40,11 @@ export function getPastConcertsByArtist(setlist = [], artistId) {
     .sort((a, b) => b.dateObj - a.dateObj);
 }
 
+// Local/TicketWeb shows often carry no attraction at all, just the event's own name
+// (e.g. "Gedfest Yeg"). That's still a real name, so it beats "Unknown artist".
+export const artistOf = (event) =>
+  event._embedded?.attractions?.[0]?.name || event.name || "Unknown artist";
+
 // A irmã da de cima, para o outro lado da linha do tempo. As duas APIs não
 // compartilham id nenhum: Setlist.fm casa com Ticketmaster pelo nome do artista,
 // e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
