@@ -52,9 +52,11 @@ ConcertFYI — Pendências e Decisões
   - card Tour Statistics com mapa da turnê abaixo do Artist Info — `ceab820`;
   - página do venue + botão VENUE acima da lista de Upcoming Concerts — `d9caf59`;
   - página My City + botão MY CITY — `3764d1f`;
+  - `3764d1f` apagou sem querer o `locationOf` da UpcomingConcerts e toda página de artista quebrou em produção até `1d0f89c`. Os botões eram para a Home e foram para lá em `52de73b`. Na Home, o VENUE abre `/venues` (venues da cidade ordenados por shows no ano), já que lá não existe show aberto de onde tirar o venue.
   - card Recently Added na Home — `9d56540`.
 □ Cota do setlist.fm nas seções novas — Tour Statistics gasta até 5 chamadas por turnê, Venue e My City até 3 cada, todas sem cache no servidor (só o React Query, por navegador). O Recently Added tem cache em memória de 30 min no servidor, que se perde a cada restart do Render. Se a cota diária estourar, o próximo passo é o mesmo cache em memória nas outras rotas.
 □ Venue: o Ticketmaster é casado pelo nome do venue a até 50 km das coordenadas da cidade no setlist.fm (os dois não compartilham id). É a mesma costura frágil do nome do artista: um nome diferente nas duas APIs deixa os Upcoming do venue vazios.
+□ Na Home, a linha VENUE / MY CITY empurra o título "Upcoming Concerts" uns 30 px para baixo do "Concerts Near You" ao lado. Se incomodar: botões abaixo do título, ou a mesma altura reservada na coluna da direita.
 □ My City usa só o ano corrente do setlist.fm: em janeiro a lista de passados fica quase vazia. Trocar por "últimos 12 meses" custa uma segunda busca com o ano anterior.
 
 ⚪ Descartado (registro, decisão reversível)
