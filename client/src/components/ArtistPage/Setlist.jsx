@@ -85,7 +85,13 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
   const goTo = (id) => navigate(`/artists/${artistId}/concerts/${id}#setlist`);
 
   const sets = concert.sets?.set || [];
-  const mainSongs = sets.filter((set) => set.encore == null).flatMap((set) => set.song || []);
+  // The first song of a named main set (setlist.fm's "B-Stage", "Acoustic") carries the name,
+  // so the list can head it the same way it heads the encore.
+  const songsOf = (set) =>
+    (set.song || []).map((song, i) =>
+      i === 0 && set.name ? { ...song, setName: set.name } : song,
+    );
+  const mainSongs = sets.filter((set) => set.encore == null).flatMap(songsOf);
   const encoreSongs = sets.filter((set) => set.encore != null).flatMap((set) => set.song || []);
   const songs = [...mainSongs, ...encoreSongs];
   const artistName = concert.artist.name;
@@ -242,15 +248,21 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
           <CardNotice>No songs in this setlist. Check back later.</CardNotice>
         ) : (
           <>
+            {/* Show-level note: "May be incomplete", "Opening act for AC/DC". */}
+            {concert.info && (
+              <p className="mx-[12px] border-b border-zinc-300/50 py-2 text-xs text-zinc-500">
+                {concert.info}
+              </p>
+            )}
             <ol className="px-[12px]">
               {displaySongs.map((song, i) => {
                 const songIndex = offset + i;
                 const isEncoreStart = encoreSongs.length > 0 && songIndex === mainSongs.length;
                 return (
                   <li key={songIndex} className="flex flex-col">
-                    {isEncoreStart && (
+                    {(isEncoreStart || song.setName) && (
                       <span className="pt-3 pb-1 text-center text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                        Encore
+                        {isEncoreStart ? "Encore" : song.setName}
                       </span>
                     )}
                     <div className="flex items-center justify-between border-b border-zinc-300/50 py-2">
@@ -258,7 +270,28 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                         position gets its own cell */}
                       <span className="flex flex-1 items-center gap-2">
                         <span className="tabular-nums text-zinc-500">{songIndex + 1}.</span>
-                        <span>{song.name}</span>
+                        <span className="flex flex-col">
+                          <span>
+                            {song.name}
+                            {song.tape && (
+                              <span className="ml-2 rounded-full border border-zinc-300 px-1.5 text-[10px] uppercase leading-4 text-zinc-500">
+                                Tape
+                              </span>
+                            )}
+                          </span>
+                          {/* setlist.fm's per-song notes: cover, guest on stage, free text. */}
+                          {(song.cover || song.with || song.info) && (
+                            <span className="text-xs text-zinc-500">
+                              {[
+                                song.cover && `${song.cover.name} cover`,
+                                song.with && `with ${song.with.name}`,
+                                song.info,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          )}
+                        </span>
                       </span>
 
                       <button
