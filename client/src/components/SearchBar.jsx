@@ -46,22 +46,6 @@ export default function SearchBar({ onClose }) {
     }
   };
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (window.innerWidth < 768) {
-  //       setPlaceholder("Search");
-  //     } else {
-  //       setPlaceholder("Search your favorite artist");
-  //     }
-  //   };
-
-  //   handleResize();
-
-  //   window.addEventListener("resize", handleResize);
-
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, []);
-
   return (
     <form onSubmit={(e) => e.preventDefault()} className="relative flex w-full mx-auto">
       <input
