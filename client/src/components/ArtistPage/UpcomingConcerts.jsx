@@ -1,14 +1,11 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
-import { faBuilding, faCity, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import Icon from "../Icon";
 import { getUpcomingConcertsByArtist } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
-
-const pill =
-  "flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600";
 
 export default function UpcomingConcerts(props) {
   const events = getUpcomingConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
@@ -21,26 +18,13 @@ export default function UpcomingConcerts(props) {
       empty="No upcoming concerts. Check back later."
       showSearch={false}
       items={events}
-      actions={
-        <>
-          {/* Same pill as SHARE / I WAS THERE. The venue is the open concert's (setlist.fm
-              id); Ticketmaster's upcoming venues don't carry one. */}
-          {props.concert.venue?.id && (
-            <Link
-              to={`/venues/${props.concert.venue.id}`}
-              title={`Past and upcoming concerts at ${props.concert.venue.name}`}
-              className={pill}
-            >
-              <Icon icon={faBuilding} className="text-[0.65rem]" />
-              VENUE
-            </Link>
-          )}
-          <Link to="/city" title="Past and upcoming concerts in your city" className={pill}>
-            <Icon icon={faCity} className="text-[0.65rem]" />
-            MY CITY
-          </Link>
-        </>
-      }
+      locationOf={(concert) => {
+        // Parte dos eventos internacionais da Ticketmaster vem com venue sem city.
+        // O guard ia só até venues[0], então city.name derrubava a árvore de rotas inteira.
+        const venue = concert._embedded?.venues?.[0];
+        const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
+        return parts.join(", ") || "Unknown location";
+      }}
       iconTitle="Get tickets"
       // NextConcert reads this same "next" param to pick which upcoming show its own
       // card previews; View concert also sets this ID before scrolling to the card.
