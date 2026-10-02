@@ -26,6 +26,7 @@ export function getTourUpcomingConcerts(events, artistName, shows, selectedId) {
         attractions: [{ name: artistName }],
         venues: [
           {
+            id: show.venue?.id,
             name: show.venue?.name,
             city: { name: city?.name },
             country: { name: city?.country?.name, countryCode: city?.country?.code },

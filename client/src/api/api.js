@@ -18,6 +18,8 @@ export const getTourSetlists = (artistMbid, tourName) =>
 export const getVenueSetlists = (venueId) => API(`/setlist/venue/${encodeURIComponent(venueId)}`);
 export const getVenueDetails = (venueId) =>
   API(`/setlist/venue-details/${encodeURIComponent(venueId)}`);
+export const getTicketmasterVenue = (venueId) =>
+  API(`/venue-lookup/${encodeURIComponent(venueId)}`, { timeout: 30000 });
 export const getVenueInfo = (name, lat, long) =>
   API("/venue-info", { params: { name, lat, long }, timeout: 30000 });
 

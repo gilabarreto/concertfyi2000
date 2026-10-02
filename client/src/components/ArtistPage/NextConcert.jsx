@@ -1,5 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import Icon from "../Icon";
 import {
   faBackward,
@@ -10,7 +10,6 @@ import {
   faShareNodes,
 } from "@fortawesome/free-solid-svg-icons";
 import { getPastConcertsByArtist, dateLabel, getBestImage } from "../../helpers/selectors";
-import MapDialog from "./MapDialog";
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
 import { getTourUpcomingConcerts } from "../../helpers/tourStats";
@@ -28,7 +27,6 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const [searchParams, setSearchParams] = useSearchParams();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
   const [linkCopied, setLinkCopied] = useState(false);
-  const mapRef = useRef(null);
   const [tourMapOpen, setTourMapOpen] = useState(false);
 
   // ?next picks which upcoming show this card previews, same idea as :concertId for the
@@ -120,7 +118,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
       <div
         className={
           // Mesmas colunas da fileira Setlists/Top Tracks: o gap-4 do grid mais o px-4 dos dois cards.
-          hideTitle ? "grid grid-cols-2 items-start gap-x-12" : ""
+          hideTitle ? "grid grid-cols-2 items-start gap-x-12" : "grid grid-cols-1 gap-3"
         }
       >
         <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
@@ -153,8 +151,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 className="text-red-600 hover:text-red-800 transition-colors"
                 aria-pressed={tourMapOpen}
                 onClick={() => {
-                  setTourMapOpen(hideTitle ? !tourMapOpen : true);
-                  if (!hideTitle) mapRef.current.showModal();
+                  setTourMapOpen(!tourMapOpen);
                 }}
               >
                 {tour}
@@ -164,7 +161,17 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Venue:</span>&ensp;{venue?.name}
+            <span className="font-semibold">Venue:</span>&ensp;
+            {venue?.id ? (
+              <Link
+                to={`/venues/${upcomingConcert.source === "setlistfm" ? venue.id : `ticketmaster:${venue.id}`}`}
+                className="text-red-600 hover:text-red-800 transition-colors"
+              >
+                {venue.name}
+              </Link>
+            ) : (
+              venue?.name
+            )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Location:</span>&ensp;
@@ -173,10 +180,10 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 type="button"
                 onClick={() => {
                   setTourMapOpen(false);
-                  mapRef.current.showModal();
                 }}
-                title="View on map"
-                aria-haspopup="dialog"
+                title="Show concert location on map"
+                aria-controls="next-concert-map"
+                aria-pressed={!tourMapOpen}
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
               >
                 <Icon icon={faLocationDot} className="mr-2" />
@@ -198,8 +205,9 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             <ConcertReminder event={upcomingConcert} artistName={concert.artist.name} iconOnly />
           </li>
         </ol>
-        {hideTitle && (coords || tourMapOpen) && (
+        {(coords || tourMapOpen) && (
           <div
+            id="next-concert-map"
             className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
@@ -208,7 +216,6 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 artistId={artistId}
                 tourName={tour}
                 onNavigate={() => {
-                  mapRef.current?.close();
                   setTourMapOpen(false);
                 }}
               />
@@ -220,25 +227,6 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           </div>
         )}
       </div>
-
-      <MapDialog
-        dialogRef={mapRef}
-        title={tourMapOpen ? tour : venue?.name || "Venue location"}
-        latitude={coords?.latitude}
-        longitude={coords?.longitude}
-      >
-        {tourMapOpen && !hideTitle && (
-          <TourMapPanel
-            popup
-            artistId={artistId}
-            tourName={tour}
-            onNavigate={() => {
-              mapRef.current?.close();
-              setTourMapOpen(false);
-            }}
-          />
-        )}
-      </MapDialog>
     </>
   );
 }

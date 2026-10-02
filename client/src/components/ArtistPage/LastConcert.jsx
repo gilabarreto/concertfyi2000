@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Icon from "../Icon";
 import {
   faBackward,
@@ -11,7 +11,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import { getReviews } from "../../helpers/concertReviews";
-import MapDialog from "./MapDialog";
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
 import ConcertRatingDialog from "./ConcertRatingDialog";
@@ -37,7 +36,6 @@ export default function LastConcert({
   const [attended, setAttended] = useState(getAttended);
   const [linkCopied, setLinkCopied] = useState(false);
   const [reviews, setReviews] = useState(() => getReviews(concert.id));
-  const mapRef = useRef(null);
   const [tourMapOpen, setTourMapOpen] = useState(false);
   const ratingRef = useRef(null);
 
@@ -122,7 +120,7 @@ export default function LastConcert({
       <div
         className={
           // Mesmas colunas da fileira Setlists/Top Tracks: o gap-4 do grid mais o px-4 dos dois cards.
-          hideTitle ? "grid grid-cols-2 items-start gap-x-12" : ""
+          hideTitle ? "grid grid-cols-2 items-start gap-x-12" : "grid grid-cols-1 gap-3"
         }
       >
         <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
@@ -155,8 +153,7 @@ export default function LastConcert({
                 className="text-red-600 hover:text-red-800 transition-colors"
                 aria-pressed={tourMapOpen}
                 onClick={() => {
-                  setTourMapOpen(hideTitle ? !tourMapOpen : true);
-                  if (!hideTitle) mapRef.current.showModal();
+                  setTourMapOpen(!tourMapOpen);
                 }}
               >
                 {tour}
@@ -166,7 +163,17 @@ export default function LastConcert({
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Venue:</span>&ensp;{venue}
+            <span className="font-semibold">Venue:</span>&ensp;
+            {concert.venue?.id ? (
+              <Link
+                to={`/venues/${concert.venue.id}`}
+                className="text-red-600 hover:text-red-800 transition-colors"
+              >
+                {venue}
+              </Link>
+            ) : (
+              venue
+            )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Location:</span>&ensp;
@@ -175,10 +182,10 @@ export default function LastConcert({
                 type="button"
                 onClick={() => {
                   setTourMapOpen(false);
-                  mapRef.current.showModal();
                 }}
-                title="View on map"
-                aria-haspopup="dialog"
+                title="Show concert location on map"
+                aria-controls="last-concert-map"
+                aria-pressed={!tourMapOpen}
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
               >
                 <Icon icon={faLocationDot} className="mr-2" />
@@ -201,8 +208,9 @@ export default function LastConcert({
             key={concert.id}
           />
         </ol>
-        {hideTitle && (coords || tourMapOpen) && (
+        {(coords || tourMapOpen) && (
           <div
+            id="last-concert-map"
             className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
             aria-label="Concert location map"
           >
@@ -211,7 +219,6 @@ export default function LastConcert({
                 artistId={artistId}
                 tourName={tour}
                 onNavigate={() => {
-                  mapRef.current?.close();
                   setTourMapOpen(false);
                 }}
               />
@@ -223,25 +230,6 @@ export default function LastConcert({
           </div>
         )}
       </div>
-
-      <MapDialog
-        dialogRef={mapRef}
-        title={tourMapOpen ? tour : venue || "Venue location"}
-        latitude={coords?.lat}
-        longitude={coords?.long}
-      >
-        {tourMapOpen && !hideTitle && (
-          <TourMapPanel
-            popup
-            artistId={artistId}
-            tourName={tour}
-            onNavigate={() => {
-              mapRef.current?.close();
-              setTourMapOpen(false);
-            }}
-          />
-        )}
-      </MapDialog>
 
       <ConcertRatingDialog ref={ratingRef} concertId={concert.id} onSaved={setReviews} />
     </>

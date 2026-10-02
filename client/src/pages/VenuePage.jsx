@@ -7,6 +7,7 @@ import {
   useVenueDetails,
   useVenueInfo,
   useVenueServices,
+  useTicketmasterVenue,
 } from "../api/queries";
 import VenueInfo from "../components/VenuePage/VenueInfo";
 import VenueActions from "../components/VenuePage/VenueActions";
@@ -16,6 +17,7 @@ import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
 import HotelOptions from "../components/ArtistPage/HotelOptions";
 import ConcertReminder from "../components/ArtistPage/ConcertReminder";
+import ViewConcertButton from "../components/ArtistPage/ViewConcertButton";
 import Map from "../components/ArtistPage/Map";
 import { SEOHead } from "../components/SEOHead";
 
@@ -27,13 +29,17 @@ const artistOf = (event) =>
 // every setlist, so it costs no call of its own.
 export default function VenuePage() {
   const { venueId } = useParams();
-  const { data, isLoading } = useVenueSetlists(venueId);
+  const isTicketmaster = venueId.startsWith("ticketmaster:");
+  const { data: lookup, isLoading: lookupLoading } = useTicketmasterVenue(
+    isTicketmaster ? venueId.slice("ticketmaster:".length) : null,
+  );
+  const { data, isLoading } = useVenueSetlists(isTicketmaster ? lookup?.setlistVenueId : venueId);
   const listVenue = data?.setlist?.[0]?.venue;
   const { data: directVenue, isLoading: detailsLoading } = useVenueDetails(
-    venueId,
-    !isLoading && !listVenue,
+    isTicketmaster ? null : venueId,
+    !isTicketmaster && !isLoading && !listVenue,
   );
-  const venue = listVenue || directVenue;
+  const venue = isTicketmaster ? lookup?.venue : listVenue || directVenue;
   const coords = venue?.city?.coords;
   const { data: upcomingData, isLoading: eventsLoading } = useVenueEvents(
     venue?.name,
@@ -46,7 +52,8 @@ export default function VenuePage() {
     isError: infoFailed,
     refetch: retryInfo,
   } = useVenueInfo(venue?.name, coords?.lat, coords?.long);
-  const location = upcomingData?.venue?.location;
+  const ticketmasterVenue = lookup?.ticketmaster || upcomingData?.venue;
+  const location = ticketmasterVenue?.location;
   const exactCoords = location
     ? { lat: Number(location.latitude), long: Number(location.longitude) }
     : info.coordinates;
@@ -64,7 +71,7 @@ export default function VenuePage() {
     refetch: retryServices,
   } = useVenueServices(identity, !!venue && !infoLoading && !eventsLoading);
 
-  if (isLoading || detailsLoading) {
+  if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
     return <div className="p-8 w-full text-center text-zinc-400">Loading venue…</div>;
   }
   if (!venue) {
@@ -112,7 +119,7 @@ export default function VenuePage() {
             <VenueInfo
               key={venueId}
               venue={venue}
-              ticketmaster={upcomingData?.venue}
+              ticketmaster={ticketmasterVenue}
               info={info}
               services={services}
               identity={identity}
@@ -138,7 +145,7 @@ export default function VenuePage() {
                 )}
               </>
             )}
-            <VenueActions ticketmaster={upcomingData?.venue} services={services} />
+            <VenueActions ticketmaster={ticketmasterVenue} services={services} />
           </div>
         </div>
 
@@ -152,7 +159,7 @@ export default function VenuePage() {
           <div className="min-w-0 bg-white px-4 space-y-2">
             <ConcertList
               title="Past Concerts"
-              empty="No past setlists for this venue yet."
+              empty={isLoading ? "Loading…" : "No past setlists for this venue yet."}
               showSearch={false}
               items={past}
               locationOf={(show) => show.artist.name}
@@ -183,7 +190,8 @@ export default function VenuePage() {
                 <>
                   <TicketOptions event={event} artistName={artistOf(event)} />
                   <HotelOptions event={event} />
-                  <ConcertReminder event={event} artistName={artistOf(event)} />
+                  <ConcertReminder event={event} artistName={artistOf(event)} showShare={false} />
+                  <ViewConcertButton event={event} artistName={artistOf(event)} />
                 </>
               )}
             />

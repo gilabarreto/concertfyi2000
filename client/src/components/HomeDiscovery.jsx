@@ -9,6 +9,7 @@ import ConcertList from "./ArtistPage/ConcertList";
 import TicketOptions from "./ArtistPage/TicketOptions";
 import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
+import ViewConcertButton from "./ArtistPage/ViewConcertButton";
 
 const normalize = (value = "") =>
   value
@@ -99,7 +100,7 @@ function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
     <section aria-label={`Venues in ${city}`} className="w-full space-y-2">
       <CardTitle>
         <Link to="/venues" className="hover:text-red-800">
-          Venues
+          Nearby Venues
         </Link>
       </CardTitle>
       {!venues.length ? (
@@ -175,15 +176,6 @@ export default function HomeDiscovery({ location }) {
   const venues = [...byVenue.values()].sort((a, b) => b.shows - a.shows);
   return (
     <div className="w-full space-y-6 lg:space-y-3">
-      <VenueCarousel
-        key={`${city}-${countryCode}-${lat}-${long}`}
-        venues={venues}
-        events={events}
-        city={city}
-        loading={setlists.isLoading}
-        failed={setlists.isError}
-        onRetry={setlists.refetch}
-      />
       <div
         className="grid grid-cols-1 lg:grid-cols-2 gap-3"
         aria-label="Local concert lists"
@@ -217,7 +209,8 @@ export default function HomeDiscovery({ location }) {
                 <>
                   <TicketOptions event={event} artistName={artistOf(event)} />
                   <HotelOptions event={event} />
-                  <ConcertReminder event={event} artistName={artistOf(event)} />
+                  <ConcertReminder event={event} artistName={artistOf(event)} showShare={false} />
+                  <ViewConcertButton event={event} artistName={artistOf(event)} />
                 </>
               )}
             />
@@ -233,6 +226,15 @@ export default function HomeDiscovery({ location }) {
           </section>
         ))}
       </div>
+      <VenueCarousel
+        key={`${city}-${countryCode}-${lat}-${long}`}
+        venues={venues}
+        events={events}
+        city={city}
+        loading={setlists.isLoading}
+        failed={setlists.isError}
+        onRetry={setlists.refetch}
+      />
     </div>
   );
 }

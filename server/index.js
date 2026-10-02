@@ -54,6 +54,7 @@ app.get("/api/lyrics", require("./routes/lyrics"));
 app.get("/api/youtube", require("./routes/youtube"));
 app.get("/api/wikipedia", require("./routes/wikipedia"));
 app.get("/api/venue-info", require("./routes/venueInfo"));
+app.get("/api/venue-lookup/:venueId", require("./routes/venueLookup"));
 app.get("/api/venue-services", require("./routes/venueServices").services);
 app.get("/api/venue-reviews", require("./routes/venueServices").reviews);
 app.get("/api/venue-photos", require("./routes/venueServices").photos);

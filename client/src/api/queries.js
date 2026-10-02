@@ -6,6 +6,7 @@ import {
   getTourSetlists,
   getVenueSetlists,
   getVenueDetails,
+  getTicketmasterVenue,
   getVenueInfo,
   getVenueServices,
   getVenueReviews,
@@ -191,6 +192,15 @@ export const useVenueDetails = (venueId, enabled) =>
     queryFn: () => getVenueDetails(venueId),
     enabled: !!venueId && enabled,
     staleTime: 24 * 60 * 60 * 1000,
+    retry: false,
+  });
+
+export const useTicketmasterVenue = (venueId) =>
+  useQuery({
+    queryKey: ["ticketmaster-venue", venueId],
+    queryFn: () => getTicketmasterVenue(venueId),
+    enabled: !!venueId,
+    staleTime: 60 * 60 * 1000,
     retry: false,
   });
 
