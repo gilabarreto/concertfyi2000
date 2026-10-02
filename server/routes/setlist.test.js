@@ -16,21 +16,8 @@ http.request = async (url, { params }) => {
 };
 const setlist = require("./setlist");
 
-const call = (url, query) =>
-  new Promise((resolve, reject) => {
-    const res = {
-      statusCode: 200,
-      status(code) {
-        this.statusCode = code;
-        return this;
-      },
-      json(body) {
-        resolve({ status: this.statusCode, body });
-        return this;
-      },
-    };
-    setlist({ method: "GET", url, query, headers: {} }, res, reject);
-  });
+const fakeRequest = require("../fakeRequest");
+const call = (url, query) => fakeRequest(setlist, url, query);
 
 test("a mesma consulta paginada vai ao setlist.fm uma vez só", async () => {
   const query = { artistMbid: "67f66c07-6e61-4026-ade5-7e782fad3a5d", tourName: "Take Cover" };

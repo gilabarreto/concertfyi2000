@@ -8,25 +8,7 @@ const assert = require("node:assert");
 const ticketmaster = require("./ticketmaster");
 const setlist = require("./setlist");
 
-// Express de mentira: um router é chamável, só precisa de req.url/method e do res.
-const call = (router, url, query) =>
-  new Promise((resolve, reject) => {
-    const res = {
-      statusCode: 200,
-      set() {
-        return this;
-      },
-      status(code) {
-        this.statusCode = code;
-        return this;
-      },
-      json(body) {
-        resolve({ status: this.statusCode, body });
-        return this;
-      },
-    };
-    router({ method: "GET", url, query, headers: {} }, res, reject);
-  });
+const call = require("../fakeRequest");
 
 test("/events exige coordenada de verdade", async () => {
   for (const query of [{}, { lat: "abc", long: "1" }, { lat: "91", long: "0" }, { lat: "0", long: "181" }]) {

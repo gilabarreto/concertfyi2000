@@ -4,8 +4,9 @@ export function distanceKm(lat, long, otherLat, otherLong) {
   const values = [lat, long, otherLat, otherLong];
   if (values.some((value) => value == null || value === "")) return null;
   const [a, b, c, d] = values.map(Number);
-  if (![a, b, c, d].every(Number.isFinite) || Math.abs(a) > 90 || Math.abs(c) > 90) return null;
-  if (Math.abs(b) > 180 || Math.abs(d) > 180) return null;
+  const inRange =
+    Math.abs(a) <= 90 && Math.abs(c) <= 90 && Math.abs(b) <= 180 && Math.abs(d) <= 180;
+  if (![a, b, c, d].every(Number.isFinite) || !inRange) return null;
   const radians = (value) => (value * Math.PI) / 180;
   const h =
     Math.sin(radians(c - a) / 2) ** 2 +
