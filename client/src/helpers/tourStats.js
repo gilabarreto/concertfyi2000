@@ -1,4 +1,9 @@
-import { dateLabel, parseSetlistDate, getUpcomingConcertsByArtist } from "./selectors.js";
+import {
+  dateLabel,
+  distanceKm,
+  parseSetlistDate,
+  getUpcomingConcertsByArtist,
+} from "./selectors.js";
 
 // Keep the selected setlist.fm date available even when ticket vendors don't list it.
 export function getTourUpcomingConcerts(events, artistName, shows, selectedId) {
@@ -156,32 +161,8 @@ export function findTourUpcomingEvent(show, events = []) {
     if (venueName && normalize(venue?.name) === venueName) return true;
     const coords = show.venue?.city?.coords;
     const location = venue?.location;
-    if (
-      coords?.lat == null ||
-      coords?.long == null ||
-      location?.latitude == null ||
-      location?.longitude == null
-    )
-      return false;
-    const lat = Number(coords.lat),
-      lng = Number(coords.long);
-    const otherLat = Number(location.latitude),
-      otherLng = Number(location.longitude);
-    if (
-      ![lat, lng, otherLat, otherLng].every(Number.isFinite) ||
-      Math.abs(lat) > 90 ||
-      Math.abs(otherLat) > 90 ||
-      Math.abs(lng) > 180 ||
-      Math.abs(otherLng) > 180
-    )
-      return false;
-    const radians = (value) => (value * Math.PI) / 180;
-    const deltaLat = radians(otherLat - lat),
-      deltaLng = radians(otherLng - lng);
-    const distance =
-      Math.sin(deltaLat / 2) ** 2 +
-      Math.cos(radians(lat)) * Math.cos(radians(otherLat)) * Math.sin(deltaLng / 2) ** 2;
-    return 6371 * 2 * Math.asin(Math.sqrt(Math.min(distance, 1))) <= 25;
+    const km = distanceKm(coords?.lat, coords?.long, location?.latitude, location?.longitude);
+    return km !== null && km <= 25;
   });
   return matches.length === 1 ? matches[0] : null;
 }

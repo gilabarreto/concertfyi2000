@@ -1,3 +1,18 @@
+// Haversine, in km. null when a coordinate is missing or out of range, so callers can't
+// mistake bad data (Number("") is 0) for a place on the equator.
+export function distanceKm(lat, long, otherLat, otherLong) {
+  const values = [lat, long, otherLat, otherLong];
+  if (values.some((value) => value == null || value === "")) return null;
+  const [a, b, c, d] = values.map(Number);
+  if (![a, b, c, d].every(Number.isFinite) || Math.abs(a) > 90 || Math.abs(c) > 90) return null;
+  if (Math.abs(b) > 180 || Math.abs(d) > 180) return null;
+  const radians = (value) => (value * Math.PI) / 180;
+  const h =
+    Math.sin(radians(c - a) / 2) ** 2 +
+    Math.cos(radians(a)) * Math.cos(radians(c)) * Math.sin(radians(d - b) / 2) ** 2;
+  return 6371 * 2 * Math.asin(Math.sqrt(Math.min(h, 1)));
+}
+
 // A data do Setlist.fm é DD-MM-YYYY. Sempre monte a partir das partes: passar a
 // string "2026-09-16" para o Date é meia-noite UTC pela especificação, e em fuso
 // negativo isso é o dia anterior à noite — um show de amanhã cai na lista de
@@ -65,17 +80,8 @@ export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true
       if (!venueCity || !cityName) return false;
       if (!sameCity && center) {
         const location = item._embedded?.venues?.[0]?.location;
-        if (location?.latitude == null || location?.longitude == null) return false;
-        const lat = Number(location.latitude),
-          long = Number(location.longitude);
-        if (![lat, long, center.lat, center.long].every(Number.isFinite)) return false;
-        const radians = (value) => (value * Math.PI) / 180;
-        const distance =
-          Math.sin(radians(lat - center.lat) / 2) ** 2 +
-          Math.cos(radians(center.lat)) *
-            Math.cos(radians(lat)) *
-            Math.sin(radians(long - center.long) / 2) ** 2;
-        if (6371 * 2 * Math.asin(Math.sqrt(Math.min(distance, 1))) > 50) return false;
+        const km = distanceKm(location?.latitude, location?.longitude, center.lat, center.long);
+        if (km === null || km > 50) return false;
       }
       const normalize = (value) =>
         value
