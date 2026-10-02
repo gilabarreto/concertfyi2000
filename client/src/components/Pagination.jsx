@@ -49,7 +49,7 @@ export default function Pagination({
       {visiblePages.map((pageNum) => (
         <button
           key={pageNum}
-          className={`px-2 py-1 rounded ${
+          className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
             pageNum === currentPage
               ? "bg-red-600 text-white"
               : "bg-zinc-200 text-zinc-700 hover:bg-zinc-300"

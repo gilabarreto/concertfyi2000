@@ -249,7 +249,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                 return (
                   <li key={songIndex} className="flex flex-col">
                     {isEncoreStart && (
-                      <span className="pt-3 pb-1 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                      <span className="pt-3 pb-1 text-center text-xs font-semibold uppercase tracking-wide text-zinc-400">
                         Encore
                       </span>
                     )}

@@ -1,6 +1,7 @@
 import { useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import ReminderClose from "../components/ReminderClose";
+import ReminderDelete from "../components/ReminderDelete";
 import Swiper from "../components/Swiper";
 import { SEOHead } from "../components/SEOHead";
 import { useLocalEvents } from "../api/queries";
@@ -36,13 +37,15 @@ const Home = () => {
     setReminderOpen,
     reminderInteracted,
     setReminderInteracted,
+    setReminderSeen,
   } = useContext(AppContext);
   useEffect(() => {
     setConcertReminder({ id: "home-intro", pathname: "/", targetId: "home-reminder" });
     setReminderOpen(false);
+    setReminderSeen(false);
     setReminderInteracted(false);
     return () => setConcertReminder(null);
-  }, [setConcertReminder, setReminderOpen, setReminderInteracted]);
+  }, [setConcertReminder, setReminderOpen, setReminderInteracted, setReminderSeen]);
 
   useEffect(() => {
     if (reminderInteracted) return;
@@ -79,10 +82,11 @@ const Home = () => {
           >
             <div className="min-h-0 overflow-hidden">
               <div className="relative bg-red-600">
-                <p className="w-full bg-red-600 px-12 py-3 text-center text-sm sm:text-base text-white text-pretty">
+                <p className="w-full bg-red-600 pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
                   Track your favorite artists, explore past performances and never miss a concert
                   again.
                 </p>
+                <ReminderDelete />
                 <ReminderClose />
               </div>
             </div>

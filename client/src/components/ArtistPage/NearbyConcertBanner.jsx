@@ -5,6 +5,7 @@ import { useGeolocation } from "../../hooks/useGeolocation";
 import { getNearbyConcert } from "../../helpers/nearbyConcert";
 import { dateLabel } from "../../helpers/selectors";
 import ReminderClose from "../ReminderClose";
+import ReminderDelete from "../ReminderDelete";
 import Icon from "../Icon";
 import { faCheck, faPlus } from "@fortawesome/free-solid-svg-icons";
 import "./NearbyConcertBanner.css";
@@ -17,6 +18,7 @@ export default function NearbyConcertBanner({ artist, events }) {
     setReminderInteracted,
     reminderOpen,
     setReminderOpen,
+    setReminderSeen,
     goingConcertIds,
     toggleGoingConcert,
   } = useContext(AppContext);
@@ -33,14 +35,29 @@ export default function NearbyConcertBanner({ artist, events }) {
   useEffect(() => {
     setConcertReminder(eventId ? { id: eventId, pathname: location.pathname } : null);
     setReminderOpen(false);
+    setReminderSeen(false);
     setReminderInteracted(false);
     return () => setConcertReminder(null);
-  }, [eventId, location.pathname, setConcertReminder, setReminderOpen, setReminderInteracted]);
+  }, [
+    eventId,
+    location.pathname,
+    setConcertReminder,
+    setReminderOpen,
+    setReminderInteracted,
+    setReminderSeen,
+  ]);
 
   useEffect(() => {
     if (!eventId || reminderInteracted) return;
-    const timer = setTimeout(() => setReminderOpen(true), 5000);
-    return () => clearTimeout(timer);
+    let closeTimer;
+    const openTimer = setTimeout(() => {
+      setReminderOpen(true);
+      closeTimer = setTimeout(() => setReminderOpen(false), 5000);
+    }, 10000);
+    return () => {
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+    };
   }, [eventId, location.pathname, reminderInteracted, setReminderOpen]);
   if (!event) return null;
 
@@ -67,7 +84,7 @@ export default function NearbyConcertBanner({ artist, events }) {
     >
       <div className="min-h-0 overflow-hidden">
         <div className="relative">
-          <p className="bg-red-600 px-12 py-3 text-center text-sm sm:text-base text-white text-pretty">
+          <p className="bg-red-600 pl-7 sm:pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
             {artist} are playing {venue?.city?.name || "near you"} on {dateLabel(event.dateObj)}
             {venue?.name ? ` at ${venue.name}` : ""}.{" "}
             <button
@@ -81,6 +98,7 @@ export default function NearbyConcertBanner({ artist, events }) {
               I'M GOING
             </button>
           </p>
+          <ReminderDelete />
           <ReminderClose />
         </div>
       </div>

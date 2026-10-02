@@ -15,6 +15,10 @@ export function useAppState() {
   const [concertReminder, setConcertReminder] = useState(null);
   const [reminderInteracted, setReminderInteracted] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
+  const [reminderSeen, setReminderSeen] = useState(false);
+  useEffect(() => {
+    if (reminderOpen) setReminderSeen(true);
+  }, [reminderOpen]);
   const [searchValue, setSearchValue] = useState("");
   const [setlist, setSetlist] = useState([]);
   const [ticketmaster, setTicketmaster] = useState({});
@@ -37,6 +41,8 @@ export function useAppState() {
     setReminderInteracted,
     reminderOpen,
     setReminderOpen,
+    reminderSeen,
+    setReminderSeen,
     searchValue,
     setSearchValue,
     setlist,

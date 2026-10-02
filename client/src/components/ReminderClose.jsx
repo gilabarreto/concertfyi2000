@@ -15,7 +15,7 @@ export default function ReminderClose() {
         setReminderOpen(false);
         document.querySelector("button[aria-controls][aria-label^='Concert reminders']")?.focus();
       }}
-      className="absolute right-0 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center text-white hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
+      className="absolute right-3 top-1/2 flex h-11 w-6 -translate-y-1/2 items-center justify-center text-white before:absolute before:-left-1 before:h-4 before:border-l before:border-white/50 hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-white"
     >
       <Icon icon={faXmark} />
     </button>

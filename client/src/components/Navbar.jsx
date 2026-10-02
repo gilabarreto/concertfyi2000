@@ -29,7 +29,7 @@ const phrases = [
 
 function Navbar() {
   const { pathname } = useLocation();
-  const { concertReminder, reminderOpen, setReminderOpen, setReminderInteracted } =
+  const { concertReminder, reminderOpen, reminderSeen, setReminderOpen, setReminderInteracted } =
     useContext(AppContext);
   const reminderTarget = concertReminder?.targetId || "nearby-concert-reminder";
   const reminderCount = concertReminder?.pathname === pathname ? 1 : 0;
@@ -99,14 +99,13 @@ function Navbar() {
           className={`flex items-center justify-center justify-self-start min-h-11 px-1 text-xl ${iconColor} disabled:cursor-default hover:opacity-80`}
         >
           <Icon icon={faBell} />
-          {reminderCount > 0 && (
-            <span
-              className="-ml-0.5 mt-1 flex h-4 w-4 shrink-0 self-start items-center justify-center rounded-full bg-red-600 pt-px text-xs font-bold leading-none text-white"
-              aria-hidden="true"
-            >
-              {reminderCount}
-            </span>
-          )}
+          <span
+            className="reminder-badge -ml-0.5 mt-1 flex h-4 w-4 shrink-0 self-start items-center justify-center rounded-full bg-red-600 pt-px text-xs font-bold leading-none text-white"
+            data-visible={reminderCount > 0 && (reminderOpen || reminderSeen)}
+            aria-hidden="true"
+          >
+            1
+          </span>
         </button>
         <button
           ref={logoRef}
