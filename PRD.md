@@ -46,7 +46,7 @@ receita por link de afiliado (ingresso, hotel, discos).
 | Página do show | Data, turnê, local, mapa, foto e informações do artista | Setlist.fm + Ticketmaster |
 | Setlist | Lista de músicas com encore sinalizado, paginação, copiar, letra, prévia no Spotify/YouTube | Setlist.fm, LRCLib, Spotify, YouTube |
 | Playlist | Cria no Spotify da pessoa uma playlist com o setlist | Spotify (OAuth via popup) |
-| Tour Statistics | Números da turnê (shows, países, música mais tocada, abertura, encerramento) e mapa com shows passados e futuros | Setlist.fm + Ticketmaster |
+| Mapa da turnê | Shows passados e futuros da turnê no mapa, a partir do nome da turnê no Last/Next Concert | Setlist.fm + Ticketmaster |
 | Shows passados | Lista navegável dos shows anteriores do artista | Setlist.fm |
 | Venue | Página do local: o que foi tocado lá (qualquer artista) e o que está à venda | Setlist.fm + Ticketmaster |
 | My City | Setlists do ano na cidade escolhida e shows à venda nela | Setlist.fm + Ticketmaster |

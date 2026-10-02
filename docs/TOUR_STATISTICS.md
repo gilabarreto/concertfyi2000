@@ -10,7 +10,7 @@ O card Tour Statistics foi retirado da ArtistPage por decisão do dono. A propos
 - Usual opener e Usual closer: abertura e encerramento mais frequentes.
 - Played only once: músicas executadas uma única vez na amostra.
 
-A implementação anterior está em `client/src/components/ArtistPage/TourStats.jsx`; os cálculos e testes continuam em `client/src/helpers/tourStats.js` e `tourStats.test.mjs`. Não são exibidos na página.
+A implementação anterior (o card `TourStats.jsx` e `getTourStats` com o teste) foi apagada em 2026-10-02 e está no histórico do git: `git show ceab820` traz a versão original. A rota `/api/setlist/tour` e o `useTourSetlists` continuam, porque o mapa da tour usa os dois.
 
 ## Limites para uma futura retomada
 
