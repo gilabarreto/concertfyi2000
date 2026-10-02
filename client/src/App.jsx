@@ -15,7 +15,8 @@ const ArtistPage = lazy(() => import("./pages/ArtistPage"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const SpotifyCallback = lazy(() => import("./pages/SpotifyCallback"));
-const ApiLab = import.meta.env.DEV ? lazy(() => import("./pages/ApiLab")) : null;
+// Fora do bundle de entrada como as outras; em produção o servidor pede senha (API_LAB_TOKEN).
+const ApiLab = lazy(() => import("./pages/ApiLab"));
 
 function App() {
   const appState = useAppState();
@@ -84,7 +85,7 @@ function App() {
                     <Route path="/about" element={<About />} />
                     <Route path="/contact" element={<Contact />} />
                     <Route path="/callback" element={<SpotifyCallback />} />
-                    {import.meta.env.DEV && <Route path="/api-lab" element={<ApiLab />} />}
+                    <Route path="/api-lab" element={<ApiLab />} />
                   </Routes>
                 </Suspense>
               </ErrorBoundary>

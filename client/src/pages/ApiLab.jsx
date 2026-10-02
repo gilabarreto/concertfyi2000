@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { useApiLab } from "../api/queries";
+import { Helmet } from "react-helmet-async";
+import { useApiLab } from "../api/apiLabQuery";
 
 const API_SOURCES = [
   ["setlistfm", "setlist.fm", "https://api.setlist.fm/docs/1.0/index.html"],
@@ -161,8 +162,27 @@ function inspectResponse(result) {
   page.document.body.append(response);
 }
 
+// sessionStorage: some ao fechar a aba, e recarregar a página no celular não pede de novo.
+const TOKEN_KEY = "apiLabToken";
+const readToken = () => {
+  try {
+    return sessionStorage.getItem(TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+};
+
 export default function ApiLab() {
   const [results, setResults] = useState(new Map());
+  const [token, setToken] = useState(readToken);
+  const saveToken = (value) => {
+    setToken(value);
+    try {
+      sessionStorage.setItem(TOKEN_KEY, value);
+    } catch {
+      // storage bloqueado: a senha vale só enquanto a página estiver aberta
+    }
+  };
   const {
     mutate,
     data,
@@ -178,11 +198,12 @@ export default function ApiLab() {
 
   return (
     <main className="w-full min-w-0 px-4 py-6 sm:px-6">
+      <Helmet>
+        <meta name="robots" content="noindex" />
+      </Helmet>
       <div className="mx-auto max-w-5xl space-y-6">
         <header className="space-y-2">
-          <p className="text-sm font-semibold uppercase tracking-wide text-red-600">
-            Local test page
-          </p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-red-600">Test page</p>
           <h1 className="text-3xl font-bold">API lab · Foo Fighters</h1>
           <p className="max-w-3xl text-zinc-600">
             Esta tela faz chamadas ao vivo e mostra o que cada fonte devolve. Algumas usam as chaves
@@ -190,13 +211,26 @@ export default function ApiLab() {
             ou não têm API pública aparecem com o motivo. Use Test API em cada cartão ou Test all
             APIs para testar todas. Inspect response abre a resposta em uma nova aba.
           </p>
+          <label className="block max-w-xs space-y-1 text-sm text-zinc-600">
+            <span className="font-semibold">Password</span>
+            <input
+              type="password"
+              value={token}
+              onChange={(event) => saveToken(event.target.value)}
+              autoComplete="current-password"
+              className="block w-full rounded-md border border-zinc-300 px-3 py-2 text-zinc-900"
+            />
+            <span className="block text-xs text-zinc-500">
+              Needed on the live site; local dev without API_LAB_TOKEN ignores it.
+            </span>
+          </label>
           <button
             type="button"
-            onClick={() => mutate()}
+            onClick={() => mutate({ token })}
             disabled={isFetching}
             className="rounded-md bg-red-600 px-5 py-3 font-semibold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
           >
-            {isFetching && !variables ? "Calling APIs…" : "Test all APIs"}
+            {isFetching && !variables?.source ? "Calling APIs…" : "Test all APIs"}
           </button>
           {isFetching && (
             <p role="status" className="text-sm text-zinc-500">
@@ -205,8 +239,11 @@ export default function ApiLab() {
           )}
           {isError && (
             <p role="alert" className="rounded border border-red-300 bg-red-50 p-3 text-red-800">
-              {asText(error?.message) ||
-                "Could not reach the local API lab. Start the server with `npm run dev` and open this page through Vite."}
+              {error?.status === 401
+                ? "Wrong password."
+                : error?.status === 404
+                  ? "The API lab is off on this server. Set API_LAB_TOKEN on Render, or run the server locally with `npm run dev`."
+                  : asText(error?.message) || "Could not reach the API lab server."}
             </p>
           )}
         </header>
@@ -255,12 +292,14 @@ export default function ApiLab() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => mutate(id)}
+                  onClick={() => mutate({ source: id, token })}
                   disabled={isFetching}
                   aria-label={`Test ${name}`}
                   className="mt-3 rounded bg-red-600 px-3 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-wait disabled:opacity-60"
                 >
-                  {isFetching && (!variables || variables === id) ? "Calling API…" : "Test API"}
+                  {isFetching && (!variables?.source || variables.source === id)
+                    ? "Calling API…"
+                    : "Test API"}
                 </button>
                 {result ? (
                   <div className="mt-3 space-y-2 text-sm">
