@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const { request } = require("../http");
 const { musicbrainzRequest } = require("../musicbrainzClient");
 const { artistImagesFrom } = require("./audiodb");
@@ -66,12 +67,25 @@ function mockResponse() {
   };
 }
 
+// Compara hashes de tamanho fixo: timingSafeEqual exige o mesmo comprimento, e o hash
+// também não deixa o tempo de resposta vazar quantos caracteres da senha bateram.
+function tokenMatches(given, expected) {
+  if (typeof given !== "string") return false;
+  const digest = (value) => crypto.createHash("sha256").update(value).digest();
+  return crypto.timingSafeEqual(digest(given), digest(expected));
+}
+
 function createApiLabHandler({ fetchJson = request, mbRequest = musicbrainzRequest, env = process.env } = {}) {
   const fetchWithTimeout = (url, options = {}) => fetchJson(url, {
     ...options,
     signal: options.signal || AbortSignal.timeout(12000),
   });
   return async (req, res) => {
+    // Em produção a rota só existe com API_LAB_TOKEN (server/index.js), e cada chamada
+    // gasta cota real, então sem a senha certa nada sai daqui. Local, sem token, segue livre.
+    if (env.API_LAB_TOKEN && !tokenMatches(req.headers?.["x-api-lab-token"], env.API_LAB_TOKEN)) {
+      return res.status(401).json({ error: "Wrong API lab password" });
+    }
     const source = req.query?.source;
     const sources = ["setlistfm", "musicbrainz", "eventart", "coverart", "ticketmaster", "audiodb", "lastfm", "listenbrainz", "youtube", "acoustid", "apple", "spotify", "songkick", "myshowposter", "concertcollect", "commons", "wikidata", "wikipedia", "archive", "github"];
     if (source !== undefined && !sources.includes(source)) {
