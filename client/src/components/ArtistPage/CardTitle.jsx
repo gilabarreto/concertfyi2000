@@ -5,7 +5,7 @@ import { forwardRef } from "react";
 const CardTitle = forwardRef(function CardTitle({ id, className = "", action, children }, ref) {
   return (
     // Um div só: os cards usam space-y-2, que abriria espaço entre as três peças.
-    <div className="relative border-y border-zinc-400">
+    <div className="relative border-y border-zinc-300">
       <h2
         id={id}
         ref={ref}

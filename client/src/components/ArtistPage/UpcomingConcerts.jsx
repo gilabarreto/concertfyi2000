@@ -1,4 +1,6 @@
-import { useSearchParams } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import Icon from "../Icon";
 import { getUpcomingConcertsByArtist } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
@@ -8,6 +10,7 @@ import ConcertReminder from "./ConcertReminder";
 export default function UpcomingConcerts(props) {
   const events = getUpcomingConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
   const [, setSearchParams] = useSearchParams();
+  const location = useLocation();
 
   return (
     <ConcertList
@@ -24,8 +27,7 @@ export default function UpcomingConcerts(props) {
       }}
       iconTitle="Get tickets"
       // NextConcert reads this same "next" param to pick which upcoming show its own
-      // card previews — a query param instead of local state so the Share button below
-      // can just hand out the current URL and land the recipient on this exact date.
+      // card previews; View concert also sets this ID before scrolling to the card.
       onSelect={(concert) =>
         setSearchParams((prev) => {
           const params = new URLSearchParams(prev);
@@ -37,7 +39,24 @@ export default function UpcomingConcerts(props) {
         <>
           <TicketOptions event={concert} artistName={props.concert.artist.name} />
           <HotelOptions event={concert} />
-          <ConcertReminder event={concert} artistName={props.concert.artist.name} />
+          <ConcertReminder
+            event={concert}
+            artistName={props.concert.artist.name}
+            showShare={false}
+          />
+          <div className="flex justify-center px-2 py-3 sm:px-4">
+            <Link
+              to={{
+                pathname: location.pathname,
+                search: `?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(location.search)), next: concert.id })}`,
+              }}
+              state={{ scrollTo: "next-concert" }}
+              className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
+            >
+              <Icon icon={faEye} />
+              View concert
+            </Link>
+          </div>
         </>
       )}
     />

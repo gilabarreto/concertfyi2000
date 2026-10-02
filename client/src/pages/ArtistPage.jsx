@@ -129,11 +129,11 @@ export default function ArtistPage() {
             </div>
           ))}
         </nav>
-        <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4">
+        <div className="w-full mx-auto p-0 sm:px-6 sm:py-4 space-y-4 lg:space-y-3">
           {/* Mesmo palco zinc da Home: foto e nome do artista em destaque (DESIGN.md). */}
           <div
             id="artist"
-            className="min-w-0 scroll-mt-16 bg-zinc-100 shadow-[inset_0_-8px_8px_-8px_theme(colors.zinc.300)] px-3 lg:px-6 pb-4 pt-0 lg:pt-4 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
+            className="min-w-0 scroll-mt-16 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-3 lg:px-6 pb-4 pt-0 lg:pt-4 sm:-mx-6 sm:-mt-4 flex-1 space-y-2"
           >
             <ArtistInfo
               key={artistId}
@@ -150,7 +150,7 @@ export default function ArtistPage() {
             fallbackImage={artistImage}
           />
 
-          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="artist-card-grid grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
             <div className="min-w-0 bg-white px-4 space-y-2 lg:flex lg:flex-col">
               <Setlist
                 key={concert.id}
@@ -178,7 +178,7 @@ export default function ArtistPage() {
           </div>
 
           {/* Sem artist-card-grid: nem divisória entre Past e Upcoming, nem linha em cima. */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
             <div
               id="past-concerts"
               className="min-w-0 scroll-mt-20 bg-white px-4 space-y-2 lg:flex lg:flex-col"

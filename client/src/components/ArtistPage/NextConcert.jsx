@@ -123,11 +123,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         }
       >
         <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
-          {!hideTitle && (
-            <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
-              {actions}
-            </li>
-          )}
+          <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">{actions}</li>
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
               <span className="font-semibold">Concert date:</span>&ensp;
@@ -147,7 +143,6 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 />
               )}
             </span>
-            {hideTitle && <span className="ml-auto flex gap-1">{actions}</span>}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Tour:</span>&ensp;{tour}
@@ -176,13 +171,9 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
               </span>
             )}
           </li>
-          <li className="border-b border-zinc-300/50 py-2">
+          <li className="flex flex-wrap items-center justify-center gap-2 border-b border-zinc-300/50 py-2">
             <TicketOptions event={upcomingConcert} artistName={concert.artist.name} iconOnly />
-          </li>
-          <li className="border-b border-zinc-300/50 py-2">
             <HotelOptions event={upcomingConcert} iconOnly />
-          </li>
-          <li className="border-b border-zinc-300/50 py-2">
             <ConcertReminder event={upcomingConcert} artistName={concert.artist.name} iconOnly />
           </li>
         </ol>

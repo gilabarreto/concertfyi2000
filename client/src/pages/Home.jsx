@@ -72,7 +72,7 @@ const Home = () => {
         description="Track your favorite artists, explore past performances, and never miss a concert again. Find setlists, venues, and ticket information."
         url="/"
       />
-      <div className="flex flex-col w-full flex-1 items-center gap-6 overflow-x-clip p-4">
+      <div className="flex flex-col w-full flex-1 items-center gap-6 lg:gap-3 overflow-x-clip p-4">
         <div className="flex flex-col w-[calc(100%+2rem)] -mx-4 -mt-4 items-center">
           <div
             id="home-reminder"
@@ -92,13 +92,13 @@ const Home = () => {
             </div>
           </div>
           {/* Palco do Cover Flow: faixa zinc de ponta a ponta da coluna (DESIGN.md). */}
-          <div className="w-full shrink-0 bg-zinc-100 shadow-[inset_0_-8px_8px_-8px_theme(colors.zinc.300)] px-4 pt-4 pb-2">
+          <div className="w-full shrink-0 bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)] px-4 pt-4 pb-2">
             <Swiper />
           </div>
         </div>
 
         {/* Sem artist-card-grid: sem divisória entre as duas listas. */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-3 w-full">
           <div className="min-w-0 bg-white p-6 space-y-2">
             <ConcertList
               title="Upcoming Concerts"

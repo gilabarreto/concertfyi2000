@@ -121,11 +121,7 @@ export default function LastConcert({
         }
       >
         <ol className={`mx-[12px] min-w-0 ${hideTitle ? "border-t border-zinc-300/50" : ""}`}>
-          {!hideTitle && (
-            <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
-              {actions}
-            </li>
-          )}
+          <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">{actions}</li>
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
               <span className="font-semibold">Concert date:</span>&ensp;
@@ -145,7 +141,6 @@ export default function LastConcert({
                 />
               )}
             </span>
-            {hideTitle && <span className="ml-auto flex gap-1">{actions}</span>}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Tour:</span>&ensp;{tour}

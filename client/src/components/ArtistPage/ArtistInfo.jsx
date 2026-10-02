@@ -5,7 +5,7 @@ import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import {
   faInstagram,
-  faTwitter,
+  faXTwitter,
   faYoutube,
   faWikipediaW,
 } from "@fortawesome/free-brands-svg-icons";
@@ -29,7 +29,7 @@ const httpOnly = (url) => (/^https?:\/\//i.test(url) ? url : undefined);
 const SOCIALS = [
   { key: "youtube", icon: faYoutube, label: "YouTube" },
   { key: "instagram", icon: faInstagram, label: "Instagram" },
-  { key: "twitter", icon: faTwitter, label: "Twitter" },
+  { key: "twitter", icon: faXTwitter, label: "X" },
 ];
 
 export default function ArtistInfo(props) {

@@ -1,4 +1,4 @@
-import { faRotateLeft } from "@fortawesome/free-solid-svg-icons";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import Icon from "../Icon";
 import { getPastConcertsByArtist } from "../../helpers/selectors";
@@ -22,7 +22,7 @@ export default function PastConcerts(props) {
             state={{ scrollTo: "last-concert" }}
             className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
           >
-            <Icon icon={faRotateLeft} />
+            <Icon icon={faEye} />
             View concert
           </Link>
         </div>

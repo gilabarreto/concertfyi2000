@@ -11,7 +11,7 @@ import {
 
 // Apple publishes no template URL, so its tile hands over the .ics file — the same
 // file any other calendar app imports, which is why it names it on the second line.
-export default function ConcertReminder({ event, artistName, iconOnly = false }) {
+export default function ConcertReminder({ event, artistName, iconOnly = false, showShare = true }) {
   const google = googleCalendarUrl(event, artistName);
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef(null);
@@ -80,7 +80,7 @@ export default function ConcertReminder({ event, artistName, iconOnly = false })
         vendors={vendors}
         iconOnly={iconOnly}
       />
-      {!iconOnly && (
+      {!iconOnly && showShare && (
         <div className="flex justify-center px-2 py-3 sm:px-4">
           {/* Same visual weight as "Create Spotify Playlist" below the setlist — both are
             the one committing action on their card, everything else on this row is a link. */}

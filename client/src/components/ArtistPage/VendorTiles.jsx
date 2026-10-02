@@ -1,3 +1,4 @@
+import VendorPopup from "./VendorPopup";
 import Icon from "../Icon";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 
@@ -9,45 +10,14 @@ export default function VendorTiles({ icon, title, vendors, iconOnly = false }) 
   const hasSubtitle = vendors.some((vendor) => vendor.subtitle);
 
   if (iconOnly) {
-    return (
-      <div className="flex items-center gap-2">
-        <span className="shrink-0 font-semibold">{title}:&ensp;</span>
-        <ul className="flex min-w-0 flex-wrap items-center gap-3">
-          {vendors.map((vendor) => (
-            <li key={vendor.name}>
-              <a
-                href={vendor.href}
-                download={vendor.download}
-                target={vendor.download ? undefined : "_blank"}
-                rel="noopener noreferrer"
-                aria-label={vendor.name}
-                title={vendor.name}
-                className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-              >
-                <img
-                  src={`https://www.google.com/s2/favicons?domain=${vendor.domain}&sz=64`}
-                  alt=""
-                  width="24"
-                  height="24"
-                  loading="lazy"
-                  className="h-6 w-6 object-contain"
-                  onError={(event) => {
-                    event.currentTarget.style.visibility = "hidden";
-                  }}
-                />
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
+    return <VendorPopup icon={icon} title={title} vendors={vendors} />;
   }
 
   return (
     <details className="group bg-zinc-50 border-b border-zinc-300/50 p-2 sm:p-4">
       <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
-        <span className="inline-flex items-center px-6">
-          <Icon icon={icon} className="mr-2 text-sm text-red-600" />
+        <span className="mx-auto grid w-44 max-w-[calc(100%-3rem)] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 text-left">
+          <Icon icon={icon} className="justify-self-center text-sm text-red-600" />
           {title}
         </span>
         <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
