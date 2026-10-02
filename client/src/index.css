@@ -56,6 +56,12 @@
 /* Palco zinc do topo das páginas (DESIGN.md): fundo e sombra interna embaixo. Layout e
    espaçamento ficam em cada página, porque variam. */
 @layer components {
+  /* Botão-pílula das ações (SHARE, COPY, I WAS THERE, I'M GOING, detalhes do venue).
+     O estado ligado vem do aria-pressed do próprio botão, sem classe condicional. */
+  .pill {
+    @apply flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border border-zinc-300 text-[12px] leading-4 text-zinc-500 whitespace-nowrap transition-colors hover:border-red-600 hover:text-red-600 aria-pressed:border-red-600 aria-pressed:text-red-600 aria-pressed:hover:bg-red-50;
+  }
+
   .stage {
     @apply bg-zinc-100 shadow-[inset_0_-2px_4px_-2px_rgba(0,0,0,0.12)];
   }

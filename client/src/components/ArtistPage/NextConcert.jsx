@@ -83,12 +83,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
     <>
-      <button
-        type="button"
-        onClick={share}
-        title="Share this concert"
-        className="flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[12px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-      >
+      <button type="button" onClick={share} title="Share this concert" className="pill">
         <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
         {linkCopied ? "LINK COPIED" : "SHARE"}
       </button>
@@ -97,11 +92,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
         onClick={toggleGoing}
         aria-pressed={imGoing}
         title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
-        className={`flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[12px] leading-4 whitespace-nowrap transition-colors ${
-          imGoing
-            ? "border-red-600 text-red-600 hover:bg-red-50"
-            : "border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
-        }`}
+        className="pill"
       >
         <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
         I'M GOING

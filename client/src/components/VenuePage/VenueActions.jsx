@@ -64,7 +64,7 @@ export default function VenueActions({ ticketmaster, services = {} }) {
               setSelectedDetail({ label, value: value || "N/A", source });
               detailsRef.current.showModal();
             }}
-            className="flex shrink-0 items-center gap-1 px-2 py-0.5 rounded-full border text-[12px] leading-4 whitespace-nowrap transition-colors border-zinc-300 text-zinc-500 hover:border-red-600 hover:text-red-600"
+            className="pill"
           >
             <Icon icon={detailIcons[index]} className="text-[0.65rem]" />
             {label.toUpperCase()}
