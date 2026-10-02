@@ -120,4 +120,35 @@ router.get("/events", async (req, res) => {
   }
 });
 
+// Venue page, upcoming side. setlist.fm and Ticketmaster don't share venue ids, so the
+// venue is looked up by name within a few km of setlist.fm's coordinates (the city's, not
+// the building's) — same fragile seam as the artist name. No match is an empty list.
+router.get("/venue-events", async (req, res) => {
+  const { name } = req.query;
+  const lat = Number(req.query.lat);
+  const long = Number(req.query.long);
+  if (typeof name !== "string" || !name.trim() || name.length > MAX_TERM ||
+      !Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) {
+    return res.status(400).json({ error: "Missing or invalid name/lat/long" });
+  }
+
+  try {
+    const venues = await request(`${TM_BASE}/venues.json`, {
+      params: { apikey: process.env.TICKETMASTER_API_KEY, keyword: name, latlong: `${lat},${long}`, radius: 50, unit: "km", size: 5 },
+      headers,
+    });
+    const venue = venues._embedded?.venues?.[0];
+    if (!venue) return res.json({ venue: null, events: [] });
+
+    const data = await request(`${TM_BASE}/events.json`, {
+      params: { apikey: process.env.TICKETMASTER_API_KEY, venueId: venue.id, classificationName: "Music", sort: "date,asc", size: 50 },
+      headers,
+    });
+    res.json({ venue: { id: venue.id, name: venue.name }, events: data._embedded?.events || [] });
+  } catch (error) {
+    console.error("Ticketmaster venue error:", error.message);
+    res.status(error.status || 500).json({ error: error.data || "Ticketmaster venue fetch failed" });
+  }
+});
+
 module.exports = router;

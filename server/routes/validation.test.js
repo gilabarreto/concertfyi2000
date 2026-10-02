@@ -65,3 +65,17 @@ test("a turnê exige mbid e nome da turnê", async () => {
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
   }
 });
+
+test("o venue exige id do setlist.fm", async () => {
+  for (const id of ["x", "53d61ff5zz", "../artist"]) {
+    const { status } = await call(setlist, `/venue/${encodeURIComponent(id)}`, {});
+    assert.strictEqual(status, 400, `aceitou ${id}`);
+  }
+});
+
+test("/venue-events exige nome e coordenada", async () => {
+  for (const query of [{ lat: "1", long: "1" }, { name: "Arena" }, { name: "Arena", lat: "91", long: "0" }, { name: "a".repeat(201), lat: "1", long: "1" }]) {
+    const { status } = await call(ticketmaster, "/venue-events", query);
+    assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
+  }
+});

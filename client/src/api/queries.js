@@ -4,6 +4,8 @@ import {
   getSetlistById,
   getArtistSetlists,
   getTourSetlists,
+  getVenueSetlists,
+  getVenueEvents,
   getLocalEvents,
   getTicketmaster,
   searchCities,
@@ -119,6 +121,26 @@ export const useTourSetlists = (artistMbid, tourName) => {
     enabled: !!artistMbid && !!tourName,
     staleTime: 60 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
+  });
+};
+
+// Venue page: up to 3 setlist.fm calls, so hold it like the tour.
+export const useVenueSetlists = (venueId) => {
+  return useQuery({
+    queryKey: ["venue-setlists", venueId],
+    queryFn: () => getVenueSetlists(venueId),
+    enabled: !!venueId,
+    staleTime: 60 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
+  });
+};
+
+export const useVenueEvents = (name, lat, long) => {
+  return useQuery({
+    queryKey: ["venue-events", name, lat, long],
+    queryFn: () => getVenueEvents(name, lat, long),
+    enabled: !!name && lat != null && long != null,
+    staleTime: 10 * 60 * 1000,
   });
 };
 
