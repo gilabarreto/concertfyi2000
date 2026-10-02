@@ -64,7 +64,6 @@ router.get("/artist/:mbid", async (req, res) => {
 
 // setlist.fm pages by 20 and allows 2 requests/s, so pages go one at a time with a gap.
 // A 404 on page 1 is setlist.fm's "no results"; any failure after page 1 keeps what came.
-// ponytail: no server cache, each call here costs up to `maxPages` of the daily quota.
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function allPages(url, params, maxPages) {
@@ -85,9 +84,27 @@ async function allPages(url, params, maxPages) {
   return { total, setlist };
 }
 
+// Every route below answers the same for every visitor (a tour, a venue, a city), and Home
+// alone fires two of them per visit, so one copy per query is kept for 30 min. The promise
+// is what's stored, so concurrent visitors share one fetch; a failure is dropped at once.
+// ponytail: in-memory, per instance and lost on restart; fine for one Render instance.
+const PAGE_TTL = 30 * 60 * 1000;
+const pageCache = new Map();
+
+function cachedPages(url, params, maxPages) {
+  const key = JSON.stringify([url, params, maxPages]);
+  const hit = pageCache.get(key);
+  if (hit?.expires > Date.now()) return hit.promise;
+  const promise = allPages(url, params, maxPages);
+  if (pageCache.size >= 200) pageCache.delete(pageCache.keys().next().value);
+  pageCache.set(key, { promise, expires: Date.now() + PAGE_TTL });
+  promise.catch(() => pageCache.delete(key));
+  return promise;
+}
+
 const sendPages = async (res, url, params, maxPages) => {
   try {
-    res.json(await allPages(url, params, maxPages));
+    res.json(await cachedPages(url, params, maxPages));
   } catch (error) {
     console.error("Setlist.fm API error:", error.status, error.message);
     res.status(error.status || 500).json({ error: "Setlist.fm fetch failed" });
@@ -142,8 +159,9 @@ router.get("/recent", (req, res) => {
       (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))) {
     return res.status(400).json({ error: "Missing or invalid cityName/countryCode" });
   }
+  // Whole days only: a timestamp to the second would make every request a new cache key.
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  const lastUpdated = since.toISOString().replace(/[-:T]/g, "").slice(0, 14);
+  const lastUpdated = `${since.toISOString().slice(0, 10).replace(/-/g, "")}000000`;
   sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { cityName, countryCode, lastUpdated }, 3);
 });
 
