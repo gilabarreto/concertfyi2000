@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import CardTitle from "../ArtistPage/CardTitle";
 import { useVenueReviews } from "../../api/queries";
 
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
-const PREVIEW_LENGTH = 120;
+const PREVIEW_LINES = 5;
 
 export default function VenueReviewSummary({ identity, enabled }) {
   const { data, isLoading, isError, refetch } = useVenueReviews(identity, enabled);
@@ -10,19 +11,37 @@ export default function VenueReviewSummary({ identity, enabled }) {
   const [expanded, setExpanded] = useState(false);
   const reviews = data?.reviews || [];
   const current = reviews[Math.min(index, Math.max(0, reviews.length - 1))];
-  const hasMore = current?.text.length > PREVIEW_LENGTH;
+  const textRef = useRef(null);
+  const [hasMore, setHasMore] = useState(false);
+  const [lineHeight, setLineHeight] = useState(24);
+  useEffect(() => {
+    const element = textRef.current;
+    if (!element) {
+      setHasMore(false);
+      return;
+    }
+    const measure = () => {
+      const measuredLineHeight = parseFloat(getComputedStyle(element).lineHeight);
+      setLineHeight(measuredLineHeight);
+      setHasMore(element.scrollHeight > measuredLineHeight * PREVIEW_LINES + 1);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [current?.text]);
   const mask =
     hasMore && !expanded
-      ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
+      ? `linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) ${lineHeight * PREVIEW_LINES}px, rgba(0,0,0,0) ${lineHeight * (PREVIEW_LINES + 1)}px)`
       : undefined;
   const step = (delta) => {
     setIndex((index + delta + reviews.length) % reviews.length);
     setExpanded(false);
   };
   return (
-    <li className="py-2">
-      <div className="space-y-2">
-        <p className="font-semibold">Reviews:</p>
+    <section aria-label="Venue reviews" className="min-w-0 bg-white px-2 sm:px-4 space-y-2">
+      <CardTitle>Reviews</CardTitle>
+      <div className="space-y-2 py-2">
         {isLoading ? (
           <span role="status">Loading…</span>
         ) : isError || data?.status === "unavailable" ? (
@@ -36,26 +55,29 @@ export default function VenueReviewSummary({ identity, enabled }) {
                 type="button"
                 aria-label="Previous venue review"
                 onClick={() => step(-1)}
-                className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600"
+                className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600"
               >
                 {"{"}
               </button>
             )}
             <p
+              ref={textRef}
               id="venue-review-text"
-              className="min-w-0 flex-1 ml-3 break-words whitespace-pre-line text-base leading-relaxed text-zinc-700"
-              style={{ maskImage: mask, WebkitMaskImage: mask }}
+              className="min-w-0 flex-1 ml-3 overflow-hidden break-words whitespace-pre-line text-base leading-relaxed text-zinc-700"
+              style={{
+                maxHeight: hasMore && !expanded ? lineHeight * (PREVIEW_LINES + 1) : undefined,
+                maskImage: mask,
+                WebkitMaskImage: mask,
+              }}
             >
-              {hasMore && !expanded
-                ? `${current.text.slice(0, PREVIEW_LENGTH).replace(/\s+\S*$/, "")}…`
-                : current.text}
+              {current.text}
             </p>
             {reviews.length > 1 && (
               <button
                 type="button"
                 aria-label="Next venue review"
                 onClick={() => step(1)}
-                className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600"
+                className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600"
               >
                 {"}"}
               </button>
@@ -99,6 +121,6 @@ export default function VenueReviewSummary({ identity, enabled }) {
           </a>
         </p>
       )}
-    </li>
+    </section>
   );
 }

@@ -6,8 +6,6 @@ import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
 import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons/faHeart";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons/faHeart";
-import StarRating from "../ArtistPage/StarRating";
-import VenueReviewSummary from "./VenueReviewSummary";
 
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 const FAVORITE_VENUES_KEY = "favoriteVenueIds";
@@ -25,8 +23,6 @@ export default function VenueInfo({
   ticketmaster,
   info = {},
   services = {},
-  identity,
-  reviewsEnabled,
   loading,
   failed,
   onRetry,
@@ -197,29 +193,6 @@ export default function VenueInfo({
             "N/A"
           )}
         </li>
-        <li className="border-b border-zinc-300/50 py-2">
-          <div className="flex items-start gap-2" aria-label="Google rating">
-            <span className="font-semibold">Rating:</span>
-            {fields.rating ? (
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <StarRating value={fields.rating.value} size="text-lg" />
-                  <div className="flex items-center gap-2">
-                    <span className="whitespace-nowrap text-xs text-zinc-500">
-                      {fields.rating.value.toFixed(1)}
-                      {fields.rating.count != null &&
-                        ` (${fields.rating.count.toLocaleString("en-US")} ratings)`}
-                    </span>
-                    <VenueSource detail={fields.rating} inline />
-                  </div>
-                </div>
-              </div>
-            ) : (
-              "N/A"
-            )}
-          </div>
-        </li>
-        <VenueReviewSummary identity={identity} enabled={reviewsEnabled} />
         {loading && (
           <li role="status" className="border-b border-zinc-300/50 py-2 text-zinc-400">
             Loading venue info…

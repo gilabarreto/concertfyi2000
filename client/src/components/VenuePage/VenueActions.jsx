@@ -51,22 +51,31 @@ export default function VenueActions({ ticketmaster, services = {} }) {
     faClock,
   ];
 
+  const availableRows = rows
+    .map(([label, value, source], index) => ({ label, value, source, icon: detailIcons[index] }))
+    .filter(({ value }) => {
+      const text = String(value ?? "").trim();
+      return text && text.toUpperCase() !== "N/A";
+    });
+
+  if (!availableRows.length) return null;
+
   return (
     <section aria-label="Venue services" className="px-[12px] mt-2">
       <div className="flex flex-wrap items-center justify-center gap-2 py-2">
-        {rows.map(([label, value, source], index) => (
+        {availableRows.map(({ label, value, source, icon }) => (
           <button
             key={label}
             type="button"
             aria-haspopup="dialog"
             onClick={(event) => {
               triggerRef.current = event.currentTarget;
-              setSelectedDetail({ label, value: value || "N/A", source });
+              setSelectedDetail({ label, value, source });
               detailsRef.current.showModal();
             }}
             className="pill"
           >
-            <Icon icon={detailIcons[index]} className="text-[0.65rem]" />
+            <Icon icon={icon} className="text-[0.65rem]" />
             {label.toUpperCase()}
           </button>
         ))}

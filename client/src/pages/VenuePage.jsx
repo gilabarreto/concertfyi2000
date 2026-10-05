@@ -12,6 +12,8 @@ import {
 import VenueInfo from "../components/VenuePage/VenueInfo";
 import VenueActions from "../components/VenuePage/VenueActions";
 import VenuePhotos from "../components/VenuePage/VenuePhotos";
+import VenueRating from "../components/VenuePage/VenueRating";
+import VenueReviewSummary from "../components/VenuePage/VenueReviewSummary";
 import { artistOf, parseSetlistDate, withTicketmasterDate } from "../helpers/selectors";
 import ConcertList from "../components/ArtistPage/ConcertList";
 import TicketOptions from "../components/ArtistPage/TicketOptions";
@@ -116,8 +118,6 @@ export default function VenuePage() {
               ticketmaster={ticketmasterVenue}
               info={info}
               services={services}
-              identity={identity}
-              reviewsEnabled={!!services.fields?.rating}
               loading={infoLoading || servicesLoading}
               failed={infoFailed || servicesFailed || services.partial}
               onRetry={() => {
@@ -143,6 +143,14 @@ export default function VenuePage() {
           </div>
         </div>
 
+        <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:gap-3">
+          <VenueRating rating={services.fields?.rating} />
+          <VenueReviewSummary
+            key={venueId}
+            identity={identity}
+            enabled={!!services.fields?.rating}
+          />
+        </div>
         <VenuePhotos
           key={venueId}
           identity={identity}

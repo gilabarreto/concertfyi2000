@@ -56,7 +56,7 @@ export default function VenuePhotos({ identity, enabled, name }) {
                   setPage(page - 1);
                   setFailed([]);
                 }}
-                className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
+                className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600 disabled:text-zinc-300"
               >
                 {"{"}
               </button>
@@ -111,7 +111,7 @@ export default function VenuePhotos({ identity, enabled, name }) {
                   setPage(page + 1);
                   setFailed([]);
                 }}
-                className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
+                className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600 disabled:text-zinc-300"
               >
                 {"}"}
               </button>
