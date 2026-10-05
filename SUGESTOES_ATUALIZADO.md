@@ -112,3 +112,5 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 
 ☑ Perfil de venues — implementado localmente com dados do setlist.fm/Ticketmaster e fallback Wikidata/Wikipedia; sem nova chave. Endereço, inauguração, links, descrição e serviços aparecem apenas quando confirmados. Fontes, limites e comportamento em falhas documentados em `docs/APIS_E_FONTES.md`.
 ☑ Complemento de venues — Google Places API (New) e OpenStreetMap/Overpass implementados localmente e validados ao vivo com Wembley. `GOOGLE_PLACES_API_KEY` configurada no servidor local; configurar também no Render quando publicar. Phone/Opening hours separados da bilheteria; Reviews consulta somente ao abrir o popup. Fontes e configuração em `docs/APIS_E_FONTES.md`; Yelp fica para outra etapa.
+
+☑ Separador "·" (rodada /review de 2026-10-05) — troca em lista de shows, cópia do setlist, nome da playlist e título em `69a9b32`; título padrão e títulos sociais do `client/index.html` em `61f085a`; separador da lista com `aria-hidden` em `f92040c`.
