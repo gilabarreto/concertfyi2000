@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import { LANGUAGES, getLanguage, setLanguage, useT } from "../i18n";
+import { getLanguage, setLanguage, useT } from "../i18n";
+import { prefersDark } from "../theme";
 import Icon from "./Icon";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
@@ -59,10 +60,12 @@ function Navbar() {
   const [phraseSize, setPhraseSize] = useState(null);
   const timerRef = useRef(null);
   const [logoBusy, setLogoBusy] = useState(false);
-  // main.jsx already applied the saved or system theme; the class is the source of truth.
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const [dark, setDark] = useState(prefersDark);
+  // About and Contact are red pages by design and stay that way in dark mode.
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", dark && !redNavbar);
+  }, [dark, redNavbar]);
   const toggleDark = () => {
-    document.documentElement.classList.toggle("dark", !dark);
     localStorage.setItem("theme", dark ? "light" : "dark");
     setDark(!dark);
   };
@@ -97,11 +100,21 @@ function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-red-600 z-20">
+    <header className="fixed top-0 left-0 w-full bg-[var(--frame)] z-20">
       <nav
         className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : pathname === "/" || pathname.startsWith("/artists/") ? "bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.12)]" : "bg-white border-b border-zinc-200"}`}
       >
         <div className={`flex items-center justify-self-start gap-1 sm:gap-2 ${iconColor}`}>
+          <button
+            type="button"
+            onClick={toggleDark}
+            aria-pressed={dark}
+            aria-label={t("Dark mode")}
+            title={dark ? t("Switch to light mode") : t("Switch to dark mode")}
+            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl hover:opacity-80"
+          >
+            <Icon icon={dark ? faSun : faMoon} />
+          </button>
           <button
             type="button"
             disabled={!reminderCount}
@@ -120,16 +133,6 @@ function Navbar() {
             >
               1
             </span>
-          </button>
-          <button
-            type="button"
-            onClick={toggleDark}
-            aria-pressed={dark}
-            aria-label={t("Dark mode")}
-            title={dark ? t("Switch to light mode") : t("Switch to dark mode")}
-            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl hover:opacity-80"
-          >
-            <Icon icon={dark ? faSun : faMoon} />
           </button>
         </div>
         <button
@@ -160,7 +163,7 @@ function Navbar() {
             title={t("Language")}
             className="min-h-11 cursor-pointer appearance-none bg-transparent px-1 text-base font-semibold hover:opacity-80"
           >
-            {LANGUAGES.map((code) => (
+            {["en", "fr", "es", "pt"].map((code) => (
               <option key={code} value={code} className="bg-white text-zinc-900">
                 {code.toUpperCase()}
               </option>

@@ -65,6 +65,12 @@ export default function NearbyConcertBanner({ artist, events }) {
   if (!event) return null;
 
   const venue = event._embedded?.venues?.[0];
+  const bannerVars = {
+    artist,
+    city: venue?.city?.name || t("near you"),
+    date: dateLabel(event.dateObj),
+    venue: venue?.name,
+  };
   const imGoing = goingConcertIds.includes(event.id);
   const handleGoing = () => {
     toggleGoingConcert(event.id);
@@ -86,10 +92,11 @@ export default function NearbyConcertBanner({ artist, events }) {
       role="status"
     >
       <div className="min-h-0 overflow-hidden">
-        <div className="relative">
+        <div className="reminder-band relative">
           <p className="bg-red-600 pl-7 sm:pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
-            {artist} are playing {venue?.city?.name || "near you"} on {dateLabel(event.dateObj)}
-            {venue?.name ? ` at ${venue.name}` : ""}.{" "}
+            {venue?.name
+              ? t("{artist} are playing {city} on {date} at {venue}.", bannerVars)
+              : t("{artist} are playing {city} on {date}.", bannerVars)}{" "}
             <button
               type="button"
               onClick={handleGoing}

@@ -236,3 +236,29 @@ dialog.map-dialog[open] {
 .dark .hover\:text-red-800:hover {
   color: theme("colors.red.300");
 }
+
+/* The frame around main: red, or in dark mode the stage tone of the artist header. One
+   variable so Navbar, Footer (and its rounded corners) and main can't drift apart. */
+:root {
+  --frame: theme("colors.red.600");
+}
+.dark {
+  --frame: theme("colors.zinc.800");
+}
+
+/* Reminder bands turn white in dark mode, so they still stand out from the page. */
+.dark .reminder-band,
+.dark .reminder-band .bg-red-600 {
+  background-color: theme("colors.white");
+}
+.dark .reminder-band .text-white {
+  color: theme("colors.red.600");
+}
+.dark .reminder-band .border-white,
+.dark .reminder-band .before\:border-white\/50::before {
+  border-color: theme("colors.red.600");
+}
+.dark .reminder-band .bg-white {
+  background-color: theme("colors.red.600");
+  color: theme("colors.white");
+}

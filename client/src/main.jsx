@@ -4,6 +4,7 @@ import App from "./App";
 import "./index.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./api/queryClient";
+import { prefersDark } from "./theme";
 
 // No refresh mobile, comece no topo em vez de repetir o destino da navegação anterior.
 // Links abertos normalmente e navegação dentro da página continuam usando seus destinos.
@@ -25,12 +26,10 @@ if (
 }
 
 // Before the first render, so a dark visitor never sees a white page. The CSP forbids an
-// inline script in index.html, so this is as early as it gets. No choice saved yet: follow
-// the system.
-const savedTheme = localStorage.getItem("theme");
+// inline script in index.html, so this is as early as it gets. About and Contact stay red.
 document.documentElement.classList.toggle(
   "dark",
-  savedTheme ? savedTheme === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches,
+  prefersDark() && !/^\/(about|contact)\/?$/.test(window.location.pathname),
 );
 
 ReactDOM.createRoot(document.getElementById("root")).render(

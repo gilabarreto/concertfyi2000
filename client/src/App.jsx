@@ -40,7 +40,11 @@ function App() {
       <AppContext.Provider value={appState}>
         <Router basename="/">
           {!isSpotifyPopup && <Navbar />}
-          <main className={isSpotifyPopup ? "" : "min-h-dvh w-full bg-red-600 flex justify-center"}>
+          <main
+            className={
+              isSpotifyPopup ? "" : "min-h-dvh w-full bg-[var(--frame)] flex justify-center"
+            }
+          >
             {!isSpotifyPopup &&
               ["left", "right"].map((side) => (
                 <div

@@ -51,7 +51,7 @@ export default function Footer() {
   return (
     <footer
       ref={footerRef}
-      className="fixed bottom-0 left-0 w-full bg-red-600 text-white z-20"
+      className="fixed bottom-0 left-0 w-full bg-[var(--frame)] text-white z-20"
       onKeyDown={(event) => {
         if (event.key !== "Escape" || openPanel !== "search") return;
         searchButtonRef.current?.focus();
@@ -67,11 +67,11 @@ export default function Footer() {
           <>
             <div
               aria-hidden="true"
-              className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_19.5px,_#dc2626_20px)]"
+              className="hidden min-[1012.44px]:block absolute bottom-full left-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_right,_transparent_19.5px,_var(--frame)_20px)]"
             />
             <div
               aria-hidden="true"
-              className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_19.5px,_#dc2626_20px)]"
+              className="hidden min-[1012.44px]:block absolute bottom-full right-0 w-5 h-5 pointer-events-none bg-[radial-gradient(circle_at_top_left,_transparent_19.5px,_var(--frame)_20px)]"
             />
           </>
         )}
