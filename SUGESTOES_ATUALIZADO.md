@@ -119,3 +119,8 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 □ Venues que faltam na lista da home — esperando o dono: a lista vem só dos setlists do ano corrente com nome de cidade idêntico. Precisa de 2 ou 3 exemplos reais antes de mexer.
 □ Banco de dados como cache das APIs — esperando o dono: pedido para depois desta rodada. Restrição: os termos do Google Places só permitem guardar o place ID, então conteúdo do Google não entra no banco; Ticketmaster, setlist.fm, Wikipedia/Wikidata e OSM entram conforme a licença de cada um.
 ☑ "Venues/Concerts are temporarily unavailable" na home — removido a pedido do dono junto com a padronização de mensagens vazias (ver commit seguinte a `5ffbef0`). Erros de ação continuam visíveis: busca de cidade, criação de playlist, clique no carrossel e formulário de contato.
+☑ Dark mode (2026-10-05) — lua ao lado do sino, segue o sistema até o visitante escolher; paleta remapeada uma vez no `index.css` em `6b54212`, legenda do carrossel em `309c692`.
+☑ Idiomas EN/PT/ES/FR (2026-10-05) — seletor ao lado do ícone de usuário, dicionários sob demanda e teste de cobertura em `05b9a73`.
+□ Mapa do Google no dark mode — esperando o dono: continua claro. Dá para passar `styles` escuros ao `GoogleMap` em `Map.jsx`; ficou fora para não misturar com a troca de tema.
+□ SEO e conteúdo das APIs em outros idiomas — descartado por opinião: título/descrição de SEO seguem em inglês (o site não tem URL por idioma, então o Google indexaria uma língua só) e bio/setlist/reviews vêm como a fonte escreveu. O dono pode vetar.
+□ Frases do logo (Find Your Inspiration…) — mantidas em inglês por opinião: formam F-Y-I e perdem o sentido traduzidas.
