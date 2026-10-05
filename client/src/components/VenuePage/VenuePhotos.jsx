@@ -7,7 +7,7 @@ import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
 
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 
-export default function VenuePhotos({ identity, enabled, name }) {
+export default function VenuePhotos({ identity, enabled, loading, name }) {
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
   const [failed, setFailed] = useState([]);
@@ -22,28 +22,16 @@ export default function VenuePhotos({ identity, enabled, name }) {
     return () => media.removeEventListener("change", update);
   }, []);
   const limit = desktop ? 6 : 3;
-  const { data, isLoading, isError, refetch } = useVenuePhotos(
-    identity,
-    enabled,
-    page * limit,
-    limit,
-  );
+  const { data, isLoading } = useVenuePhotos(identity, enabled, page * limit, limit);
   const total = data?.total || 0;
   const photos = (data?.photos || []).filter((photo) => !failed.includes(photo.imageUrl));
   return (
     <section aria-label="Venue photos" className="bg-white px-4 space-y-2">
       <CardTitle>Photos</CardTitle>
       <div className="min-h-36 lg:min-h-52">
-        {isLoading ? (
-          <p role="status" className="text-center text-zinc-500 py-4">
-            Loading venue photos…
-          </p>
-        ) : isError || data?.status === "unavailable" ? (
-          <p className="text-center text-zinc-500 py-4">
-            Photos are temporarily unavailable.{" "}
-            <button type="button" onClick={() => refetch()} className="text-red-600">
-              Try again
-            </button>
+        {loading || isLoading ? (
+          <p role="status" className="text-center py-4">
+            Loading…
           </p>
         ) : (
           <>
@@ -83,9 +71,7 @@ export default function VenuePhotos({ identity, enabled, name }) {
                     </a>
                   </li>
                 ))}
-                {!photos.length && (
-                  <li className="py-4 text-center text-zinc-500">No venue photos available.</li>
-                )}
+                {!photos.length && <li className="py-4 text-center">N/A</li>}
               </ul>
               <button
                 type="button"
@@ -128,14 +114,6 @@ export default function VenuePhotos({ identity, enabled, name }) {
               </ul>
             )}
             {data?.source && <VenueSource detail={data} />}
-            {data?.partial && (
-              <p className="text-center text-xs text-zinc-500">
-                Some photos are temporarily unavailable.{" "}
-                <button type="button" onClick={() => refetch()} className="text-red-600">
-                  Try again
-                </button>
-              </p>
-            )}
           </>
         )}
       </div>

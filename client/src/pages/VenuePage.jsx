@@ -45,12 +45,11 @@ export default function VenuePage() {
     coords?.lat,
     coords?.long,
   );
-  const {
-    data: info = {},
-    isLoading: infoLoading,
-    isError: infoFailed,
-    refetch: retryInfo,
-  } = useVenueInfo(venue?.name, coords?.lat, coords?.long);
+  const { data: info = {}, isLoading: infoLoading } = useVenueInfo(
+    venue?.name,
+    coords?.lat,
+    coords?.long,
+  );
   const ticketmasterVenue = lookup?.ticketmaster || upcomingData?.venue;
   const location = ticketmasterVenue?.location;
   const exactCoords = location
@@ -63,16 +62,13 @@ export default function VenuePage() {
     long: mapCoords?.long,
     exact: !!exactCoords,
   };
-  const {
-    data: services = {},
-    isLoading: servicesLoading,
-    isError: servicesFailed,
-    refetch: retryServices,
-  } = useVenueServices(
+  const { data: services = {}, isPending: servicesPending } = useVenueServices(
     identity,
     // Ticketmaster's exact location settles the identity; only without it is Wikidata's worth waiting for.
     !!venue && (!!location || (!infoLoading && !eventsLoading)),
   );
+  // Pending covers the wait before the query is even enabled; without coordinates it never runs.
+  const servicesLoading = servicesPending && identity.lat != null;
 
   if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
     return <div className="p-8 w-full text-center text-zinc-400">Loading venue…</div>;
@@ -123,11 +119,6 @@ export default function VenuePage() {
               info={info}
               services={services}
               loading={infoLoading || servicesLoading}
-              failed={infoFailed || servicesFailed || services.partial}
-              onRetry={() => {
-                retryInfo();
-                retryServices();
-              }}
             />
           </div>
           <div className="w-full self-start">
@@ -148,7 +139,7 @@ export default function VenuePage() {
         </div>
 
         <div className="grid grid-cols-2 gap-2 sm:gap-4 lg:gap-3">
-          <VenueRating rating={services.fields?.rating} />
+          <VenueRating rating={services.fields?.rating} loading={servicesLoading} />
           <VenueReviewSummary
             key={venueId}
             reviews={services.reviews}
@@ -160,6 +151,7 @@ export default function VenuePage() {
           key={venueId}
           identity={identity}
           enabled={!!services.fields?.rating || services.providers?.google === "ok"}
+          loading={servicesLoading}
           name={venue.name}
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">

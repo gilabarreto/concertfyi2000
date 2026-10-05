@@ -18,15 +18,9 @@ const getFavoriteVenues = () => {
   }
 };
 
-export default function VenueInfo({
-  venue,
-  ticketmaster,
-  info = {},
-  services = {},
-  loading,
-  failed,
-  onRetry,
-}) {
+export default function VenueInfo({ venue, ticketmaster, info = {}, services = {}, loading }) {
+  // Missing only once every source has answered; until then the row is still on its way.
+  const empty = loading ? "Loading…" : "N/A";
   const [expanded, setExpanded] = useState(false);
   const [favoriteVenues, setFavoriteVenues] = useState(getFavoriteVenues);
   const isFavorite = favoriteVenues.includes(venue.id);
@@ -110,7 +104,7 @@ export default function VenueInfo({
               ? hasMore && !expanded
                 ? `${description.slice(0, 300).replace(/\s+\S*$/, "")}…`
                 : description
-              : "N/A"}
+              : empty}
           </p>
           {descriptionSource && (!hasMore || expanded) && (
             <VenueSource detail={descriptionSource} />
@@ -172,7 +166,7 @@ export default function VenueInfo({
                 {value}
               </a>
             ) : (
-              value || "N/A"
+              value || empty
             )}
             <VenueSource detail={source} />
           </li>
@@ -190,26 +184,9 @@ export default function VenueInfo({
               {website}
             </a>
           ) : (
-            "N/A"
+            empty
           )}
         </li>
-        {loading && (
-          <li role="status" className="border-b border-zinc-300/50 py-2 text-zinc-400">
-            Loading venue info…
-          </li>
-        )}
-        {(failed || info.partial) && (
-          <li role="status" className="border-b border-zinc-300/50 py-2 text-zinc-400">
-            Some venue details are temporarily unavailable.{" "}
-            <button
-              type="button"
-              onClick={onRetry}
-              className="font-semibold text-red-600 hover:text-red-800"
-            >
-              Try again
-            </button>
-          </li>
-        )}
       </ol>
     </section>
   );

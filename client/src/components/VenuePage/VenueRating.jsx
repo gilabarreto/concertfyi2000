@@ -2,7 +2,7 @@ import CardTitle from "../ArtistPage/CardTitle";
 import StarRating from "../ArtistPage/StarRating";
 import VenueSource from "./VenueSource";
 
-export default function VenueRating({ rating }) {
+export default function VenueRating({ rating, loading }) {
   return (
     <section
       aria-label="Venue ratings"
@@ -27,7 +27,9 @@ export default function VenueRating({ rating }) {
             <VenueSource detail={rating} />
           </>
         ) : (
-          <p className="text-center">N/A</p>
+          <p className="text-center" role={loading ? "status" : undefined}>
+            {loading ? "Loading…" : "N/A"}
+          </p>
         )}
       </div>
     </section>
