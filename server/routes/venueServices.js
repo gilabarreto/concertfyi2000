@@ -51,7 +51,6 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
 
   async function google(identity, key, mode, photoOptions = {}) {
     if (!apiKey) return { status: "unconfigured", fields: {}, reviews: [] };
-    const reviews = mode === "reviews";
     try {
       let id = placeIds.get(key)?.expires > Date.now() ? placeIds.get(key).value : null;
       const headers = { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey };
@@ -63,10 +62,13 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         if (typeof id !== "string" || !/^[a-zA-Z0-9_-]+$/.test(id)) return { status: "not-found", fields: {}, reviews: [] };
         remember(placeIds, key, id, 24 * 60 * 60 * 1000);
       }
-      const mask = mode === "photos" ? "photos,googleMapsUri,attributions" : reviews ? "rating,userRatingCount,reviews,googleMapsUri,attributions" : "formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
+      // Billing follows the priciest field. editorialSummary/parking/payments already make this
+      // Enterprise + Atmosphere (1,000 free a month), so reviews ride along at no extra cost;
+      // the photo list stays IDs Only, which is unbilled.
+      const mask = mode === "photos" ? "photos,attributions" : "reviews,formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
       const place = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(id)}`, { headers: { ...headers, "X-Goog-FieldMask": mask }, params: { languageCode: "en" } });
       const attributions = (place.attributions || []).map(item => ({ name: item.provider, url: safeUrl(item.providerUri) }));
-      const source = "Google Maps", url = safeUrl(place.googleMapsUri);
+      const source = "Google Maps", url = safeUrl(place.googleMapsUri) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(identity.name)}&query_place_id=${id}`;
       if (mode === "photos") {
         const photos = (place.photos || []).slice(0, 10);
         const { offset, limit } = photoOptions;
@@ -79,8 +81,8 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         }));
         return { status: "ok", source, url, attributions, total: photos.length, offset, photos: results.filter(item => item.status === "fulfilled").map(item => item.value), partial: results.some(item => item.status === "rejected") };
       }
-      if (reviews) return { status: "ok", source, url, attributions, rating: place.rating ?? null, count: place.userRatingCount ?? null, reviews: (place.reviews || []).slice(0, 5).map(review => ({ rating: review.rating, text: review.text?.text || review.originalText?.text || "", author: review.authorAttribution?.displayName || "Google Maps user", authorUrl: safeUrl(review.authorAttribution?.uri), photoUrl: safeUrl(review.authorAttribution?.photoUri), published: review.relativePublishTimeDescription || "", url: safeUrl(review.googleMapsUri) })) };
-      return { status: "ok", fields: {
+      const reviews = (place.reviews || []).slice(0, 5).map(review => ({ rating: review.rating, text: review.text?.text || review.originalText?.text || "", author: review.authorAttribution?.displayName || "Google Maps user", authorUrl: safeUrl(review.authorAttribution?.uri), photoUrl: safeUrl(review.authorAttribution?.photoUri), published: review.relativePublishTimeDescription || "", url: safeUrl(review.googleMapsUri) }));
+      return { status: "ok", reviews, fields: {
         address: field(place.formattedAddress, source, url, attributions), website: field(safeUrl(place.websiteUri), source, url, attributions), phone: field(place.internationalPhoneNumber, source, url, attributions),
         openingHours: field(place.regularOpeningHours?.weekdayDescriptions?.join("\n"), source, url, attributions),
         accessibility: field(booleanLines(place.accessibilityOptions, accessLabels), source, url, attributions), parking: field(booleanLines(place.parkingOptions, parkingLabels), source, url, attributions), payments: field(booleanLines(place.paymentOptions, paymentLabels), source, url, attributions),
@@ -101,7 +103,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     const fallback = needsFallback ? await osm(identity, key) : { status: "unused", fields: {} };
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
-    return { fields, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
+    return { fields, reviews: primary.reviews, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
   }
 
   const handler = mode => async (req, res) => {
@@ -120,7 +122,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     res.set("Cache-Control", "no-store");
     return res.json(await pending.get(pendingKey));
   };
-  return { services: handler("services"), reviews: handler("reviews"), photos: handler("photos") };
+  return { services: handler("services"), photos: handler("photos") };
 }
 module.exports = createVenueServicesHandlers();
 module.exports.createVenueServicesHandlers = createVenueServicesHandlers;

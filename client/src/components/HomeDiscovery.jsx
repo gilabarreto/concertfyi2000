@@ -29,10 +29,13 @@ function VenueTile({ venue, ticketmaster }) {
     long: location?.longitude != null ? Number(location.longitude) : venue.city?.coords?.long,
     exact: !!location,
   };
-  const { data, isLoading } = useVenuePhotos(identity, true, 0, 1);
+  // Google photos are 1,000 free a month, shared with the venue pages: only ask when
+  // Ticketmaster has no usable image.
+  const ticketmasterImage = !failed && image;
+  const { data, isLoading } = useVenuePhotos(identity, !ticketmasterImage, 0, 1);
   const photo = data?.photos?.[0];
-  const googlePhoto = !googleFailed && safeUrl(photo?.imageUrl);
-  const src = googlePhoto || (!failed && image);
+  const googlePhoto = !ticketmasterImage && !googleFailed && safeUrl(photo?.imageUrl);
+  const src = ticketmasterImage || googlePhoto;
   return (
     <li className="w-[calc((100%-1.5rem)/3)] lg:w-[calc((100%-3.75rem)/6)] min-w-0">
       <Link to={`/venues/${venue.id}`} className="group block space-y-1 text-center">

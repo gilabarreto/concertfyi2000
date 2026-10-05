@@ -26,9 +26,6 @@ export const getVenueInfo = (name, lat, long) =>
 export const getVenueServices = (identity) =>
   API("/venue-services", { params: identity, timeout: 45000 });
 
-export const getVenueReviews = (identity) =>
-  API("/venue-reviews", { params: identity, timeout: 30000 });
-
 export const getVenuePhotos = (identity, offset, limit) =>
   API("/venue-photos", { params: { ...identity, offset, limit }, timeout: 45000 });
 

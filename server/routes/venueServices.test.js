@@ -19,10 +19,8 @@ test("OSM works without a Google key, preserves negative values and caches only 
   assert.equal(first.headers["Cache-Control"], "no-store");
   await call(handlers.services);
   assert.equal(requests, 1);
-  const reviews = await call(handlers.reviews);
-  assert.equal(reviews.body.status, "unconfigured");
-  assert.deepEqual(reviews.body.reviews, []);
-  assert.equal(requests, 1, "OSM is never queried for reviews");
+  assert.deepEqual(first.body.reviews, [], "reviews come only from Google");
+  assert.equal(first.body.providers.google, "unconfigured");
 });
 
 test("matching rejects namesakes, ambiguity and incomplete Overpass results", async () => {
@@ -57,23 +55,25 @@ test("Google complements use explicit masks, fallback per missing field and neve
   assert.equal(requests.filter(item => item.url.endsWith("searchText")).length, 1, "only the place ID is reused");
   const details = requests.filter(item => item.url.includes("places/test_place"));
   assert.equal(details.length, 2);
-  assert.ok(!details[0].options.headers["X-Goog-FieldMask"].includes("reviews"));
+  assert.ok(details[0].options.headers["X-Goog-FieldMask"].includes("reviews"), "reviews share the one billed details call");
   assert.equal(details[0].options.headers["X-Goog-Api-Key"], "test-placeholder");
   assert.ok(requests.every(item => !item.url.includes("test-placeholder")));
 });
 
-test("reviews are separate, capped at five and preserve author/source attribution", async () => {
+test("reviews ride on the services call, capped at five, preserving author/source attribution", async () => {
   const masks = [];
   const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async (url, options) => {
     if (url.endsWith("searchText")) return { places: [{ id: "test_place", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
+    if (!url.includes("places.googleapis.com")) return { elements: [] };
     masks.push(options.headers["X-Goog-FieldMask"]);
     return { rating: 4.5, userRatingCount: 100, googleMapsUri: "https://maps.google.com/?cid=1", reviews: Array.from({ length: 6 }, () => ({ rating: 5, text: { text: "A review" }, authorAttribution: { displayName: "Author", uri: "https://maps.google.com/user", photoUri: "https://example.com/photo" } })) };
   } });
-  const result = await call(handlers.reviews);
+  const result = await call(handlers.services);
   assert.equal(result.body.reviews.length, 5);
   assert.equal(result.body.reviews[0].author, "Author");
-  assert.equal(result.body.rating, 4.5);
-  assert.deepEqual(masks, ["rating,userRatingCount,reviews,googleMapsUri,attributions"]);
+  assert.equal(result.body.fields.rating.value, 4.5);
+  assert.equal(masks.length, 1, "one details call per venue");
+  assert.ok(masks[0].split(",").includes("reviews"));
 });
 
 test("invalid inputs never reach providers, and failures expose no credentials", async () => {
@@ -150,14 +150,14 @@ test("OSM can supplement a pub's alternate descriptor and About, without hardcod
   assert.ok(queryText.includes("D[^[:alnum:]]*i"));
 });
 
-test("profile rating uses Google's aggregate and count without downloading reviews", async () => {
+test("profile rating uses Google's aggregate and count from the same details call as reviews", async () => {
   const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async (url, options) => {
     if (url.endsWith("searchText")) return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
     if (url.includes("places/venue")) {
       const mask = options.headers["X-Goog-FieldMask"].split(",");
       assert.ok(mask.includes("rating"));
       assert.ok(mask.includes("userRatingCount"));
-      assert.ok(!mask.includes("reviews"));
+      assert.ok(mask.includes("reviews"));
       return { rating: 4.6, userRatingCount: 1438, googleMapsUri: "https://maps.google.com/?cid=1" };
     }
     return { elements: [] };
@@ -174,7 +174,7 @@ test("photo pages fetch fresh resources and only requested images, keeping autho
     calls.push({ url, options });
     if (url.endsWith("searchText")) return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
     if (url.endsWith("places/venue")) {
-      assert.equal(options.headers["X-Goog-FieldMask"], "photos,googleMapsUri,attributions");
+      assert.equal(options.headers["X-Goog-FieldMask"], "photos,attributions", "IDs Only: the photo list is unbilled");
       return { googleMapsUri: "https://maps.google.com/?cid=1", photos: Array.from({ length: 10 }, (_, index) => ({ name: `places/venue/photos/photo_${index}`, authorAttributions: [{ displayName: `Author ${index}`, uri: "https://maps.google.com/author" }] })) };
     }
     assert.equal(options.params.skipHttpRedirect, true);

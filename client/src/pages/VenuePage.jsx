@@ -147,8 +147,9 @@ export default function VenuePage() {
           <VenueRating rating={services.fields?.rating} />
           <VenueReviewSummary
             key={venueId}
-            identity={identity}
-            enabled={!!services.fields?.rating}
+            reviews={services.reviews}
+            url={services.fields?.rating?.url}
+            loading={servicesLoading}
           />
         </div>
         <VenuePhotos

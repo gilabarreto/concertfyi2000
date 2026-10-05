@@ -9,7 +9,6 @@ import {
   getTicketmasterVenue,
   getVenueInfo,
   getVenueServices,
-  getVenueReviews,
   getVenuePhotos,
   getVenueEvents,
   getCitySetlists,
@@ -31,17 +30,6 @@ export const useVenueServices = (identity, enabled) =>
   useQuery({
     queryKey: ["venue-services", identity],
     queryFn: () => getVenueServices(identity),
-    enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
-    staleTime: 0,
-    gcTime: 0,
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
-export const useVenueReviews = (identity, enabled) =>
-  useQuery({
-    queryKey: ["venue-reviews", identity],
-    queryFn: () => getVenueReviews(identity),
     enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
     staleTime: 0,
     gcTime: 0,

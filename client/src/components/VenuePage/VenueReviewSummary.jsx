@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import CardTitle from "../ArtistPage/CardTitle";
-import { useVenueReviews } from "../../api/queries";
 
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 const PREVIEW_LINES = 5;
 
-export default function VenueReviewSummary({ identity, enabled }) {
-  const { data, isLoading, isError, refetch } = useVenueReviews(identity, enabled);
+// Reviews arrive with the venue's services payload: one billed Google call carries both.
+export default function VenueReviewSummary({ reviews = [], url, loading }) {
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
-  const reviews = data?.reviews || [];
   const current = reviews[Math.min(index, Math.max(0, reviews.length - 1))];
   const textRef = useRef(null);
   const [hasMore, setHasMore] = useState(false);
@@ -42,12 +40,8 @@ export default function VenueReviewSummary({ identity, enabled }) {
     <section aria-label="Venue reviews" className="min-w-0 bg-white px-2 sm:px-4 space-y-2">
       <CardTitle>Reviews</CardTitle>
       <div className="space-y-2 py-2">
-        {isLoading ? (
+        {loading ? (
           <span role="status">Loading…</span>
-        ) : isError || data?.status === "unavailable" ? (
-          <button type="button" onClick={() => refetch()} className="text-red-600">
-            Try again
-          </button>
         ) : current ? (
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {reviews.length > 1 && (
@@ -112,7 +106,7 @@ export default function VenueReviewSummary({ identity, enabled }) {
           </a>{" "}
           · {current.rating}/5 · {current.published} ·{" "}
           <a
-            href={safeUrl(current.url || data.url)}
+            href={safeUrl(current.url || url)}
             target="_blank"
             rel="noreferrer"
             className="underline hover:text-red-600"
