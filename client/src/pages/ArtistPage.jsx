@@ -77,7 +77,7 @@ export default function ArtistPage() {
   }
 
   if (!concert) {
-    return <div className="p-8 w-full text-center text-zinc-400">Loading concert info…</div>;
+    return <div className="p-8 w-full text-center text-zinc-400">Loading…</div>;
   }
 
   const attraction = getArtistAttraction(ticketmaster, concert.artist.name);

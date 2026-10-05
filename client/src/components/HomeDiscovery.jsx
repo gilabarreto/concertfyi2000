@@ -83,7 +83,7 @@ function VenueTile({ venue, ticketmaster }) {
   );
 }
 
-function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
+function VenueCarousel({ venues, events, city, loading }) {
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -122,16 +122,7 @@ function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
       </CardTitle>
       {!venues.length ? (
         <p className="py-4 text-center text-sm text-zinc-500" role="status">
-          {loading
-            ? "Loading venues…"
-            : failed
-              ? "Venues are temporarily unavailable."
-              : `No venues found in ${city}.`}
-          {failed && (
-            <button onClick={onRetry} type="button" className="ml-2 text-red-600">
-              Try again
-            </button>
-          )}
+          {loading ? "Loading…" : `No venues available in ${city} yet. Check back later.`}
         </p>
       ) : (
         <div ref={carouselRef} className="flex items-start gap-4" aria-roledescription="carousel">
@@ -214,11 +205,9 @@ export default function HomeDiscovery({ location }) {
               empty={
                 local.isLoading
                   ? "Loading…"
-                  : local.isError
-                    ? "Concerts are temporarily unavailable."
-                    : nearby
-                      ? `No concerts in neighboring cities within 50 km of ${city}.`
-                      : `No upcoming concerts in ${city} right now.`
+                  : nearby
+                    ? `No concerts available in neighboring cities within 50 km of ${city} yet. Check back later.`
+                    : `No upcoming concerts available in ${city} yet. Check back later.`
               }
               showSearch={false}
               pageSize={nearby ? 5 : 7}
@@ -237,15 +226,6 @@ export default function HomeDiscovery({ location }) {
                 </>
               )}
             />
-            {local.isError && (
-              <button
-                type="button"
-                onClick={() => local.refetch()}
-                className="block mx-auto text-red-600 hover:text-red-800"
-              >
-                Try again
-              </button>
-            )}
           </section>
         ))}
       </div>
@@ -255,8 +235,6 @@ export default function HomeDiscovery({ location }) {
         events={events}
         city={city}
         loading={setlists.isLoading}
-        failed={setlists.isError}
-        onRetry={setlists.refetch}
       />
     </div>
   );

@@ -15,7 +15,7 @@ export default function UpcomingConcerts(props) {
   return (
     <ConcertList
       title="Upcoming Concerts"
-      empty="No upcoming concerts. Check back later."
+      empty="No upcoming concerts available for this artist yet. Check back later."
       showSearch={false}
       items={events}
       locationOf={(concert) => {

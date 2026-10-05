@@ -77,7 +77,11 @@ export default function CityPage() {
             <div className="min-w-0 bg-white px-4 space-y-2">
               <ConcertList
                 title="Past Concerts"
-                empty={isLoading ? "Loading…" : `No setlists from ${city} this year yet.`}
+                empty={
+                  isLoading
+                    ? "Loading…"
+                    : `No past setlists available in ${city} this year yet. Check back later.`
+                }
                 showSearch={false}
                 items={past}
                 locationOf={(show) => `${show.artist.name} @ ${show.venue.name}`}
@@ -99,10 +103,10 @@ export default function CityPage() {
                 view === "recent"
                   ? recentLoading
                     ? "Loading…"
-                    : `No recently added upcoming concerts in ${city}.`
+                    : `No recently added concerts available in ${city} yet. Check back later.`
                   : view === "nearby"
-                    ? `No concerts in neighboring cities within 50 km of ${city}.`
-                    : `No upcoming concerts in ${city} right now.`
+                    ? `No concerts available in neighboring cities within 50 km of ${city} yet. Check back later.`
+                    : `No upcoming concerts available in ${city} yet. Check back later.`
               }
               showSearch={false}
               items={view === "recent" ? recent : upcoming}

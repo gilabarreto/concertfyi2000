@@ -59,11 +59,7 @@ export default function TourMapPanel({ artistId, tourName, popup = false, onNavi
       <div className={popup ? "aspect-video w-full" : "aspect-[103/60] w-full"}>
         {isLoading || isError || !points.length ? (
           <p className="flex h-full items-center justify-center text-sm text-zinc-500">
-            {isLoading
-              ? "Loading tour map…"
-              : isError
-                ? "Tour map unavailable. Try again later."
-                : "No locations available for this tour."}
+            {isLoading ? "Loading…" : "No locations available for this tour yet. Check back later."}
           </p>
         ) : (
           <TourMap points={points} onSelect={selectPoint} />

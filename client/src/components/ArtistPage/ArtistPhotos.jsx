@@ -3,7 +3,7 @@ import { useArtistImages } from "../../api/queries";
 import { getBestImage } from "../../helpers/selectors";
 
 export default function ArtistPhotos({ artistId, artist, attraction }) {
-  const { data, isLoading, isError, refetch } = useArtistImages(artistId);
+  const { data, isLoading } = useArtistImages(artistId);
   const [selectedUrl, setSelectedUrl] = useState(null);
   const [failed, setFailed] = useState([]);
   const stripRef = useRef(null);
@@ -56,7 +56,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
           />
         ) : (
           <p className="px-4 text-center text-sm text-zinc-500">
-            {isLoading ? "Loading artist photos…" : "No artist photos available."}
+            {isLoading ? "Loading…" : "No photos available for this artist yet. Check back later."}
           </p>
         )}
       </div>
@@ -117,14 +117,6 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
           >
             {selected.source}
           </a>
-        </p>
-      )}
-      {isError && (
-        <p className="text-center text-xs text-zinc-500">
-          Source: Could not load additional photos.{" "}
-          <button type="button" onClick={() => refetch()} className="text-red-600 underline">
-            Try again
-          </button>
         </p>
       )}
     </div>

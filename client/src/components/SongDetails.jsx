@@ -87,7 +87,7 @@ export default function SongDetails({ songName, artistName }) {
         />
       );
 
-    if (playerLoading) return <p className="text-sm text-zinc-500">Loading Spotify track...</p>;
+    if (playerLoading) return <p className="text-sm text-zinc-500">Loading…</p>;
     return null;
   };
 
@@ -106,9 +106,11 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         <div className="mt-3">
-          {loading && <p className="text-sm text-zinc-500">Loading lyrics...</p>}
-          {lyricsError && (
-            <p className="text-sm text-red-600 italic text-center">Could not load lyrics</p>
+          {loading && <p className="text-sm text-zinc-500 text-center">Loading…</p>}
+          {!loading && (lyricsError || !lyrics) && (
+            <p className="text-sm text-zinc-500 text-center">
+              No lyrics available for this song yet. Check back later.
+            </p>
           )}
           {lyrics && !loading && (
             <>
@@ -146,12 +148,8 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         {videoLoading ? (
-          <p className="mt-3 text-sm text-zinc-500 text-center">Loading music video...</p>
-        ) : videoError ? (
-          <p className="mt-3 text-sm text-red-600 italic text-center">
-            Could not load music video.
-          </p>
-        ) : videoId ? (
+          <p className="mt-3 text-sm text-zinc-500 text-center">Loading…</p>
+        ) : videoId && !videoError ? (
           <div className="mt-3 rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
               width="100%"
@@ -165,7 +163,7 @@ export default function SongDetails({ songName, artistName }) {
           </div>
         ) : (
           <p className="mt-3 text-sm text-zinc-500 text-center">
-            No music video available for this song.
+            No music video available for this song yet. Check back later.
           </p>
         )}
       </details>

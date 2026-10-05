@@ -50,7 +50,9 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
     });
 
   if (!upcomingConcert) {
-    return hideTitle ? <CardNotice>No upcoming concerts. Check back later.</CardNotice> : null;
+    return hideTitle ? (
+      <CardNotice>No upcoming concerts available for this artist yet. Check back later.</CardNotice>
+    ) : null;
   }
 
   // Same idea as "I WAS THERE" on Last Concert, mirrored forward: mark locally that the

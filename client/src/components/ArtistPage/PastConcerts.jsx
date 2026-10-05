@@ -8,7 +8,7 @@ export default function PastConcerts(props) {
   return (
     <ConcertList
       title="Past Concerts"
-      empty="No recent concerts. Check back later."
+      empty="No past concerts available for this artist yet. Check back later."
       showSearch={false}
       items={getPastConcertsByArtist(props.setlist, props.artistId)}
       locationOf={(concert) =>

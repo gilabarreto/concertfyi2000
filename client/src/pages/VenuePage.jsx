@@ -72,7 +72,7 @@ export default function VenuePage() {
   const servicesLoading = servicesPending && identity.lat != null;
 
   if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
-    return <div className="p-8 w-full text-center text-zinc-400">Loading venue…</div>;
+    return <div className="p-8 w-full text-center text-zinc-400">Loading…</div>;
   }
   if (!venue) {
     return (
@@ -159,7 +159,11 @@ export default function VenuePage() {
           <div className="min-w-0 bg-white px-4 space-y-2">
             <ConcertList
               title="Past Concerts"
-              empty={isLoading ? "Loading…" : "No past setlists for this venue yet."}
+              empty={
+                isLoading
+                  ? "Loading…"
+                  : "No past setlists available for this venue yet. Check back later."
+              }
               showSearch={false}
               items={past}
               locationOf={(show) => show.artist.name}
@@ -181,7 +185,7 @@ export default function VenuePage() {
           <div className="min-w-0 bg-white px-4 pb-4 space-y-2">
             <ConcertList
               title="Upcoming Concerts"
-              empty="No upcoming concerts on sale for this venue."
+              empty="No upcoming concerts available for this venue yet. Check back later."
               showSearch={false}
               items={upcoming}
               locationOf={artistOf}

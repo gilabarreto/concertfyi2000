@@ -38,7 +38,9 @@ export default function VenuesPage() {
           <CardTitle>Busiest this year</CardTitle>
           {venues.length === 0 ? (
             <CardNotice>
-              {isLoading ? "Loading…" : `No venues with setlists in ${city} this year.`}
+              {isLoading
+                ? "Loading…"
+                : `No venues available in ${city} this year yet. Check back later.`}
             </CardNotice>
           ) : (
             <ol className="px-[12px]">

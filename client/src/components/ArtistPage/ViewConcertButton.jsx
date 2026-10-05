@@ -55,7 +55,7 @@ export default function ViewConcertButton({ event, artistName }) {
         className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
       >
         <Icon icon={faEye} />
-        {loading ? "Loading concert…" : "View concert"}
+        {loading ? "Loading…" : "View concert"}
       </button>
       {error && (
         <p role="status" className="mt-2 text-center text-sm text-zinc-500">

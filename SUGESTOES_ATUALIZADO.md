@@ -118,4 +118,4 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 □ Cotas do Google Cloud alinhadas ao nível grátis — esperando o dono: só ele acessa o Console. Valores sugeridos na conversa de 2026-10-05.
 □ Venues que faltam na lista da home — esperando o dono: a lista vem só dos setlists do ano corrente com nome de cidade idêntico. Precisa de 2 ou 3 exemplos reais antes de mexer.
 □ Banco de dados como cache das APIs — esperando o dono: pedido para depois desta rodada. Restrição: os termos do Google Places só permitem guardar o place ID, então conteúdo do Google não entra no banco; Ticketmaster, setlist.fm, Wikipedia/Wikidata e OSM entram conforme a licença de cada um.
-□ "Venues/Concerts are temporarily unavailable" na home — mantido por opinião: aparece só quando a lista inteira falha, não é o aviso por campo que foi removido. O dono pode vetar.
+☑ "Venues/Concerts are temporarily unavailable" na home — removido a pedido do dono junto com a padronização de mensagens vazias (ver commit seguinte a `5ffbef0`). Erros de ação continuam visíveis: busca de cidade, criação de playlist, clique no carrossel e formulário de contato.

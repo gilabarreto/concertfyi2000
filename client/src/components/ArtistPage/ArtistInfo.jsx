@@ -62,12 +62,7 @@ export default function ArtistInfo(props) {
   );
 
   const artist = concert.artist.name;
-  const {
-    data: background = {},
-    isLoading: isBackgroundLoading,
-    isError: isBackgroundError,
-    refetch: refetchBackground,
-  } = useArtistBackground(artist);
+  const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artist);
   const hasMoreBiography = (background.extract?.length || 0) > 300;
   const biographyMask =
     hasMoreBiography && !showFullBiography
@@ -126,21 +121,9 @@ export default function ArtistInfo(props) {
 
         <ol className="px-[12px]">
           {isBackgroundLoading && (
-            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading artist info…</li>
+            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading…</li>
           )}
-          {isBackgroundError && (
-            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">
-              Something went wrong.{" "}
-              <button
-                type="button"
-                onClick={() => refetchBackground()}
-                className="font-semibold text-red-600 hover:text-red-800"
-              >
-                Try again
-              </button>
-            </li>
-          )}
-          {!isBackgroundLoading && !isBackgroundError && (
+          {!isBackgroundLoading && (
             <li className="border-b border-zinc-300/50 py-2">
               {background.extract ? (
                 <>
@@ -173,7 +156,9 @@ export default function ArtistInfo(props) {
                   )}
                 </>
               ) : (
-                <p className="text-sm text-zinc-500">No biography available for this artist.</p>
+                <p className="text-sm text-zinc-500">
+                  No biography available for this artist yet. Check back later.
+                </p>
               )}
             </li>
           )}

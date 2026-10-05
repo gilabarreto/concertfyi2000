@@ -238,7 +238,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
 
       <>
         {songs.length === 0 ? (
-          <CardNotice>No songs in this setlist. Check back later.</CardNotice>
+          <CardNotice>No songs available for this setlist yet. Check back later.</CardNotice>
         ) : (
           <>
             {/* Show-level note: "May be incomplete", "Opening act for AC/DC". */}
