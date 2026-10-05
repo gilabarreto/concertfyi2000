@@ -61,11 +61,8 @@ function Navbar() {
   const timerRef = useRef(null);
   const [logoBusy, setLogoBusy] = useState(false);
   const [dark, setDark] = useState(prefersDark);
-  // About and Contact are red pages by design and stay that way in dark mode.
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", dark && !redNavbar);
-  }, [dark, redNavbar]);
   const toggleDark = () => {
+    document.documentElement.classList.toggle("dark", !dark);
     localStorage.setItem("theme", dark ? "light" : "dark");
     setDark(!dark);
   };
@@ -102,7 +99,7 @@ function Navbar() {
   return (
     <header className="fixed top-0 left-0 w-full bg-[var(--frame)] z-20">
       <nav
-        className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : pathname === "/" || pathname.startsWith("/artists/") ? "bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.12)]" : "bg-white border-b border-zinc-200"}`}
+        className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-[var(--frame)] text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : pathname === "/" || pathname.startsWith("/artists/") ? "bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.12)]" : "bg-white border-b border-zinc-200"}`}
       >
         <div className={`flex items-center justify-self-start gap-1 sm:gap-2 ${iconColor}`}>
           <button

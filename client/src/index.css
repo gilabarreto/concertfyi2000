@@ -246,19 +246,27 @@ dialog.map-dialog[open] {
   --frame: theme("colors.zinc.800");
 }
 
-/* Reminder bands turn white in dark mode, so they still stand out from the page. */
-.dark .reminder-band,
-.dark .reminder-band .bg-red-600 {
+/* About and Contact: the red page takes the frame's grey, so page and frame read as one
+   surface, as the red does in light mode. The {fyi} braces, the mail icon and the logo
+   braces were dark-on-red; on grey they take the dark accent. The form keeps its light
+   look: white fields and a white button with red text. */
+.dark .red-page {
+  background-color: var(--frame);
+}
+.dark .red-page-mark,
+.dark header .text-black {
+  color: theme("colors.red.400");
+}
+.dark .red-page form {
+  color-scheme: light;
+  color: theme("colors.zinc.800");
+}
+.dark .red-page form .bg-white {
   background-color: theme("colors.white");
 }
-.dark .reminder-band .text-white {
+.dark .red-page form .text-red-600 {
   color: theme("colors.red.600");
 }
-.dark .reminder-band .border-white,
-.dark .reminder-band .before\:border-white\/50::before {
-  border-color: theme("colors.red.600");
-}
-.dark .reminder-band .bg-white {
-  background-color: theme("colors.red.600");
-  color: theme("colors.white");
+.dark .red-page form .hover\:bg-zinc-100:hover {
+  background-color: theme("colors.zinc.100");
 }

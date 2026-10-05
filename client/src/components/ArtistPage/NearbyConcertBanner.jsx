@@ -92,7 +92,7 @@ export default function NearbyConcertBanner({ artist, events }) {
       role="status"
     >
       <div className="min-h-0 overflow-hidden">
-        <div className="reminder-band relative">
+        <div className="relative">
           <p className="bg-red-600 pl-7 sm:pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
             {venue?.name
               ? t("{artist} are playing {city} on {date} at {venue}.", bannerVars)

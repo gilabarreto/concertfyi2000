@@ -60,7 +60,7 @@ export default function Footer() {
     >
       <nav
         aria-label={t("Footer navigation")}
-        className={`relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal ${showDivider ? "bg-red-600 shadow-[0_-4px_6px_-4px_rgba(0,0,0,0.3)]" : ""}`}
+        className={`relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal ${showDivider ? "bg-[var(--frame)] shadow-[0_-4px_6px_-4px_rgba(0,0,0,0.3)]" : ""}`}
       >
         {/* Concave ramps join the main's sides smoothly to the footer. */}
         {!showDivider && (

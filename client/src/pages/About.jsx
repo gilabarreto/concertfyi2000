@@ -15,8 +15,8 @@ export default function About() {
         description="Learn about concertfyi - your backstage pass to live music. Discover concert history, setlists, and upcoming shows."
         url="/about"
       />
-      <div className="w-full bg-red-600 flex flex-col items-center justify-evenly p-6">
-        <div className="text-[10rem] font-medium tracking-tight leading-tight text-center overflow-hidden">
+      <div className="red-page w-full bg-red-600 flex flex-col items-center justify-evenly p-6">
+        <div className="red-page-mark text-[10rem] font-medium tracking-tight leading-tight text-center overflow-hidden">
           {"{"}
           <span className="font-semibold text-zinc-100">fyi</span>
           {"}"}

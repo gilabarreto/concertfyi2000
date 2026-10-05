@@ -35,7 +35,7 @@ Só tokens padrão do Tailwind. Nada de hex novo.
 
 ### Dark mode
 
-Lua no Navbar, à esquerda do sino. About e Contact ficam sempre vermelhos, também no escuro. A moldura em volta do main (Navbar, Footer, fundo) vem de `--frame`: `red-600` no claro, `zinc-800` (o palco) no escuro. As faixas de lembrete ficam brancas com texto vermelho no escuro. Sem escolha salva, segue o sistema (`prefers-color-scheme`); a escolha fica em `localStorage.theme`. O `main.jsx` aplica a classe `dark` no `<html>` antes do primeiro render (a CSP barra script inline no `index.html`).
+Lua no Navbar, à esquerda do sino. A moldura em volta do main (Navbar, Footer, fundo) vem de `--frame`: `red-600` no claro, `zinc-800` (o palco) no escuro. About e Contact (`.red-page`) tomam essa mesma cor no escuro; as chaves do {fyi}, o envelope e as chaves do logo passam para `red-400`; o formulário de contato mantém campos e botão claros. As faixas de lembrete continuam vermelhas. Sem escolha salva, segue o sistema (`prefers-color-scheme`); a escolha fica em `localStorage.theme`. O `main.jsx` aplica a classe `dark` no `<html>` antes do primeiro render (a CSP barra script inline no `index.html`).
 
 As cores não ganham `dark:` em cada classe: o fim do `index.css` remapeia os tokens desta tabela sob `.dark` — `white` → `zinc-900`, palco `zinc-100` → `zinc-800`, texto `zinc-900/800` → `zinc-100`, secundário `zinc-500` → `zinc-400`, bordas `zinc-300` → `zinc-700`. O vermelho de texto sobe para `red-400` (`red-600` sobre `zinc-900` dá 3,7:1, abaixo do AA); botões cheios e a moldura `red-600` ficam iguais. Classe de cor nova num componente precisa da linha correspondente lá. O mapa do Google continua claro.
 

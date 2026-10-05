@@ -26,11 +26,8 @@ if (
 }
 
 // Before the first render, so a dark visitor never sees a white page. The CSP forbids an
-// inline script in index.html, so this is as early as it gets. About and Contact stay red.
-document.documentElement.classList.toggle(
-  "dark",
-  prefersDark() && !/^\/(about|contact)\/?$/.test(window.location.pathname),
-);
+// inline script in index.html, so this is as early as it gets.
+document.documentElement.classList.toggle("dark", prefersDark());
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

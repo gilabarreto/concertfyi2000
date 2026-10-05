@@ -75,7 +75,7 @@ const Home = () => {
             className={`grid w-full scroll-mt-16 transition-[grid-template-rows] duration-[650ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${reminderOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}
           >
             <div className="min-h-0 overflow-hidden">
-              <div className="reminder-band relative bg-red-600">
+              <div className="relative bg-red-600">
                 <p className="w-full bg-red-600 pl-[52px] pr-[72px] py-3 text-left lg:pl-[72px] lg:text-center text-sm sm:text-base text-white text-pretty">
                   {recent && (
                     <Link
