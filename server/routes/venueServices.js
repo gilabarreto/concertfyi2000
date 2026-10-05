@@ -46,7 +46,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       } };
       remember(osmCache, key, result, 60 * 60 * 1000);
       return result;
-    } catch { return { status: "unavailable", fields: {} }; }
+    } catch (error) { console.error("venue-services osm:", error.message); return { status: "unavailable", fields: {} }; }
   }
 
   async function google(identity, key, mode, photoOptions = {}) {
@@ -87,7 +87,11 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         description: field(place.editorialSummary?.text, source, url, attributions),
         rating: typeof place.rating === "number" ? { value: place.rating, count: place.userRatingCount ?? null, source, url, attributions } : null,
       } };
-    } catch { return { status: "unavailable", fields: {}, reviews: [] }; }
+    } catch (error) {
+      // The message is "<status> <url>" from http.js; the key travels in a header, never the URL.
+      console.error(`venue-services google ${mode}:`, error.message);
+      return { status: "unavailable", fields: {}, reviews: [] };
+    }
   }
 
   async function load(identity, key, mode, photoOptions) {
