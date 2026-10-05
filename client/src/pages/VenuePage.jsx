@@ -61,6 +61,7 @@ export default function VenuePage() {
     lat: mapCoords?.lat,
     long: mapCoords?.long,
     exact: !!exactCoords,
+    city: venue?.city?.name,
   };
   const { data: services = {}, isPending: servicesPending } = useVenueServices(
     identity,

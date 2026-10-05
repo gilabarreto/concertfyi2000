@@ -28,6 +28,7 @@ function VenueTile({ venue, ticketmaster }) {
     lat: location?.latitude != null ? Number(location.latitude) : venue.city?.coords?.lat,
     long: location?.longitude != null ? Number(location.longitude) : venue.city?.coords?.long,
     exact: !!location,
+    city: venue.city?.name,
   };
   // Google photos are 1,000 free a month, shared with the venue pages: only ask when
   // Ticketmaster has no usable image.

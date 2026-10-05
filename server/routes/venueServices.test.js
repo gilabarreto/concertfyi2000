@@ -217,11 +217,39 @@ test("with an exact pin, Google's top venue-typed result stands in for a renamed
     } });
     return (await call(handlers.services, input)).body;
   };
-  const arena = { id: "renamed", displayName: { text: "Espaço Unimed - Arena" }, types: ["event_venue"], location: { latitude: 51.556, longitude: -0.279 } };
-  const cafe = { ...arena, id: "cafe", displayName: { text: "Café do Espaço" }, types: ["cafe"] };
-  const named = { ...query, name: "Espaço Unimed" };
+  // A sponsor rename shares no words with the old name: only the exact pin can vouch for it.
+  const arena = { id: "renamed", displayName: { text: "Vibra São Paulo" }, types: ["event_venue"], location: { latitude: 51.556, longitude: -0.279 } };
+  const cafe = { ...arena, id: "cafe", displayName: { text: "Café do Centro" }, types: ["cafe"] };
+  const named = { ...query, name: "Credicard Hall" };
   assert.equal((await run(named, [arena])).providers.google, "ok");
   assert.equal((await run({ ...named, exact: "false" }, [arena])).providers.google, "not-found", "city coordinates are too loose to trust a different name");
   assert.equal((await run(named, [cafe, arena])).providers.google, "not-found", "only Google's top result may stand in");
   assert.equal((await run(named, [cafe])).providers.google, "not-found", "a non-venue type never stands in");
+});
+
+test("automatic matching: added/dropped words need a venue type, and a miss retries with the city", async () => {
+  const run = async (input, answer) => {
+    const queries = [];
+    const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async (url, options) => {
+      if (url.endsWith("searchText")) { const { textQuery } = JSON.parse(options.body); queries.push(textQuery); return { places: answer(textQuery) }; }
+      if (url.includes("places.googleapis.com")) return { internationalPhoneNumber: "+55 11 0000", googleMapsUri: "https://maps.google.com/?cid=1" };
+      return { elements: [] };
+    } });
+    return { body: (await call(handlers.services, input)).body, queries };
+  };
+  const at = { latitude: 51.556, longitude: -0.279 };
+  const loose = { ...query, exact: "false" };
+  const suffixed = { id: "suffixed", displayName: { text: "Espaço Unimed - Arena" }, types: ["event_venue"], location: at };
+  assert.equal((await run({ ...loose, name: "Espaço Unimed" }, () => [suffixed])).body.providers.google, "ok", "added words, even with city coordinates");
+  assert.equal((await run({ ...loose, name: "Allianz Parque Arena" }, () => [{ ...suffixed, displayName: { text: "Allianz Parque" } }])).body.providers.google, "ok", "dropped words");
+  assert.equal((await run({ ...loose, name: "Espaço Unimed" }, () => [{ ...suffixed, types: ["parking"] }])).body.providers.google, "not-found", "never a non-venue");
+  assert.equal((await run({ ...loose, name: "Espaço Unimed" }, () => [suffixed, { ...suffixed, id: "twin" }])).body.providers.google, "not-found", "never ambiguous");
+  assert.equal((await run({ ...loose, name: "Madison Square Garden" }, () => [{ ...suffixed, displayName: { text: "Madison" } }])).body.providers.google, "not-found", "too short to stand for the whole name");
+
+  const retried = await run({ ...loose, name: "Espaço Unimed", city: "São Paulo" }, textQuery => textQuery.includes("São Paulo") ? [suffixed] : []);
+  assert.equal(retried.body.providers.google, "ok");
+  assert.deepEqual(retried.queries, ["Espaço Unimed", "Espaço Unimed, São Paulo"]);
+  const firstHit = await run({ ...loose, name: "Espaço Unimed", city: "São Paulo" }, () => [suffixed]);
+  assert.equal(firstHit.queries.length, 1, "the city search is spent only on a miss");
+  assert.equal((await run({ ...loose, city: ["x"] }, () => [])).body.error, "Invalid city");
 });

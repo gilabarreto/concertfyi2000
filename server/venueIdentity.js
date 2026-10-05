@@ -18,6 +18,18 @@ function venueNamesMatch(requested, candidate, types = []) {
   return [a.descriptor, b.descriptor].filter(Boolean).every(descriptor => descriptors[descriptor].some(type => types.includes(type)));
 }
 
+const words = value => (value || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().split(/[^a-z0-9]+/).filter(word => word && word !== "the");
+// Sponsors and listings add or drop words ("Espaço Unimed" / "Espaço Unimed - Arena"): every
+// word of the shorter name must appear in the longer one. When Google's name is the shorter,
+// it needs two words: a lone "Madison" can't stand for Madison Square Garden. Callers still
+// require a venue type and a unique nearby hit.
+function venueNamesOverlap(requested, candidate) {
+  const ours = words(requested), theirs = words(candidate);
+  const [shorter, longer] = theirs.length < ours.length ? [theirs, ours] : [ours, theirs];
+  if (shorter === theirs && theirs.length < 2) return false;
+  return shorter.join("").length >= 6 && shorter.every(word => longer.includes(word));
+}
+
 function nearby(lat, long, otherLat, otherLong, radius = 30) {
   if ([lat, long, otherLat, otherLong].some(value => value == null || value === "")) return false;
   const values = [lat, long, otherLat, otherLong].map(Number);
@@ -34,4 +46,4 @@ function findTicketmasterVenue(venues = [], name, lat, long) {
     nearby(lat, long, venue.location?.latitude, venue.location?.longitude));
   return matches.length === 1 ? matches[0] : null;
 }
-module.exports = { normalize, nearby, findTicketmasterVenue, venueNamesMatch, venueNameParts };
+module.exports = { normalize, nearby, findTicketmasterVenue, venueNamesMatch, venueNamesOverlap, venueNameParts };
