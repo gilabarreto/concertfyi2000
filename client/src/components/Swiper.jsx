@@ -361,7 +361,7 @@ export default function Swiper() {
               {slides.map(renderSlide)}
             </div>
             {activeSlide && (
-              <div className="mx-auto w-full sm:w-[80%] lg:w-[64%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-black font-sans">
+              <div className="mx-auto w-full sm:w-[80%] lg:w-[64%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-zinc-900 font-sans">
                 <button
                   type="button"
                   onClick={() => go(-1)}
