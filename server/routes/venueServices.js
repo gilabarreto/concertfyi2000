@@ -11,7 +11,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
   const osmCache = new Map();
   const placeIds = new Map(); // Only place IDs are retained; Google content is never cached.
   const pending = new Map();
-  const fetch = (url, options = {}) => fetchJson(url, { ...options, signal: AbortSignal.timeout(12000) });
+  const fetch = (url, options = {}, timeout = 12000) => fetchJson(url, { ...options, signal: AbortSignal.timeout(timeout) });
   const remember = (map, key, value, ttl) => { if (map.size >= 200) map.delete(map.keys().next().value); map.set(key, { value, expires: Date.now() + ttl }); };
 
   async function osm(identity, key) {
@@ -20,9 +20,9 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     const { name, lat, long, radius } = identity;
     // Optional punctuation accommodates Dicken's Pub / Dickens without a per-venue alias.
     const escaped = [...venueNameParts(name).rawBase].filter(char => /[\p{L}\p{N}]/u.test(char)).join("[^[:alnum:]]*");
-    const query = `[out:json][timeout:10];nwr(around:${radius * 1000},${lat},${long})[~"^(name|name:en|official_name|alt_name)$"~${JSON.stringify(escaped)},i];out center tags;`;
+    const query = `[out:json][timeout:6];nwr(around:${radius * 1000},${lat},${long})[~"^(name|name:en|official_name|alt_name)$"~${JSON.stringify(escaped)},i];out center tags;`;
     try {
-      const data = await fetch(overpassUrl, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, body: new URLSearchParams({ data: query }).toString() });
+      const data = await fetch(overpassUrl, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, body: new URLSearchParams({ data: query }).toString() }, 7000);
       if (data.remark) throw new Error("Incomplete Overpass response");
       const matches = (data.elements || []).filter(item => {
         const tags = item.tags || {};
@@ -98,9 +98,9 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
 
   async function load(identity, key, mode, photoOptions) {
     if (mode !== "services") return google(identity, key, mode, photoOptions);
-    const primary = await google(identity, key, "services");
-    const needsFallback = ["address", "website", "phone", "openingHours", "accessibility", "parking", "payments", "description"].some(key => !primary.fields[key]);
-    const fallback = needsFallback ? await osm(identity, key) : { status: "unused", fields: {} };
+    // In parallel: Google almost never fills every field, so waiting on it first only
+    // stacked Overpass's latency (up to its timeout) behind Google's.
+    const [primary, fallback] = await Promise.all([google(identity, key, "services"), osm(identity, key)]);
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
     return { fields, reviews: primary.reviews, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };

@@ -68,7 +68,11 @@ export default function VenuePage() {
     isLoading: servicesLoading,
     isError: servicesFailed,
     refetch: retryServices,
-  } = useVenueServices(identity, !!venue && !infoLoading && !eventsLoading);
+  } = useVenueServices(
+    identity,
+    // Ticketmaster's exact location settles the identity; only without it is Wikidata's worth waiting for.
+    !!venue && (!!location || (!infoLoading && !eventsLoading)),
+  );
 
   if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
     return <div className="p-8 w-full text-center text-zinc-400">Loading venue…</div>;
