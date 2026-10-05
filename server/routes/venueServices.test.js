@@ -207,3 +207,21 @@ test("one failed photo leaves the other photos visible; mismatched resources are
   assert.equal(result.body.photos.length, 1);
   assert.equal(result.body.partial, true);
 });
+
+test("with an exact pin, Google's top venue-typed result stands in for a renamed venue; never with city coordinates", async () => {
+  const run = async (input, places) => {
+    const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async url => {
+      if (url.endsWith("searchText")) return { places };
+      if (url.includes("places.googleapis.com")) return { internationalPhoneNumber: "+55 11 0000", googleMapsUri: "https://maps.google.com/?cid=1" };
+      return { elements: [] };
+    } });
+    return (await call(handlers.services, input)).body;
+  };
+  const arena = { id: "renamed", displayName: { text: "Espaço Unimed - Arena" }, types: ["event_venue"], location: { latitude: 51.556, longitude: -0.279 } };
+  const cafe = { ...arena, id: "cafe", displayName: { text: "Café do Espaço" }, types: ["cafe"] };
+  const named = { ...query, name: "Espaço Unimed" };
+  assert.equal((await run(named, [arena])).providers.google, "ok");
+  assert.equal((await run({ ...named, exact: "false" }, [arena])).providers.google, "not-found", "city coordinates are too loose to trust a different name");
+  assert.equal((await run(named, [cafe, arena])).providers.google, "not-found", "only Google's top result may stand in");
+  assert.equal((await run(named, [cafe])).providers.google, "not-found", "a non-venue type never stands in");
+});

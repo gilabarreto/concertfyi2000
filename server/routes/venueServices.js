@@ -5,6 +5,10 @@ const booleanLines = (options, labels) => Object.entries(labels).filter(([key]) 
 const parkingLabels = { freeParkingLot: "Free parking lot", paidParkingLot: "Paid parking lot", freeStreetParking: "Free street parking", paidStreetParking: "Paid street parking", valetParking: "Valet parking", freeGarageParking: "Free garage parking", paidGarageParking: "Paid garage parking" };
 const accessLabels = { wheelchairAccessibleParking: "Wheelchair-accessible parking", wheelchairAccessibleEntrance: "Wheelchair-accessible entrance", wheelchairAccessibleRestroom: "Wheelchair-accessible restroom", wheelchairAccessibleSeating: "Wheelchair-accessible seating" };
 const paymentLabels = { acceptsCreditCards: "Credit cards", acceptsDebitCards: "Debit cards", acceptsCashOnly: "Cash only", acceptsNfc: "Contactless payments" };
+const TRANSIT = ["train_station", "bus_station", "bus_stop", "subway_station", "transit_station", "light_rail_station"];
+// Places a show can happen in. With Ticketmaster's exact pin, one of these within 1.5 km is
+// the venue even when Google names it differently (sponsor renames, "Arena" suffixes).
+const VENUE_TYPES = ["stadium", "arena", "concert_hall", "live_music_venue", "performing_arts_theater", "event_venue", "amphitheatre", "auditorium", "night_club", "bar", "pub", "cultural_center"];
 const field = (value, source, url, attributions = []) => value ? { value, source, url: safeUrl(url), attributions } : null;
 
 function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env.GOOGLE_PLACES_API_KEY, overpassUrl = process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter" } = {}) {
@@ -56,9 +60,13 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       const headers = { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey };
       if (!id) {
         const data = await fetch("https://places.googleapis.com/v1/places:searchText", { method: "POST", headers: { ...headers, "X-Goog-FieldMask": "places.id,places.displayName,places.location,places.types" }, body: JSON.stringify({ textQuery: identity.name, languageCode: "en", locationBias: { circle: { center: { latitude: identity.lat, longitude: identity.long }, radius: identity.radius * 1000 } } }) });
-        const matches = (data.places || []).filter(place => !(place.types || []).some(type => ["train_station", "bus_station", "bus_stop", "subway_station", "transit_station", "light_rail_station"].includes(type)) && venueNamesMatch(identity.name, place.displayName?.text, place.types) && nearby(identity.lat, identity.long, place.location?.latitude, place.location?.longitude, identity.radius));
-        if (matches.length !== 1) return { status: "not-found", fields: {}, reviews: [] };
-        id = matches[0].id;
+        const close = (data.places || []).filter(place => !(place.types || []).some(type => TRANSIT.includes(type)) && nearby(identity.lat, identity.long, place.location?.latitude, place.location?.longitude, identity.radius));
+        const matches = close.filter(place => venueNamesMatch(identity.name, place.displayName?.text, place.types));
+        // Google ranks by relevance, so only its top answer may stand in for a name that didn't match.
+        const renamed = identity.exact && !matches.length && close[0] === data.places[0] && (close[0]?.types || []).some(type => VENUE_TYPES.includes(type)) ? [close[0]] : [];
+        const picked = matches.length ? matches : renamed;
+        if (picked.length !== 1) return { status: "not-found", fields: {}, reviews: [] };
+        id = picked[0].id;
         if (typeof id !== "string" || !/^[a-zA-Z0-9_-]+$/.test(id)) return { status: "not-found", fields: {}, reviews: [] };
         remember(placeIds, key, id, 24 * 60 * 60 * 1000);
       }
@@ -110,7 +118,8 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     const { name } = req.query;
     const lat = Number(req.query.lat), long = Number(req.query.long);
     if (typeof name !== "string" || !name.trim() || name.length > 200 || typeof req.query.lat !== "string" || !req.query.lat.trim() || typeof req.query.long !== "string" || !req.query.long.trim() || !Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) return res.status(400).json({ error: "Missing or invalid name/coordinates" });
-    const identity = { name: name.trim(), lat, long, radius: req.query.exact === "true" ? 1.5 : 30 };
+    const exact = req.query.exact === "true";
+    const identity = { name: name.trim(), lat, long, exact, radius: exact ? 1.5 : 30 };
     const photoOptions = { offset: Number(req.query.offset ?? 0), limit: Number(req.query.limit ?? 3) };
     if (mode === "photos" && (!Number.isInteger(photoOptions.offset) || photoOptions.offset < 0 || photoOptions.offset > 9 || ![1, 3, 6].includes(photoOptions.limit))) return res.status(400).json({ error: "Invalid photo page" });
     const key = JSON.stringify(identity);
