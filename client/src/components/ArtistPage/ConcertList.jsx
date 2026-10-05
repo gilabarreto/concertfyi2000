@@ -64,7 +64,9 @@ export default function ConcertList({
                   <span className="tabular-nums whitespace-nowrap shrink-0">
                     {dateLabel(concert.dateObj)}
                   </span>
-                  <span className="mx-2 text-zinc-500">·</span>
+                  <span className="mx-2 text-zinc-500" aria-hidden="true">
+                    ·
+                  </span>
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate text-zinc-500">{locationOf(concert)}</span>
                     <span className="text-xs text-zinc-500">{secondaryText}</span>
