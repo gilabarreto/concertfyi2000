@@ -32,6 +32,13 @@ Só tokens padrão do Tailwind. Nada de hex novo.
   - Exceção: botão do Spotify fica no verde da marca deles. Tirar vermelho das setas e ícones foi testado e recusado pelo dono em
   2026-09-23.
 
+
+### Dark mode
+
+Lua no Navbar, ao lado do sino. Sem escolha salva, segue o sistema (`prefers-color-scheme`); a escolha fica em `localStorage.theme`. O `main.jsx` aplica a classe `dark` no `<html>` antes do primeiro render (a CSP barra script inline no `index.html`).
+
+As cores não ganham `dark:` em cada classe: o fim do `index.css` remapeia os tokens desta tabela sob `.dark` — `white` → `zinc-900`, palco `zinc-100` → `zinc-800`, texto `zinc-900/800` → `zinc-100`, secundário `zinc-500` → `zinc-400`, bordas `zinc-300` → `zinc-700`. O vermelho de texto sobe para `red-400` (`red-600` sobre `zinc-900` dá 3,7:1, abaixo do AA); botões cheios e a moldura `red-600` ficam iguais. Classe de cor nova num componente precisa da linha correspondente lá. O mapa do Google continua claro.
+
 ## Tipografia
 
 - DM Sans continua. SF Pro não pode ser hospedada, e `system-ui` viraria três apps

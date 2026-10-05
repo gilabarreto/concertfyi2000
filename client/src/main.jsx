@@ -24,6 +24,15 @@ if (
   window.scrollTo({ top: 0, left: 0, behavior: "instant" });
 }
 
+// Before the first render, so a dark visitor never sees a white page. The CSP forbids an
+// inline script in index.html, so this is as early as it gets. No choice saved yet: follow
+// the system.
+const savedTheme = localStorage.getItem("theme");
+document.documentElement.classList.toggle(
+  "dark",
+  savedTheme ? savedTheme === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches,
+);
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

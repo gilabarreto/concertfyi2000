@@ -4,6 +4,7 @@ import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
+import { faSun } from "@fortawesome/free-solid-svg-icons/faSun";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 
 const phrases = [
@@ -55,6 +56,13 @@ function Navbar() {
   const [phraseSize, setPhraseSize] = useState(null);
   const timerRef = useRef(null);
   const [logoBusy, setLogoBusy] = useState(false);
+  // main.jsx already applied the saved or system theme; the class is the source of truth.
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+  const toggleDark = () => {
+    document.documentElement.classList.toggle("dark", !dark);
+    localStorage.setItem("theme", dark ? "light" : "dark");
+    setDark(!dark);
+  };
 
   useEffect(() => () => clearTimeout(timerRef.current), []);
 
@@ -90,25 +98,37 @@ function Navbar() {
       <nav
         className={`grid grid-cols-[1fr_auto_1fr] w-full max-w-[1012.44px] mx-auto items-center px-3 sm:px-6 py-4 h-16 font-sans gap-2 ${redNavbar ? "bg-red-600 text-white shadow-[0_4px_6px_-4px_rgba(0,0,0,0.3)]" : pathname === "/" || pathname.startsWith("/artists/") ? "bg-white shadow-[0_2px_4px_-2px_rgba(0,0,0,0.12)]" : "bg-white border-b border-zinc-200"}`}
       >
-        <button
-          type="button"
-          disabled={!reminderCount}
-          onClick={toggleReminder}
-          aria-label={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
-          aria-expanded={reminderCount ? reminderOpen : undefined}
-          aria-controls={reminderCount ? reminderTarget : undefined}
-          title={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
-          className={`flex items-center justify-center justify-self-start min-h-11 px-1 text-xl ${iconColor} disabled:cursor-default hover:opacity-80`}
-        >
-          <Icon icon={faBell} />
-          <span
-            className="reminder-badge -ml-0.5 mt-1 flex h-4 w-4 shrink-0 self-start items-center justify-center rounded-full bg-red-600 pt-px text-xs font-bold leading-none text-white"
-            data-visible={reminderCount > 0 && (reminderOpen || reminderSeen)}
-            aria-hidden="true"
+        <div className={`flex items-center justify-self-start gap-1 sm:gap-2 ${iconColor}`}>
+          <button
+            type="button"
+            disabled={!reminderCount}
+            onClick={toggleReminder}
+            aria-label={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
+            aria-expanded={reminderCount ? reminderOpen : undefined}
+            aria-controls={reminderCount ? reminderTarget : undefined}
+            title={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
+            className="flex items-center justify-center min-h-11 px-1 text-xl disabled:cursor-default hover:opacity-80"
           >
-            1
-          </span>
-        </button>
+            <Icon icon={faBell} />
+            <span
+              className="reminder-badge -ml-0.5 mt-1 flex h-4 w-4 shrink-0 self-start items-center justify-center rounded-full bg-red-600 pt-px text-xs font-bold leading-none text-white"
+              data-visible={reminderCount > 0 && (reminderOpen || reminderSeen)}
+              aria-hidden="true"
+            >
+              1
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={toggleDark}
+            aria-pressed={dark}
+            aria-label="Dark mode"
+            title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl hover:opacity-80"
+          >
+            <Icon icon={dark ? faSun : faMoon} />
+          </button>
+        </div>
         <button
           ref={logoRef}
           type="button"
@@ -129,15 +149,6 @@ function Navbar() {
         </button>
 
         <div className={`flex items-center justify-self-end gap-1 sm:gap-2 ${iconColor}`}>
-          <button
-            type="button"
-            disabled
-            aria-label="Dark mode (coming soon)"
-            title="Dark mode (coming soon)"
-            className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl cursor-default"
-          >
-            <Icon icon={faMoon} />
-          </button>
           <button
             type="button"
             disabled
