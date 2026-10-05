@@ -98,9 +98,11 @@ const Home = () => {
           </div>
         </div>
 
-        <Suspense fallback={null}>
-          <HomeDiscovery location={location} />
-        </Suspense>
+        <div className="w-[calc(100%+2rem)] min-w-0 -mx-4 sm:px-6">
+          <Suspense fallback={null}>
+            <HomeDiscovery location={location} />
+          </Suspense>
+        </div>
       </div>
     </>
   );

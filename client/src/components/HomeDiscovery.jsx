@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
@@ -94,8 +94,23 @@ function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
   const limit = desktop ? 6 : 3;
   const currentPage = Math.min(page, Math.max(0, Math.ceil(venues.length / limit) - 1));
   const visible = venues.slice(currentPage * limit, (currentPage + 1) * limit);
+  const carouselRef = useRef(null);
+  const tilesRef = useRef(null);
+  useEffect(() => {
+    const tiles = tilesRef.current;
+    if (!tiles) return;
+    const measure = () => {
+      const gap = parseFloat(getComputedStyle(tiles).columnGap);
+      const photoSize = (tiles.clientWidth - gap * (limit - 1)) / limit;
+      carouselRef.current.style.setProperty("--venue-photo-size", `${photoSize}px`);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(tiles);
+    return () => observer.disconnect();
+  }, [limit, venues.length]);
   return (
-    <section aria-label={`Venues in ${city}`} className="w-full space-y-2">
+    <section aria-label={`Venues in ${city}`} className="w-full min-w-0 bg-white px-4 space-y-2">
       <CardTitle>
         <Link to="/venues" className="hover:text-red-800">
           Nearby Venues
@@ -115,17 +130,18 @@ function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
           )}
         </p>
       ) : (
-        <div className="flex items-center gap-2" aria-roledescription="carousel">
+        <div ref={carouselRef} className="flex items-start gap-4" aria-roledescription="carousel">
           <button
             type="button"
             aria-label="Previous venues"
             disabled={currentPage === 0}
             onClick={() => setPage(currentPage - 1)}
-            className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
+            style={{ marginTop: "calc((var(--venue-photo-size, 84px) - 84px) / 2)" }}
+            className="flex h-[84px] w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600 disabled:text-zinc-300"
           >
             {"{"}
           </button>
-          <ul className="flex min-w-0 flex-1 justify-center gap-3">
+          <ul ref={tilesRef} className="flex min-w-0 flex-1 justify-center gap-3">
             {visible.map((venue) => {
               const matches = events
                 .flatMap((event) => event._embedded?.venues || [])
@@ -149,7 +165,8 @@ function VenueCarousel({ venues, events, city, loading, failed, onRetry }) {
             aria-label="Next venues"
             disabled={(currentPage + 1) * limit >= venues.length}
             onClick={() => setPage(currentPage + 1)}
-            className="flex w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
+            style={{ marginTop: "calc((var(--venue-photo-size, 84px) - 84px) / 2)" }}
+            className="flex h-[84px] w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600 disabled:text-zinc-300"
           >
             {"}"}
           </button>
@@ -173,9 +190,9 @@ export default function HomeDiscovery({ location }) {
   }
   const venues = [...byVenue.values()].sort((a, b) => b.shows - a.shows);
   return (
-    <div className="w-full space-y-6 lg:space-y-3">
+    <div className="w-full min-w-0 space-y-4 lg:space-y-3">
       <div
-        className="grid grid-cols-1 lg:grid-cols-2 gap-3"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3"
         aria-label="Local concert lists"
         key={`${city}-${lat}-${long}`}
       >
@@ -183,7 +200,11 @@ export default function HomeDiscovery({ location }) {
           { title: "Upcoming Concerts", nearby: false },
           { title: `Concerts Near ${city}`, nearby: true },
         ].map(({ title, nearby }) => (
-          <section key={title} aria-label={title} className="min-w-0 bg-white space-y-2 pb-4">
+          <section
+            key={title}
+            aria-label={title}
+            className="min-w-0 bg-white px-4 pb-4 space-y-2 lg:flex lg:flex-col"
+          >
             <ConcertList
               title={title}
               empty={
@@ -196,11 +217,11 @@ export default function HomeDiscovery({ location }) {
                       : `No upcoming concerts in ${city} right now.`
               }
               showSearch={false}
+              pageSize={nearby ? 5 : 7}
               items={getUpcomingConcertsByCity(events, city, !nearby, { lat, long })}
-              locationOf={(event) =>
-                nearby
-                  ? `${artistOf(event)} — ${event._embedded?.venues?.[0]?.city?.name}`
-                  : artistOf(event)
+              locationOf={artistOf}
+              secondaryTextOf={
+                nearby ? (event) => event._embedded?.venues?.[0]?.city?.name : undefined
               }
               iconTitle="Get tickets"
               expand={(event) => (

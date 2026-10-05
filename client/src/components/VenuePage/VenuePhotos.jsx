@@ -47,7 +47,7 @@ export default function VenuePhotos({ identity, enabled, name }) {
           </p>
         ) : (
           <>
-            <div className="flex items-center gap-2" aria-roledescription="carousel">
+            <div className="flex items-center gap-4" aria-roledescription="carousel">
               <button
                 type="button"
                 aria-label="Previous venue photos"
@@ -81,22 +81,6 @@ export default function VenuePhotos({ identity, enabled, name }) {
                         onError={() => setFailed((previous) => [...previous, photo.imageUrl])}
                       />
                     </a>
-                    {photo.authors?.map((author, authorIndex) => (
-                      <p
-                        key={authorIndex}
-                        className="mt-1 text-center text-xs text-zinc-500 break-words"
-                      >
-                        <a
-                          href={safeUrl(author.url)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="hover:text-red-600"
-                        >
-                          <Icon icon={faCamera} className="mr-1" />
-                          {author.name}
-                        </a>
-                      </p>
-                    ))}
                   </li>
                 ))}
                 {!photos.length && (
@@ -116,6 +100,33 @@ export default function VenuePhotos({ identity, enabled, name }) {
                 {"}"}
               </button>
             </div>
+            {photos.some((photo) => photo.authors?.length) && (
+              <ul className="mt-1 flex justify-center gap-3 px-10">
+                {photos.map((photo) => (
+                  <li
+                    key={photo.imageUrl}
+                    className="w-[calc((100%-1.5rem)/3)] lg:w-[calc((100%-3.75rem)/6)]"
+                  >
+                    {photo.authors?.map((author, authorIndex) => (
+                      <p
+                        key={authorIndex}
+                        className="text-center text-xs text-zinc-500 break-words"
+                      >
+                        <a
+                          href={safeUrl(author.url)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="hover:text-red-600"
+                        >
+                          <Icon icon={faCamera} className="mr-1" />
+                          {author.name}
+                        </a>
+                      </p>
+                    ))}
+                  </li>
+                ))}
+              </ul>
+            )}
             {data?.source && <VenueSource detail={data} />}
             {data?.partial && (
               <p className="text-center text-xs text-zinc-500">

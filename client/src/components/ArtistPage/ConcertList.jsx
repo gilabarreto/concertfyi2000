@@ -8,8 +8,6 @@ import { dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
 
-const PAGE_SIZE = 5;
-
 // items carry a dateObj. A row is either a link to one of our own routes (linkOf) or a
 // disclosure that opens panels in place (expand, like Setlist does) — never both, and the
 // disclosure wins. Rows used to be able to point at an outside URL too; since the next
@@ -22,17 +20,19 @@ export default function ConcertList({
   showSearch = true,
   items,
   locationOf,
+  secondaryTextOf,
   linkOf,
   icon,
   iconTitle,
   expand,
   onSelect,
+  pageSize = 5,
 }) {
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
 
-  const pageCount = Math.ceil(items.length / PAGE_SIZE);
-  const currentPage = items.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
+  const pageCount = Math.ceil(items.length / pageSize);
+  const currentPage = items.slice(page * pageSize, page * pageSize + pageSize);
 
   const goToPage = (next) => {
     setOpenId(null);
@@ -58,7 +58,19 @@ export default function ConcertList({
             {currentPage.map((concert) => {
               const open = openId === concert.id;
               // the date never truncates; a long city name does, so the icon keeps its place
-              const label = (
+              const secondaryText = secondaryTextOf?.(concert);
+              const label = secondaryText ? (
+                <span className="flex min-w-0 items-start text-left">
+                  <span className="tabular-nums whitespace-nowrap shrink-0">
+                    {dateLabel(concert.dateObj)}
+                  </span>
+                  <span className="ml-2 mr-1 text-zinc-500">-</span>
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate text-zinc-500">{locationOf(concert)}</span>
+                    <span className="text-xs text-zinc-500">{secondaryText}</span>
+                  </span>
+                </span>
+              ) : (
                 <span className="flex min-w-0 items-center">
                   <span className="tabular-nums whitespace-nowrap shrink-0">
                     {dateLabel(concert.dateObj)}
