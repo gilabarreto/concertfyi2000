@@ -99,7 +99,7 @@ export default function ArtistPage() {
   return (
     <>
       <SEOHead
-        title={`${artistName} - ${concertVenue} - ${concertDate}`}
+        title={`${artistName} · ${concertVenue} · ${concertDate}`}
         description={`Setlist and details for ${artistName} at ${concertVenue} on ${concertDate}. Explore songs performed and concert information.`}
         image={artistImage}
         url={`/artists/${artistId}/concerts/${concertId}`}

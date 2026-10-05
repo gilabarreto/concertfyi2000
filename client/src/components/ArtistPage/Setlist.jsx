@@ -152,7 +152,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
       if (encoreSongs.length > 0 && i === mainSongs.length) lines.push("", "Encore");
       lines.push(`${i + 1}. ${song.name}`);
     });
-    const header = `${artistName} - ${concert.venue?.name || "Concert"} - ${dateLabel(parseSetlistDate(concertDate))}`;
+    const header = `${artistName} · ${concert.venue?.name || "Concert"} · ${dateLabel(parseSetlistDate(concertDate))}`;
     const text = [header, "", ...lines].join("\n");
 
     try {

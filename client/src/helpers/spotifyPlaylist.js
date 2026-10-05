@@ -47,7 +47,7 @@ export const createSpotifyPlaylist = async (
   const user = await userResponse.json();
 
   // Format playlist name: Artist + Tour + Date + by ConcertFYI.com
-  const playlistName = `${artistName}${tourName ? ` - ${tourName}` : ""} - ${concertDate} by ConcertFYI.com`;
+  const playlistName = `${artistName}${tourName ? ` · ${tourName}` : ""} · ${concertDate} by ConcertFYI.com`;
   const playlistDescription = `Setlist from ${artistName} concert at ${concertDate}. Created with ConcertFYI.com`;
 
   // Create playlist
