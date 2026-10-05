@@ -28,7 +28,7 @@ export default function VenueRating({ rating, loading }) {
           </>
         ) : (
           <p className="text-center" role={loading ? "status" : undefined}>
-            {loading ? "Loading…" : "N/A"}
+            {loading ? "Loading…" : "No ratings available for this venue yet. Check back later."}
           </p>
         )}
       </div>

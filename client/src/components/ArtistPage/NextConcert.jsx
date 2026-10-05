@@ -78,7 +78,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const coords = venue?.location;
   // Prefer the selected show's tour; Ticketmaster dates use the most recent known tour.
   const tour =
-    upcomingConcert.tourName || getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || "N/A";
+    upcomingConcert.tourName || getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || null;
 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
@@ -134,7 +134,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Tour:</span>&ensp;
-            {tour !== "N/A" ? (
+            {tour ? (
               <button
                 type="button"
                 className="text-red-600 hover:text-red-800 transition-colors"
@@ -146,7 +146,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
                 {tour}
               </button>
             ) : (
-              tour
+              "No tour announced for this concert yet. Check back later."
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">

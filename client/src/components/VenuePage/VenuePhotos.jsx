@@ -71,7 +71,11 @@ export default function VenuePhotos({ identity, enabled, loading, name }) {
                     </a>
                   </li>
                 ))}
-                {!photos.length && <li className="py-4 text-center">N/A</li>}
+                {!photos.length && (
+                  <li className="py-4 text-center">
+                    No photos available for this venue yet. Check back later.
+                  </li>
+                )}
               </ul>
               <button
                 type="button"

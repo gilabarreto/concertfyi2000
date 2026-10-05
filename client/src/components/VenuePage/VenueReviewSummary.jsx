@@ -78,7 +78,7 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
             )}
           </div>
         ) : (
-          "N/A"
+          "No reviews available for this venue yet. Check back later."
         )}
       </div>
       {hasMore && (

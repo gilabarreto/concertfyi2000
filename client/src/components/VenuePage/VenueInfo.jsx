@@ -20,7 +20,8 @@ const getFavoriteVenues = () => {
 
 export default function VenueInfo({ venue, ticketmaster, info = {}, services = {}, loading }) {
   // Missing only once every source has answered; until then the row is still on its way.
-  const empty = loading ? "Loading…" : "N/A";
+  const empty = (what) =>
+    loading ? "Loading…" : `No ${what} available for this venue yet. Check back later.`;
   const [expanded, setExpanded] = useState(false);
   const [favoriteVenues, setFavoriteVenues] = useState(getFavoriteVenues);
   const isFavorite = favoriteVenues.includes(venue.id);
@@ -104,7 +105,7 @@ export default function VenueInfo({ venue, ticketmaster, info = {}, services = {
               ? hasMore && !expanded
                 ? `${description.slice(0, 300).replace(/\s+\S*$/, "")}…`
                 : description
-              : empty}
+              : empty("description")}
           </p>
           {descriptionSource && (!hasMore || expanded) && (
             <VenueSource detail={descriptionSource} />
@@ -166,7 +167,7 @@ export default function VenueInfo({ venue, ticketmaster, info = {}, services = {
                 {value}
               </a>
             ) : (
-              value || empty
+              value || empty(label === "Phone" ? "phone number" : label.toLowerCase())
             )}
             <VenueSource detail={source} />
           </li>
@@ -184,7 +185,7 @@ export default function VenueInfo({ venue, ticketmaster, info = {}, services = {
               {website}
             </a>
           ) : (
-            empty
+            empty("website")
           )}
         </li>
       </ol>

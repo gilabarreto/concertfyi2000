@@ -72,7 +72,7 @@ export default function LastConcert({
   const lastConcertId = pastConcerts[idx + 1]?.id;
   const nextConcertId = pastConcerts[idx - 1]?.id;
 
-  const tour = concert.tour?.name || "N/A";
+  const tour = concert.tour?.name || null;
   const venue = concert.venue?.name;
   const city = concert.venue.city?.name;
   const country = concert.venue.city?.country.code;
@@ -136,7 +136,7 @@ export default function LastConcert({
           </li>
           <li className="border-b border-zinc-300/50 py-2">
             <span className="font-semibold">Tour:</span>&ensp;
-            {tour !== "N/A" ? (
+            {tour ? (
               <button
                 type="button"
                 className="text-red-600 hover:text-red-800 transition-colors"
@@ -148,7 +148,7 @@ export default function LastConcert({
                 {tour}
               </button>
             ) : (
-              tour
+              "No tour listed for this concert."
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
