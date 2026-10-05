@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import CardTitle from "../ArtistPage/CardTitle";
 
+import { useT } from "../../i18n";
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 const PREVIEW_LINES = 5;
 
 // Reviews arrive with the venue's services payload: one billed Google call carries both.
 export default function VenueReviewSummary({ reviews = [], url, loading }) {
+  const t = useT();
   const [index, setIndex] = useState(0);
   const [expanded, setExpanded] = useState(false);
   const current = reviews[Math.min(index, Math.max(0, reviews.length - 1))];
@@ -37,17 +39,17 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
     setExpanded(false);
   };
   return (
-    <section aria-label="Venue reviews" className="min-w-0 bg-white px-2 sm:px-4 space-y-2">
-      <CardTitle>Reviews</CardTitle>
+    <section aria-label={t("Venue reviews")} className="min-w-0 bg-white px-2 sm:px-4 space-y-2">
+      <CardTitle>{t("Reviews")}</CardTitle>
       <div className="space-y-2 py-2">
         {loading ? (
-          <span role="status">Loading…</span>
+          <span role="status">{t("Loading…")}</span>
         ) : current ? (
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {reviews.length > 1 && (
               <button
                 type="button"
-                aria-label="Previous venue review"
+                aria-label={t("Previous venue review")}
                 onClick={() => step(-1)}
                 className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600"
               >
@@ -69,7 +71,7 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
             {reviews.length > 1 && (
               <button
                 type="button"
-                aria-label="Next venue review"
+                aria-label={t("Next venue review")}
                 onClick={() => step(1)}
                 className="flex w-6 shrink-0 items-center justify-center text-[5.25rem] font-light leading-none text-red-600"
               >
@@ -78,7 +80,7 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
             )}
           </div>
         ) : (
-          "No reviews available for this venue yet. Check back later."
+          t("No reviews available for this venue yet. Check back later.")
         )}
       </div>
       {hasMore && (
@@ -90,7 +92,7 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
             aria-controls="venue-review-text"
             onClick={() => setExpanded(!expanded)}
           >
-            {expanded ? "Show less" : "Read more"}
+            {expanded ? t("Show Less") : t("Read more")}
           </button>
         </div>
       )}

@@ -8,6 +8,7 @@ import { dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
 
+import { useT } from "../../i18n";
 // items carry a dateObj. A row is either a link to one of our own routes (linkOf) or a
 // disclosure that opens panels in place (expand, like Setlist does) — never both, and the
 // disclosure wins. Rows used to be able to point at an outside URL too; since the next
@@ -28,6 +29,7 @@ export default function ConcertList({
   onSelect,
   pageSize = 5,
 }) {
+  const t = useT();
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
 
@@ -48,7 +50,7 @@ export default function ConcertList({
           <p>{empty}</p>
           {showSearch && (
             <Link to="/" className="font-semibold text-red-600 hover:text-red-800">
-              Search another artist
+              {t("Search another artist")}
             </Link>
           )}
         </CardNotice>

@@ -3,15 +3,17 @@ import { faStar as faStarFull } from "@fortawesome/free-solid-svg-icons/faStar";
 import { faStarHalfStroke } from "@fortawesome/free-solid-svg-icons/faStarHalfStroke";
 import { faStar as faStarEmpty } from "@fortawesome/free-regular-svg-icons/faStar";
 
+import { useT } from "../../i18n";
 // Read-only (no onRate) for display; interactive for the rating dialog. One button per
 // star, not a left/right split — a split needs pixel-precise aim for the half; clicking
 // the same star repeatedly cycles full → half → empty instead.
 export default function StarRating({ value, onRate, size = "text-2xl" }) {
+  const t = useT();
   return (
     <div
       className={`flex gap-1 ${size} text-yellow-400`}
       role={onRate ? "radiogroup" : "img"}
-      aria-label={onRate ? "Rate this concert" : `Rated ${value} out of 5 stars`}
+      aria-label={onRate ? t("Rate this concert") : t("Rated {value} out of 5 stars", { value })}
     >
       {[1, 2, 3, 4, 5].map((n) => {
         const icon = value >= n ? faStarFull : value >= n - 0.5 ? faStarHalfStroke : faStarEmpty;
@@ -21,7 +23,7 @@ export default function StarRating({ value, onRate, size = "text-2xl" }) {
           <button
             key={n}
             type="button"
-            aria-label={`${n} stars`}
+            aria-label={t("{count} stars", { count: n })}
             onClick={() => onRate(next)}
             className="leading-none"
           >

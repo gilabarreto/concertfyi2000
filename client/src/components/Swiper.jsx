@@ -13,6 +13,7 @@ import { AppContext } from "../context/AppContext";
 import LocationSelector from "./LocationSelector";
 import "./Swiper.css";
 
+import { useT } from "../i18n";
 const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
 const subscribeMotion = (notify) => {
   motionPreference.addEventListener("change", notify);
@@ -61,6 +62,7 @@ function getSlideStyle(offset, depth, restDepth, image, isMobileScreen, spacing)
 }
 
 export default function Swiper() {
+  const t = useT();
   const { setSetlist, setTicketmaster, selectedLocation } = useContext(AppContext);
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
@@ -139,7 +141,7 @@ export default function Swiper() {
         const { setlist = [], ticketmaster = {} } = response.data;
 
         if (!setlist.length) {
-          setError(`No setlist found for ${selectedArtist.artistName}.`);
+          setError(t("No setlist found for {artist}.", { artist: selectedArtist.artistName }));
           return;
         }
 
@@ -152,12 +154,14 @@ export default function Swiper() {
         navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
       } catch (err) {
         console.error("Error handling slide click:", err);
-        setError(`Couldn't load ${selectedArtist.artistName}. Please try again.`);
+        setError(
+          t("Couldn't load {artist}. Please try again.", { artist: selectedArtist.artistName }),
+        );
       } finally {
         setIsLoading(false);
       }
     })();
-  }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster]);
+  }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster, t]);
 
   useEffect(() => {
     const list = getCarouselSlides(localEventsData);
@@ -288,7 +292,7 @@ export default function Swiper() {
       {isLoading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg text-sm">
-            <p>Loading…</p>
+            <p>{t("Loading…")}</p>
           </div>
         </div>
       )}
@@ -308,7 +312,7 @@ export default function Swiper() {
               onClick={dismissError}
               className="px-4 py-2 rounded-lg bg-red-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
             >
-              Close
+              {t("Close")}
             </button>
           </div>
         </div>
@@ -316,16 +320,18 @@ export default function Swiper() {
 
       {noEvents ? (
         <div className="w-full h-[250px] sm:h-[380px] flex flex-col items-center justify-center gap-2 text-center">
-          <p className="text-lg text-zinc-800 text-pretty">No concerts found near</p>
+          <p className="text-lg text-zinc-800 text-pretty">{t("No concerts found near")}</p>
           <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
-          <p className="text-sm text-zinc-500 text-pretty">Pick another city to see what's on.</p>
+          <p className="text-sm text-zinc-500 text-pretty">
+            {t("Pick another city to see what's on.")}
+          </p>
         </div>
       ) : (
         <div
           className="original-swiper w-full"
           role="region"
           aria-roledescription="carousel"
-          aria-label="Upcoming concerts"
+          aria-label={t("Upcoming concerts")}
           onKeyDown={(event) => {
             if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
             if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
@@ -339,7 +345,7 @@ export default function Swiper() {
               ref={photosRef}
               tabIndex={0}
               role="group"
-              aria-label="Concert photos. Use left and right arrow keys to browse."
+              aria-label={t("Concert photos. Use left and right arrow keys to browse.")}
               className="swiper-photo-stage relative w-full h-[calc((min(100vw,1012.44px)-2rem)*0.5625)] sm:h-[calc((min(100vw,1012.44px)-2rem)*0.342)] lg:h-[calc((min(100vw,1012.44px)-2rem)*0.2736)] flex items-start justify-center overflow-x-visible overflow-y-visible touch-pan-y select-none cursor-grab active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
               onPointerDown={startDrag}
               onPointerMove={moveDrag}
@@ -359,7 +365,7 @@ export default function Swiper() {
                 <button
                   type="button"
                   onClick={() => go(-1)}
-                  aria-label="Previous"
+                  aria-label={t("Previous")}
                   disabled={active === 0}
                   className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
@@ -382,7 +388,7 @@ export default function Swiper() {
                 <button
                   type="button"
                   onClick={() => go(1)}
-                  aria-label="Next"
+                  aria-label={t("Next")}
                   disabled={active === slides.length - 1}
                   className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
                 >
@@ -398,7 +404,7 @@ export default function Swiper() {
                 step={1}
                 value={active}
                 onChange={(event) => setActive(Number(event.target.value))}
-                aria-label="Scroll through concert photos"
+                aria-label={t("Scroll through concert photos")}
                 aria-valuetext={activeSlide?.artistName}
                 className="swiper-scrollbar mx-auto mt-2 sm:mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
               />

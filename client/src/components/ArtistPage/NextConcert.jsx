@@ -20,7 +20,9 @@ import ConcertReminder from "./ConcertReminder";
 
 import { AppContext } from "../../context/AppContext";
 
+import { useT } from "../../i18n";
 export default function NextConcert({ concert, setlist, ticketmaster, hideTitle = false }) {
+  const t = useT();
   const { artistId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
@@ -51,7 +53,9 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
 
   if (!upcomingConcert) {
     return hideTitle ? (
-      <CardNotice>No upcoming concerts available for this artist yet. Check back later.</CardNotice>
+      <CardNotice>
+        {t("No upcoming concerts available for this artist yet. Check back later.")}
+      </CardNotice>
     ) : null;
   }
 
@@ -62,7 +66,16 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const toggleGoing = () => toggleGoingConcert(upcomingConcert.id);
 
   // A URL já leva o ?next deste show, então quem abre cai nesta mesma data.
-  const shareText = `${concert.artist.name} are playing ${upcomingConcert._embedded?.venues?.[0]?.city?.name || "near you"} on ${dateLabel(upcomingConcert.dateObj)}${upcomingConcert._embedded?.venues?.[0]?.name ? ` at ${upcomingConcert._embedded.venues[0].name}` : ""}. Are you going?`;
+  const shareVenue = upcomingConcert._embedded?.venues?.[0];
+  const shareVars = {
+    artist: concert.artist.name,
+    city: shareVenue?.city?.name || t("near you"),
+    date: dateLabel(upcomingConcert.dateObj),
+    venue: shareVenue?.name,
+  };
+  const shareText = shareVenue?.name
+    ? t("{artist} are playing {city} on {date} at {venue}. Are you going?", shareVars)
+    : t("{artist} are playing {city} on {date}. Are you going?", shareVars);
   const eventImage = getBestImage(upcomingConcert.images);
   const share = async () => {
     if (
@@ -85,26 +98,26 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
     <>
-      <button type="button" onClick={share} title="Share this concert" className="pill">
+      <button type="button" onClick={share} title={t("Share this concert")} className="pill">
         <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-        {linkCopied ? "LINK COPIED" : "SHARE"}
+        {linkCopied ? t("LINK COPIED") : t("SHARE")}
       </button>
       <button
         type="button"
         onClick={toggleGoing}
         aria-pressed={imGoing}
-        title={imGoing ? "Remove from concerts you're going to" : "Mark that you're going"}
+        title={imGoing ? t("Remove from concerts you're going to") : t("Mark that you're going")}
         className="pill"
       >
         <Icon icon={imGoing ? faCheck : faPlus} className="text-[0.65rem]" />
-        I'M GOING
+        {t("I'M GOING")}
       </button>
     </>
   );
 
   return (
     <>
-      {!hideTitle && <CardTitle>Next Concert</CardTitle>}
+      {!hideTitle && <CardTitle>{t("Next Concert")}</CardTitle>}
 
       <div
         className={
@@ -116,7 +129,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">{actions}</li>
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
-              <span className="font-semibold">Concert date:</span>&ensp;
+              <span className="font-semibold">{t("Concert date:")}</span>&ensp;
               {idx > 0 && (
                 <Icon
                   icon={faBackward}
@@ -135,7 +148,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             </span>
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Tour:</span>&ensp;
+            <span className="font-semibold">{t("Tour:")}</span>&ensp;
             {tour ? (
               <button
                 type="button"
@@ -152,7 +165,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Venue:</span>&ensp;
+            <span className="font-semibold">{t("Venue:")}</span>&ensp;
             {venue?.id ? (
               <Link
                 to={`/venues/${upcomingConcert.source === "setlistfm" ? venue.id : `ticketmaster:${venue.id}`}`}
@@ -165,14 +178,14 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Location:</span>&ensp;
+            <span className="font-semibold">{t("Location:")}</span>&ensp;
             {coords ? (
               <button
                 type="button"
                 onClick={() => {
                   setTourMapOpen(false);
                 }}
-                title="Show concert location on map"
+                title={t("Show concert location on map")}
                 aria-controls="next-concert-map"
                 aria-pressed={!tourMapOpen}
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
@@ -200,7 +213,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           <div
             id="next-concert-map"
             className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
-            aria-label="Concert location map"
+            aria-label={t("Concert location map")}
           >
             {tourMapOpen ? (
               <TourMapPanel

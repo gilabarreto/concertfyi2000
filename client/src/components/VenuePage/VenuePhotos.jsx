@@ -5,9 +5,11 @@ import VenueSource from "./VenueSource";
 import Icon from "../Icon";
 import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
 
+import { useT } from "../../i18n";
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 
 export default function VenuePhotos({ identity, enabled, loading, name }) {
+  const t = useT();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
   const [failed, setFailed] = useState([]);
@@ -26,19 +28,19 @@ export default function VenuePhotos({ identity, enabled, loading, name }) {
   const total = data?.total || 0;
   const photos = (data?.photos || []).filter((photo) => !failed.includes(photo.imageUrl));
   return (
-    <section aria-label="Venue photos" className="bg-white px-4 space-y-2">
-      <CardTitle>Photos</CardTitle>
+    <section aria-label={t("Venue photos")} className="bg-white px-4 space-y-2">
+      <CardTitle>{t("Photos")}</CardTitle>
       <div className="min-h-36 lg:min-h-52">
         {loading || isLoading ? (
           <p role="status" className="text-center py-4">
-            Loading…
+            {t("Loading…")}
           </p>
         ) : (
           <>
             <div className="flex items-center gap-4" aria-roledescription="carousel">
               <button
                 type="button"
-                aria-label="Previous venue photos"
+                aria-label={t("Previous venue photos")}
                 disabled={page === 0}
                 onClick={() => {
                   setPage(page - 1);
@@ -59,11 +61,14 @@ export default function VenuePhotos({ identity, enabled, loading, name }) {
                       target="_blank"
                       rel="noreferrer"
                       className="block"
-                      title={`View ${name} on Google Maps`}
+                      title={t("View {name} on Google Maps", { name })}
                     >
                       <img
                         src={safeUrl(photo.imageUrl)}
-                        alt={`${name} — venue photo ${page * limit + index + 1}`}
+                        alt={t("{name} — venue photo {number}", {
+                          name,
+                          number: page * limit + index + 1,
+                        })}
                         loading="lazy"
                         className="aspect-square w-full rounded-md object-cover bg-zinc-100 transition-opacity hover:opacity-80"
                         onError={() => setFailed((previous) => [...previous, photo.imageUrl])}
@@ -73,13 +78,13 @@ export default function VenuePhotos({ identity, enabled, loading, name }) {
                 ))}
                 {!photos.length && (
                   <li className="py-4 text-center">
-                    No photos available for this venue yet. Check back later.
+                    {t("No photos available for this venue yet. Check back later.")}
                   </li>
                 )}
               </ul>
               <button
                 type="button"
-                aria-label="Next venue photos"
+                aria-label={t("Next venue photos")}
                 disabled={(page + 1) * limit >= total}
                 onClick={() => {
                   setPage(page + 1);

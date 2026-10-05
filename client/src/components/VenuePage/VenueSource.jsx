@@ -1,10 +1,12 @@
+import { useT } from "../../i18n";
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 
 export default function VenueSource({ detail, inline = false }) {
+  const t = useT();
   if (!detail?.source) return null;
   return (
     <p className={`${inline ? "" : "mt-2 text-center "}text-xs text-zinc-500`}>
-      Source:{" "}
+      {t("Source:")}{" "}
       <a
         href={safeUrl(detail.url)}
         target="_blank"

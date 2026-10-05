@@ -3,13 +3,15 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
 
+import { useT } from "../i18n";
 export default function ReminderClose() {
+  const t = useT();
   const { setReminderOpen, setReminderInteracted } = useContext(AppContext);
   return (
     <button
       type="button"
-      aria-label="Close reminder"
-      title="Close reminder"
+      aria-label={t("Close reminder")}
+      title={t("Close reminder")}
       onClick={() => {
         setReminderInteracted(true);
         setReminderOpen(false);

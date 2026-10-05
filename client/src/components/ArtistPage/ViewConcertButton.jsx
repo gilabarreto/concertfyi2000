@@ -7,7 +7,9 @@ import { getConcertTarget } from "../../helpers/concertTarget";
 import { AppContext } from "../../context/AppContext";
 import Icon from "../Icon";
 
+import { useT } from "../../i18n";
 export default function ViewConcertButton({ event, artistName }) {
+  const t = useT();
   const { setSetlist, setTicketmaster } = useContext(AppContext);
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -40,7 +42,11 @@ export default function ViewConcertButton({ event, artistName }) {
       setTicketmaster(ticketmaster);
       navigate(target, { state: { scrollTo: "next-concert" } });
     } catch {
-      setError(`Concert details for ${artistName} are unavailable. Please try again.`);
+      setError(
+        t("Concert details for {artist} are unavailable. Please try again.", {
+          artist: artistName,
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -55,7 +61,7 @@ export default function ViewConcertButton({ event, artistName }) {
         className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
       >
         <Icon icon={faEye} />
-        {loading ? "Loading…" : "View concert"}
+        {loading ? t("Loading…") : t("View concert")}
       </button>
       {error && (
         <p role="status" className="mt-2 text-center text-sm text-zinc-500">

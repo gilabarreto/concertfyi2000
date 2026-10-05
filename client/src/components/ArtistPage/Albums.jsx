@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useArtistAlbums } from "../../api/queries";
 import CardTitle from "./CardTitle";
 
+import { useT } from "../../i18n";
 // Tag de afiliado da Amazon Associates Canadá (só vale na amazon.ca). Sem ela o link funciona igual, só não comissiona.
 const AMAZON_TAG = "";
 
@@ -17,6 +18,7 @@ const amazonSearchUrl = (artist, title) => {
 };
 
 export default function Albums({ artistId, artist, className = "" }) {
+  const t = useT();
   const { data } = useArtistAlbums(artistId);
   // Capa que o Cover Art Archive não tem: some o disco, em vez de um quadrado quebrado.
   const [missing, setMissing] = useState([]);
@@ -26,10 +28,10 @@ export default function Albums({ artistId, artist, className = "" }) {
 
   return (
     <div className={`space-y-2 ${className}`}>
-      <CardTitle>Keep Listening</CardTitle>
+      <CardTitle>{t("Keep Listening")}</CardTitle>
       {/* Exigência do Operating Agreement da Amazon Associates: aviso visível junto aos links. */}
       <p className="text-center text-sm text-zinc-500">
-        As an Amazon Associate, ConcertFYI earns from qualifying purchases.
+        {t("As an Amazon Associate, ConcertFYI earns from qualifying purchases.")}
       </p>
       {/* Flex em vez de grid: fileira incompleta (artista com 4 ou 5 discos) fica no centro. */}
       <ul className="flex flex-wrap justify-center gap-3">

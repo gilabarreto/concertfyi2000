@@ -2,6 +2,7 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { upsertReview } from "../../helpers/concertReviews";
 
+import { useT } from "../../i18n";
 const MAX_COMMENT = 300;
 
 // Two entry points into the same <dialog>: "I WAS THERE" opens at the rate step (rating
@@ -9,6 +10,7 @@ const MAX_COMMENT = 300;
 // closed unanswered); the Review row's own "Leave a review" skips straight to the comment
 // step and never touches the rating — that's what the stars in the list are for.
 const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId, onSaved }, ref) {
+  const t = useT();
   const dialogRef = useRef(null);
   const [step, setStep] = useState("rate");
   const [rating, setRating] = useState(0);
@@ -48,7 +50,7 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
       {step === "rate" ? (
         <>
           <h3 id="rating-title" className="text-xl font-bold mb-4 text-center">
-            Rate this concert
+            {t("Rate this concert")}
           </h3>
           <div className="flex justify-center py-4">
             <StarRating value={rating} onRate={setRating} size="text-4xl" />
@@ -59,7 +61,7 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
               onClick={() => dialogRef.current.close()}
               className="flex-1 px-4 py-2 border border-zinc-300 rounded font-semibold text-zinc-600 hover:border-red-600 hover:text-red-600"
             >
-              Not now
+              {t("Not now")}
             </button>
             <button
               type="button"
@@ -67,20 +69,20 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
               disabled={!rating}
               className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-800 disabled:opacity-50 text-white font-semibold rounded"
             >
-              Next
+              {t("Next")}
             </button>
           </div>
         </>
       ) : (
         <>
           <h3 id="rating-title" className="text-xl font-bold mb-4 text-center">
-            Want to add a comment?
+            {t("Want to add a comment?")}
           </h3>
           <textarea
             value={comment}
             onChange={(e) => setComment(e.target.value.slice(0, MAX_COMMENT))}
             rows={4}
-            placeholder="Share your thoughts about this concert…"
+            placeholder={t("Share your thoughts about this concert…")}
             className="w-full border border-zinc-300 rounded p-2 text-sm resize-none"
           />
           <div className="text-xs text-zinc-400 text-right mb-4">
@@ -92,7 +94,7 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
               onClick={() => saveComment(false)}
               className="flex-1 px-4 py-2 border border-zinc-300 rounded font-semibold text-zinc-600 hover:border-red-600 hover:text-red-600"
             >
-              Skip
+              {t("Skip")}
             </button>
             <button
               type="button"
@@ -100,7 +102,7 @@ const ConcertRatingDialog = forwardRef(function ConcertRatingDialog({ concertId,
               disabled={!comment.trim()}
               className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-800 disabled:opacity-50 text-white font-semibold rounded"
             >
-              Post
+              {t("Post")}
             </button>
           </div>
         </>

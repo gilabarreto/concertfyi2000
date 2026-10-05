@@ -16,6 +16,7 @@ import ConcertComments from "./ConcertComments";
 import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
 import CardTitle from "./CardTitle";
 
+import { useT } from "../../i18n";
 const ATTENDED_KEY = "attendedConcertIds";
 
 function getAttended() {
@@ -29,6 +30,7 @@ export default function LastConcert({
   fallbackImage,
   hideTitle = false,
 }) {
+  const t = useT();
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
   const [attended, setAttended] = useState(getAttended);
@@ -81,30 +83,39 @@ export default function LastConcert({
   const eventImage =
     getTicketmasterEventImage(ticketmaster?.events, concert.artist.name, localDate, venue) ||
     fallbackImage;
-  const shareText = `${concert.artist.name} played ${city || "near you"} on ${dateLabel(parseSetlistDate(concert.eventDate))}${venue ? ` at ${venue}` : ""}. Were you there?`;
+  const shareVars = {
+    artist: concert.artist.name,
+    city: city || t("near you"),
+    date: dateLabel(parseSetlistDate(concert.eventDate)),
+    venue,
+  };
+  const shareText = venue
+    ? t("{artist} played {city} on {date} at {venue}. Were you there?", shareVars)
+    : t("{artist} played {city} on {date}. Were you there?", shareVars);
 
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
     <>
-      <button type="button" onClick={share} title="Share this concert" className="pill">
+      <button type="button" onClick={share} title={t("Share this concert")} className="pill">
         <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-        {linkCopied ? "LINK COPIED" : "SHARE"}
+        {linkCopied ? t("LINK COPIED") : t("SHARE")}
       </button>
       <button
         type="button"
         onClick={toggleWasThere}
         aria-pressed={wasThere}
-        title={wasThere ? "Remove from concerts you attended" : "Mark that you were there"}
+        title={wasThere ? t("Remove from concerts you attended") : t("Mark that you were there")}
         className="pill"
       >
-        <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />I WAS THERE
+        <Icon icon={wasThere ? faCheck : faPlus} className="text-[0.65rem]" />
+        {t("I WAS THERE")}
       </button>
     </>
   );
 
   return (
     <>
-      {!hideTitle && <CardTitle>Last Concert</CardTitle>}
+      {!hideTitle && <CardTitle>{t("Last Concert")}</CardTitle>}
 
       <div
         className={
@@ -116,7 +127,7 @@ export default function LastConcert({
           <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">{actions}</li>
           <li className="flex items-center gap-x-3 border-b border-zinc-300/50 py-2">
             <span className="min-w-0">
-              <span className="font-semibold">Concert date:</span>&ensp;
+              <span className="font-semibold">{t("Concert date:")}</span>&ensp;
               {lastConcertId && (
                 <Icon
                   icon={faBackward}
@@ -135,7 +146,7 @@ export default function LastConcert({
             </span>
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Tour:</span>&ensp;
+            <span className="font-semibold">{t("Tour:")}</span>&ensp;
             {tour ? (
               <button
                 type="button"
@@ -152,7 +163,7 @@ export default function LastConcert({
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Venue:</span>&ensp;
+            <span className="font-semibold">{t("Venue:")}</span>&ensp;
             {concert.venue?.id ? (
               <Link
                 to={`/venues/${concert.venue.id}`}
@@ -165,14 +176,14 @@ export default function LastConcert({
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">
-            <span className="font-semibold">Location:</span>&ensp;
+            <span className="font-semibold">{t("Location:")}</span>&ensp;
             {coords ? (
               <button
                 type="button"
                 onClick={() => {
                   setTourMapOpen(false);
                 }}
-                title="Show concert location on map"
+                title={t("Show concert location on map")}
                 aria-controls="last-concert-map"
                 aria-pressed={!tourMapOpen}
                 className="inline align-baseline text-red-600 hover:text-red-800 transition-colors"
@@ -201,7 +212,7 @@ export default function LastConcert({
           <div
             id="last-concert-map"
             className="mt-[12px] w-full self-start overflow-hidden rounded-md bg-zinc-100"
-            aria-label="Concert location map"
+            aria-label={t("Concert location map")}
           >
             {tourMapOpen ? (
               <TourMapPanel

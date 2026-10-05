@@ -1,6 +1,7 @@
 import { faBed } from "@fortawesome/free-solid-svg-icons/faBed";
 import VendorTiles from "./VendorTiles";
 
+import { useT } from "../../i18n";
 // localDate is a plain "YYYY-MM-DD", so parsing it as UTC keeps the night of the show
 // as check-in no matter where the visitor is.
 const nextDay = (localDate) => {
@@ -13,6 +14,7 @@ const nextDay = (localDate) => {
 // the ones worth monetising. None publishes a nightly rate without an affiliate key, so
 // every tile falls back to "Check price". The links do land on the right city and dates.
 export default function HotelOptions({ event, iconOnly = false }) {
+  const t = useT();
   const venue = event._embedded?.venues?.[0];
   const checkin = event.dates?.start?.localDate;
 
@@ -30,21 +32,23 @@ export default function HotelOptions({ event, iconOnly = false }) {
       name: "Booking.com",
       domain: "booking.com",
       href: `https://www.booking.com/searchresults.html?ss=${dest}&checkin=${checkin}&checkout=${checkout}`,
-      subtitle: "Check price",
+      subtitle: t("Check price"),
     },
     {
       name: "Expedia",
       domain: "expedia.com",
       href: `https://www.expedia.com/Hotel-Search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
-      subtitle: "Check price",
+      subtitle: t("Check price"),
     },
     {
       name: "Vrbo",
       domain: "vrbo.com",
       href: `https://www.vrbo.com/search?destination=${dest}&startDate=${checkin}&endDate=${checkout}`,
-      subtitle: "Check price",
+      subtitle: t("Check price"),
     },
   ];
 
-  return <VendorTiles icon={faBed} title="Book a hotel" vendors={vendors} iconOnly={iconOnly} />;
+  return (
+    <VendorTiles icon={faBed} title={t("Book a hotel")} vendors={vendors} iconOnly={iconOnly} />
+  );
 }

@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAccessTokenFromCode, saveAccessToken } from "../helpers/spotifyAuth";
 
+import { useT } from "../i18n";
 // Runs inside the auth popup: exchange the code, hand the token to the opener, close.
 export default function SpotifyCallback() {
+  const t = useT();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState("loading");
 
@@ -40,23 +42,23 @@ export default function SpotifyCallback() {
       {status === "loading" && (
         <div className="space-y-5">
           <div className="mx-auto size-10 animate-spin motion-reduce:animate-none rounded-full border-4 border-green-600 border-t-transparent" />
-          <p className="text-zinc-800">Connecting to Spotify...</p>
+          <p className="text-zinc-800">{t("Connecting to Spotify…")}</p>
         </div>
       )}
 
       {status === "success" && (
         <div className="space-y-2">
           <p className="text-5xl text-green-600">✓</p>
-          <p className="font-semibold text-zinc-800">Connected!</p>
-          <p className="text-sm text-zinc-500">Creating your playlist...</p>
+          <p className="font-semibold text-zinc-800">{t("Connected!")}</p>
+          <p className="text-sm text-zinc-500">{t("Creating your playlist…")}</p>
         </div>
       )}
 
       {status === "error" && (
         <div className="space-y-2">
           <p className="text-5xl text-red-500">✗</p>
-          <p className="font-semibold text-zinc-800">Authentication failed</p>
-          <p className="text-sm text-zinc-500">Please try again</p>
+          <p className="font-semibold text-zinc-800">{t("Authentication failed")}</p>
+          <p className="text-sm text-zinc-500">{t("Please try again")}</p>
         </div>
       )}
     </div>

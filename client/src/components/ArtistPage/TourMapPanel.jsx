@@ -6,7 +6,9 @@ import { dateLabel } from "../../helpers/selectors";
 import { TourMap } from "./Map";
 import { getTourMapData, findTourUpcomingEvent } from "../../helpers/tourStats";
 
+import { useT } from "../../i18n";
 export default function TourMapPanel({ artistId, tourName, popup = false, onNavigate }) {
+  const t = useT();
   const { ticketmaster, setSetlist } = useContext(AppContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +61,9 @@ export default function TourMapPanel({ artistId, tourName, popup = false, onNavi
       <div className={popup ? "aspect-video w-full" : "aspect-[103/60] w-full"}>
         {isLoading || isError || !points.length ? (
           <p className="flex h-full items-center justify-center text-sm text-zinc-500">
-            {isLoading ? "Loading…" : "No locations available for this tour yet. Check back later."}
+            {isLoading
+              ? t("Loading…")
+              : t("No locations available for this tour yet. Check back later.")}
           </p>
         ) : (
           <TourMap points={points} onSelect={selectPoint} />
@@ -68,7 +72,7 @@ export default function TourMapPanel({ artistId, tourName, popup = false, onNavi
       {!isLoading && !isError && (
         <div className="px-1 py-2 text-zinc-500">
           <p className="flex items-center justify-center gap-2 whitespace-nowrap text-[10px] sm:text-xs">
-            {dates && <span>Dates: {dates}</span>}
+            {dates && <span>{t("Dates: {dates}", { dates })}</span>}
             <span className="inline-flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-red-600" />
               Past: {past}

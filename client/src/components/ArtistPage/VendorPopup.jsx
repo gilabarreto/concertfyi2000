@@ -2,7 +2,9 @@ import { useId, useRef } from "react";
 import Icon from "../Icon";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
+import { useT } from "../../i18n";
 export default function VendorPopup({ icon, title, vendors }) {
+  const t = useT();
   const dialogRef = useRef(null);
   const titleId = useId();
   const hasSubtitle = vendors.some((vendor) => vendor.subtitle);
@@ -39,7 +41,7 @@ export default function VendorPopup({ icon, title, vendors }) {
         </h3>
         <button
           type="button"
-          aria-label={`Close ${title}`}
+          aria-label={t("Close {title}", { title })}
           onClick={() => dialogRef.current.close()}
           className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded text-zinc-500 hover:text-red-600"
         >

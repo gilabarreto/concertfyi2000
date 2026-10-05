@@ -1,6 +1,7 @@
 import { faTicketSimple } from "@fortawesome/free-solid-svg-icons/faTicketSimple";
 import VendorTiles from "./VendorTiles";
 
+import { useT } from "../../i18n";
 const term = (...parts) => encodeURIComponent(parts.filter(Boolean).join(" "));
 
 const money = (amount, currency) =>
@@ -15,6 +16,7 @@ const money = (amount, currency) =>
 // Ticketmaster only publishes priceRanges for TicketWeb-ticketed shows; the rest of
 // its inventory is dynamically priced and carries no range at all.
 export default function TicketOptions({ event, artistName, iconOnly = false }) {
+  const t = useT();
   const city = event._embedded?.venues?.[0]?.city?.name;
   const range = event.priceRanges?.find((item) => item.currency);
 
@@ -23,17 +25,24 @@ export default function TicketOptions({ event, artistName, iconOnly = false }) {
       name: "Ticketmaster",
       domain: "ticketmaster.com",
       href: event.url,
-      subtitle: range ? `from ${money(range.min, range.currency)}` : "Check price",
+      subtitle: range
+        ? t("from {price}", { price: money(range.min, range.currency) })
+        : t("Check price"),
     },
     {
       name: "SeatGeek",
       domain: "seatgeek.com",
       href: `https://seatgeek.com/search?search=${term(artistName, city)}`,
-      subtitle: "Check price",
+      subtitle: t("Check price"),
     },
   ];
 
   return (
-    <VendorTiles icon={faTicketSimple} title="Get tickets" vendors={vendors} iconOnly={iconOnly} />
+    <VendorTiles
+      icon={faTicketSimple}
+      title={t("Get tickets")}
+      vendors={vendors}
+      iconOnly={iconOnly}
+    />
   );
 }

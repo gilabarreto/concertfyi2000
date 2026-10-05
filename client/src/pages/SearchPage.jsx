@@ -4,7 +4,9 @@ import { getBestImage, getPastConcertsByArtist, parseSetlistDate } from "../help
 import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
+import { useT } from "../i18n";
 export default function SearchPage() {
+  const t = useT();
   const { setlist = [], ticketmaster = {} } = useContext(AppContext);
   const { attractions = [] } = ticketmaster;
 
@@ -21,12 +23,12 @@ export default function SearchPage() {
   return (
     <>
       <SEOHead
-        title="Search Results - Artist Concerts & Setlists"
+        title={t("Search Results - Artist Concerts & Setlists")}
         description="Browse concert setlists and event information for your favorite artists."
         url="/search"
       />
       <div className="w-full mx-auto px-6 py-8">
-        <h2 className="text-2xl font-bold mb-4">Search Results</h2>
+        <h2 className="text-2xl font-bold mb-4">{t("Search Results")}</h2>
         <hr className="border-t border-zinc-300 opacity-50 mb-6" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center">

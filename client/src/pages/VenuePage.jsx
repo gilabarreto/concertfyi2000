@@ -23,10 +23,12 @@ import ViewConcertButton from "../components/ArtistPage/ViewConcertButton";
 import Map from "../components/ArtistPage/Map";
 import { SEOHead } from "../components/SEOHead";
 
+import { useT } from "../i18n";
 // One venue, both sides of the timeline: setlist.fm for what was played there (any artist),
 // Ticketmaster for what's on sale. The venue itself (name, city, coords) rides along on
 // every setlist, so it costs no call of its own.
 export default function VenuePage() {
+  const t = useT();
   const { venueId } = useParams();
   const isTicketmaster = venueId.startsWith("ticketmaster:");
   const { data: lookup, isLoading: lookupLoading } = useTicketmasterVenue(
@@ -72,14 +74,14 @@ export default function VenuePage() {
   const servicesLoading = servicesPending && identity.lat != null;
 
   if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
-    return <div className="p-8 w-full text-center text-zinc-400">Loading…</div>;
+    return <div className="p-8 w-full text-center text-zinc-400">{t("Loading…")}</div>;
   }
   if (!venue) {
     return (
       <div className="p-8 w-full text-center text-zinc-500">
-        Venue not found.{" "}
+        {t("Venue not found.")}{" "}
         <Link to="/" className="text-red-600 underline">
-          Back to home
+          {t("Back to home")}
         </Link>
       </div>
     );
@@ -130,7 +132,7 @@ export default function VenuePage() {
                 </div>
                 {!exactCoords && (
                   <p className="mt-1 text-center text-xs text-zinc-500">
-                    City location · exact venue location unavailable
+                    {t("City location · exact venue location unavailable")}
                   </p>
                 )}
               </>
@@ -158,16 +160,16 @@ export default function VenuePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
           <div className="min-w-0 bg-white px-4 space-y-2">
             <ConcertList
-              title="Past Concerts"
+              title={t("Past Concerts")}
               empty={
                 isLoading
-                  ? "Loading…"
-                  : "No past setlists available for this venue yet. Check back later."
+                  ? t("Loading…")
+                  : t("No past setlists available for this venue yet. Check back later.")
               }
               showSearch={false}
               items={past}
               locationOf={(show) => show.artist.name}
-              iconTitle="Show concert options"
+              iconTitle={t("Show concert options")}
               expand={(show) => (
                 <div className="px-2 py-3 sm:px-4">
                   <Link
@@ -176,7 +178,7 @@ export default function VenuePage() {
                     className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
                   >
                     <Icon icon={faEye} />
-                    View concert
+                    {t("View concert")}
                   </Link>
                 </div>
               )}
@@ -184,12 +186,12 @@ export default function VenuePage() {
           </div>
           <div className="min-w-0 bg-white px-4 pb-4 space-y-2">
             <ConcertList
-              title="Upcoming Concerts"
-              empty="No upcoming concerts available for this venue yet. Check back later."
+              title={t("Upcoming Concerts")}
+              empty={t("No upcoming concerts available for this venue yet. Check back later.")}
               showSearch={false}
               items={upcoming}
               locationOf={artistOf}
-              iconTitle="Get tickets"
+              iconTitle={t("Get tickets")}
               expand={(event) => (
                 <>
                   <TicketOptions event={event} artistName={artistOf(event)} />

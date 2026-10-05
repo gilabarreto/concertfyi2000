@@ -12,6 +12,7 @@ import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";
 import CardTitle from "./CardTitle";
 
+import { useT } from "../../i18n";
 const FAVORITE_ARTISTS_KEY = "favoriteArtistIds";
 
 function getFavoriteArtists() {
@@ -31,6 +32,7 @@ const SOCIALS = [
 ];
 
 export default function ArtistInfo(props) {
+  const t = useT();
   const { concert, attraction } = props;
   const { artistId } = useParams();
   const [favoriteArtists, setFavoriteArtists] = useState(getFavoriteArtists);
@@ -74,7 +76,7 @@ export default function ArtistInfo(props) {
   const showSource = !hasMoreBiography || showFullBiography;
   const source = (
     <>
-      Source:{" "}
+      {t("Source:")}{" "}
       <a
         href={httpOnly(background.pageUrl)}
         target="_blank"
@@ -108,8 +110,10 @@ export default function ArtistInfo(props) {
               type="button"
               onClick={toggleFavorite}
               aria-pressed={isFavorite}
-              title={isFavorite ? "Remove from favorites" : "Favorite this artist"}
-              aria-label={isFavorite ? "Remove artist from favorites" : "Favorite this artist"}
+              title={isFavorite ? t("Remove from favorites") : t("Favorite this artist")}
+              aria-label={
+                isFavorite ? t("Remove artist from favorites") : t("Favorite this artist")
+              }
               className={isFavorite ? "text-red-600" : "text-zinc-500 hover:text-red-600"}
             >
               <Icon icon={isFavorite ? faHeartSolid : faHeartRegular} className="text-2xl" />
@@ -121,7 +125,7 @@ export default function ArtistInfo(props) {
 
         <ol className="px-[12px]">
           {isBackgroundLoading && (
-            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">Loading…</li>
+            <li className="border-b border-zinc-300/50 py-2 text-zinc-400">{t("Loading…")}</li>
           )}
           {!isBackgroundLoading && (
             <li className="border-b border-zinc-300/50 py-2">
@@ -132,7 +136,7 @@ export default function ArtistInfo(props) {
                     className="whitespace-pre-line text-base leading-relaxed text-zinc-700 mb-2"
                     style={{ maskImage: biographyMask, WebkitMaskImage: biographyMask }}
                   >
-                    <span className="font-semibold">Bio:</span>&ensp;
+                    <span className="font-semibold">{t("Bio:")}</span>&ensp;
                     {hasMoreBiography && !showFullBiography
                       ? `${background.extract.slice(0, 300).replace(/\s+\S*$/, "")}…`
                       : background.extract}
@@ -150,26 +154,30 @@ export default function ArtistInfo(props) {
                         aria-controls="artist-biography"
                         className="text-base text-red-600 hover:text-red-800 font-semibold"
                       >
-                        {showFullBiography ? "Show Less" : "View More"}
+                        {showFullBiography ? t("Show Less") : t("View More")}
                       </button>
                     </div>
                   )}
                 </>
               ) : (
                 <p className="text-sm text-zinc-500">
-                  No biography available for this artist yet. Check back later.
+                  {t("No biography available for this artist yet. Check back later.")}
                 </p>
               )}
             </li>
           )}
           {displayGenres.length > 0 && (
             <li className="border-b border-zinc-300/50 py-2">
-              <span className="font-semibold">Genres:</span>&ensp;{displayGenres.join(", ")}
+              <span className="font-semibold">{t("Genres:")}</span>&ensp;
+              {displayGenres.join(", ")}
             </li>
           )}
         </ol>
         {(hasSocials || background.pageUrl) && (
-          <div className="flex justify-center items-center gap-4 py-3" aria-label="Artist links">
+          <div
+            className="flex justify-center items-center gap-4 py-3"
+            aria-label={t("Artist links")}
+          >
             {socialIcons}
             {background.pageUrl && (
               <a

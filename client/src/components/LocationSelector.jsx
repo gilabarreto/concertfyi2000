@@ -8,6 +8,7 @@ import { AppContext } from "../context/AppContext";
 import { useCitySearch } from "../api/queries";
 import useDebounce from "../hooks/useDebounce";
 
+import { useT } from "../i18n";
 // Country to code mapping for geolocation display
 const countryCodeMap = {
   Brazil: "BR",
@@ -42,6 +43,7 @@ export default function LocationSelector({
   isOpen,
   onOpenChange,
 }) {
+  const t = useT();
   const { selectedLocation, updateLocation } = useContext(AppContext);
   const [localOpen, setLocalOpen] = useState(false);
   const showDropdown = isOpen ?? localOpen;
@@ -68,9 +70,9 @@ export default function LocationSelector({
   // ainda está buscando, ou buscou e não achou. `term !== query` é o intervalo em que o
   // debounce ainda não alcançou o que foi digitado — ali ainda é "procurando".
   const emptyMessage = () => {
-    if (isError) return "Couldn't search cities. Try again.";
+    if (isError) return t("Couldn't search cities. Try again.");
     if (isFetching || term !== query) return "Searching…";
-    return "No cities found";
+    return t("No cities found");
   };
 
   useEffect(() => {
@@ -120,13 +122,15 @@ export default function LocationSelector({
           setShowDropdown(!showDropdown);
         }}
         className="flex justify-center items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity bg-none border-none active:opacity-70"
-        title="Change location"
+        title={t("Change location")}
       >
         <Icon icon={faLocationDot} className="shrink-0 text-xl" />
         <span
           className={`tracking-tight ${placement === "top" ? "text-xl font-normal" : "text-lg font-medium"}`}
         >
-          {isLoading && !selectedLocation ? "Locating..." : displayName || "Location unavailable"}
+          {isLoading && !selectedLocation
+            ? t("Locating…")
+            : displayName || t("Location unavailable")}
         </span>
         <Icon className="text-sm" icon={showDropdown ? faChevronUp : faChevronDown} />
       </button>
@@ -143,7 +147,7 @@ export default function LocationSelector({
             <input
               ref={inputRef}
               type="text"
-              placeholder="Search location..."
+              placeholder={t("Search location…")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="bg-white w-full px-4 py-3 pr-20 border-b border-zinc-300 focus:outline-none focus:ring-2 focus:ring-red-600 text-sm"
@@ -157,8 +161,8 @@ export default function LocationSelector({
                   inputRef.current?.focus();
                 }}
                 className="absolute right-10 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-red-600 transition-colors bg-none border-none p-1 cursor-pointer"
-                title="Clear search"
-                aria-label="Clear search"
+                title={t("Clear search")}
+                aria-label={t("Clear search")}
               >
                 <Icon icon={faXmark} size="sm" />
               </button>
@@ -169,8 +173,8 @@ export default function LocationSelector({
                 setShowDropdown(false);
                 toggleRef.current?.focus();
               }}
-              aria-label="Close location"
-              title="Close location"
+              aria-label={t("Close location")}
+              title={t("Close location")}
               className="absolute right-0 top-0 flex h-full w-10 items-center justify-center text-zinc-500 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
             >
               <Icon icon={faXmark} />
@@ -186,7 +190,7 @@ export default function LocationSelector({
               }}
               className="w-full px-4 py-2 text-center text-sm text-red-600 hover:bg-red-50 border-b border-zinc-200 transition-colors bg-none border-none"
             >
-              Reset to Original Location
+              {t("Reset to Original Location")}
             </button>
           )}
 

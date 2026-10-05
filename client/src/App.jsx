@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 
+import { useT } from "./i18n";
 // Home fica no bundle inicial — é a porta de entrada. O resto carrega sob demanda:
 // ArtistPage sozinha arrasta o Google Maps, que a maioria das visitas nunca abre.
 const SearchPage = lazy(() => import("./pages/SearchPage"));
@@ -19,6 +20,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const SpotifyCallback = lazy(() => import("./pages/SpotifyCallback"));
 
 function App() {
+  const t = useT();
   const appState = useAppState();
 
   // Handle GitHub Pages 404.html redirect for Spotify OAuth callback
@@ -75,7 +77,9 @@ function App() {
               <ErrorBoundary>
                 <Suspense
                   fallback={
-                    <div className="w-full flex items-center justify-center p-6">Loading…</div>
+                    <div className="w-full flex items-center justify-center p-6">
+                      {t("Loading…")}
+                    </div>
                   }
                 >
                   <Routes>

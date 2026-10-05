@@ -43,6 +43,8 @@ Sempre construir um Date a partir das partes, nunca de uma string de data. new D
 Estado: context para a sessão, React Query para fetch
 AppContext (alimentado por useAppState) guarda os payloads atuais de setlist + ticketmaster para navegar entre shows não refazer fetch, mais selectedLocation persistido em localStorage. React Query é dono de tudo que é rede; todos os hooks vivem em client/src/api/queries.js e todas as chamadas axios em api.js. Nada mais no app deve chamar a rede direto.
 
+Idiomas (EN/PT/ES/FR): todo texto de interface passa por `t("texto em inglês")` de client/src/i18n.js; o inglês é a própria chave e o fallback. Texto novo precisa de entrada em client/src/locales/{pt,es,fr}.json, ou client/src/i18n.test.mjs falha. A chave tem que ser literal: `cond ? t("a") : t("b")`, nunca `t(cond ? "a" : "b")`, que o teste não enxerga. Conteúdo das APIs (bio, setlist, reviews) e os títulos/descrições de SEO ficam como vêm.
+
 queryClient.js compartilha só um orçamento de retry (retry: 1); cada query em queries.js define seu próprio staleTime/gcTime, notadamente o preset songCache para lyrics/YouTube/Spotify (dados imutáveis, APIs com cota, retry: false).
 
 ArtistPage.jsx trata o cold-start: link compartilhado ou refresh chega com context vazio, então busca o show pelo id da URL e depois backfilla o setlist completo do artista + dados do Ticketmaster.

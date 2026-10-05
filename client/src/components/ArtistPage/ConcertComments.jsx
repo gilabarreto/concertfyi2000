@@ -5,12 +5,14 @@ import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
 import StarRating from "./StarRating";
 import { upsertReview } from "../../helpers/concertReviews";
 
+import { useT } from "../../i18n";
 const PREVIEW_LENGTH = 120;
 
 // Two more <li>s appended to LastConcert's own <ol> — same border-b/py-2 as Concert
 // date/Tour/Venue/Location, so Rating and Review get the same separator and type size
 // as the rest of that list instead of a mismatched block bolted on below it.
 export default function ConcertComments({ concertId, reviews, onSaved, onLeaveReview }) {
+  const t = useT();
   const [index, setIndex] = useState(0);
   const expandRef = useRef(null);
 
@@ -28,7 +30,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
         <div className="flex items-center gap-2">
           {/* Clicking here edits the rating directly — no need to reopen the popup just
               because someone changed their mind about the stars. */}
-          <span className="font-semibold">Rating:</span>&ensp;
+          <span className="font-semibold">{t("Rating:")}</span>&ensp;
           <StarRating
             value={average}
             onRate={(n) => onSaved(upsertReview(concertId, { rating: n }))}
@@ -36,15 +38,20 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
           />
           <span className="text-xs text-zinc-500">
             {reviews.length > 0
-              ? `${average.toFixed(1)} (${reviews.length} ${reviews.length === 1 ? "review" : "reviews"})`
-              : "(no ratings yet)"}
+              ? reviews.length === 1
+                ? t("{average} ({count} review)", { average: average.toFixed(1), count: 1 })
+                : t("{average} ({count} reviews)", {
+                    average: average.toFixed(1),
+                    count: reviews.length,
+                  })
+              : t("(no ratings yet)")}
           </span>
         </div>
       </li>
 
       <li className="border-b border-zinc-300/50 py-2">
         <div className="flex items-center gap-2">
-          <span className="shrink-0 font-semibold">Review:&ensp;</span>
+          <span className="shrink-0 font-semibold">{t("Review:")}&ensp;</span>
           {current ? (
             <>
               {withComments.length > 1 && (
@@ -63,7 +70,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
                       onClick={() => expandRef.current.showModal()}
                       className="text-red-600 hover:text-red-800 font-semibold"
                     >
-                      Read more
+                      {t("Read more")}
                     </button>
                   </>
                 ) : (
@@ -84,7 +91,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
               onClick={onLeaveReview}
               className="text-red-600 hover:text-red-800 font-semibold"
             >
-              (Leave a review)
+              {t("(Leave a review)")}
             </button>
           )}
         </div>
@@ -92,7 +99,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
 
       <dialog
         ref={expandRef}
-        aria-label="Review"
+        aria-label={t("Review")}
         className="bg-white rounded-lg p-6 w-[calc(100%-2rem)] max-w-md backdrop:bg-black/50"
       >
         <p className="text-sm text-zinc-700 mb-4 whitespace-pre-wrap">{current?.comment}</p>
@@ -101,7 +108,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
           onClick={() => expandRef.current.close()}
           className="w-full px-4 py-2 bg-red-600 hover:bg-red-800 text-white font-semibold rounded"
         >
-          Close
+          {t("Close")}
         </button>
       </dialog>
     </>

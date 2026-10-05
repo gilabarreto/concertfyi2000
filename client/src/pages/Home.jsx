@@ -9,11 +9,13 @@ import { useCurrentCity } from "../hooks/useCurrentCity";
 import { useCitySetlists, useLocalEvents, useRecentSetlists } from "../api/queries";
 import { dateLabel, getRecentUpcomingSetlists } from "../helpers/selectors";
 
+import { useT } from "../i18n";
 // Below the fold, and it pulls the ticket/hotel/reminder panels in with it: loading it on
 // demand keeps those out of the entry chunk (CONSTRAINTS.md, 270 kB ceiling).
 const HomeDiscovery = lazy(() => import("../components/HomeDiscovery"));
 
 const Home = () => {
+  const t = useT();
   const location = useCurrentCity();
   const { data: recentData } = useRecentSetlists(location.city, location.countryCode);
   // HomeDiscovery's two queries, started here with the same keys so they load alongside its
@@ -60,7 +62,7 @@ const Home = () => {
   return (
     <>
       <SEOHead
-        title="Discover Live Music & Concerts"
+        title={t("Discover Live Music & Concerts")}
         description="Track your favorite artists, explore past performances, and never miss a concert again. Find setlists, venues, and ticket information."
         url="/"
       />
@@ -80,8 +82,8 @@ const Home = () => {
                       to={`/artists/${recent.artist.mbid}/concerts/${recent.id}`}
                       className="hover:opacity-80"
                     >
-                      <span className="font-semibold">Recently added:</span> {recent.artist.name},{" "}
-                      {dateLabel(recent.dateObj)}
+                      <span className="font-semibold">{t("Recently added:")}</span>{" "}
+                      {recent.artist.name}, {dateLabel(recent.dateObj)}
                       {" at "}
                       {recent.venue?.name || "Venue to be announced"}
                     </Link>

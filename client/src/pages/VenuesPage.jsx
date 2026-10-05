@@ -7,10 +7,12 @@ import CardNotice from "../components/ArtistPage/CardNotice";
 import Icon from "../components/Icon";
 import { SEOHead } from "../components/SEOHead";
 
+import { useT } from "../i18n";
 // Home's VENUE button: the venues of the current city, busiest first. Built from the same
 // setlists My City already fetches (setlist.fm's own venue search has no ranking — São
 // Paulo alone returns 1,892 venues in name order).
 export default function VenuesPage() {
+  const t = useT();
   const { city, country, countryCode } = useCurrentCity();
   const { data, isLoading } = useCitySetlists(city, countryCode, new Date().getFullYear());
 
@@ -25,7 +27,7 @@ export default function VenuesPage() {
   return (
     <>
       <SEOHead
-        title={`Venues in ${city}`}
+        title={t("Venues in {city}", { city })}
         description={`Concert venues in ${city} with past setlists and upcoming shows.`}
         url="/venues"
       />
@@ -35,12 +37,12 @@ export default function VenuesPage() {
           <p className="text-zinc-500">{country}</p>
         </div>
         <div className="bg-white px-4 space-y-2">
-          <CardTitle>Busiest this year</CardTitle>
+          <CardTitle>{t("Busiest this year")}</CardTitle>
           {venues.length === 0 ? (
             <CardNotice>
               {isLoading
-                ? "Loading…"
-                : `No venues available in ${city} this year yet. Check back later.`}
+                ? t("Loading…")
+                : t("No venues available in {city} this year yet. Check back later.", { city })}
             </CardNotice>
           ) : (
             <ol className="px-[12px]">

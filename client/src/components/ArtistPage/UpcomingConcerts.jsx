@@ -7,15 +7,17 @@ import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
 import ConcertReminder from "./ConcertReminder";
 
+import { useT } from "../../i18n";
 export default function UpcomingConcerts(props) {
+  const t = useT();
   const events = getUpcomingConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
 
   return (
     <ConcertList
-      title="Upcoming Concerts"
-      empty="No upcoming concerts available for this artist yet. Check back later."
+      title={t("Upcoming Concerts")}
+      empty={t("No upcoming concerts available for this artist yet. Check back later.")}
       showSearch={false}
       items={events}
       locationOf={(concert) => {
@@ -23,9 +25,9 @@ export default function UpcomingConcerts(props) {
         // O guard ia só até venues[0], então city.name derrubava a árvore de rotas inteira.
         const venue = concert._embedded?.venues?.[0];
         const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
-        return parts.join(", ") || "Unknown location";
+        return parts.join(", ") || t("Unknown location");
       }}
-      iconTitle="Get tickets"
+      iconTitle={t("Get tickets")}
       // NextConcert reads this same "next" param to pick which upcoming show its own
       // card previews; View concert also sets this ID before scrolling to the card.
       onSelect={(concert) =>
@@ -54,7 +56,7 @@ export default function UpcomingConcerts(props) {
               className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
             >
               <Icon icon={faEye} />
-              View concert
+              {t("View concert")}
             </Link>
           </div>
         </>

@@ -11,9 +11,11 @@ import {
   details,
 } from "../../helpers/calendar";
 
+import { useT } from "../../i18n";
 // Apple publishes no template URL, so its tile hands over the .ics file — the same
 // file any other calendar app imports, which is why it names it on the second line.
 export default function ConcertReminder({ event, artistName, iconOnly = false, showShare = true }) {
+  const t = useT();
   const google = googleCalendarUrl(event, artistName);
   const [copied, setCopied] = useState(false);
   const copyTimerRef = useRef(null);
@@ -78,7 +80,7 @@ export default function ConcertReminder({ event, artistName, iconOnly = false, s
     <>
       <VendorTiles
         icon={faCalendarPlus}
-        title="Add to calendar"
+        title={t("Add to calendar")}
         vendors={vendors}
         iconOnly={iconOnly}
       />
@@ -89,14 +91,14 @@ export default function ConcertReminder({ event, artistName, iconOnly = false, s
           <button
             type="button"
             onClick={handleShare}
-            title="Share"
+            title={t("Share")}
             className="w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors"
           >
             <Icon icon={copied ? faCheck : faShareNodes} />
-            {copied ? "Link copied" : "Share"}
+            {copied ? t("Link copied") : t("Share")}
           </button>
           <span role="status" aria-live="polite" className="sr-only">
-            {copied ? "Concert details copied to clipboard" : ""}
+            {copied ? t("Concert details copied to clipboard") : ""}
           </span>
         </div>
       )}

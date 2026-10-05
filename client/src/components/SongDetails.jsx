@@ -8,9 +8,11 @@ import { faFileLines } from "@fortawesome/free-regular-svg-icons/faFileLines";
 import { openSpotifyAuthPopup, getStoredAccessToken } from "../helpers/spotifyAuth";
 import { useLyrics, useYoutubeVideo, useSpotifyTrack } from "../api/queries";
 
+import { useT } from "../i18n";
 const FADE_OUT = "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)";
 
 export default function SongDetails({ songName, artistName }) {
+  const t = useT();
   const [showFullLyrics, setShowFullLyrics] = useState(false);
   const [token, setToken] = useState(getStoredAccessToken);
   const lyricsRef = useRef(null);
@@ -69,10 +71,10 @@ export default function SongDetails({ songName, artistName }) {
         <button
           onClick={openSpotifyAuthPopup}
           className="w-full px-4 py-2 text-md font-semibold text-white bg-green-600 hover:bg-green-700 rounded flex items-center justify-center gap-2 transition-colors"
-          title="Connect to Spotify"
+          title={t("Connect to Spotify")}
         >
           <Icon icon={faSpotify} />
-          Connect to Listen
+          {t("Connect to Listen")}
         </button>
       );
 
@@ -87,7 +89,7 @@ export default function SongDetails({ songName, artistName }) {
         />
       );
 
-    if (playerLoading) return <p className="text-sm text-zinc-500">Loading…</p>;
+    if (playerLoading) return <p className="text-sm text-zinc-500">{t("Loading…")}</p>;
     return null;
   };
 
@@ -98,7 +100,7 @@ export default function SongDetails({ songName, artistName }) {
         <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
           <span className="mx-auto grid w-44 max-w-[calc(100%-3rem)] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 text-left">
             <Icon icon={faFileLines} className="justify-self-center text-sm text-red-600" />
-            Lyrics
+            {t("Lyrics")}
           </span>
           <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
             <Icon icon={faPlus} className="group-open/lyrics:hidden" />
@@ -106,10 +108,10 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         <div className="mt-3">
-          {loading && <p className="text-sm text-zinc-500 text-center">Loading…</p>}
+          {loading && <p className="text-sm text-zinc-500 text-center">{t("Loading…")}</p>}
           {!loading && (lyricsError || !lyrics) && (
             <p className="text-sm text-zinc-500 text-center">
-              No lyrics available for this song yet. Check back later.
+              {t("No lyrics available for this song yet. Check back later.")}
             </p>
           )}
           {lyrics && !loading && (
@@ -126,7 +128,7 @@ export default function SongDetails({ songName, artistName }) {
                     onClick={toggleLyrics}
                     className="text-base text-red-600 hover:text-red-800 font-semibold"
                   >
-                    {showFullLyrics ? "Show Less" : "View More"}
+                    {showFullLyrics ? t("Show Less") : t("View More")}
                   </button>
                 </div>
               )}
@@ -140,7 +142,7 @@ export default function SongDetails({ songName, artistName }) {
         <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
           <span className="mx-auto grid w-44 max-w-[calc(100%-3rem)] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 text-left">
             <Icon icon={faCirclePlay} className="justify-self-center text-sm text-red-600" />
-            Music Video
+            {t("Music Video")}
           </span>
           <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
             <Icon icon={faPlus} className="group-open/video:hidden" />
@@ -148,7 +150,7 @@ export default function SongDetails({ songName, artistName }) {
           </span>
         </summary>
         {videoLoading ? (
-          <p className="mt-3 text-sm text-zinc-500 text-center">Loading…</p>
+          <p className="mt-3 text-sm text-zinc-500 text-center">{t("Loading…")}</p>
         ) : videoId && !videoError ? (
           <div className="mt-3 rounded overflow-hidden" style={{ aspectRatio: "16 / 9" }}>
             <iframe
@@ -163,7 +165,7 @@ export default function SongDetails({ songName, artistName }) {
           </div>
         ) : (
           <p className="mt-3 text-sm text-zinc-500 text-center">
-            No music video available for this song yet. Check back later.
+            {t("No music video available for this song yet. Check back later.")}
           </p>
         )}
       </details>

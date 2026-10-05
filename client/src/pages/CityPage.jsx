@@ -15,9 +15,11 @@ import ConcertReminder from "../components/ArtistPage/ConcertReminder";
 import Map from "../components/ArtistPage/Map";
 import { SEOHead } from "../components/SEOHead";
 
+import { useT } from "../i18n";
 // My City: this year's setlists in the current city from setlist.fm, what's on sale there
 // from Ticketmaster.
 export default function CityPage() {
+  const t = useT();
   const [params] = useSearchParams();
   const view = params.get("view");
   const focused = ["upcoming", "nearby", "recent"].includes(view);
@@ -46,15 +48,15 @@ export default function CityPage() {
   const recent = getRecentUpcomingSetlists(recentData?.setlist, city, countryCode);
   const title =
     view === "nearby"
-      ? `Concerts Near ${city}`
+      ? t("Concerts Near {city}", { city })
       : view === "recent"
-        ? `Recently Added in ${city}`
-        : `Upcoming Concerts in ${city}`;
+        ? t("Recently Added in {city}", { city })
+        : t("Upcoming Concerts in {city}", { city });
 
   return (
     <>
       <SEOHead
-        title={focused ? title : `Concerts in ${city}`}
+        title={focused ? title : t("Concerts in {city}", { city })}
         description={`Recent setlists and upcoming concerts in ${city}.`}
         url="/city"
       />
@@ -64,7 +66,9 @@ export default function CityPage() {
           <div className="flex flex-col justify-center text-center lg:text-left">
             <h1 className="text-3xl font-bold text-balance">{focused ? title : city}</h1>
             <p className="text-zinc-500">
-              {view === "nearby" ? `Neighboring cities within 50 km · ${country}` : country}
+              {view === "nearby"
+                ? t("Neighboring cities within 50 km · {country}", { country })
+                : country}
             </p>
           </div>
           <div className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100">
@@ -76,37 +80,44 @@ export default function CityPage() {
           {!focused && (
             <div className="min-w-0 bg-white px-4 space-y-2">
               <ConcertList
-                title="Past Concerts"
+                title={t("Past Concerts")}
                 empty={
                   isLoading
-                    ? "Loading…"
-                    : `No past setlists available in ${city} this year yet. Check back later.`
+                    ? t("Loading…")
+                    : t("No past setlists available in {city} this year yet. Check back later.", {
+                        city,
+                      })
                 }
                 showSearch={false}
                 items={past}
                 locationOf={(show) => `${show.artist.name} @ ${show.venue.name}`}
                 linkOf={(show) => `/artists/${show.artist.mbid}/concerts/${show.id}`}
                 icon={faMusic}
-                iconTitle="View setlist"
+                iconTitle={t("View setlist")}
               />
             </div>
           )}
           <div className="min-w-0 bg-white px-4 pb-4 space-y-2">
             {view === "recent" && (
               <p className="text-center text-xs text-zinc-500">
-                Upcoming shows updated in the last 30 days
+                {t("Upcoming shows updated in the last 30 days")}
               </p>
             )}
             <ConcertList
-              title={focused ? title : "Upcoming Concerts"}
+              title={focused ? title : t("Upcoming Concerts")}
               empty={
                 view === "recent"
                   ? recentLoading
-                    ? "Loading…"
-                    : `No recently added concerts available in ${city} yet. Check back later.`
+                    ? t("Loading…")
+                    : t("No recently added concerts available in {city} yet. Check back later.", {
+                        city,
+                      })
                   : view === "nearby"
-                    ? `No concerts available in neighboring cities within 50 km of ${city} yet. Check back later.`
-                    : `No upcoming concerts available in ${city} yet. Check back later.`
+                    ? t(
+                        "No concerts available in neighboring cities within 50 km of {city} yet. Check back later.",
+                        { city },
+                      )
+                    : t("No upcoming concerts available in {city} yet. Check back later.", { city })
               }
               showSearch={false}
               items={view === "recent" ? recent : upcoming}
@@ -118,12 +129,12 @@ export default function CityPage() {
               icon={view === "recent" ? faMusic : undefined}
               locationOf={(event) =>
                 view === "recent"
-                  ? `${event.artist.name} @ ${event.venue?.name || "Venue to be announced"}`
+                  ? `${event.artist.name} @ ${event.venue?.name || t("Venue to be announced")}`
                   : view === "nearby"
                     ? `${artistOf(event)} — ${event._embedded?.venues?.[0]?.city?.name}`
                     : artistOf(event)
               }
-              iconTitle={view === "recent" ? "View concert" : "Get tickets"}
+              iconTitle={view === "recent" ? t("View concert") : t("Get tickets")}
               expand={
                 view === "recent"
                   ? undefined

@@ -3,7 +3,9 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons/faEnvelope";
 import { useState } from "react";
 import { SEOHead } from "../components/SEOHead";
 
+import { useT } from "../i18n";
 export default function Contact() {
+  const t = useT();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,14 +35,14 @@ export default function Contact() {
       });
 
       if (response.ok) {
-        setStatus("Message sent successfully!");
+        setStatus(t("Message sent successfully!"));
         setFormData({ name: "", email: "", message: "" });
       } else {
-        setStatus("An error occurred while sending the message.");
+        setStatus(t("An error occurred while sending the message."));
       }
     } catch (error) {
       console.error("Error:", error);
-      setStatus("Connection failed. Please try again later.");
+      setStatus(t("Connection failed. Please try again later."));
     }
   };
 
@@ -49,7 +51,7 @@ export default function Contact() {
   return (
     <>
       <SEOHead
-        title="Contact us"
+        title={t("Contact us")}
         description="Get in touch with the concertfyi team. Questions about artists, concerts, or suggestions?"
         url="/contact"
       />
@@ -62,7 +64,7 @@ export default function Contact() {
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="flex-1">
                 <label htmlFor="name" className="block text-white font-medium mb-1">
-                  Name
+                  {t("Name")}
                 </label>
                 <input
                   type="text"
@@ -93,7 +95,7 @@ export default function Contact() {
 
             <div>
               <label htmlFor="message" className="block text-white font-medium mb-1">
-                Message
+                {t("Message")}
               </label>
               <textarea
                 id="message"
@@ -110,7 +112,7 @@ export default function Contact() {
               disabled={sending}
               className="bg-white text-red-600 font-bold py-1 px-3 rounded-md hover:bg-zinc-100 transition mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {sending ? "Sending…" : "Send Message"}
+              {sending ? t("Sending…") : t("Send Message")}
             </button>
 
             <p role="status" aria-live="polite" className="text-white min-h-[1.25rem]">

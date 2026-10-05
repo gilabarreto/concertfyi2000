@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { LANGUAGES, getLanguage, setLanguage, useT } from "../i18n";
 import Icon from "./Icon";
 import { faBell } from "@fortawesome/free-solid-svg-icons/faBell";
 import { faMoon } from "@fortawesome/free-solid-svg-icons/faMoon";
 import { faSun } from "@fortawesome/free-solid-svg-icons/faSun";
 import { faUser } from "@fortawesome/free-solid-svg-icons/faUser";
 
+// The phrases spell F-Y-I, so they stay in English in every language.
 const phrases = [
   "Find Your Inspiration",
   "Follow Your Instinct",
@@ -31,6 +33,7 @@ const phrases = [
 ];
 
 function Navbar() {
+  const t = useT();
   const { pathname } = useLocation();
   const { concertReminder, reminderOpen, reminderSeen, setReminderOpen, setReminderInteracted } =
     useContext(AppContext);
@@ -103,10 +106,10 @@ function Navbar() {
             type="button"
             disabled={!reminderCount}
             onClick={toggleReminder}
-            aria-label={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
+            aria-label={reminderCount ? t("Concert reminders: 1") : t("No concert reminders")}
             aria-expanded={reminderCount ? reminderOpen : undefined}
             aria-controls={reminderCount ? reminderTarget : undefined}
-            title={reminderCount ? "Concert reminders: 1" : "No concert reminders"}
+            title={reminderCount ? t("Concert reminders: 1") : t("No concert reminders")}
             className="flex items-center justify-center min-h-11 px-1 text-xl disabled:cursor-default hover:opacity-80"
           >
             <Icon icon={faBell} />
@@ -122,8 +125,8 @@ function Navbar() {
             type="button"
             onClick={toggleDark}
             aria-pressed={dark}
-            aria-label="Dark mode"
-            title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={t("Dark mode")}
+            title={dark ? t("Switch to light mode") : t("Switch to dark mode")}
             className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl hover:opacity-80"
           >
             <Icon icon={dark ? faSun : faMoon} />
@@ -134,7 +137,7 @@ function Navbar() {
           type="button"
           onClick={expandLogo}
           disabled={logoBusy}
-          aria-label="concertfyi — reveal a phrase"
+          aria-label={t("concertfyi — reveal a phrase")}
           className="justify-self-center inline-flex items-center font-medium tracking-tight text-xl sm:text-2xl"
         >
           <span>concert</span>
@@ -149,11 +152,25 @@ function Navbar() {
         </button>
 
         <div className={`flex items-center justify-self-end gap-1 sm:gap-2 ${iconColor}`}>
+          {/* Native select: the OS draws the menu, keyboard and screen readers come for free. */}
+          <select
+            value={getLanguage()}
+            onChange={(event) => setLanguage(event.target.value)}
+            aria-label={t("Language")}
+            title={t("Language")}
+            className="min-h-11 cursor-pointer appearance-none bg-transparent px-1 text-base font-semibold hover:opacity-80"
+          >
+            {LANGUAGES.map((code) => (
+              <option key={code} value={code} className="bg-white text-zinc-900">
+                {code.toUpperCase()}
+              </option>
+            ))}
+          </select>
           <button
             type="button"
             disabled
-            aria-label="User profile (coming soon)"
-            title="User profile (coming soon)"
+            aria-label={t("User profile (coming soon)")}
+            title={t("User profile (coming soon)")}
             className="flex shrink-0 items-center justify-center min-h-11 px-1 text-xl cursor-default"
           >
             <Icon icon={faUser} />

@@ -14,18 +14,10 @@ import { getArtistAttraction } from "../helpers/selectors";
 import { getTourUpcomingConcerts } from "../helpers/tourStats";
 import { SEOHead } from "../components/SEOHead";
 
-// Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
-const SECTIONS = [
-  ["artist", "Artist"],
-  ["last-concert", "Last Concert"],
-  ["next-concert", "Next Concert"],
-  ["setlist", "Setlists"],
-  ["top-tracks", "Top Tracks"],
-  ["past-concerts", "Past Concerts"],
-  ["upcoming-concerts", "Upcoming Concerts"],
-];
+import { useT } from "../i18n";
 
 export default function ArtistPage() {
+  const t = useT();
   const { setlist = [], ticketmaster = {}, setSetlist, setTicketmaster } = useContext(AppContext);
   const { concertId, artistId } = useParams();
   const menuRef = useRef(null);
@@ -68,16 +60,16 @@ export default function ArtistPage() {
   if (isError) {
     return (
       <div className="p-8 w-full text-center text-zinc-500">
-        Concert not found.{" "}
+        {t("Concert not found.")}{" "}
         <Link to="/" className="text-red-600 underline">
-          Back to home
+          {t("Back to home")}
         </Link>
       </div>
     );
   }
 
   if (!concert) {
-    return <div className="p-8 w-full text-center text-zinc-400">Loading…</div>;
+    return <div className="p-8 w-full text-center text-zinc-400">{t("Loading…")}</div>;
   }
 
   const attraction = getArtistAttraction(ticketmaster, concert.artist.name);
@@ -89,7 +81,16 @@ export default function ArtistPage() {
     getTourUpcomingConcerts(ticketmaster.events, artistName, setlist, searchParams.get("next"))
       .length > 0;
   // Next Concert some sem show futuro, porque o card dele fica vazio.
-  const sections = SECTIONS.filter(([id]) => hasNextConcert || id !== "next-concert");
+  // Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
+  const sections = [
+    ["artist", t("Artist")],
+    ["last-concert", t("Last Concert")],
+    ["next-concert", t("Next Concert")],
+    ["setlist", t("Setlists")],
+    ["top-tracks", t("Top Tracks")],
+    ["past-concerts", t("Past Concerts")],
+    ["upcoming-concerts", t("Upcoming Concerts")],
+  ].filter(([id]) => hasNextConcert || id !== "next-concert");
   const scrollToSection = (id) =>
     document.getElementById(id)?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -112,7 +113,7 @@ export default function ArtistPage() {
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav
           ref={menuRef}
-          aria-label="Artist page sections"
+          aria-label={t("Artist page sections")}
           className="sticky top-16 z-10 lg:hidden flex w-full flex-col items-center justify-center gap-1 bg-zinc-100/60 backdrop-blur p-4 text-sm sm:text-base text-zinc-800"
         >
           {[

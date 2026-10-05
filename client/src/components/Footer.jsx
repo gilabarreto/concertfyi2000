@@ -10,7 +10,9 @@ import LocationSelector from "./LocationSelector";
 import { useGeolocation } from "../hooks/useGeolocation";
 import { AppContext } from "../context/AppContext";
 
+import { useT } from "../i18n";
 export default function Footer() {
+  const t = useT();
   const { pathname } = useLocation();
   const showDivider = /^\/(about|contact)\/?$/.test(pathname);
   const { setSearchValue } = useContext(AppContext);
@@ -38,8 +40,8 @@ export default function Footer() {
     setOpenPanel(null);
   };
   const navLinks = [
-    { path: "/about", label: "About", icon: faCircleInfo },
-    { path: "/contact", label: "Contact", icon: faEnvelope },
+    { path: "/about", label: t("About"), icon: faCircleInfo },
+    { path: "/contact", label: t("Contact"), icon: faEnvelope },
   ];
   const panelClass =
     "absolute bottom-full left-0 w-full bg-red-600 text-white shadow-md border-b border-white/20 px-6 py-4";
@@ -57,7 +59,7 @@ export default function Footer() {
       }}
     >
       <nav
-        aria-label="Footer navigation"
+        aria-label={t("Footer navigation")}
         className={`relative flex w-full max-w-[1012.44px] mx-auto justify-evenly items-center h-16 px-3 sm:px-6 gap-3 sm:gap-6 font-sans font-normal ${showDivider ? "bg-red-600 shadow-[0_-4px_6px_-4px_rgba(0,0,0,0.3)]" : ""}`}
       >
         {/* Concave ramps join the main's sides smoothly to the footer. */}
@@ -73,21 +75,21 @@ export default function Footer() {
             />
           </>
         )}
-        <Link to="/" aria-label="Home" onClick={closeAndNavigate} className={buttonClass}>
+        <Link to="/" aria-label={t("Home")} onClick={closeAndNavigate} className={buttonClass}>
           <Icon icon={faHouse} />
-          <span className="hidden sm:inline">Home</span>
+          <span className="hidden sm:inline">{t("Home")}</span>
         </Link>
         <button
           ref={searchButtonRef}
           type="button"
-          aria-label="Search artists"
+          aria-label={t("Search artists")}
           aria-expanded={openPanel === "search"}
           aria-controls="footer-search"
           onClick={() => toggle("search")}
           className={buttonClass}
         >
           <Icon icon={faMagnifyingGlass} />
-          <span className="hidden sm:inline">Search</span>
+          <span className="hidden sm:inline">{t("Search")}</span>
         </button>
         <div className="min-w-0 [&>div>button]:max-w-full [&>div>button>span]:truncate">
           <LocationSelector

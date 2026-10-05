@@ -6,11 +6,13 @@ import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
 import { faXmark } from "@fortawesome/free-solid-svg-icons/faXmark";
 
+import { useT } from "../i18n";
 export default function SearchBar({ onClose }) {
+  const t = useT();
   const { searchValue, setSearchValue, setSetlist, setTicketmaster } = useContext(AppContext);
   const navigate = useNavigate();
   const { artistId } = useParams();
-  const placeholder = "Search your favorite artist";
+  const placeholder = t("Search your favorite artist");
 
   const term = useDebounce(searchValue, 700);
 
@@ -58,8 +60,8 @@ export default function SearchBar({ onClose }) {
       <button
         type="button"
         onClick={onClose}
-        aria-label="Close search"
-        title="Close search"
+        aria-label={t("Close search")}
+        title={t("Close search")}
         className="absolute right-0 top-0 flex h-full w-10 items-center justify-center text-zinc-500 hover:text-red-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
       >
         <Icon icon={faXmark} />
@@ -69,13 +71,13 @@ export default function SearchBar({ onClose }) {
           role="alert"
           className="absolute left-0 top-full mt-1 w-full bg-white px-4 py-2 text-sm text-zinc-500 shadow"
         >
-          Search failed.{" "}
+          {t("Search failed.")}{" "}
           <button
             type="button"
             onClick={retry}
             className="font-semibold text-red-600 hover:text-red-800"
           >
-            Try again
+            {t("Try again")}
           </button>
         </p>
       )}

@@ -11,6 +11,7 @@ import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
 import ViewConcertButton from "./ArtistPage/ViewConcertButton";
 
+import { useT } from "../i18n";
 const normalize = (value = "") =>
   value
     .normalize("NFKD")
@@ -19,6 +20,7 @@ const normalize = (value = "") =>
     .replace(/[^a-z0-9]/g, "");
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 function VenueTile({ venue, ticketmaster }) {
+  const t = useT();
   const [failed, setFailed] = useState(false);
   const [googleFailed, setGoogleFailed] = useState(false);
   const image = ticketmaster?.images?.find((item) => safeUrl(item.url))?.url;
@@ -51,7 +53,7 @@ function VenueTile({ venue, ticketmaster }) {
         ) : (
           <div
             className="aspect-square w-full rounded-md bg-zinc-100 flex items-center justify-center text-zinc-400"
-            aria-label={isLoading ? "Loading venue photo" : "Venue photo unavailable"}
+            aria-label={isLoading ? t("Loading venue photo") : t("Venue photo unavailable")}
           >
             <Icon icon={faBuilding} className="text-3xl" />
           </div>
@@ -84,6 +86,7 @@ function VenueTile({ venue, ticketmaster }) {
 }
 
 function VenueCarousel({ venues, events, city, loading }) {
+  const t = useT();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
   useEffect(() => {
@@ -117,18 +120,18 @@ function VenueCarousel({ venues, events, city, loading }) {
     <section aria-label={`Venues in ${city}`} className="w-full min-w-0 bg-white px-4 space-y-2">
       <CardTitle>
         <Link to="/venues" className="hover:text-red-800">
-          Nearby Venues
+          {t("Nearby Venues")}
         </Link>
       </CardTitle>
       {!venues.length ? (
         <p className="py-4 text-center text-sm text-zinc-500" role="status">
-          {loading ? "Loading…" : `No venues available in ${city} yet. Check back later.`}
+          {loading ? t("Loading…") : `No venues available in ${city} yet. Check back later.`}
         </p>
       ) : (
         <div ref={carouselRef} className="flex items-start gap-4" aria-roledescription="carousel">
           <button
             type="button"
-            aria-label="Previous venues"
+            aria-label={t("Previous venues")}
             disabled={currentPage === 0}
             onClick={() => setPage(currentPage - 1)}
             style={{ marginTop: "calc((var(--venue-photo-size, 84px) - 84px) / 2)" }}
@@ -157,7 +160,7 @@ function VenueCarousel({ venues, events, city, loading }) {
           </ul>
           <button
             type="button"
-            aria-label="Next venues"
+            aria-label={t("Next venues")}
             disabled={(currentPage + 1) * limit >= venues.length}
             onClick={() => setPage(currentPage + 1)}
             style={{ marginTop: "calc((var(--venue-photo-size, 84px) - 84px) / 2)" }}
@@ -172,6 +175,7 @@ function VenueCarousel({ venues, events, city, loading }) {
 }
 
 export default function HomeDiscovery({ location }) {
+  const t = useT();
   const { city, countryCode, lat, long } = location;
   const local = useLocalEvents(lat, long);
   const setlists = useCitySetlists(city, countryCode, new Date().getFullYear());
@@ -188,12 +192,12 @@ export default function HomeDiscovery({ location }) {
     <div className="w-full min-w-0 space-y-4 lg:space-y-3">
       <div
         className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3"
-        aria-label="Local concert lists"
+        aria-label={t("Local concert lists")}
         key={`${city}-${lat}-${long}`}
       >
         {[
-          { title: "Upcoming Concerts", nearby: false },
-          { title: `Concerts Near ${city}`, nearby: true },
+          { title: t("Upcoming Concerts"), nearby: false },
+          { title: t("Concerts Near {city}", { city }), nearby: true },
         ].map(({ title, nearby }) => (
           <section
             key={title}
@@ -204,10 +208,13 @@ export default function HomeDiscovery({ location }) {
               title={title}
               empty={
                 local.isLoading
-                  ? "Loading…"
+                  ? t("Loading…")
                   : nearby
-                    ? `No concerts available in neighboring cities within 50 km of ${city} yet. Check back later.`
-                    : `No upcoming concerts available in ${city} yet. Check back later.`
+                    ? t(
+                        "No concerts available in neighboring cities within 50 km of {city} yet. Check back later.",
+                        { city },
+                      )
+                    : t("No upcoming concerts available in {city} yet. Check back later.", { city })
               }
               showSearch={false}
               pageSize={nearby ? 5 : 7}
@@ -216,7 +223,7 @@ export default function HomeDiscovery({ location }) {
               secondaryTextOf={
                 nearby ? (event) => event._embedded?.venues?.[0]?.city?.name : undefined
               }
-              iconTitle="Get tickets"
+              iconTitle={t("Get tickets")}
               expand={(event) => (
                 <>
                   <TicketOptions event={event} artistName={artistOf(event)} />

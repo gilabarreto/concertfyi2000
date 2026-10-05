@@ -1,9 +1,7 @@
-export default function Pagination({
-  currentPage,
-  totalPages,
-  onPageChange,
-  label = "Concert pages",
-}) {
+import { useT } from "../i18n";
+
+export default function Pagination({ currentPage, totalPages, onPageChange, label }) {
+  const t = useT();
   const MAX_VISIBLE = 5;
 
   const getVisiblePages = () => {
@@ -35,7 +33,7 @@ export default function Pagination({
 
   return (
     <nav
-      aria-label={label}
+      aria-label={label || t("Concert pages")}
       className="flex items-center justify-center space-x-2 mt-4 text-sm tabular-nums"
     >
       <button
@@ -43,7 +41,7 @@ export default function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 0}
       >
-        &lt; Prev
+        &lt; {t("Prev")}
       </button>
 
       {visiblePages.map((pageNum) => (
@@ -66,7 +64,7 @@ export default function Pagination({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages - 1}
       >
-        Next &gt;
+        {t("Next")} &gt;
       </button>
     </nav>
   );

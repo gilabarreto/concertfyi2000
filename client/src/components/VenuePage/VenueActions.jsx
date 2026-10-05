@@ -11,33 +11,35 @@ import { faTicketSimple } from "@fortawesome/free-solid-svg-icons/faTicketSimple
 import { faCircleInfo } from "@fortawesome/free-solid-svg-icons/faCircleInfo";
 import { faChild } from "@fortawesome/free-solid-svg-icons/faChild";
 
+import { useT } from "../../i18n";
 export default function VenueActions({ ticketmaster, services = {} }) {
+  const t = useT();
   const [selectedDetail, setSelectedDetail] = useState(null);
   const detailsRef = useRef(null);
   const triggerRef = useRef(null);
   const fields = services.fields || {};
   const rows = [
     [
-      "Parking",
+      t("Parking"),
       ticketmaster?.parkingDetail || fields.parking?.value,
       ticketmaster?.parkingDetail ? null : fields.parking,
     ],
     [
-      "Accessibility",
+      t("Accessibility"),
       ticketmaster?.accessibleSeatingDetail || fields.accessibility?.value,
       ticketmaster?.accessibleSeatingDetail ? null : fields.accessibility,
     ],
-    ["Box office", ticketmaster?.boxOfficeInfo?.phoneNumberDetail],
-    ["Box office hours", ticketmaster?.boxOfficeInfo?.openHoursDetail],
+    [t("Box office"), ticketmaster?.boxOfficeInfo?.phoneNumberDetail],
+    [t("Box office hours"), ticketmaster?.boxOfficeInfo?.openHoursDetail],
     [
-      "Accepted payments",
+      t("Accepted payments"),
       ticketmaster?.boxOfficeInfo?.acceptedPaymentDetail || fields.payments?.value,
       ticketmaster?.boxOfficeInfo?.acceptedPaymentDetail ? null : fields.payments,
     ],
-    ["Will call", ticketmaster?.boxOfficeInfo?.willCallDetail],
-    ["General rules", ticketmaster?.generalInfo?.generalRule],
-    ["Children", ticketmaster?.generalInfo?.childRule],
-    ["Opening hours", fields.openingHours?.value, fields.openingHours],
+    [t("Will call"), ticketmaster?.boxOfficeInfo?.willCallDetail],
+    [t("General rules"), ticketmaster?.generalInfo?.generalRule],
+    [t("Children"), ticketmaster?.generalInfo?.childRule],
+    [t("Opening hours"), fields.openingHours?.value, fields.openingHours],
   ];
   const detailIcons = [
     faSquareParking,
@@ -61,7 +63,7 @@ export default function VenueActions({ ticketmaster, services = {} }) {
   if (!availableRows.length) return null;
 
   return (
-    <section aria-label="Venue services" className="px-[12px] mt-2">
+    <section aria-label={t("Venue services")} className="px-[12px] mt-2">
       <div className="flex flex-wrap items-center justify-center gap-2 py-2">
         {availableRows.map(({ label, value, source, icon }) => (
           <button
@@ -95,7 +97,7 @@ export default function VenueActions({ ticketmaster, services = {} }) {
           </h2>
           <button
             type="button"
-            aria-label="Close"
+            aria-label={t("Close")}
             onClick={() => detailsRef.current.close()}
             className="flex h-8 w-8 shrink-0 items-center justify-center text-zinc-500 hover:text-red-600"
           >

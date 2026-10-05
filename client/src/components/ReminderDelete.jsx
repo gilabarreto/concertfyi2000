@@ -3,14 +3,16 @@ import { faTrashCan } from "@fortawesome/free-solid-svg-icons/faTrashCan";
 import { AppContext } from "../context/AppContext";
 import Icon from "./Icon";
 
+import { useT } from "../i18n";
 export default function ReminderDelete() {
+  const t = useT();
   const { setConcertReminder, setReminderOpen, setReminderInteracted, setReminderSeen } =
     useContext(AppContext);
   return (
     <button
       type="button"
-      aria-label="Delete reminder"
-      title="Delete reminder"
+      aria-label={t("Delete reminder")}
+      title={t("Delete reminder")}
       onClick={() => {
         document.querySelector("button[aria-controls][aria-label^='Concert reminders']")?.focus();
         setReminderInteracted(true);

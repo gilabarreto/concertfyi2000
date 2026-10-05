@@ -18,10 +18,12 @@ import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
 import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
 
+import { useT } from "../../i18n";
 // Páginas de 10, com paginação só acima disso.
 const PAGE_SIZE = 10;
 
 export default function Setlist({ concert, setlist, ticketmaster, fallbackImage }) {
+  const t = useT();
   const navigate = useNavigate();
   const [expandedLyrics, setExpandedLyrics] = useState(null);
   const [page, setPage] = useState(0);
@@ -54,8 +56,12 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
         localDate,
         concert.venue?.name,
       ) || fallbackImage;
-    const text = `Check out ${concert.artist.name}'s setlist from their concert at ${place || "the concert venue"} on ${dateLabel(parseSetlistDate(concert.eventDate))}.`;
-    const title = `${concert.artist.name} setlist`;
+    const text = t("Check out {artist}'s setlist from their concert at {place} on {date}.", {
+      artist: concert.artist.name,
+      place: place || t("the concert venue"),
+      date: dateLabel(parseSetlistDate(concert.eventDate)),
+    });
+    const title = t("{artist} setlist", { artist: concert.artist.name });
 
     if (await shareOrCopy(url.href, title, { text, imageUrl })) {
       setLinkCopied(true);
@@ -184,12 +190,12 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
   return (
     <>
       <CardTitle id="setlist" ref={titleRef} className="scroll-mt-20">
-        Setlists
+        {t("Setlists")}
       </CardTitle>
 
       <div className="mx-[12px] flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-zinc-300/50 py-2">
         <span>
-          <span className="font-semibold">Concert date:</span>&ensp;
+          <span className="font-semibold">{t("Concert date:")}</span>&ensp;
           {olderId && (
             <Icon
               icon={faBackward}
@@ -213,24 +219,29 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
               type="button"
               onClick={handleCopySetlist}
               className="pill"
-              title="Copy setlist"
-              aria-label="Copy setlist"
+              title={t("Copy setlist")}
+              aria-label={t("Copy setlist")}
             >
               <Icon
                 icon={copied ? faCheck : faCopy}
                 className={copied ? "text-green-600 text-[0.65rem]" : "text-[0.65rem]"}
               />
-              {copied ? "COPIED" : "COPY"}
+              {copied ? t("COPIED") : t("COPY")}
             </button>
             <span role="status" aria-live="polite" className="sr-only">
-              {copied ? "Setlist copied to clipboard" : ""}
+              {copied ? t("Setlist copied to clipboard") : ""}
             </span>
-            <button type="button" onClick={shareSetlist} title="Share setlist" className="pill">
+            <button
+              type="button"
+              onClick={shareSetlist}
+              title={t("Share setlist")}
+              className="pill"
+            >
               <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-              {linkCopied ? "LINK COPIED" : "SHARE"}
+              {linkCopied ? t("LINK COPIED") : t("SHARE")}
             </button>
             <span role="status" className="sr-only">
-              {linkCopied ? "Setlist link copied" : ""}
+              {linkCopied ? t("Setlist link copied") : ""}
             </span>
           </div>
         )}
@@ -238,10 +249,10 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
 
       <>
         {songs.length === 0 ? (
-          <CardNotice>No songs available for this setlist yet. Check back later.</CardNotice>
+          <CardNotice>{t("No songs available for this setlist yet. Check back later.")}</CardNotice>
         ) : (
           <>
-            {/* Show-level note: "May be incomplete", "Opening act for AC/DC". */}
+            {/* Show-level note: t("May be incomplete"), "Opening act for AC/DC". */}
             {concert.info && (
               <p className="mx-[12px] border-b border-zinc-300/50 py-2 text-xs text-zinc-500">
                 {concert.info}
@@ -255,7 +266,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                   <li key={songIndex} className="flex flex-col">
                     {(isEncoreStart || song.setName) && (
                       <span className="pt-3 pb-1 text-center text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                        {isEncoreStart ? "Encore" : song.setName}
+                        {isEncoreStart ? t("Encore") : song.setName}
                       </span>
                     )}
                     <div className="flex items-center justify-between border-b border-zinc-300/50 py-2">
@@ -268,7 +279,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                             {song.name}
                             {song.tape && (
                               <span className="ml-2 rounded-full border border-zinc-300 px-1.5 text-[10px] uppercase leading-4 text-zinc-500">
-                                Tape
+                                {t("Tape")}
                               </span>
                             )}
                           </span>
@@ -292,7 +303,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                         onClick={() =>
                           setExpandedLyrics(expandedLyrics === songIndex ? null : songIndex)
                         }
-                        aria-label={`Details for ${song.name}`}
+                        aria-label={t("Details for {song}", { song: song.name })}
                         aria-expanded={expandedLyrics === songIndex}
                         className="p-1 hover:text-red-800 ml-2"
                       >
@@ -329,10 +340,10 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
                 disabled={creatingPlaylist}
                 aria-busy={creatingPlaylist}
                 className={`w-full px-4 py-2 text-md font-semibold text-white bg-red-600 hover:bg-red-800 rounded flex items-center justify-center gap-2 transition-colors disabled:opacity-50 ${creatingPlaylist ? "animate-pulse motion-reduce:animate-none" : ""}`}
-                title="Create Spotify Playlist"
+                title={t("Create Spotify Playlist")}
               >
                 <Icon icon={faSpotify} />
-                {creatingPlaylist ? "Creating playlist…" : "Create Spotify Playlist"}
+                {creatingPlaylist ? t("Creating playlist…") : t("Create Spotify Playlist")}
               </button>
             </div>
           </>

@@ -2,16 +2,18 @@ import CardTitle from "../ArtistPage/CardTitle";
 import StarRating from "../ArtistPage/StarRating";
 import VenueSource from "./VenueSource";
 
+import { useT } from "../../i18n";
 export default function VenueRating({ rating, loading }) {
+  const t = useT();
   return (
     <section
-      aria-label="Venue ratings"
+      aria-label={t("Venue ratings")}
       className="flex min-w-0 flex-col gap-2 bg-white px-2 sm:px-4"
     >
-      <CardTitle>Ratings</CardTitle>
+      <CardTitle>{t("Ratings")}</CardTitle>
       <div
         className="flex flex-1 flex-col items-center justify-center py-2"
-        aria-label="Google rating"
+        aria-label={t("Google rating")}
       >
         {rating ? (
           <>
@@ -28,7 +30,9 @@ export default function VenueRating({ rating, loading }) {
           </>
         ) : (
           <p className="text-center" role={loading ? "status" : undefined}>
-            {loading ? "Loading…" : "No ratings available for this venue yet. Check back later."}
+            {loading
+              ? t("Loading…")
+              : t("No ratings available for this venue yet. Check back later.")}
           </p>
         )}
       </div>

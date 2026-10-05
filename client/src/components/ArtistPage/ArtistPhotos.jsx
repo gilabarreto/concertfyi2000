@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useArtistImages } from "../../api/queries";
 import { getBestImage } from "../../helpers/selectors";
 
+import { useT } from "../../i18n";
 export default function ArtistPhotos({ artistId, artist, attraction }) {
+  const t = useT();
   const { data, isLoading } = useArtistImages(artistId);
   const [selectedUrl, setSelectedUrl] = useState(null);
   const [failed, setFailed] = useState([]);
@@ -13,7 +15,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
     ? [
         {
           imageUrl: mainImage,
-          label: "Artist photo",
+          label: t("Artist photo"),
           source: "Ticketmaster",
           sourceUrl: attraction.url,
         },
@@ -45,7 +47,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
   const shownPhotos = visible.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
 
   return (
-    <div className="w-full sm:max-w-[520px] space-y-2" aria-label="Artist photos">
+    <div className="w-full sm:max-w-[520px] space-y-2" aria-label={t("Artist photos")}>
       <div className="aspect-video overflow-hidden rounded-md bg-zinc-200 flex items-center justify-center">
         {selected ? (
           <img
@@ -56,7 +58,9 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
           />
         ) : (
           <p className="px-4 text-center text-sm text-zinc-500">
-            {isLoading ? "Loading…" : "No photos available for this artist yet. Check back later."}
+            {isLoading
+              ? t("Loading…")
+              : t("No photos available for this artist yet. Check back later.")}
           </p>
         )}
       </div>
@@ -64,13 +68,13 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
         <div
           ref={stripRef}
           className="flex w-full min-w-0 items-center gap-2"
-          aria-label="Choose artist photo"
+          aria-label={t("Choose artist photo")}
         >
           <button
             type="button"
             onClick={() => step(-1)}
             disabled={selectedIndex === 0}
-            aria-label="Previous artist photo"
+            aria-label={t("Previous artist photo")}
             className="flex h-14 w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
           >
             {"{"}
@@ -99,7 +103,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
             type="button"
             onClick={() => step(1)}
             disabled={selectedIndex === visible.length - 1}
-            aria-label="Next artist photo"
+            aria-label={t("Next artist photo")}
             className="flex h-14 w-6 shrink-0 items-center justify-center text-[3.5rem] font-light leading-none text-red-600 disabled:text-zinc-300"
           >
             {"}"}
@@ -108,7 +112,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
       )}
       {selected && (
         <p className="text-center text-xs text-zinc-500">
-          Source:{" "}
+          {t("Source:")}{" "}
           <a
             href={/^https?:\/\//i.test(selected.sourceUrl) ? selected.sourceUrl : selected.imageUrl}
             target="_blank"

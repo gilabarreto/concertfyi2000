@@ -4,12 +4,12 @@ import LastConcert from "./LastConcert";
 import NextConcert from "./NextConcert";
 import "./ConcertTabs.css";
 
-const tabs = [
-  { id: "last-concert", label: "Last Concert" },
-  { id: "next-concert", label: "Next Concert" },
-];
+import { useT } from "../../i18n";
+const tabs = [{ id: "last-concert" }, { id: "next-concert" }];
 
 export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackImage }) {
+  const t = useT();
+  const labels = { "last-concert": t("Last Concert"), "next-concert": t("Next Concert") };
   const location = useLocation();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [active, setActive] = useState(() =>
@@ -63,7 +63,7 @@ export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackIm
       {desktop && (
         <div
           role="tablist"
-          aria-label="Concert details"
+          aria-label={t("Concert details")}
           className="concert-tab-list"
           onKeyDown={handleKeyDown}
         >
@@ -80,7 +80,7 @@ export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackIm
               onClick={() => setActive(index)}
               className="concert-tab"
             >
-              {tab.label}
+              {labels[tab.id]}
             </button>
           ))}
           <span aria-hidden="true" className="concert-tab-underline" />

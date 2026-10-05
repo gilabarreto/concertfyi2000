@@ -1,3 +1,6 @@
+// Explicit extension: node:test loads this file as plain ESM, without Vite's resolver.
+import { getLanguage } from "../i18n.js";
+
 // Haversine, in km. null when a coordinate is missing or out of range, so callers can't
 // mistake bad data (Number("") is 0) for a place on the equator.
 export function distanceKm(lat, long, otherLat, otherLong) {
@@ -32,7 +35,11 @@ export function withTicketmasterDate(event) {
 // en-GB is the locale that shortens September to "Sept" (en-US stops at "Sep"); the
 // other eleven months are identical, and the month-day-year order stays ours. Shared by
 // every card that shows a concert date, so past/upcoming/last concert all read the same.
+// Other languages get their own order and abbreviations ("12 de set. de 2025").
 export function dateLabel(date) {
+  const lang = getLanguage();
+  if (lang !== "en")
+    return date.toLocaleDateString(lang, { day: "numeric", month: "short", year: "numeric" });
   return `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
