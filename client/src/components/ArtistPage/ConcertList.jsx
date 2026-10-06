@@ -62,21 +62,21 @@ export default function ConcertList({
               // the date never truncates; a long city name does, so the icon keeps its place
               const secondaryText = secondaryTextOf?.(concert);
               const label = secondaryText ? (
-                <span className="flex min-w-0 items-start text-left">
-                  <span className="tabular-nums whitespace-nowrap shrink-0">
-                    {dateLabel(concert.dateObj)}
-                  </span>
-                  <span className="mx-2 text-zinc-500" aria-hidden="true">
-                    ·
-                  </span>
-                  <span className="flex min-w-0 flex-col">
+                <span className="flex min-w-0 flex-col text-left">
+                  <span className="flex min-w-0 items-center">
+                    <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
+                      {dateLabel(concert.dateObj)}
+                    </span>
+                    <span className="mx-2 text-zinc-500" aria-hidden="true">
+                      ·
+                    </span>
                     <span className="truncate text-zinc-500">{locationOf(concert)}</span>
-                    <span className="text-xs text-zinc-500">{secondaryText}</span>
                   </span>
+                  <span className="text-xs text-zinc-500">{secondaryText}</span>
                 </span>
               ) : (
                 <span className="flex min-w-0 items-center">
-                  <span className="tabular-nums whitespace-nowrap shrink-0">
+                  <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
                     {dateLabel(concert.dateObj)}
                   </span>
                   <span className="text-zinc-500 ml-2 truncate">· {locationOf(concert)}</span>
