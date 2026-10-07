@@ -40,7 +40,8 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       const source = "OpenStreetMap";
       const address = [[tags["addr:housenumber"], tags["addr:street"]].filter(Boolean).join(" "), tags["addr:city"], tags["addr:postcode"], tags["addr:country"]].filter(Boolean).join(", ");
       const payments = Object.entries(tags).filter(([key]) => key.startsWith("payment:")).map(([key, value]) => `${key.slice(8).replace(/_/g, " ")}: ${value}`).join("\n");
-      const result = { status: item ? "ok" : "not-found", fields: {
+      const at = item && { lat: item.lat ?? item.center?.lat, long: item.lon ?? item.center?.lon };
+      const result = { status: item ? "ok" : "not-found", location: at?.lat != null && at.long != null ? at : null, fields: {
         address: field(address, source, url), website: field(safeUrl(tags.website || tags["contact:website"]), source, url),
         phone: field(tags.phone || tags["contact:phone"], source, url), openingHours: field(tags.opening_hours, source, url),
         accessibility: field(tags.wheelchair ? `Wheelchair access: ${tags.wheelchair}` : "", source, url),
@@ -88,7 +89,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       // Billing follows the priciest field. editorialSummary/parking/payments already make this
       // Enterprise + Atmosphere (1,000 free a month), so reviews ride along at no extra cost;
       // the photo list stays IDs Only, which is unbilled.
-      const mask = mode === "photos" ? "photos,attributions" : "reviews,formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
+      const mask = mode === "photos" ? "photos,attributions" : "location,reviews,formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
       const place = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(id)}`, { headers: { ...headers, "X-Goog-FieldMask": mask }, params: { languageCode: "en" } });
       const attributions = (place.attributions || []).map(item => ({ name: item.provider, url: safeUrl(item.providerUri) }));
       const source = "Google Maps", url = safeUrl(place.googleMapsUri) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(identity.name)}&query_place_id=${id}`;
@@ -105,7 +106,8 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         return { status: "ok", source, url, attributions, total: photos.length, offset, photos: results.filter(item => item.status === "fulfilled").map(item => item.value), partial: results.some(item => item.status === "rejected") };
       }
       const reviews = (place.reviews || []).slice(0, 5).map(review => ({ rating: review.rating, text: review.text?.text || review.originalText?.text || "", author: review.authorAttribution?.displayName || "Google Maps user", authorUrl: safeUrl(review.authorAttribution?.uri), photoUrl: safeUrl(review.authorAttribution?.photoUri), published: review.relativePublishTimeDescription || "", url: safeUrl(review.googleMapsUri) }));
-      return { status: "ok", reviews, fields: {
+      const location = Number.isFinite(place.location?.latitude) && Number.isFinite(place.location?.longitude) ? { lat: place.location.latitude, long: place.location.longitude } : null;
+      return { status: "ok", reviews, location, fields: {
         address: field(place.formattedAddress, source, url, attributions), website: field(safeUrl(place.websiteUri), source, url, attributions), phone: field(place.internationalPhoneNumber, source, url, attributions),
         openingHours: field(place.regularOpeningHours?.weekdayDescriptions?.join("\n"), source, url, attributions),
         accessibility: field(booleanLines(place.accessibilityOptions, accessLabels), source, url, attributions), parking: field(booleanLines(place.parkingOptions, parkingLabels), source, url, attributions), payments: field(booleanLines(place.paymentOptions, paymentLabels), source, url, attributions),
@@ -126,7 +128,8 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     const [primary, fallback] = await Promise.all([google(identity, key, "services"), osm(identity, key)]);
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
-    return { fields, reviews: primary.reviews, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
+    // The matched building's pin, for the map; never fed back into the identity.
+    return { fields, reviews: primary.reviews, location: primary.location || fallback.location || null, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
   }
 
   const handler = mode => async (req, res) => {

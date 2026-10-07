@@ -57,11 +57,11 @@ export default function VenuePage() {
   const exactCoords = location
     ? { lat: Number(location.latitude), long: Number(location.longitude) }
     : info.coordinates;
-  const mapCoords = exactCoords || coords;
+  const identityCoords = exactCoords || coords;
   const identity = {
     name: venue?.name,
-    lat: mapCoords?.lat,
-    long: mapCoords?.long,
+    lat: identityCoords?.lat,
+    long: identityCoords?.long,
     exact: !!exactCoords,
     city: venue?.city?.name,
   };
@@ -72,6 +72,9 @@ export default function VenuePage() {
   );
   // Pending covers the wait before the query is even enabled; without coordinates it never runs.
   const servicesLoading = servicesPending && identity.lat != null;
+  // Google/OSM's pin for the building that gave the address; the city centre only as a last resort.
+  const pinCoords = exactCoords || services.location;
+  const mapCoords = pinCoords || coords;
 
   if (lookupLoading || (!isTicketmaster && (isLoading || detailsLoading))) {
     return <div className="p-8 w-full text-center text-zinc-400">{t("Loading…")}</div>;
@@ -130,7 +133,7 @@ export default function VenuePage() {
                 <div className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100">
                   <Map latitude={mapCoords.lat} longitude={mapCoords.long} />
                 </div>
-                {!exactCoords && (
+                {!pinCoords && (
                   <p className="mt-1 text-center text-xs text-zinc-500">
                     {t("City location · exact venue location unavailable")}
                   </p>

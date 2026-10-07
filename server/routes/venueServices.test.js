@@ -66,7 +66,7 @@ test("reviews ride on the services call, capped at five, preserving author/sourc
     if (url.endsWith("searchText")) return { places: [{ id: "test_place", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
     if (!url.includes("places.googleapis.com")) return { elements: [] };
     masks.push(options.headers["X-Goog-FieldMask"]);
-    return { rating: 4.5, userRatingCount: 100, googleMapsUri: "https://maps.google.com/?cid=1", reviews: Array.from({ length: 6 }, () => ({ rating: 5, text: { text: "A review" }, authorAttribution: { displayName: "Author", uri: "https://maps.google.com/user", photoUri: "https://example.com/photo" } })) };
+    return { rating: 4.5, userRatingCount: 100, location: { latitude: 51.5561, longitude: -0.2796 }, googleMapsUri: "https://maps.google.com/?cid=1", reviews: Array.from({ length: 6 }, () => ({ rating: 5, text: { text: "A review" }, authorAttribution: { displayName: "Author", uri: "https://maps.google.com/user", photoUri: "https://example.com/photo" } })) };
   } });
   const result = await call(handlers.services);
   assert.equal(result.body.reviews.length, 5);
@@ -74,6 +74,7 @@ test("reviews ride on the services call, capped at five, preserving author/sourc
   assert.equal(result.body.fields.rating.value, 4.5);
   assert.equal(masks.length, 1, "one details call per venue");
   assert.ok(masks[0].split(",").includes("reviews"));
+  assert.deepEqual(result.body.location, { lat: 51.5561, long: -0.2796 }, "the building's pin, for the map");
 });
 
 test("invalid inputs never reach providers, and failures expose no credentials", async () => {
@@ -89,7 +90,9 @@ test("invalid inputs never reach providers, and failures expose no credentials",
 test("transport stops named after a stadium cannot supply its details", async () => {
   const station = { ...osmVenue, type: "node", lat: 51.554, lon: -0.284, tags: { name: query.name, public_transport: "station", phone: "wrong station phone" } };
   const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements: [station, osmVenue] }) });
-  assert.equal((await call(handlers.services)).body.fields.phone.value, "+44 1234");
+  const body = (await call(handlers.services)).body;
+  assert.equal(body.fields.phone.value, "+44 1234");
+  assert.ok(body.location, "OSM's pin when Google has none");
   const stationOnly = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements: [station] }) });
   assert.equal((await call(stationOnly.services)).body.providers.osm, "not-found");
 });
