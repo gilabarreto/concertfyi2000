@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { request } = require("../http");
-const { findTicketmasterVenue } = require("../venueIdentity");
+const { findTicketmasterVenue, leadingWords } = require("../venueIdentity");
 
 const TM_BASE = "https://app.ticketmaster.com/discovery/v2";
 const headers = { "User-Agent": "concertfyi2000/1.0.0 (gilabarreto@gmail.com)" };
@@ -137,11 +137,15 @@ router.get("/venue-events", async (req, res) => {
   }
 
   try {
-    const venues = await request(`${TM_BASE}/venues.json`, {
-      params: { apikey: process.env.TICKETMASTER_API_KEY, keyword: name, latlong: `${lat},${long}`, radius: 50, unit: "km", size: 5 },
+    const search = async keyword => (await request(`${TM_BASE}/venues.json`, {
+      params: { apikey: process.env.TICKETMASTER_API_KEY, keyword, latlong: `${lat},${long}`, radius: 50, unit: "km", size: 5 },
       headers,
-    });
-    const venue = findTicketmasterVenue(venues._embedded?.venues, name, lat, long);
+    }))._embedded?.venues;
+    let venue = findTicketmasterVenue(await search(name), name, lat, long);
+    // A resort's stage is filed under its own name ("Grey Eagle Resort & Casino" is Ticketmaster's
+    // "Grey Eagle Event Centre"): one more search by the first two words, one nearby hit or none.
+    const lead = leadingWords(name);
+    if (!venue && lead) venue = findTicketmasterVenue(await search(lead), name, lat, long, true);
     if (!venue) return res.json({ venue: null, events: [] });
 
     const data = await request(`${TM_BASE}/events.json`, {

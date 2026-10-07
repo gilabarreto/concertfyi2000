@@ -1,7 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { createVenueInfoHandler } = require("./venueInfo");
-const { findTicketmasterVenue } = require("../venueIdentity");
+const { findTicketmasterVenue, leadingWords } = require("../venueIdentity");
 const coords = { lat: 51.55, lon: -0.28 };
 const value = value => [{ mainsnak: { datavalue: { value } } }];
 const entity = { id: "Q128468", claims: { P625: value({ latitude: coords.lat, longitude: coords.lon }), P6375: value({ text: "Wembley Park, London HA9 0WS" }), P856: value("https://www.wembleystadium.com"), P1619: value({ time: "+2007-03-09T00:00:00Z", precision: 11 }), P571: value({ time: "+2002-01-01T00:00:00Z", precision: 9 }) } };
@@ -70,4 +70,14 @@ test("Ticketmaster lookup requires one venue with compatible name and coordinate
   assert.equal(findTicketmasterVenue([{ name: "Wrong Arena", location: venue.location }, venue], "Wembley Stadium", 51.51, -0.12), venue);
   assert.equal(findTicketmasterVenue([venue, { ...venue }], "Wembley Stadium", 51.51, -0.12), null);
   assert.equal(findTicketmasterVenue([venue], "Wembley Stadium", 0, 0), null);
+});
+
+test("Ticketmaster lookup by leading words still needs one nearby venue", () => {
+  const centre = { name: "Grey Eagle Event Centre", location: { latitude: 51.0075, longitude: -114.1472 } };
+  assert.equal(leadingWords("Grey Eagle Resort & Casino"), "grey eagle");
+  assert.equal(leadingWords("Rogers Arena"), "", "two words are the whole name");
+  assert.equal(findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08), null, "exact by default");
+  assert.equal(findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08, true), centre);
+  assert.equal(findTicketmasterVenue([centre, { ...centre, name: "Grey Eagle Casino" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
+  assert.equal(findTicketmasterVenue([{ ...centre, name: "Grey Owl Hall" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
 });

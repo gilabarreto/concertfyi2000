@@ -43,10 +43,17 @@ function nearby(lat, long, otherLat, otherLong, radius = 30) {
   return 6371 * 2 * Math.asin(Math.sqrt(Math.min(distance, 1))) <= radius;
 }
 
-function findTicketmasterVenue(venues = [], name, lat, long) {
+// The first two words of a longer name, when they're distinctive enough to search by.
+function leadingWords(name) {
+  const all = words(name);
+  return all.length > 2 && all[0].length + all[1].length >= 6 ? all.slice(0, 2).join(" ") : "";
+}
+
+function findTicketmasterVenue(venues = [], name, lat, long, byLead = false) {
+  const same = value => byLead ? words(value).slice(0, 2).join(" ") === leadingWords(name) : normalize(value) === normalize(name);
   const matches = venues.filter(venue =>
-    [venue.name, ...(venue.aliases || [])].some(value => normalize(value) === normalize(name)) &&
+    [venue.name, ...(venue.aliases || [])].some(same) &&
     nearby(lat, long, venue.location?.latitude, venue.location?.longitude));
   return matches.length === 1 ? matches[0] : null;
 }
-module.exports = { normalize, nearby, findTicketmasterVenue, venueNamesMatch, venueNamesOverlap, venueNameParts };
+module.exports = { normalize, nearby, findTicketmasterVenue, leadingWords, venueNamesMatch, venueNamesOverlap, venueNameParts };
