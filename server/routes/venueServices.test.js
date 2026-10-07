@@ -245,6 +245,9 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
   assert.equal((await run({ ...loose, name: "Espaço Unimed" }, () => [{ ...suffixed, types: ["parking"] }])).body.providers.google, "not-found", "never a non-venue");
   assert.equal((await run({ ...loose, name: "Espaço Unimed" }, () => [suffixed, { ...suffixed, id: "twin" }])).body.providers.google, "not-found", "never ambiguous");
   assert.equal((await run({ ...loose, name: "Madison Square Garden" }, () => [{ ...suffixed, displayName: { text: "Madison" } }])).body.providers.google, "not-found", "too short to stand for the whole name");
+  assert.equal((await run({ ...loose, name: "Commonwealth Bar & Stage" }, () => [{ ...suffixed, displayName: { text: "Commonwealth" } }])).body.providers.google, "ok", "generic words dropped");
+  assert.equal((await run({ ...loose, name: "King’s Head Pub" }, () => [{ ...suffixed, displayName: { text: "The King's Head Eatery & Music Room" } }])).body.providers.google, "ok", "generic words added");
+  assert.equal((await run({ ...loose, name: "Cafe Theatre" }, () => [{ ...suffixed, displayName: { text: "Café Théâtre | French Restaurant Calgary" }, types: ["restaurant"] }])).body.providers.google, "ok", "tagline after the bar");
 
   const retried = await run({ ...loose, name: "Espaço Unimed", city: "São Paulo" }, textQuery => textQuery.includes("São Paulo") ? [suffixed] : []);
   assert.equal(retried.body.providers.google, "ok");

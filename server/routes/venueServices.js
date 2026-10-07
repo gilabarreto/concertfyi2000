@@ -62,9 +62,11 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         const pick = places => {
           const close = places.filter(place => !(place.types || []).some(type => TRANSIT.includes(type)) && nearby(identity.lat, identity.long, place.location?.latitude, place.location?.longitude, identity.radius));
           const isVenue = place => (place.types || []).some(type => VENUE_TYPES.includes(type));
+          // Listings append a tagline: "Café Théâtre | French Restaurant Calgary".
+          const nameOf = place => (place.displayName?.text || "").split("|")[0];
           for (const rung of [
-            close.filter(place => venueNamesMatch(identity.name, place.displayName?.text, place.types)),
-            close.filter(place => isVenue(place) && venueNamesOverlap(identity.name, place.displayName?.text)),
+            close.filter(place => venueNamesMatch(identity.name, nameOf(place), place.types)),
+            close.filter(place => isVenue(place) && venueNamesOverlap(identity.name, nameOf(place))),
             // Google ranks by relevance, so with Ticketmaster's exact pin its top answer may stand in
             // for a sponsor rename that shares no words with the old name.
             identity.exact && close[0] && close[0] === places[0] && isVenue(close[0]) ? [close[0]] : [],
