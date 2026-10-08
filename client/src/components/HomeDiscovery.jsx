@@ -10,6 +10,7 @@ import TicketOptions from "./ArtistPage/TicketOptions";
 import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
 import ViewConcertButton from "./ArtistPage/ViewConcertButton";
+import ExploreEvent from "./ExploreEvent";
 
 import { useT } from "../i18n";
 const normalize = (value = "") =>
@@ -258,14 +259,7 @@ export default function HomeDiscovery({ location }) {
             locationOf={artistOf}
             wrap
             iconTitle={t("Get tickets")}
-            // No View concert: without an artist there's no setlist page to open.
-            expand={(event) => (
-              <>
-                <TicketOptions event={event} artistName={artistOf(event)} />
-                <HotelOptions event={event} />
-                <ConcertReminder event={event} artistName={artistOf(event)} showShare={false} />
-              </>
-            )}
+            expand={(event) => <ExploreEvent event={event} />}
           />
         </section>
       )}
