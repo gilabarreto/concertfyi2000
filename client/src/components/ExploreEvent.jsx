@@ -1,27 +1,24 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { AppContext } from "../context/AppContext";
 import { artistOf, dateLabel } from "../helpers/selectors";
 import Icon from "./Icon";
-import Map from "./ArtistPage/Map";
 import TicketOptions from "./ArtistPage/TicketOptions";
 import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
 import { useT } from "../i18n";
 
-// Next Concert's rows for an event with no artist (Home's Explore Events): no tour, and no
-// date arrows since there's no tour to step through. Share points at the venue page — the
+// Next Concert's rows for an event with no artist (Home's Explore Events): no tour, no map,
+// and no date arrows since there's no tour to step through. Share points at the venue page — the
 // share route only previews /artists/ pages, and these events have none.
 export default function ExploreEvent({ event }) {
   const t = useT();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
   const [linkCopied, setLinkCopied] = useState(false);
   const venue = event._embedded?.venues?.[0];
-  const coords = venue?.location;
   const imGoing = goingConcertIds.includes(event.id);
   const venuePath = venue?.id && `/venues/ticketmaster:${venue.id}`;
 
@@ -39,7 +36,7 @@ export default function ExploreEvent({ event }) {
   };
 
   return (
-    <div className="px-2 py-3 sm:px-4 space-y-3">
+    <div className="px-2 py-3 sm:px-4">
       <ol className="min-w-0">
         <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
           <button type="button" onClick={share} title={t("Share this concert")} className="pill">
@@ -75,7 +72,6 @@ export default function ExploreEvent({ event }) {
         </li>
         <li className="border-b border-zinc-300/50 py-2">
           <span className="font-semibold">{t("Location:")}</span>&ensp;
-          {coords && <Icon icon={faLocationDot} className="mr-2 text-red-600" />}
           {venue?.city?.name}, {venue?.country?.countryCode}
         </li>
         <li className="flex flex-wrap items-center justify-center gap-2 border-b border-zinc-300/50 py-2">
@@ -84,14 +80,6 @@ export default function ExploreEvent({ event }) {
           <ConcertReminder event={event} artistName={artistOf(event)} iconOnly />
         </li>
       </ol>
-      {coords && (
-        <div
-          className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100"
-          aria-label={t("Concert location map")}
-        >
-          <Map latitude={coords.latitude} longitude={coords.longitude} />
-        </div>
-      )}
     </div>
   );
 }
