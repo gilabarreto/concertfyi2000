@@ -15,6 +15,7 @@ import { useT } from "../../i18n";
 // concerts opened a seller list instead of a single ticket link, nothing passes one.
 // onSelect is optional and only fires on a disclosure row — UpcomingConcerts uses it to
 // mirror the click into the URL, so the Next Concert card above stays in sync.
+// listClassName lays the rows out differently (Home's More Events runs two columns).
 export default function ConcertList({
   title,
   empty,
@@ -28,6 +29,7 @@ export default function ConcertList({
   expand,
   onSelect,
   pageSize = 5,
+  listClassName = "",
 }) {
   const t = useT();
   const [page, setPage] = useState(0);
@@ -56,7 +58,7 @@ export default function ConcertList({
         </CardNotice>
       ) : (
         <>
-          <ol className="px-[12px]">
+          <ol className={`px-[12px] ${listClassName}`}>
             {currentPage.map((concert) => {
               const open = openId === concert.id;
               // the date never truncates; a long city name does, so the icon keeps its place

@@ -16,6 +16,7 @@ import {
   getTicketmasterGenres,
   getArtistAttraction,
   getUpcomingConcertsByCity,
+  getMoreEventsByCity,
   getRecentUpcomingSetlists,
 } from "./selectors.js";
 
@@ -290,7 +291,7 @@ test("local lists require confirmed upcoming dates and distinguish neighboring c
   const event = (id, city, start = {}) => ({
     id,
     dates: { start: { localDate: "2099-10-03", ...start } },
-    _embedded: { venues: [{ city: { name: city } }] },
+    _embedded: { venues: [{ city: { name: city } }], attractions: [{ name: "Band" }] },
   });
   const events = [
     event("city", "São Paulo"),
@@ -336,7 +337,10 @@ test("nearby concerts stay within 50 km of the selected location", () => {
   const event = (id, city, latitude, longitude) => ({
     id,
     dates: { start: { localDate: "2099-10-03" } },
-    _embedded: { venues: [{ city: { name: city }, location: { latitude, longitude } }] },
+    _embedded: {
+      venues: [{ city: { name: city }, location: { latitude, longitude } }],
+      attractions: [{ name: "Band" }],
+    },
   });
   const events = [
     event("near", "Airdrie", 51.2917, -114.0144),
@@ -349,5 +353,35 @@ test("nearby concerts stay within 50 km of the selected location", () => {
       (e) => e.id,
     ),
     ["near"],
+  );
+});
+
+test("events without an artist leave the concert lists for More Events, city and neighbors together", () => {
+  const event = (id, city, localDate, attractions, latitude = 51.2917) => ({
+    id,
+    dates: { start: { localDate } },
+    _embedded: {
+      venues: [{ city: { name: city }, location: { latitude, longitude: -114.0144 } }],
+      ...(attractions && { attractions }),
+    },
+  });
+  const events = [
+    event("show", "Calgary", "2099-10-03", [{ name: "Band" }]),
+    event("party", "Calgary", "2099-10-05"),
+    event("neighbor-party", "Airdrie", "2099-10-04", []),
+    event("far-party", "Edmonton", "2099-10-01", undefined, 53.5461),
+  ];
+  const center = { lat: 51.0447, long: -114.0719 };
+  assert.deepEqual(
+    getUpcomingConcertsByCity(events, "Calgary").map((e) => e.id),
+    ["show"],
+  );
+  assert.deepEqual(
+    getUpcomingConcertsByCity(events, "Calgary", false, center).map((e) => e.id),
+    [],
+  );
+  assert.deepEqual(
+    getMoreEventsByCity(events, "Calgary", center).map((e) => e.id),
+    ["neighbor-party", "party"],
   );
 });

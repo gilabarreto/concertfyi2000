@@ -79,6 +79,22 @@ export function getUpcomingConcertsByArtist(events = [], artistName) {
 // sameCity=false pega o resto do raio de 50km, pra "Concerts Near X" não repetir
 // as linhas de "Upcoming Concerts" de X.
 export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true, center) {
+  return byCity(events.filter(hasArtist), cityName, sameCity, center);
+}
+
+// Ticketmaster files club nights and parties as Music too ("World Famous Fridays"), always
+// without an attraction; so does a small bar listing a real show under its own title. Neither
+// is dropped: the artist-less ones, city and neighbors together, are Home's More Events card.
+export const hasArtist = (event) => !!event._embedded?.attractions?.length;
+
+export function getMoreEventsByCity(events = [], cityName, center) {
+  const rest = events.filter((event) => !hasArtist(event));
+  return [...byCity(rest, cityName, true), ...byCity(rest, cityName, false, center)].sort(
+    (a, b) => a.dateObj - b.dateObj,
+  );
+}
+
+function byCity(events, cityName, sameCity, center) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 

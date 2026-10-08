@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
-import { artistOf, getUpcomingConcertsByCity } from "../helpers/selectors";
+import { artistOf, getMoreEventsByCity, getUpcomingConcertsByCity } from "../helpers/selectors";
 import CardTitle from "./ArtistPage/CardTitle";
 import Icon from "./Icon";
 import ConcertList from "./ArtistPage/ConcertList";
@@ -188,6 +188,7 @@ export default function HomeDiscovery({ location }) {
     byVenue.set(venue.id, entry);
   }
   const venues = [...byVenue.values()].sort((a, b) => b.shows - a.shows);
+  const moreEvents = getMoreEventsByCity(events, city, { lat, long });
   return (
     <div className="w-full min-w-0 space-y-4 lg:space-y-3">
       <div
@@ -243,6 +244,31 @@ export default function HomeDiscovery({ location }) {
         city={city}
         loading={setlists.isLoading}
       />
+      {moreEvents.length > 0 && (
+        <section
+          aria-label={t("More Events")}
+          className="w-full min-w-0 bg-white px-4 pb-4 space-y-2"
+        >
+          <ConcertList
+            title={t("More Events")}
+            showSearch={false}
+            pageSize={10}
+            listClassName="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6"
+            items={moreEvents}
+            locationOf={artistOf}
+            secondaryTextOf={(event) => event._embedded?.venues?.[0]?.name}
+            iconTitle={t("Get tickets")}
+            // No View concert: without an artist there's no setlist page to open.
+            expand={(event) => (
+              <>
+                <TicketOptions event={event} artistName={artistOf(event)} />
+                <HotelOptions event={event} />
+                <ConcertReminder event={event} artistName={artistOf(event)} showShare={false} />
+              </>
+            )}
+          />
+        </section>
+      )}
     </div>
   );
 }
