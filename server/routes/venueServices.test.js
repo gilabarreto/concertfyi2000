@@ -251,6 +251,10 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
   assert.equal((await run({ ...loose, name: "Commonwealth Bar & Stage" }, () => [{ ...suffixed, displayName: { text: "Commonwealth" } }])).body.providers.google, "ok", "generic words dropped");
   assert.equal((await run({ ...loose, name: "King’s Head Pub" }, () => [{ ...suffixed, displayName: { text: "The King's Head Eatery & Music Room" } }])).body.providers.google, "ok", "generic words added");
   assert.equal((await run({ ...loose, name: "Cafe Theatre" }, () => [{ ...suffixed, displayName: { text: "Café Théâtre | French Restaurant Calgary" }, types: ["restaurant"] }])).body.providers.google, "ok", "tagline after the bar");
+  const flats = { ...suffixed, id: "flats", displayName: { text: "The Palomino" }, types: ["lodging"] };
+  const smokehouse = { ...suffixed, id: "smokehouse", displayName: { text: "Palomino Smokehouse" }, types: ["bar", "live_music_venue"] };
+  assert.equal((await run({ ...loose, name: "The Palomino" }, () => [smokehouse, flats])).body.providers.google, "ok", "never a same-named apartment block");
+  assert.equal((await run({ ...loose, name: "The Palomino" }, () => [flats])).body.providers.google, "not-found");
 
   const retried = await run({ ...loose, name: "Espaço Unimed", city: "São Paulo" }, textQuery => textQuery.includes("São Paulo") ? [suffixed] : []);
   assert.equal(retried.body.providers.google, "ok");

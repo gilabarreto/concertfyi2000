@@ -61,8 +61,10 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       if (!id) {
         // Strictest evidence first; each looser rung needs a venue type and a single candidate.
         const pick = places => {
-          const close = places.filter(place => !(place.types || []).some(type => TRANSIT.includes(type)) && nearby(identity.lat, identity.long, place.location?.latitude, place.location?.longitude, identity.radius));
           const isVenue = place => (place.types || []).some(type => VENUE_TYPES.includes(type));
+          // A hotel counts only when it's also a venue (Grey Eagle Resort & Casino); "The Palomino"
+          // the apartment block isn't The Palomino the bar.
+          const close = places.filter(place => !(place.types || []).some(type => TRANSIT.includes(type)) && !(place.types?.includes("lodging") && !isVenue(place)) && nearby(identity.lat, identity.long, place.location?.latitude, place.location?.longitude, identity.radius));
           // Listings append a tagline: "Café Théâtre | French Restaurant Calgary".
           const nameOf = place => (place.displayName?.text || "").split("|")[0];
           for (const rung of [
