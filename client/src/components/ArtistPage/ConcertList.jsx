@@ -15,7 +15,8 @@ import { useT } from "../../i18n";
 // concerts opened a seller list instead of a single ticket link, nothing passes one.
 // onSelect is optional and only fires on a disclosure row — UpcomingConcerts uses it to
 // mirror the click into the URL, so the Next Concert card above stays in sync.
-// listClassName lays the rows out differently (Home's More Events runs two columns).
+// listClassName lays the rows out differently (Home's Explore Events runs two columns), and
+// wrap breaks a long name onto more lines, under itself, instead of cutting it with "…".
 export default function ConcertList({
   title,
   empty,
@@ -30,6 +31,7 @@ export default function ConcertList({
   onSelect,
   pageSize = 5,
   listClassName = "",
+  wrap = false,
 }) {
   const t = useT();
   const [page, setPage] = useState(0);
@@ -75,6 +77,16 @@ export default function ConcertList({
                     <span className="truncate text-zinc-500">{locationOf(concert)}</span>
                   </span>
                   <span className="text-xs text-zinc-500">{secondaryText}</span>
+                </span>
+              ) : wrap ? (
+                <span className="flex min-w-0 items-baseline text-left">
+                  <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
+                    {dateLabel(concert.dateObj)}
+                  </span>
+                  <span className="mx-2 text-zinc-500 shrink-0" aria-hidden="true">
+                    ·
+                  </span>
+                  <span className="min-w-0 break-words text-zinc-500">{locationOf(concert)}</span>
                 </span>
               ) : (
                 <span className="flex min-w-0 items-center">

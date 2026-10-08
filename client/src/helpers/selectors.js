@@ -84,7 +84,7 @@ export function getUpcomingConcertsByCity(events = [], cityName, sameCity = true
 
 // Ticketmaster files club nights and parties as Music too ("World Famous Fridays"), always
 // without an attraction; so does a small bar listing a real show under its own title. Neither
-// is dropped: the artist-less ones, city and neighbors together, are Home's More Events card.
+// is dropped: the artist-less ones, city and neighbors together, are Home's Explore Events card.
 export const hasArtist = (event) => !!event._embedded?.attractions?.length;
 
 export function getMoreEventsByCity(events = [], cityName, center) {

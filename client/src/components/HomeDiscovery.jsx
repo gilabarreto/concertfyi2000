@@ -246,17 +246,17 @@ export default function HomeDiscovery({ location }) {
       />
       {moreEvents.length > 0 && (
         <section
-          aria-label={t("More Events")}
+          aria-label={t("Explore Events")}
           className="w-full min-w-0 bg-white px-4 pb-4 space-y-2"
         >
           <ConcertList
-            title={t("More Events")}
+            title={t("Explore Events")}
             showSearch={false}
             pageSize={10}
-            listClassName="lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6"
+            listClassName="lg:grid lg:grid-cols-2 lg:gap-x-6"
             items={moreEvents}
             locationOf={artistOf}
-            secondaryTextOf={(event) => event._embedded?.venues?.[0]?.name}
+            wrap
             iconTitle={t("Get tickets")}
             // No View concert: without an artist there's no setlist page to open.
             expand={(event) => (

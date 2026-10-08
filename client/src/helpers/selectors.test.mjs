@@ -356,7 +356,7 @@ test("nearby concerts stay within 50 km of the selected location", () => {
   );
 });
 
-test("events without an artist leave the concert lists for More Events, city and neighbors together", () => {
+test("events without an artist leave the concert lists for Explore Events, city and neighbors together", () => {
   const event = (id, city, localDate, attractions, latitude = 51.2917) => ({
     id,
     dates: { start: { localDate } },
