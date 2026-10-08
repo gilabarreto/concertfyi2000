@@ -181,6 +181,11 @@ dialog.map-dialog[open] {
 .dark .bg-zinc-200 {
   background-color: theme("colors.zinc.700");
 }
+@media (max-width: 1023px) {
+  .dark .artist-section-menu {
+    background-color: rgb(39 39 42 / 0.6);
+  }
+}
 .dark .bg-zinc-300,
 .dark .hover\:bg-zinc-300:hover {
   background-color: theme("colors.zinc.600");
