@@ -11,7 +11,6 @@ import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
 import ViewConcertButton from "./ArtistPage/ViewConcertButton";
 import ExploreEvent from "./ExploreEvent";
-import ConcertMap from "./ArtistPage/Map";
 
 import { useT } from "../i18n";
 const normalize = (value = "") =>
@@ -261,19 +260,6 @@ export default function HomeDiscovery({ location }) {
             wrap
             iconTitle={t("Get tickets")}
             expand={(event) => <ExploreEvent event={event} />}
-            aside={(event) => {
-              const location = event._embedded?.venues?.[0]?.location;
-              return (
-                location && (
-                  <div
-                    className="aspect-[103/60] w-full overflow-hidden rounded-md bg-zinc-100"
-                    aria-label={t("Concert location map")}
-                  >
-                    <ConcertMap latitude={location.latitude} longitude={location.longitude} />
-                  </div>
-                )
-              );
-            }}
           />
         </section>
       )}
