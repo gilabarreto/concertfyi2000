@@ -17,6 +17,7 @@ import { useT } from "../../i18n";
 // mirror the click into the URL, so the Next Concert card above stays in sync.
 // listClassName lays the rows out differently (Home's Explore Events runs two columns), and
 // wrap breaks a long name onto more lines, under itself, instead of cutting it with "…".
+// aside fills the blank its open row leaves in the other column (two columns only, lg up).
 export default function ConcertList({
   title,
   empty,
@@ -32,6 +33,7 @@ export default function ConcertList({
   pageSize = 5,
   listClassName = "",
   wrap = false,
+  aside,
 }) {
   const t = useT();
   const [page, setPage] = useState(0);
@@ -61,8 +63,10 @@ export default function ConcertList({
       ) : (
         <>
           <ol className={`px-[12px] ${listClassName}`}>
-            {currentPage.map((concert) => {
+            {currentPage.map((concert, index) => {
               const open = openId === concert.id;
+              // index ^ 1 is the row beside this one in a two-column grid (0↔1, 2↔3…).
+              const neighbor = currentPage[index ^ 1];
               // the date never truncates; a long city name does, so the icon keeps its place
               const secondaryText = secondaryTextOf?.(concert);
               const label = secondaryText ? (
@@ -119,6 +123,9 @@ export default function ConcertList({
                       />
                     </button>
                     {open && expand(concert)}
+                    {aside && neighbor?.id === openId && (
+                      <div className="hidden lg:block pb-3">{aside(neighbor)}</div>
+                    )}
                   </li>
                 );
               }
