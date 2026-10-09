@@ -11,6 +11,7 @@ import HotelOptions from "./ArtistPage/HotelOptions";
 import ConcertReminder from "./ArtistPage/ConcertReminder";
 import ViewConcertButton from "./ArtistPage/ViewConcertButton";
 import ExploreEvent from "./ExploreEvent";
+import useIsSmallScreen from "../hooks/useScreenSize";
 
 import { useT } from "../i18n";
 const normalize = (value = "") =>
@@ -177,6 +178,7 @@ function VenueCarousel({ venues, events, city, loading }) {
 
 export default function HomeDiscovery({ location }) {
   const t = useT();
+  const mobile = useIsSmallScreen(640);
   const { city, countryCode, lat, long } = location;
   const local = useLocalEvents(lat, long);
   const setlists = useCitySetlists(city, countryCode, new Date().getFullYear());
@@ -219,7 +221,7 @@ export default function HomeDiscovery({ location }) {
                     : t("No upcoming concerts available in {city} yet. Check back later.", { city })
               }
               showSearch={false}
-              pageSize={nearby ? 5 : 7}
+              pageSize={nearby || mobile ? 5 : 7}
               items={getUpcomingConcertsByCity(events, city, !nearby, { lat, long })}
               locationOf={artistOf}
               secondaryTextOf={
@@ -253,7 +255,7 @@ export default function HomeDiscovery({ location }) {
           <ConcertList
             title={t("Explore Events")}
             showSearch={false}
-            pageSize={10}
+            pageSize={mobile ? 5 : 10}
             columns
             items={moreEvents}
             locationOf={artistOf}
