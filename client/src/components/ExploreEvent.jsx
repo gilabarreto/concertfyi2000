@@ -38,7 +38,7 @@ export default function ExploreEvent({ event }) {
   return (
     <div className="px-2 py-3 sm:px-4">
       <ol className="min-w-0">
-        <li className="flex justify-center gap-1 border-b border-zinc-300/50 py-2">
+        <li className="flex justify-center gap-1 border-y border-zinc-300/50 py-2">
           <button type="button" onClick={share} title={t("Share this concert")} className="pill">
             <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
             {linkCopied ? t("LINK COPIED") : t("SHARE")}
