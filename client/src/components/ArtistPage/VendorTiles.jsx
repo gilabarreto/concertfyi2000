@@ -16,12 +16,10 @@ export default function VendorTiles({ icon, title, vendors, iconOnly = false }) 
 
   return (
     <details className="group bg-zinc-50 border-b border-zinc-300/50 p-2 sm:p-4">
-      <summary className="relative flex cursor-pointer list-none items-center justify-center text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
-        <span className="mx-auto grid w-44 max-w-[calc(100%-3rem)] grid-cols-[1rem_minmax(0,1fr)] items-center gap-2 text-left">
-          <Icon icon={icon} className="justify-self-center text-sm text-red-600" />
-          {title}
-        </span>
-        <span className="absolute right-0 top-1/2 -translate-y-1/2 text-red-600">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 text-base font-semibold text-zinc-700 hover:text-red-800 [&::-webkit-details-marker]:hidden">
+        <Icon icon={icon} className="shrink-0 text-sm text-red-600" />
+        <span className="text-center">{title}</span>
+        <span className="shrink-0 text-red-600">
           <Icon icon={faPlus} className="group-open:hidden" />
           <Icon icon={faMinus} className="hidden group-open:inline-block" />
         </span>
