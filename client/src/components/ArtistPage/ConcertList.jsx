@@ -7,6 +7,7 @@ import Pagination from "../Pagination";
 import { dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
+import useIsSmallScreen from "../../hooks/useScreenSize";
 
 import { useT } from "../../i18n";
 // items carry a dateObj. A row is either a link to one of our own routes (linkOf) or a
@@ -15,7 +16,8 @@ import { useT } from "../../i18n";
 // concerts opened a seller list instead of a single ticket link, nothing passes one.
 // onSelect is optional and only fires on a disclosure row — UpcomingConcerts uses it to
 // mirror the click into the URL, so the Next Concert card above stays in sync.
-// listClassName lays the rows out differently (Home's Explore Events runs two columns), and
+// columns splits the rows into two independent stacks from lg up (Home's Explore Events), so
+// an opened row only pushes its own column down instead of leaving a blank beside it; and
 // wrap breaks a long name onto more lines, under itself, instead of cutting it with "…".
 export default function ConcertList({
   title,
@@ -30,10 +32,11 @@ export default function ConcertList({
   expand,
   onSelect,
   pageSize = 5,
-  listClassName = "",
+  columns = false,
   wrap = false,
 }) {
   const t = useT();
+  const narrow = useIsSmallScreen(1024);
   const [page, setPage] = useState(0);
   const [openId, setOpenId] = useState(null);
 
@@ -60,80 +63,89 @@ export default function ConcertList({
         </CardNotice>
       ) : (
         <>
-          <ol className={`px-[12px] ${listClassName}`}>
-            {currentPage.map((concert) => {
-              const open = openId === concert.id;
-              // the date never truncates; a long city name does, so the icon keeps its place
-              const secondaryText = secondaryTextOf?.(concert);
-              const label = secondaryText ? (
-                <span className="flex min-w-0 flex-col text-left">
-                  <span className="flex min-w-0 items-center">
-                    <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
-                      {dateLabel(concert.dateObj)}
+          <div className={columns ? "lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-6" : ""}>
+            {(columns && !narrow
+              ? [currentPage.filter((_, i) => i % 2 === 0), currentPage.filter((_, i) => i % 2)]
+              : [currentPage]
+            ).map((rows, column) => (
+              <ol key={column} className="min-w-0 px-[12px]">
+                {rows.map((concert) => {
+                  const open = openId === concert.id;
+                  // the date never truncates; a long city name does, so the icon keeps its place
+                  const secondaryText = secondaryTextOf?.(concert);
+                  const label = secondaryText ? (
+                    <span className="flex min-w-0 flex-col text-left">
+                      <span className="flex min-w-0 items-center">
+                        <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
+                          {dateLabel(concert.dateObj)}
+                        </span>
+                        <span className="mx-2 text-zinc-500" aria-hidden="true">
+                          ·
+                        </span>
+                        <span className="truncate text-zinc-500">{locationOf(concert)}</span>
+                      </span>
+                      <span className="text-xs text-zinc-500">{secondaryText}</span>
                     </span>
-                    <span className="mx-2 text-zinc-500" aria-hidden="true">
-                      ·
+                  ) : wrap ? (
+                    <span className="flex min-w-0 items-baseline text-left">
+                      <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
+                        {dateLabel(concert.dateObj)}
+                      </span>
+                      <span className="mx-2 text-zinc-500 shrink-0" aria-hidden="true">
+                        ·
+                      </span>
+                      <span className="min-w-0 break-words text-zinc-500">
+                        {locationOf(concert)}
+                      </span>
                     </span>
-                    <span className="truncate text-zinc-500">{locationOf(concert)}</span>
-                  </span>
-                  <span className="text-xs text-zinc-500">{secondaryText}</span>
-                </span>
-              ) : wrap ? (
-                <span className="flex min-w-0 items-baseline text-left">
-                  <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
-                    {dateLabel(concert.dateObj)}
-                  </span>
-                  <span className="mx-2 text-zinc-500 shrink-0" aria-hidden="true">
-                    ·
-                  </span>
-                  <span className="min-w-0 break-words text-zinc-500">{locationOf(concert)}</span>
-                </span>
-              ) : (
-                <span className="flex min-w-0 items-center">
-                  <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
-                    {dateLabel(concert.dateObj)}
-                  </span>
-                  <span className="text-zinc-500 ml-2 truncate">· {locationOf(concert)}</span>
-                </span>
-              );
-              const className =
-                "flex w-full items-center justify-between gap-2 py-2 hover:text-red-800";
+                  ) : (
+                    <span className="flex min-w-0 items-center">
+                      <span className="text-xs tabular-nums whitespace-nowrap shrink-0">
+                        {dateLabel(concert.dateObj)}
+                      </span>
+                      <span className="text-zinc-500 ml-2 truncate">· {locationOf(concert)}</span>
+                    </span>
+                  );
+                  const className =
+                    "flex w-full items-center justify-between gap-2 py-2 hover:text-red-800";
 
-              if (expand) {
-                return (
-                  <li key={concert.id} className="border-b border-zinc-300/50">
-                    <button
-                      type="button"
-                      className={className}
-                      onClick={() => {
-                        setOpenId(open ? null : concert.id);
-                        onSelect?.(concert);
-                      }}
-                      aria-expanded={open}
-                      title={iconTitle}
-                    >
-                      {label}
-                      <Icon
-                        icon={open ? faChevronUp : faChevronDown}
-                        className="text-red-600 shrink-0"
-                      />
-                    </button>
-                    {open && expand(concert)}
-                  </li>
-                );
-              }
+                  if (expand) {
+                    return (
+                      <li key={concert.id} className="border-b border-zinc-300/50">
+                        <button
+                          type="button"
+                          className={className}
+                          onClick={() => {
+                            setOpenId(open ? null : concert.id);
+                            onSelect?.(concert);
+                          }}
+                          aria-expanded={open}
+                          title={iconTitle}
+                        >
+                          {label}
+                          <Icon
+                            icon={open ? faChevronUp : faChevronDown}
+                            className="text-red-600 shrink-0"
+                          />
+                        </button>
+                        {open && expand(concert)}
+                      </li>
+                    );
+                  }
 
-              return (
-                <li key={concert.id} className="border-b border-zinc-300/50">
-                  <Link to={linkOf(concert)} className={className} title={iconTitle}>
-                    {label}
-                    {/* the row text already names the concert, so the icon is decoration */}
-                    <Icon icon={icon} className="text-red-600 shrink-0" />
-                  </Link>
-                </li>
-              );
-            })}
-          </ol>
+                  return (
+                    <li key={concert.id} className="border-b border-zinc-300/50">
+                      <Link to={linkOf(concert)} className={className} title={iconTitle}>
+                        {label}
+                        {/* the row text already names the concert, so the icon is decoration */}
+                        <Icon icon={icon} className="text-red-600 shrink-0" />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ol>
+            ))}
+          </div>
 
           <div>
             <Pagination currentPage={page} totalPages={pageCount} onPageChange={goToPage} />

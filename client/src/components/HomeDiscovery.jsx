@@ -254,7 +254,7 @@ export default function HomeDiscovery({ location }) {
             title={t("Explore Events")}
             showSearch={false}
             pageSize={10}
-            listClassName="lg:grid lg:grid-cols-2 lg:gap-x-6"
+            columns
             items={moreEvents}
             locationOf={artistOf}
             wrap
