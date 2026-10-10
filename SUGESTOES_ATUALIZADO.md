@@ -18,7 +18,7 @@ ConcertFYI — Pendências e Decisões
 □ Foto não-16:9 é cortada (object-cover na caixa aspect-video). Alternativa: object-contain com letterbox.
 □ Pre-render/SSR para páginas de artista — só vale depois de haver tráfego para medir. Opções: pre-render dos N artistas mais buscados (precisa de métrica), SSR Next.js/Remix (muda hospedagem), Prerender.io (pago).
 □ Diferencial de mercado — definir proposta de valor única (curadoria? cenas locais? social? setlists/lyrics?) e documentar no /about.
-□ Dark mode — Tailwind suporta; falta toggle + localStorage.
+☑ Dark mode — feito em `6b54212` (ver a linha de 2026-10-05 abaixo).
 ☑ PDF de pôsteres — conteúdo consolidado em `docs/APIS_E_FONTES.md`; PDF e Zone.Identifier removidos da árvore local em 01/10/2026. Nenhuma reescrita do histórico Git.
 □ Share no iPhone depois do `await` da compressão (review de 2026-09-29) — desde `1bcb841`, `shareOrCopy` comprime o payload antes de chamar `navigator.share`. O Safari do iOS exige gesto do usuário "fresco" e pode recusar com NotAllowedError depois de um `await`; o catch engole e o botão parece não fazer nada. Não reproduzido — testar no iPhone. Se falhar, a correção é gerar o token antes do clique (no render), não no handler.
 🟢 Tarefas minhas, aguardando seu "pode fazer"
@@ -116,7 +116,7 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 ☑ Separador "·" (rodada /review de 2026-10-05) — troca em lista de shows, cópia do setlist, nome da playlist e título em `69a9b32`; título padrão e títulos sociais do `client/index.html` em `61f085a`; separador da lista com `aria-hidden` em `f92040c`.
 ☑ Venues: Google Places (rodada de 2026-10-05) — causa raiz: cota diária de 200 `GetPlaceRequest` estourada (429 engolido como "unavailable"). Log do motivo em `1d25962`; reviews na mesma chamada dos detalhes, lista de fotos sem custo e home usando a foto da Ticketmaster primeiro em `27a0879`; Google e Overpass em paralelo e sem esperar a Wikidata em `8178383`; `Loading…` até responder, `N/A` depois e sem avisos de erro em `cb6a5f1`; nome diferente aceito com coordenada exata e tipo de casa de show em `7428f46`; correspondência automática por palavras e segunda busca com a cidade em `3428ccc` (a confirmação manual foi descartada pelo dono antes do push).
 □ Cotas do Google Cloud alinhadas ao nível grátis — esperando o dono: só ele acessa o Console. Valores sugeridos na conversa de 2026-10-05.
-□ Venues que faltam na lista da home — esperando o dono: a lista vem só dos setlists do ano corrente com nome de cidade idêntico. Precisa de 2 ou 3 exemplos reais antes de mexer.
+☑ Venues que faltam na lista da home — com os exemplos de Calgary (2026-10-08), elas estavam na lista; faltava foto/dados do Google. Resolvido nos commits da linha "Venues de Calgary".
 □ Banco de dados como cache das APIs — esperando o dono: pedido para depois desta rodada. Restrição: os termos do Google Places só permitem guardar o place ID, então conteúdo do Google não entra no banco; Ticketmaster, setlist.fm, Wikipedia/Wikidata e OSM entram conforme a licença de cada um.
 ☑ "Venues/Concerts are temporarily unavailable" na home — removido a pedido do dono junto com a padronização de mensagens vazias (ver commit seguinte a `5ffbef0`). Erros de ação continuam visíveis: busca de cidade, criação de playlist, clique no carrossel e formulário de contato.
 ☑ Dark mode (2026-10-05) — lua ao lado do sino, segue o sistema até o visitante escolher; paleta remapeada uma vez no `index.css` em `6b54212`, legenda do carrossel em `309c692`.
@@ -131,3 +131,7 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 ☑ Festas da Ticketmaster nas listas de shows (2026-10-08) — a lógica não tinha mudado: a Ticketmaster classifica noites de clube e festas como Music, sempre sem artista. Eventos sem artista saem de Upcoming/Concerts Near e vão para o card Explore Events da home em `83dc69f`, `4bdd774`, `5e804b6` e `0decb25`.
 □ Explore Events na página da cidade — esperando o dono: lá os eventos sem artista simplesmente somem das listas, porque o card só existe na home.
 □ Festas na página do venue — esperando o dono: a página de cada venue continua mostrando todos os eventos do lugar, festas incluídas.
+☑ Review + code-simplify da rodada de venues/Explore Events (2026-10-10) — seletor renomeado para `getExploreEvents`, `hasArtist` deixou de ser exportado, linha Location sem cidade não mostra mais ", CA" em `6a7f825`. Docs atualizados (CLAUDE.md, README, PRD, DOSSIE, CONSTRAINTS); `tasks/` removido por estar 100% fechado desde 2026-09-17 (continua no git).
+□ Explore Events — compartilhar sem prévia — esperando o dono: o SHARE de um evento sem artista manda o link da página do venue, sem imagem nem título do evento, porque a rota `/share` só aceita `/artists/`. Abrir a rota para `/venues/` daria a prévia.
+□ Pawn Shop Live cadastrado errado na Ticketmaster — sem ação: cidade "Edmonton" com coordenada de Calgary, então aparece nas listas de Calgary. Dado da fonte.
+□ Lint/prettier no server/ — esperando o dono: o gatilho de ~500 linhas do CONSTRAINTS já passou (1.335 linhas). Muda o portão, então é decisão sua.

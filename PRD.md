@@ -50,6 +50,7 @@ receita por link de afiliado (ingresso, hotel, discos).
 | Shows passados | Lista navegável dos shows anteriores do artista | Setlist.fm |
 | Venue | Página do local: o que foi tocado lá (qualquer artista) e o que está à venda | Setlist.fm + Ticketmaster |
 | My City | Setlists do ano na cidade escolhida e shows à venda nela | Setlist.fm + Ticketmaster |
+| Explore Events (Home) | Eventos sem artista cadastrado (festas, noites de clube, shows anunciados só pelo título), fora das listas de shows | Ticketmaster |
 | Próximos shows | Lista com ingresso, hotel e lembrete `.ics` | Ticketmaster + afiliados |
 | Show perto de você | Faixa avisando quando o artista toca perto da cidade escolhida | Ticketmaster |
 | Pessoal | Favoritar artista, "I WAS THERE", nota e comentário no show | `localStorage` |

@@ -6,7 +6,7 @@ CONSTRAINTS.md — Pendências e Exceções
 🟡 Decisões de qualidade (com vencimento ou gatilho)
 □ 87 achados de gitleaks no histórico da gh-pages — bundles com a chave pública do Maps. Sem vencimento; aceito (chave de browser é pública por design).
 □ 2 CVEs abertas no react-router 6.30.6 (GHSA-337j-9hxr-rhxg só afeta SSR — app não tem; GHSA-wrjc-x8rr-h8h6 é open redirect, mas as 6 chamadas prefixam segmento literal). Reavaliar se o app aceitar caminho vindo do usuário.
-□ server/ sem lint nem prettier (5 arquivos de Express, sem JSX). Reavaliar quando passar de ~500 linhas.
+□ server/ sem lint nem prettier — o gatilho "reavaliar quando passar de ~500 linhas" já disparou: 19 arquivos, 1.335 linhas em 2026-10-10. Esperando o dono.
 □ Regras do React Compiler desligadas (15 regras do eslint-plugin-react-hooks v7; projeto em React 18, sem lentidão medida). Reavaliar ao migrar para React 19.
 □ Geolocalização pedida no carregamento da home — deliberado (carrossel é "shows perto de você"; há fallback São Paulo e LocationSelector). Reavaliar se a taxa de negação virar problema medido.
 □ Componentes e hooks sem teste — Vitest + jsdom + testing-library vetados em 2026-09-15. Reabrir ao primeiro bug que só um teste de hook pegaria (useGeolocation é o candidato).
@@ -18,7 +18,7 @@ CONSTRAINTS.md — Pendências e Exceções
 O quê	Regra	Comando
 Lint do client	0 achados	npm run lint --prefix client
 Formatação do client	prettier --check limpo	npm run format:check --prefix client
-Testes	58 passam, 0 falham	node --test (raiz)
+Testes	138 passam, 0 falham (2026-10-10)	node --test (raiz)
 Teste deletado/pulado	proibido	—
 Segredo no que vai ser commitado	0	gitleaks git --staged --redact --no-banner
 CVE em dependência de runtime	0	osv-scanner scan source --config osv-scanner.toml ...

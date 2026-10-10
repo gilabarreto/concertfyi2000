@@ -12,7 +12,7 @@ cd server && npm run dev         # nodemon
 cd server && npm start
 
 # testes — node:test, sem framework nem config, da raiz do repo
-node --test                      # os dois arquivos de teste, ~0.1s
+node --test                      # todos os *.test.js/.mjs (22 arquivos), ~1.5s
 node --test server/http.test.js  # um arquivo só
 
 # portão de qualidade — package.json da raiz é só scripts, NÃO é workspace
@@ -55,9 +55,13 @@ ArtistPage.jsx compõe os cards; tudo sob components/ArtistPage/ é um card. Con
 Superfícies de monetização (vendedores de ingresso, hotéis) são alvos de link de afiliado. Os comentários dizendo por que um vendedor foi mantido ou removido são load-bearing — ler antes de adicionar ou remover um. A Ticketmaster publica priceRanges só para uma fatia do inventário, então todo tile cai para "Check price".
 
 Rotas do servidor
-server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta erro como { status, data }. Rotas: ticketmaster (suggest pagina até 5 páginas / 100 eventos, e /events faz a busca geográfica), setlist, spotify (troca de token — o client nunca vê o segredo), lyrics (lrclib.net, sem chave), youtube.
+server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta erro como { status, data }. Rotas: ticketmaster (suggest pagina até 5 páginas / 100 eventos, /events faz a busca geográfica, /venue-events acha o venue por nome perto da coordenada), setlist, spotify (troca de token — o client nunca vê o segredo), lyrics (lrclib.net, sem chave), youtube, wikipedia, albums, audiodb, share (prévia Open Graph), venue-info (Wikipedia/Wikidata), venue-lookup (venue da Ticketmaster → setlist.fm), venue-services e venue-photos (Google Places + OpenStreetMap).
 
-Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, PORT.
+Casamento de venue entre fontes: server/venueIdentity.js é o único lugar que decide se dois nomes são o mesmo lugar (palavras genéricas como bar/pub/stage não contam, exige proximidade e um candidato só). Ajuste de casamento entra ali, com teste, não espalhado nas rotas.
+
+Eventos sem artista (attractions vazio) não entram nas listas de shows: selectors.js:getUpcomingConcertsByCity filtra e getExploreEvents os junta no card Explore Events da Home. A Ticketmaster classifica festas como Music, então não há outro sinal confiável.
+
+Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, GOOGLE_PLACES_API_KEY, PORT (opcional: OVERPASS_API_URL).
 Env do client: VITE_API_BASE, VITE_GOOGLE_MAPS_KEY, VITE_FORMSPREE_ID, VITE_SPOTIFY_CLIENT_ID (todas como secrets do GitHub para o deploy).
 
 Origens novas precisam entrar em allowedOrigins no server/index.js, ou o CORS bloqueia.

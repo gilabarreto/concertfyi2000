@@ -23,7 +23,7 @@ A web platform for music lovers to explore live concerts and setlists by artist,
 
 - Backend: Node.js, Express.js
 
-- APIs: Setlist.fm, Ticketmaster, Google Maps, Nominatim
+- APIs: Setlist.fm, Ticketmaster, Google Maps e Places, OpenStreetMap (Nominatim, Overpass), Wikipedia/Wikidata, LRCLib, Spotify, YouTube
 
 - Hosting: Github Pages + Render
 
@@ -59,7 +59,7 @@ chave chegue ao browser. `server/.env`:
 
 ```
 TICKETMASTER_API_KEY=   SETLISTFM_API_KEY=   YOUTUBE_API_KEY=
-SPOTIFY_CLIENT_ID=      SPOTIFY_CLIENT_SECRET=   PORT=
+SPOTIFY_CLIENT_ID=      SPOTIFY_CLIENT_SECRET=   GOOGLE_PLACES_API_KEY=   PORT=
 ```
 
 `client/.env` — tudo aqui vai para dentro do bundle e é público por definição, então nada de

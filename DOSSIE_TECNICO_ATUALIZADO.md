@@ -1,5 +1,5 @@
 # 📋 Dossiê Técnico Consolidado: ConcertFYI
-**Atualizado em 2026-09-19**
+**Atualizado em 2026-10-10**
 
 > Este documento descreve o que está no ar hoje. Para o que falta e o porquê de cada decisão de
 > não fazer algo, ver `SUGESTOES_ATUALIZADO.md` — não duplicado aqui. Para a régua de qualidade
@@ -31,40 +31,35 @@ artista, o ponto mais frágil do app (ver `CLAUDE.md`).
 ### Frontend — `client/src/`
 ```
 App.jsx              # Router + Suspense; Home no bundle inicial, resto em React.lazy por rota
-pages/                # Home, SearchPage, ArtistPage, About, Contact, SpotifyCallback
+pages/               # Home, SearchPage, ArtistPage, VenuePage, VenuesPage, CityPage,
+                     # About, Contact, SpotifyCallback
 components/
-  ArtistPage/         # ArtistInfo, ConcertInfo, ConcertList (shell de PastConcerts/UpcomingConcerts),
-                      # Setlist, SongDetails, Player, Map, TicketOptions, HotelOptions,
-                      # ConcertReminder, VendorTiles
-  Swiper.jsx          # Carrossel de shows recomendados na Home
-  Navbar.jsx / Footer.jsx
-  LocationSelector.jsx, SearchBar.jsx, ErrorBoundary.jsx, SEOHead.jsx, Pagination.jsx, Icon.jsx
-hooks/                # useAppState, useGeolocation, useDebounce, useScreenSize
-context/AppContext.js # setlist + ticketmaster da sessão atual, selectedLocation (localStorage)
-api/                  # queries.js (React Query, todos os hooks de rede), api.js (axios→fetch, ver
-                      # request.js), queryClient.js (retry: 1 compartilhado)
-helpers/              # selectors.js (join das duas APIs, parse de datas), calendar.js,
-                      # spotifyAuth.js, spotifyPlaylist.js
+  ArtistPage/        # cards da página de artista; ConcertList é o shell de toda lista de shows
+  VenuePage/         # VenueInfo, VenueActions, VenuePhotos, VenueRating, VenueReviewSummary
+  HomeDiscovery.jsx  # listas locais, carrossel Nearby Venues e card Explore Events da Home
+  ExploreEvent.jsx   # linha aberta de um evento sem artista (Next Concert sem turnê)
+  Swiper.jsx, Navbar.jsx, Footer.jsx, LocationSelector.jsx, SearchBar.jsx, ...
+hooks/               # useAppState, useCurrentCity, useGeolocation, useDebounce, useScreenSize
+context/AppContext.js
+api/                 # queries.js (todos os hooks de rede), api.js, request.js, queryClient.js
+helpers/             # selectors.js (join das APIs, datas), calendar, share, tourStats,
+                     # nearbyConcert, concertTarget, spotifyAuth, spotifyPlaylist
+locales/             # pt/es/fr.json; o inglês é a própria chave (i18n.js)
 ```
-Não existe `config/` nem `icons.js` centralizados — rotas ficam direto em `App.jsx`
-(`react-router-dom`), ícones são importados do FontAwesome onde usados. `Header.jsx` existiu e foi
-removido em 2026-09-18 (rodada visual); About/Contact hoje só usam `SEOHead` + o próprio conteúdo.
 
 ### Backend — `server/`
 ```
-index.js              # CORS, rate limit (60 req/min/IP em /api/*), nosniff, trust proxy (Render)
-http.js                # wrapper de fetch compartilhado — toda rota reporta { status, data }
-rateLimit.js / requestLog.js
-routes/
-  ticketmaster.js      # suggest pagina até 5 páginas/100 eventos; events faz a busca geo
-  setlist.js
-  spotify.js           # troca de código OAuth — segredo nunca chega ao client
-  lyrics.js            # lrclib.net, sem chave
-  youtube.js
-  musicbrainz.js
+index.js             # CORS, rate limit (60 req/min/IP em /api/*), nosniff, trust proxy
+http.js              # wrapper de fetch compartilhado — toda rota reporta { status, data }
+venueIdentity.js     # casamento de venue entre fontes (nome + proximidade, um candidato só)
+rateLimit.js, requestLog.js, musicbrainzClient.js
+routes/              # ticketmaster, setlist, spotify, lyrics, youtube, wikipedia, albums,
+                     # audiodb, share, venueInfo, venueLookup, venueServices
 ```
-Sem banco, sem estado — cada rota é um passa-adiante fino. Não existe rota `/api/locations`;
-geolocalização e busca de cidade rodam no client (`useGeolocation`, fuzzy search local).
+
+Sem banco, sem estado — cada rota é um repasse fino, com cache em memória curto onde a cota
+pesa (setlist.fm 30 min, venue-lookup 1 h). O plano de cache em banco (Neon) está no
+`SUGESTOES_ATUALIZADO.md`.
 
 ### Estado: Context para a sessão, React Query para rede
 `AppContext` guarda `setlist`/`ticketmaster` atuais (não refaz fetch ao navegar entre concertos do
@@ -77,7 +72,7 @@ são APIs de cota).
 **Client**: `VITE_API_BASE`, `VITE_GOOGLE_MAPS_KEY`, `VITE_FORMSPREE_ID`, `VITE_SPOTIFY_CLIENT_ID`
 (secrets do GitHub Actions, injetadas no build do `deploy.yml`).
 **Server**: `TICKETMASTER_API_KEY`, `SETLISTFM_API_KEY`, `SPOTIFY_CLIENT_ID`,
-`SPOTIFY_CLIENT_SECRET`, `YOUTUBE_API_KEY`, `PORT`.
+`SPOTIFY_CLIENT_SECRET`, `YOUTUBE_API_KEY`, `GOOGLE_PLACES_API_KEY`, `PORT`.
 
 ---
 
@@ -87,13 +82,12 @@ são APIs de cota).
 |---|---|---|
 | `/` | `Home.jsx` | Bundle inicial |
 | `/search` | `SearchPage.jsx` | Lazy |
-| `/artists/:artistId/concerts/:concertId` | `ArtistPage.jsx` | Lazy; arrasta o Google Maps (155 kB) |
-| `/about` | `About.jsx` | Lazy |
-| `/contact` | `Contact.jsx` | Lazy |
-| `/callback` | `SpotifyCallback.jsx` | Lazy; recebe o OAuth do Spotify via popup |
-
-`ArtistPage.jsx` cobre o cold-start: link compartilhado ou refresh chega com o `AppContext` vazio,
-então busca o concerto pela URL e completa com o setlist + dados da Ticketmaster do artista.
+| `/artists/:artistId/concerts/:concertId` | `ArtistPage.jsx` | Lazy; arrasta o Google Maps |
+| `/venues` | `VenuesPage.jsx` | Venues da cidade atual, mais movimentados primeiro |
+| `/venues/:venueId` | `VenuePage.jsx` | id do setlist.fm ou `ticketmaster:<id>` |
+| `/city` | `CityPage.jsx` | My City; `?view=upcoming\|nearby\|recent` foca uma lista |
+| `/about`, `/contact` | `About.jsx`, `Contact.jsx` | Lazy |
+| `/callback` | `SpotifyCallback.jsx` | Lazy; recebe o OAuth |
 
 ---
 
@@ -114,6 +108,14 @@ então busca o concerto pela URL e completa com o setlist + dados da Ticketmaste
   que cria a playlist. Estado atravessa a janela via `localStorage`, não por props.
 - **Contact.jsx**: formulário via Formspree (`VITE_FORMSPREE_ID`), desabilita o botão durante o
   envio e reporta sucesso/erro num `role="status" aria-live="polite"` — sem toast de biblioteca.
+- **Venues**: `VenuePage.jsx` junta setlist.fm (shows passados), Ticketmaster (próximos e
+  coordenada exata), Wikipedia/Wikidata (descrição) e Google Places + OpenStreetMap (endereço,
+  telefone, fotos, avaliações e o pin do mapa). As fontes não compartilham id; quem decide se
+  dois nomes são o mesmo lugar é `server/venueIdentity.js`.
+- **Home**: `HomeDiscovery.jsx` monta Upcoming Concerts, Concerts Near, Nearby Venues e Explore
+  Events. Eventos da Ticketmaster sem artista cadastrado (festas e noites de clube vêm como
+  Music) saem das listas de shows e vão para Explore Events.
+- **Idiomas**: EN/PT/ES/FR via `t("texto em inglês")` de `i18n.js`; dicionários em `locales/`.
 - **ErrorBoundary.jsx**: envolve só as `<Routes>`, não Navbar/Footer — um erro de página não
   derruba a navegação.
 
@@ -142,10 +144,11 @@ então busca o concerto pela URL e completa com o setlist + dados da Ticketmaste
   sai. `weekly-checks.yml` roda CVE scan (`osv-scanner`) nos dois lockfiles e um health-check do
   proxy no Render toda segunda, abrindo issue em vez de bloquear push (não é isso que o CVE de
   terceiro pode alcançar).
-- **Testes**: `node:test`, sem framework — 66 passando hoje (`node --test` na raiz), cobrindo
-  `server/http.js`, `rateLimit.js`, `requestLog.js`, as guardas de entrada das rotas
-  (`routes/validation.test.js`), `api/request.js`, `helpers/calendar.js`, `helpers/selectors.js`
-  (a costura entre as duas APIs) e `helpers/spotifyPlaylist.js`. Sem teste de componente — decisão
+- **Testes**: `node:test`, sem framework — 138 passando em 2026-10-10 (`node --test` na raiz),
+  22 arquivos: utilitários do servidor, guardas de entrada e respostas de cada rota (incluindo o
+  casamento de venues em `venueServices.test.js` / `venueInfo.test.js`), os helpers do client
+  (`selectors`, `calendar`, `tourStats`, `nearbyConcert`, `concertTarget`, `spotifyPlaylist`) e a
+  cobertura de tradução (`i18n.test.mjs`). Sem teste de componente — decisão
   registrada em `SUGESTOES_ATUALIZADO.md`, não esquecimento.
 
 ---
@@ -164,39 +167,6 @@ desde agosto:
 | CI/CD | `deploy.yml` com portão antes do build; `weekly-checks.yml` para CVE e saúde do proxy |
 | Acessibilidade | Lighthouse 100 em produção; navegação por setas no carrossel e `aria-current` no Navbar ainda faltam |
 | Type Safety | JSDoc pontual, sem TypeScript — decisão reversível, registrada como descartada por ora |
-
----
-
-## 📁 Estrutura de pastas
-
-```
-concertfyi2000/
-├── client/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── api/          # queries.js, api.js, request.js, queryClient.js
-│   │   ├── components/   # inclui components/ArtistPage/
-│   │   ├── pages/
-│   │   ├── hooks/
-│   │   ├── context/      # AppContext.js
-│   │   ├── helpers/      # selectors.js, calendar.js, spotifyAuth.js, spotifyPlaylist.js
-│   │   ├── index.css     # Tailwind + @font-face da DM Sans
-│   │   └── main.jsx
-│   ├── public/           # favicon.svg, fonts/, robots.txt, sitemap.xml, CNAME
-│   ├── scripts/static-routes.mjs
-│   ├── vite.config.js
-│   └── package.json
-├── server/
-│   ├── index.js
-│   ├── http.js, rateLimit.js, requestLog.js
-│   ├── routes/           # ticketmaster, setlist, spotify, lyrics, youtube, musicbrainz
-│   └── package.json
-├── .github/workflows/    # deploy.yml, weekly-checks.yml
-├── CLAUDE.md             # arquitetura e convenções para quem mexe no código
-├── CONSTRAINTS.md        # régua de qualidade medida
-├── SUGESTOES_ATUALIZADO.md  # backlog: o que falta e por quê
-└── package.json          # raiz só de scripts (check, check:full) — não é workspace
-```
 
 ---
 
