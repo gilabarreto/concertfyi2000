@@ -16,7 +16,7 @@ import {
   getTicketmasterGenres,
   getArtistAttraction,
   getUpcomingConcertsByCity,
-  getMoreEventsByCity,
+  getExploreEvents,
   getRecentUpcomingSetlists,
 } from "./selectors.js";
 
@@ -381,7 +381,7 @@ test("events without an artist leave the concert lists for Explore Events, city 
     [],
   );
   assert.deepEqual(
-    getMoreEventsByCity(events, "Calgary", center).map((e) => e.id),
+    getExploreEvents(events, "Calgary", center).map((e) => e.id),
     ["neighbor-party", "party"],
   );
 });

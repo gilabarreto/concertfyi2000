@@ -72,7 +72,7 @@ export default function ExploreEvent({ event }) {
         </li>
         <li className="border-b border-zinc-300/50 py-2">
           <span className="font-semibold">{t("Location:")}</span>&ensp;
-          {venue?.city?.name}, {venue?.country?.countryCode}
+          {[venue?.city?.name, venue?.country?.countryCode].filter(Boolean).join(", ")}
         </li>
         <li className="flex flex-wrap items-center justify-center gap-2 border-b border-zinc-300/50 py-2">
           <TicketOptions event={event} artistName={artistOf(event)} iconOnly />

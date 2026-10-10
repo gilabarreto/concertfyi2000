@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
 import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
-import { artistOf, getMoreEventsByCity, getUpcomingConcertsByCity } from "../helpers/selectors";
+import { artistOf, getExploreEvents, getUpcomingConcertsByCity } from "../helpers/selectors";
 import CardTitle from "./ArtistPage/CardTitle";
 import Icon from "./Icon";
 import ConcertList from "./ArtistPage/ConcertList";
@@ -191,7 +191,7 @@ export default function HomeDiscovery({ location }) {
     byVenue.set(venue.id, entry);
   }
   const venues = [...byVenue.values()].sort((a, b) => b.shows - a.shows);
-  const moreEvents = getMoreEventsByCity(events, city, { lat, long });
+  const exploreEvents = getExploreEvents(events, city, { lat, long });
   return (
     <div className="w-full min-w-0 space-y-4 lg:space-y-3">
       <div
@@ -247,7 +247,7 @@ export default function HomeDiscovery({ location }) {
         city={city}
         loading={setlists.isLoading}
       />
-      {moreEvents.length > 0 && (
+      {exploreEvents.length > 0 && (
         <section
           aria-label={t("Explore Events")}
           className="w-full min-w-0 bg-white px-4 pb-4 space-y-2"
@@ -257,7 +257,7 @@ export default function HomeDiscovery({ location }) {
             showSearch={false}
             pageSize={mobile ? 5 : 10}
             columns
-            items={moreEvents}
+            items={exploreEvents}
             locationOf={artistOf}
             wrap
             iconTitle={t("Get tickets")}
