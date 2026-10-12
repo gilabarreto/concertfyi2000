@@ -1,0 +1,1 @@
+.nearby-concert-banner{display:grid;grid-template-rows:0fr;transition:grid-template-rows .65s cubic-bezier(.22,1,.36,1)}.nearby-concert-banner[data-open=true]{grid-template-rows:1fr}@media(prefers-reduced-motion:reduce){.nearby-concert-banner{transition:none}}
