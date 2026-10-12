@@ -7,6 +7,18 @@ const normalize = (name = "") =>
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]/gu, "");
 
+// Ticketmaster IDs are not MusicBrainz IDs: an artist without past shows needs
+// an artist-only route, with the name in the URL so refresh and sharing work.
+export function getArtistOverviewTarget(artistId, artistName, eventId) {
+  if (!artistId || !artistName) return null;
+  const params = new URLSearchParams({ name: artistName });
+  if (eventId) params.set("next", eventId);
+  return {
+    pathname: `/artists/ticketmaster/${encodeURIComponent(artistId)}`,
+    search: `?${params}`,
+  };
+}
+
 export function getConcertTarget(shows = [], artistName, eventId) {
   if (!artistName || !eventId) return null;
   const matches = shows.filter(

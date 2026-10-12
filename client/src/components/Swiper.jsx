@@ -1,15 +1,11 @@
 import { useState, useEffect, useContext, useRef, useSyncExternalStore } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
-import {
-  dateLabel,
-  getBestImage,
-  getCarouselSlides,
-  getPastConcertsByArtist,
-} from "../helpers/selectors";
+import { dateLabel, getBestImage, getCarouselSlides } from "../helpers/selectors";
 import { useGeolocation } from "../hooks/useGeolocation";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
+import { getArtistOverviewTarget, getConcertTarget } from "../helpers/concertTarget";
 import LocationSelector from "./LocationSelector";
 import "./Swiper.css";
 
@@ -140,18 +136,47 @@ export default function Swiper() {
 
         const { setlist = [], ticketmaster = {} } = response.data;
 
-        if (!setlist.length) {
-          setError(t("No setlist found for {artist}.", { artist: selectedArtist.artistName }));
+        const target = getConcertTarget(setlist, selectedArtist.artistName, selectedArtist.eventId);
+        if (!target) {
+          const selectedEvent = localEventsData?._embedded?.events?.find(
+            (event) => event.id === selectedArtist.eventId,
+          );
+          const attraction = selectedEvent?._embedded?.attractions?.find(
+            (artist) => artist.id === selectedArtist.artistId,
+          );
+          setSetlist([]);
+          setTicketmaster({
+            ...ticketmaster,
+            attractions: [
+              ...(ticketmaster.attractions || []),
+              ...(attraction
+                ? [
+                    {
+                      ...attraction,
+                      images: attraction.images?.length ? attraction.images : selectedEvent.images,
+                    },
+                  ]
+                : []),
+            ],
+            events: [
+              ...(selectedEvent ? [selectedEvent] : []),
+              ...(ticketmaster.events || []).filter((event) => event.id !== selectedArtist.eventId),
+            ],
+          });
+          navigate(
+            getArtistOverviewTarget(
+              selectedArtist.artistId,
+              selectedArtist.artistName,
+              selectedArtist.eventId,
+            ),
+          );
           return;
         }
-
-        const correctArtistId = setlist[0]?.artist?.mbid || selectedArtist.artistId;
-        const targetId = getPastConcertsByArtist(setlist, correctArtistId)[0]?.id || setlist[0]?.id;
 
         setSetlist(setlist);
         setTicketmaster(ticketmaster);
 
-        navigate(`/artists/${correctArtistId}/concerts/${targetId}`);
+        navigate(target);
       } catch (err) {
         console.error("Error handling slide click:", err);
         setError(
@@ -161,7 +186,7 @@ export default function Swiper() {
         setIsLoading(false);
       }
     })();
-  }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster, t]);
+  }, [selectedArtist, fetchArtistData, navigate, setSetlist, setTicketmaster, t, localEventsData]);
 
   useEffect(() => {
     const list = getCarouselSlides(localEventsData);

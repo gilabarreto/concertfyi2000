@@ -125,7 +125,6 @@
   "No ratings available for this venue yet. Check back later.": "Aún no hay valoraciones disponibles para este recinto. Vuelve más tarde.",
   "No recently added concerts available in {city} yet. Check back later.": "Aún no hay conciertos añadidos recientemente en {city}. Vuelve más tarde.",
   "No reviews available for this venue yet. Check back later.": "Aún no hay reseñas disponibles para este recinto. Vuelve más tarde.",
-  "No setlist found for {artist}.": "No se encontró ningún setlist de {artist}.",
   "No songs available for this setlist yet. Check back later.": "Aún no hay canciones disponibles en este setlist. Vuelve más tarde.",
   "No upcoming concerts available for this artist yet. Check back later.": "Aún no hay próximos conciertos disponibles para este artista. Vuelve más tarde.",
   "No upcoming concerts available for this venue yet. Check back later.": "Aún no hay próximos conciertos disponibles para este recinto. Vuelve más tarde.",
@@ -237,5 +236,8 @@
   "{count} stars": "{count} estrellas",
   "{name} — venue photo {number}": "{name} — foto del recinto {number}",
   "© 2025 concertfyi. all rights reserved.": "© 2025 concertfyi. todos los derechos reservados.",
-  "Explore Events": "Explorar eventos"
+  "Explore Events": "Explorar eventos",
+  "No Setlist available. Check back later.": "No hay setlist disponible. Vuelve más tarde.",
+  "No past concerts available.": "No hay conciertos pasados disponibles.",
+  "No last concert available.": "No hay último concierto disponible."
 }

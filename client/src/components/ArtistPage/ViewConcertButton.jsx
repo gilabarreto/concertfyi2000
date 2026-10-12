@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import { getSetlist, getTicketmaster } from "../../api/api";
-import { getConcertTarget } from "../../helpers/concertTarget";
+import { getArtistOverviewTarget, getConcertTarget } from "../../helpers/concertTarget";
 import { AppContext } from "../../context/AppContext";
 import Icon from "../Icon";
 
@@ -24,18 +24,32 @@ export default function ViewConcertButton({ event, artistName }) {
         staleTime: 10 * 60 * 1000,
         queryFn: async () => {
           const [shows, tm] = await Promise.all([
-            getSetlist(artistName),
+            getSetlist(artistName).catch(() => ({ setlist: [] })),
             getTicketmaster(artistName).catch(() => ({ _embedded: {} })),
           ]);
           return { setlist: shows.setlist || [], ticketmaster: tm._embedded || {} };
         },
       });
-      const target = getConcertTarget(data.setlist, artistName, event.id);
+      const attraction = event._embedded?.attractions?.find((artist) => artist.name === artistName);
+      const target =
+        getConcertTarget(data.setlist, artistName, event.id) ||
+        getArtistOverviewTarget(attraction?.id, artistName, event.id);
       if (!target) throw new Error("No artist concert found");
       // The selected event can be absent from the artist search; retain the real
       // event clicked in Home/venue so Next Concert never selects another date.
       const ticketmaster = {
         ...data.ticketmaster,
+        attractions: [
+          ...(data.ticketmaster.attractions || []),
+          ...(attraction
+            ? [
+                {
+                  ...attraction,
+                  images: attraction.images?.length ? attraction.images : event.images,
+                },
+              ]
+            : []),
+        ],
         events: [event, ...(data.ticketmaster.events || []).filter((item) => item.id !== event.id)],
       };
       setSetlist(data.setlist);

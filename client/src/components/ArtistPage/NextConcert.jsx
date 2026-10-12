@@ -21,9 +21,18 @@ import ConcertReminder from "./ConcertReminder";
 import { AppContext } from "../../context/AppContext";
 
 import { useT } from "../../i18n";
-export default function NextConcert({ concert, setlist, ticketmaster, hideTitle = false }) {
+export default function NextConcert({
+  concert,
+  artistName: name,
+  setlist,
+  ticketmaster,
+  hideTitle = false,
+  musicbrainzId,
+}) {
   const t = useT();
-  const { artistId } = useParams();
+  const { artistId: routeArtistId } = useParams();
+  const artistId = musicbrainzId === undefined ? routeArtistId : musicbrainzId;
+  const artistName = name || concert.artist.name;
   const [searchParams, setSearchParams] = useSearchParams();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -34,8 +43,8 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   // Concerts list below just hands out the current URL and expects it to land here.
   const upcomingConcerts = getTourUpcomingConcerts(
     ticketmaster.events,
-    concert.artist.name,
-    [...setlist, concert],
+    artistName,
+    concert ? [...setlist, concert] : setlist,
     searchParams.get("next"),
   );
   const idx = Math.max(
@@ -68,7 +77,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   // A URL já leva o ?next deste show, então quem abre cai nesta mesma data.
   const shareVenue = upcomingConcert._embedded?.venues?.[0];
   const shareVars = {
-    artist: concert.artist.name,
+    artist: artistName,
     city: shareVenue?.city?.name || t("near you"),
     date: dateLabel(upcomingConcert.dateObj),
     venue: shareVenue?.name,
@@ -79,7 +88,7 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
   const eventImage = getBestImage(upcomingConcert.images);
   const share = async () => {
     if (
-      await shareOrCopy(window.location.href, `${concert.artist.name} concert`, {
+      await shareOrCopy(window.location.href, `${artistName} concert`, {
         text: shareText,
         imageUrl: eventImage,
       })
@@ -203,10 +212,10 @@ export default function NextConcert({ concert, setlist, ticketmaster, hideTitle 
           </li>
           <li className="flex flex-wrap items-center justify-center gap-2 border-b border-zinc-300/50 py-2">
             {upcomingConcert.source !== "setlistfm" && (
-              <TicketOptions event={upcomingConcert} artistName={concert.artist.name} iconOnly />
+              <TicketOptions event={upcomingConcert} artistName={artistName} iconOnly />
             )}
             <HotelOptions event={upcomingConcert} iconOnly />
-            <ConcertReminder event={upcomingConcert} artistName={concert.artist.name} iconOnly />
+            <ConcertReminder event={upcomingConcert} artistName={artistName} iconOnly />
           </li>
         </ol>
         {(coords || tourMapOpen) && (

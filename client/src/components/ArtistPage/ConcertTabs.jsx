@@ -2,12 +2,21 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import LastConcert from "./LastConcert";
 import NextConcert from "./NextConcert";
+import CardTitle from "./CardTitle";
+import CardNotice from "./CardNotice";
 import "./ConcertTabs.css";
 
 import { useT } from "../../i18n";
 const tabs = [{ id: "last-concert" }, { id: "next-concert" }];
 
-export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackImage }) {
+export default function ConcertTabs({
+  concert,
+  artistName,
+  musicbrainzId,
+  setlist,
+  ticketmaster,
+  fallbackImage,
+}) {
   const t = useT();
   const labels = { "last-concert": t("Last Concert"), "next-concert": t("Next Concert") };
   const location = useLocation();
@@ -100,7 +109,12 @@ export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackIm
             data-active={active === index}
             style={{ "--panel-index": index }}
           >
-            {index === 0 ? (
+            {index === 0 && !concert ? (
+              <>
+                {!desktop && <CardTitle>{t("Last Concert")}</CardTitle>}
+                <CardNotice>{t("No last concert available.")}</CardNotice>
+              </>
+            ) : index === 0 ? (
               <LastConcert
                 concert={concert}
                 setlist={setlist}
@@ -111,6 +125,8 @@ export default function ConcertTabs({ concert, setlist, ticketmaster, fallbackIm
             ) : (
               <NextConcert
                 concert={concert}
+                artistName={artistName}
+                musicbrainzId={musicbrainzId}
                 setlist={setlist}
                 ticketmaster={ticketmaster}
                 hideTitle={desktop}

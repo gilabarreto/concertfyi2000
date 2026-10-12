@@ -12,6 +12,7 @@ import { useT } from "./i18n";
 // ArtistPage sozinha arrasta o Google Maps, que a maioria das visitas nunca abre.
 const SearchPage = lazy(() => import("./pages/SearchPage"));
 const ArtistPage = lazy(() => import("./pages/ArtistPage"));
+const ArtistOverviewPage = lazy(() => import("./pages/ArtistOverviewPage"));
 const VenuePage = lazy(() => import("./pages/VenuePage"));
 const VenuesPage = lazy(() => import("./pages/VenuesPage"));
 const CityPage = lazy(() => import("./pages/CityPage"));
@@ -90,6 +91,10 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/search" element={<SearchPage />} />
                     <Route path="/artists/:artistId/concerts/:concertId" element={<ArtistPage />} />
+                    <Route
+                      path="/artists/ticketmaster/:artistId"
+                      element={<ArtistOverviewPage />}
+                    />
                     <Route path="/venues" element={<VenuesPage />} />
                     <Route path="/venues/:venueId" element={<VenuePage />} />
                     <Route path="/city" element={<CityPage />} />

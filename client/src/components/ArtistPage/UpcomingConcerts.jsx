@@ -10,7 +10,8 @@ import ConcertReminder from "./ConcertReminder";
 import { useT } from "../../i18n";
 export default function UpcomingConcerts(props) {
   const t = useT();
-  const events = getUpcomingConcertsByArtist(props.ticketmaster.events, props.concert.artist.name);
+  const artistName = props.artistName || props.concert.artist.name;
+  const events = getUpcomingConcertsByArtist(props.ticketmaster.events, artistName);
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
 
@@ -39,13 +40,9 @@ export default function UpcomingConcerts(props) {
       }
       expand={(concert) => (
         <>
-          <TicketOptions event={concert} artistName={props.concert.artist.name} />
+          <TicketOptions event={concert} artistName={artistName} />
           <HotelOptions event={concert} />
-          <ConcertReminder
-            event={concert}
-            artistName={props.concert.artist.name}
-            showShare={false}
-          />
+          <ConcertReminder event={concert} artistName={artistName} showShare={false} />
           <div className="flex justify-center px-2 py-3 sm:px-4">
             <Link
               to={{

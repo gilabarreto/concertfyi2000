@@ -63,7 +63,7 @@ export default function ArtistInfo(props) {
     ) : null,
   );
 
-  const artist = concert.artist.name;
+  const artist = props.artistName || concert.artist.name;
   const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artist);
   const hasMoreBiography = (background.extract?.length || 0) > 300;
   const biographyMask =
@@ -100,7 +100,11 @@ export default function ArtistInfo(props) {
   return (
     <div className="flex-1 flex flex-col lg:flex-row items-start gap-4">
       <div className="flex flex-col items-center w-full lg:flex-1 lg:min-w-0">
-        <ArtistPhotos artistId={artistId} artist={artist} attraction={attraction} />
+        <ArtistPhotos
+          artistId={props.musicbrainzId === undefined ? artistId : props.musicbrainzId}
+          artist={artist}
+          attraction={attraction}
+        />
       </div>
 
       <div className="w-full lg:flex-1 lg:min-w-0">
