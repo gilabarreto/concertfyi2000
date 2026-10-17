@@ -61,11 +61,7 @@ export default function NextConcert({
     });
 
   if (!upcomingConcert) {
-    return hideTitle ? (
-      <CardNotice>
-        {t("No upcoming concerts available for this artist yet. Check back later.")}
-      </CardNotice>
-    ) : null;
+    return hideTitle ? <CardNotice>{t("No upcoming concerts available.")}</CardNotice> : null;
   }
 
   // Same idea as "I WAS THERE" on Last Concert, mirrored forward: mark locally that the
@@ -170,7 +166,7 @@ export default function NextConcert({
                 {tour}
               </button>
             ) : (
-              "No tour announced for this concert yet. Check back later."
+              t("No tour available.")
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">

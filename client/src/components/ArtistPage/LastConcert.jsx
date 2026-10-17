@@ -159,7 +159,7 @@ export default function LastConcert({
                 {tour}
               </button>
             ) : (
-              "No tour listed for this concert."
+              t("No tour available.")
             )}
           </li>
           <li className="border-b border-zinc-300/50 py-2">

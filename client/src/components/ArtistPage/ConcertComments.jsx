@@ -27,7 +27,9 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
   return (
     <>
       <li className="border-b border-zinc-300/50 py-2">
-        <div className="flex items-center gap-2">
+        <div
+          className={`flex items-center gap-2 ${!reviews.length ? "flex-wrap justify-center text-center" : ""}`}
+        >
           {/* Clicking here edits the rating directly — no need to reopen the popup just
               because someone changed their mind about the stars. */}
           <span className="font-semibold">{t("Rating:")}</span>&ensp;
@@ -36,7 +38,7 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
             onRate={(n) => onSaved(upsertReview(concertId, { rating: n }))}
             size="text-lg"
           />
-          <span className="text-xs text-zinc-500">
+          <span className={`text-xs text-zinc-500 ${!reviews.length ? "w-full" : ""}`}>
             {reviews.length > 0
               ? reviews.length === 1
                 ? t("{average} ({count} review)", { average: average.toFixed(1), count: 1 })
@@ -44,13 +46,15 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
                     average: average.toFixed(1),
                     count: reviews.length,
                   })
-              : t("(no ratings yet)")}
+              : t("No ratings available.")}
           </span>
         </div>
       </li>
 
       <li className="border-b border-zinc-300/50 py-2">
-        <div className="flex items-center gap-2">
+        <div
+          className={`flex items-center gap-2 ${!current ? "justify-center text-center flex-wrap" : ""}`}
+        >
           <span className="shrink-0 font-semibold">{t("Review:")}&ensp;</span>
           {current ? (
             <>
@@ -86,13 +90,16 @@ export default function ConcertComments({ concertId, reviews, onSaved, onLeaveRe
               )}
             </>
           ) : (
-            <button
-              type="button"
-              onClick={onLeaveReview}
-              className="text-red-600 hover:text-red-800 font-semibold"
-            >
-              {t("(Leave a review)")}
-            </button>
+            <>
+              <span className="w-full text-sm text-zinc-500">{t("No reviews available.")}</span>
+              <button
+                type="button"
+                onClick={onLeaveReview}
+                className="text-red-600 hover:text-red-800 font-semibold"
+              >
+                {t("(Leave a review)")}
+              </button>
+            </>
           )}
         </div>
       </li>

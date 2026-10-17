@@ -59,15 +59,17 @@ export default function ExploreEvent({ event }) {
         <li className="border-b border-zinc-300/50 py-2">
           <span className="font-semibold">{t("Concert date:")}</span>&ensp;
           {dateLabel(event.dateObj)}
-        </li>
-        <li className="border-b border-zinc-300/50 py-2">
-          <span className="font-semibold">{t("Venue:")}</span>&ensp;
-          {venuePath ? (
-            <Link to={venuePath} className="text-red-600 hover:text-red-800 transition-colors">
-              {venue.name}
-            </Link>
-          ) : (
-            venue?.name
+          {venue?.name && (
+            <div>
+              <span className="font-semibold">{t("Venue:")}</span>&ensp;
+              {venuePath ? (
+                <Link to={venuePath} className="text-red-600 hover:text-red-800 transition-colors">
+                  {venue.name}
+                </Link>
+              ) : (
+                venue.name
+              )}
+            </div>
           )}
         </li>
         <li className="border-b border-zinc-300/50 py-2">

@@ -165,7 +165,8 @@ export default function ArtistInfo(props) {
                 </>
               ) : (
                 <p className="text-sm text-zinc-500">
-                  {t("No biography available for this artist yet. Check back later.")}
+                  <span className="font-semibold">{t("Bio:")}</span>&ensp;
+                  {t("No biography available.")}
                 </p>
               )}
             </li>

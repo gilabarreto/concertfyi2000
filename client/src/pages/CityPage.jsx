@@ -81,13 +81,7 @@ export default function CityPage() {
             <div className="min-w-0 bg-white px-4 space-y-2">
               <ConcertList
                 title={t("Past Concerts")}
-                empty={
-                  isLoading
-                    ? t("Loading…")
-                    : t("No past setlists available in {city} this year yet. Check back later.", {
-                        city,
-                      })
-                }
+                empty={isLoading ? t("Loading…") : t("No past concerts available.")}
                 showSearch={false}
                 items={past}
                 locationOf={(show) => `${show.artist.name} @ ${show.venue.name}`}
@@ -109,15 +103,10 @@ export default function CityPage() {
                 view === "recent"
                   ? recentLoading
                     ? t("Loading…")
-                    : t("No recently added concerts available in {city} yet. Check back later.", {
-                        city,
-                      })
+                    : t("No recently added concerts available.")
                   : view === "nearby"
-                    ? t(
-                        "No concerts available in neighboring cities within 50 km of {city} yet. Check back later.",
-                        { city },
-                      )
-                    : t("No upcoming concerts available in {city} yet. Check back later.", { city })
+                    ? t("No concerts available.")
+                    : t("No upcoming concerts available.")
               }
               showSearch={false}
               items={view === "recent" ? recent : upcoming}
@@ -129,7 +118,7 @@ export default function CityPage() {
               icon={view === "recent" ? faMusic : undefined}
               locationOf={(event) =>
                 view === "recent"
-                  ? `${event.artist.name} @ ${event.venue?.name || t("Venue to be announced")}`
+                  ? `${event.artist.name} @ ${event.venue?.name || t("No venue available.")}`
                   : view === "nearby"
                     ? `${artistOf(event)} — ${event._embedded?.venues?.[0]?.city?.name}`
                     : artistOf(event)

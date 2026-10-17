@@ -58,9 +58,7 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
           />
         ) : (
           <p className="px-4 text-center text-sm text-zinc-500">
-            {isLoading
-              ? t("Loading…")
-              : t("No photos available for this artist yet. Check back later.")}
+            {isLoading ? t("Loading…") : t("No photos available.")}
           </p>
         )}
       </div>

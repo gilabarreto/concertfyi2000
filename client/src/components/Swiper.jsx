@@ -259,7 +259,7 @@ export default function Swiper() {
   const activeSlide = slides[active];
   const [year, month, day] = (activeSlide?.date || "").split("-").map(Number);
   const concertDate =
-    year && month && day ? dateLabel(new Date(year, month - 1, day)) : "Date to be announced";
+    year && month && day ? dateLabel(new Date(year, month - 1, day)) : t("No date available.");
 
   // plain render function, not a component: a component declared inside Swiper would remount
   // every slide on each render, which killed the slide transition
@@ -345,7 +345,7 @@ export default function Swiper() {
 
       {noEvents ? (
         <div className="w-full h-[250px] sm:h-[380px] flex flex-col items-center justify-center gap-2 text-center">
-          <p className="text-lg text-zinc-800 text-pretty">{t("No concerts found near")}</p>
+          <p className="text-lg text-zinc-800 text-pretty">{t("No concerts available.")}</p>
           <LocationSelector city={city} country={country} isLoading={isGeoLoading} />
           <p className="text-sm text-zinc-500 text-pretty">
             {t("Pick another city to see what's on.")}
@@ -407,7 +407,7 @@ export default function Swiper() {
                     </button>
                   </h2>
                   <p className="line-clamp-2 sm:line-clamp-none break-words text-base font-normal text-center text-pretty">
-                    {concertDate} @ {activeSlide.venue || "Venue to be announced"}
+                    {concertDate} @ {activeSlide.venue || t("No venue available.")}
                   </p>
                 </div>
                 <button

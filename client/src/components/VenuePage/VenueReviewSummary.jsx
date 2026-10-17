@@ -39,9 +39,14 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
     setExpanded(false);
   };
   return (
-    <section aria-label={t("Venue reviews")} className="min-w-0 bg-white px-2 sm:px-4 space-y-2">
+    <section
+      aria-label={t("Venue reviews")}
+      className="flex min-w-0 flex-col bg-white px-2 sm:px-4 gap-2"
+    >
       <CardTitle>{t("Reviews")}</CardTitle>
-      <div className="space-y-2 py-2">
+      <div
+        className={`space-y-2 py-2 ${!current ? "flex flex-1 items-center justify-center text-center" : ""}`}
+      >
         {loading ? (
           <span role="status">{t("Loading…")}</span>
         ) : current ? (
@@ -80,7 +85,7 @@ export default function VenueReviewSummary({ reviews = [], url, loading }) {
             )}
           </div>
         ) : (
-          t("No reviews available for this venue yet. Check back later.")
+          t("No reviews available.")
         )}
       </div>
       {hasMore && (

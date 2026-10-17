@@ -22,7 +22,7 @@ ConcertFYI — Pendências e Decisões
 ☑ PDF de pôsteres — conteúdo consolidado em `docs/APIS_E_FONTES.md`; PDF e Zone.Identifier removidos da árvore local em 01/10/2026. Nenhuma reescrita do histórico Git.
 □ Share no iPhone depois do `await` da compressão (review de 2026-09-29) — desde `1bcb841`, `shareOrCopy` comprime o payload antes de chamar `navigator.share`. O Safari do iOS exige gesto do usuário "fresco" e pode recusar com NotAllowedError depois de um `await`; o catch engole e o botão parece não fazer nada. Não reproduzido — testar no iPhone. Se falhar, a correção é gerar o token antes do clique (no render), não no handler.
 🟢 Tarefas minhas, aguardando seu "pode fazer"
-☑ Revisão dos changes (2026-10-11) — a nova rota `/artists/ticketmaster/:artistId` quebrava sem `?name=...` ("Something broke on this page"). Corrigido no lote: `ArtistOverviewPage` usa o nome da URL ou, na falta, o nome da attraction já em cache; sem nenhum dos dois, redireciona para `/`. Verificado no navegador local (sem nome, nome vazio, e com `?name=Coldplay`).
+☑ Revisão dos changes (2026-10-11) — a nova rota `/artists/ticketmaster/:artistId` quebrava sem `?name=...` ("Something broke on this page"). Corrigido no lote: `ArtistOverviewPage` usa o nome da URL ou, na falta, o nome da attraction já em cache; sem nenhum dos dois, redireciona para `/`. Verificado no navegador local (sem nome, nome vazio, e com `?name=Coldplay`). Resolvido em `d353316`.
 ☑ Normalizar id no log de acesso — resolvido em `41a0e3d`.
 ☑ Lint quebrado em SearchBar.jsx:11 (`setPlaceholder` não usado) — resolvido em `5ce7c2a`. Achado e já corrigido revisando o Swiper em 2026-09-20.
 ⚪ Itens abertos no repositório (sem decisão sua pendente)

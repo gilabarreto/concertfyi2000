@@ -72,7 +72,7 @@ export default function LocationSelector({
   const emptyMessage = () => {
     if (isError) return t("Couldn't search cities. Try again.");
     if (isFetching || term !== query) return "Searching…";
-    return t("No cities found");
+    return t("No cities available.");
   };
 
   useEffect(() => {
@@ -130,7 +130,7 @@ export default function LocationSelector({
         >
           {isLoading && !selectedLocation
             ? t("Locating…")
-            : displayName || t("Location unavailable")}
+            : displayName || t("No location available.")}
         </span>
         <Icon className="text-sm" icon={showDropdown ? faChevronUp : faChevronDown} />
       </button>

@@ -55,7 +55,7 @@ function VenueTile({ venue, ticketmaster }) {
         ) : (
           <div
             className="aspect-square w-full rounded-md bg-zinc-100 flex items-center justify-center text-zinc-400"
-            aria-label={isLoading ? t("Loading venue photo") : t("Venue photo unavailable")}
+            aria-label={isLoading ? t("Loading venue photo") : t("No photo available.")}
           >
             <Icon icon={faBuilding} className="text-3xl" />
           </div>
@@ -127,7 +127,7 @@ function VenueCarousel({ venues, events, city, loading }) {
       </CardTitle>
       {!venues.length ? (
         <p className="py-4 text-center text-sm text-zinc-500" role="status">
-          {loading ? t("Loading…") : `No venues available in ${city} yet. Check back later.`}
+          {loading ? t("Loading…") : t("No nearby venues.")}
         </p>
       ) : (
         <div ref={carouselRef} className="flex items-start gap-4" aria-roledescription="carousel">
@@ -214,11 +214,8 @@ export default function HomeDiscovery({ location }) {
                 local.isLoading
                   ? t("Loading…")
                   : nearby
-                    ? t(
-                        "No concerts available in neighboring cities within 50 km of {city} yet. Check back later.",
-                        { city },
-                      )
-                    : t("No upcoming concerts available in {city} yet. Check back later.", { city })
+                    ? t("No concerts available.")
+                    : t("No upcoming concerts available.")
               }
               showSearch={false}
               pageSize={nearby || mobile ? 5 : 7}
@@ -259,6 +256,7 @@ export default function HomeDiscovery({ location }) {
             columns
             items={exploreEvents}
             locationOf={artistOf}
+            secondaryTextOf={(event) => event._embedded?.venues?.[0]?.name}
             wrap
             iconTitle={t("Get tickets")}
             expand={(event) => <ExploreEvent event={event} />}

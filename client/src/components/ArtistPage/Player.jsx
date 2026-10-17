@@ -12,7 +12,7 @@ export default function Player({ attraction }) {
     return (
       <section aria-label={t("Top tracks")} className="space-y-3 lg:flex lg:flex-1 lg:flex-col">
         <CardTitle>{t("Top tracks")}</CardTitle>
-        <CardNotice>{t("Spotify link not available for this artist.")}</CardNotice>
+        <CardNotice>{t("No Spotify link available.")}</CardNotice>
       </section>
     );
   }

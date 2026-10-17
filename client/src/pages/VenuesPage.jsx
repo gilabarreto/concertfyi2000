@@ -39,11 +39,7 @@ export default function VenuesPage() {
         <div className="bg-white px-4 space-y-2">
           <CardTitle>{t("Busiest this year")}</CardTitle>
           {venues.length === 0 ? (
-            <CardNotice>
-              {isLoading
-                ? t("Loading…")
-                : t("No venues available in {city} this year yet. Check back later.", { city })}
-            </CardNotice>
+            <CardNotice>{isLoading ? t("Loading…") : t("No nearby venues.")}</CardNotice>
           ) : (
             <ol className="px-[12px]">
               {venues.map((venue) => (

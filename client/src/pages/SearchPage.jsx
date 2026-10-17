@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { useContext } from "react";
-import { getBestImage, getPastConcertsByArtist, parseSetlistDate } from "../helpers/selectors";
+import {
+  dateLabel,
+  getBestImage,
+  getPastConcertsByArtist,
+  getUpcomingConcertsByArtist,
+  parseSetlistDate,
+} from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
 import { SEOHead } from "../components/SEOHead";
 
@@ -31,7 +37,7 @@ export default function SearchPage() {
         <h2 className="text-2xl font-bold mb-4">{t("Search Results")}</h2>
         <hr className="border-t border-zinc-300 opacity-50 mb-6" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center">
+        <div className="flex flex-wrap justify-center items-start gap-6">
           {uniqueSetlist.map((item) => {
             const artistId = item.artist.mbid;
             const concertId = getPastConcertsByArtist(setlist, artistId)[0]?.id ?? item.id;
@@ -39,43 +45,36 @@ export default function SearchPage() {
             const ticketmasterMap = attractions.find((a) => a.name === artist) || {};
             const rawImages = ticketmasterMap.images || [];
             const bestImageUrl = getBestImage(rawImages);
+            const nextConcert = getUpcomingConcertsByArtist(ticketmaster.events, artist)[0];
+            const venue = nextConcert?._embedded?.venues?.[0];
+            const concertLocation = [venue?.city?.name, venue?.country?.countryCode]
+              .filter(Boolean)
+              .join(", ");
 
             return (
-              <div key={artistId + concertId} className="relative w-full overflow-hidden">
-                <Link
-                  to={`/artists/${artistId}/concerts/${concertId}`}
-                  className="group block relative w-full aspect-video rounded-xl overflow-hidden cursor-pointer"
-                  style={bestImageUrl ? { background: `url(${bestImageUrl}) center/cover` } : {}}
+              <Link
+                key={artistId + concertId}
+                to={`/artists/${artistId}/concerts/${concertId}`}
+                className="group block w-full sm:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)] min-w-0 rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+              >
+                <div
+                  className={`w-full aspect-video rounded-xl bg-zinc-100 bg-center bg-cover flex items-center justify-center p-4 text-sm text-zinc-500 transition-opacity group-hover:opacity-80 ${bestImageUrl ? "" : "border border-zinc-200"}`}
+                  style={bestImageUrl ? { backgroundImage: `url(${bestImageUrl})` } : undefined}
                 >
-                  <div
-                    className={`
-                    w-full py-8 absolute inset-0 bg-red-600 bg-opacity-0 flex items-center justify-center
-                    hover:bg-opacity-80 group-focus-visible:bg-opacity-80 transition aspect-video rounded-xl overflow-hidden
-                    border-4 border-solid border-transparent hover:border-zinc-800 group-focus-visible:border-zinc-800 pointer-events-auto z-10
-                    text-red-600 hover:text-zinc-100 group-focus-visible:text-zinc-100
-                    ${bestImageUrl ? "opacity-0 hover:opacity-100 group-focus-visible:opacity-100" : "opacity-100"}
-                  `}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="text-8xl sm:text-9xl text-zinc-800 font-medium pr-4 -z-20"
-                    >
-                      {"{"}
-                    </span>
-
-                    <div className="w-full flex flex-1 justify-center mb-2">
-                      <h1 className="pb-2 text-center text-4xl font-bold">{artist}</h1>
-                    </div>
-
-                    <span
-                      aria-hidden="true"
-                      className="text-8xl sm:text-9xl text-zinc-800 font-medium pl-4"
-                    >
-                      {"}"}
-                    </span>
-                  </div>
-                </Link>
-              </div>
+                  {!bestImageUrl && t("No photo available.")}
+                </div>
+                <div className="mt-3 flex min-w-0 flex-col items-center gap-1 text-center">
+                  <h3 className="text-[1.2rem] font-bold break-words group-hover:text-red-800">
+                    {artist}
+                  </h3>
+                  {nextConcert && (
+                    <p className="text-[0.8rem] font-normal text-zinc-500 text-pretty">
+                      {t("Next Concert")}: {dateLabel(nextConcert.dateObj)}
+                      {concertLocation && ` · ${concertLocation}`}
+                    </p>
+                  )}
+                </div>
+              </Link>
             );
           })}
         </div>

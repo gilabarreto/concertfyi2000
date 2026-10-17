@@ -85,7 +85,7 @@ const Home = () => {
                       <span className="font-semibold">{t("Recently added:")}</span>{" "}
                       {recent.artist.name}, {dateLabel(recent.dateObj)}
                       {" at "}
-                      {recent.venue?.name || "Venue to be announced"}
+                      {recent.venue?.name || t("No venue available.")}
                     </Link>
                   )}
                 </p>

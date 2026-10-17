@@ -18,7 +18,7 @@ export default function UpcomingConcerts(props) {
   return (
     <ConcertList
       title={t("Upcoming Concerts")}
-      empty={t("No upcoming concerts available for this artist yet. Check back later.")}
+      empty={t("No upcoming concerts available.")}
       showSearch={false}
       items={events}
       locationOf={(concert) => {
@@ -26,7 +26,7 @@ export default function UpcomingConcerts(props) {
         // O guard ia só até venues[0], então city.name derrubava a árvore de rotas inteira.
         const venue = concert._embedded?.venues?.[0];
         const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
-        return parts.join(", ") || t("Unknown location");
+        return parts.join(", ") || t("No location available.");
       }}
       iconTitle={t("Get tickets")}
       // NextConcert reads this same "next" param to pick which upcoming show its own

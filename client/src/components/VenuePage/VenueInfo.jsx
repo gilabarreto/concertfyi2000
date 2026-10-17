@@ -24,11 +24,11 @@ export default function VenueInfo({ venue, ticketmaster, info = {}, services = {
   // Missing only once every source has answered; until then the row is still on its way.
   // One full sentence per field: word order differs by language, so they can't be assembled.
   const missing = {
-    description: t("No description available for this venue yet. Check back later."),
-    city: t("No city available for this venue yet. Check back later."),
-    address: t("No address available for this venue yet. Check back later."),
-    phone: t("No phone number available for this venue yet. Check back later."),
-    website: t("No website available for this venue yet. Check back later."),
+    description: t("No description available."),
+    city: t("No city available."),
+    address: t("No address available."),
+    phone: t("No phone number available."),
+    website: t("No website available."),
   };
   const empty = (field) => (loading ? t("Loading…") : missing[field]);
   const [expanded, setExpanded] = useState(false);

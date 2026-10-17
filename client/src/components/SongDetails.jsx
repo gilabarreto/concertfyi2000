@@ -110,9 +110,7 @@ export default function SongDetails({ songName, artistName }) {
         <div className="mt-3">
           {loading && <p className="text-sm text-zinc-500 text-center">{t("Loading…")}</p>}
           {!loading && (lyricsError || !lyrics) && (
-            <p className="text-sm text-zinc-500 text-center">
-              {t("No lyrics available for this song yet. Check back later.")}
-            </p>
+            <p className="text-sm text-zinc-500 text-center">{t("No lyrics available.")}</p>
           )}
           {lyrics && !loading && (
             <>
@@ -164,9 +162,7 @@ export default function SongDetails({ songName, artistName }) {
             />
           </div>
         ) : (
-          <p className="mt-3 text-sm text-zinc-500 text-center">
-            {t("No music video available for this song yet. Check back later.")}
-          </p>
+          <p className="mt-3 text-sm text-zinc-500 text-center">{t("No music video available.")}</p>
         )}
       </details>
 
