@@ -6,29 +6,23 @@ const mapsOptions = { googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY };
 // Takes raw coordinates instead of a concert: Last Concert (setlist.fm, coords under
 // venue.city.coords) and Next Concert (Ticketmaster, coords under venue.location) don't
 // share a shape, so each caller pulls its own pair out and this stays pure display.
+// Maps Embed and not the JS map: one pin needs no interaction, and Embed is free with no
+// cap, while every JS map load spends the 10,000-a-month free tier shared with TourMap.
 export default function Map({ latitude, longitude }) {
   const t = useT();
-  // O hook vem antes do guard: coords ausentes num render seguidas de coords presentes
-  // no próximo mudaria a quantidade de hooks entre renders e derruba o componente.
-  const { isLoaded } = useLoadScript(mapsOptions);
-
-  if (!latitude || !longitude) return null;
-
-  if (!isLoaded) {
-    return <div className="flex items-center justify-center h-full">{t("Loading…")}</div>;
-  }
-
-  return <ArtistMap latitude={latitude} longitude={longitude} />;
-}
-
-function ArtistMap({ latitude, longitude }) {
   const lat = parseFloat(latitude);
   const lng = parseFloat(longitude);
+  if (!lat || !lng) return null;
 
+  const src = `https://www.google.com/maps/embed/v1/place?key=${mapsOptions.googleMapsApiKey}&q=${lat},${lng}&zoom=12`;
   return (
-    <GoogleMap zoom={12} center={{ lat, lng }} mapContainerClassName="w-full h-full">
-      <MarkerF position={{ lat, lng }} />
-    </GoogleMap>
+    <iframe
+      title={t("Map")}
+      src={src}
+      className="w-full h-full border-0"
+      loading="lazy"
+      referrerPolicy="strict-origin-when-cross-origin"
+    />
   );
 }
 

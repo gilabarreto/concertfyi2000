@@ -26,7 +26,7 @@ const csp = [
   // TheAudioDB and Wikimedia Commons are image-only sources for ArtistInfo and the local API lab.
   "img-src 'self' data: blob: https://s1.ticketm.net https://r2.theaudiodb.com https://upload.wikimedia.org https://maps.googleapis.com https://*.gstatic.com https://*.ggpht.com https://*.googleusercontent.com https://www.google.com https://eventartarchive.org https://coverartarchive.org https://archive.org https://*.archive.org",
   "connect-src 'self' https://api.concertfyi.com https://maps.googleapis.com https://api.spotify.com https://formspree.io https://photon.komoot.io https://nominatim.openstreetmap.org",
-  "frame-src https://open.spotify.com https://www.youtube.com",
+  "frame-src https://open.spotify.com https://www.youtube.com https://www.google.com",
   "worker-src 'self' blob:",
   "base-uri 'self'",
   "form-action 'self'",
