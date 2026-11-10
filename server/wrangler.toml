@@ -19,3 +19,9 @@ CLIENT_IP_HEADER = "cf-connecting-ip"
 
 # Chaves de API: secrets, nunca aqui. `npx wrangler secret put NOME` para cada uma
 # (lista no CLAUDE.md). Localmente o `wrangler dev` lê do server/.dev.vars.
+
+# Cache dos ids de vídeo do YouTube (routes/youtube.js). Plano grátis: 100 mil
+# leituras e 1.000 escritas por dia.
+[[kv_namespaces]]
+binding = "SONG_CACHE"
+id = "1354ac50effc458a9be62ceaf5ec7227"
