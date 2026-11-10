@@ -3,7 +3,7 @@ const { inflateSync } = require("node:zlib");
 
 const router = express.Router();
 const SITE_URL = "https://concertfyi.com";
-const SHARE_ORIGIN = process.env.RENDER_EXTERNAL_URL || "https://concertfyi2000.onrender.com";
+const SHARE_ORIGIN = "https://api.concertfyi.com";
 const DEFAULT_IMAGE = `${SITE_URL}/og-image.png`;
 
 const escapeHtml = (value) =>

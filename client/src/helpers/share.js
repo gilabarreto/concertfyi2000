@@ -16,7 +16,7 @@ export function getTicketmasterEventImage(events = [], artistName, localDate, ve
 
 // Share a URL hosted by the API so social crawlers can read event-specific Open Graph
 // metadata before a browser is redirected to the regular ConcertFYI artist page.
-const SHARE_BASE = import.meta.env.VITE_API_BASE || "https://concertfyi2000.onrender.com";
+const SHARE_BASE = import.meta.env.VITE_API_BASE || "https://api.concertfyi.com";
 
 export async function shareOrCopy(url, title = document.title, { text = "", imageUrl } = {}) {
   const description = `${text} Learn more at concertfyi.com.`;

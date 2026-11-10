@@ -60,12 +60,12 @@ jobs:
       # Sem cota de terceiro: esta rota devolve 400 na guarda de entrada do nosso próprio
       # código, antes de chamar a Ticketmaster. Um 400 aqui prova as três coisas que
       # interessam — o processo subiu, o router está montado e o nosso código roda.
-      # O plano grátis do Render hiberna, então a primeira ida pode levar ~1 min: timeout
-      # largo e uma tentativa só. Falha aqui quer dizer fora do ar, não devagar.
+      # O Worker do Cloudflare não hiberna; o timeout largo só evita falso alarme por
+      # rede lenta do runner. Falha aqui quer dizer fora do ar, não devagar.
       - name: Probe the proxy
         run: |
           code=$(curl -o /dev/null -s -w '%{http_code}' --max-time 120 \
-            https://concertfyi2000.onrender.com/api/ticketmaster/events)
+            https://api.concertfyi.com/api/ticketmaster/events)
           echo "HTTP $code"
           test "$code" = "400"
 

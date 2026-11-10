@@ -3,8 +3,7 @@ import { request } from "./request";
 // dev keeps the base relative so the Vite proxy forwards /api to the local server;
 // the build has no proxy, so it needs the absolute host.
 export const API_BASE =
-  import.meta.env.VITE_API_BASE ||
-  (import.meta.env.DEV ? "" : "https://concertfyi2000.onrender.com");
+  import.meta.env.VITE_API_BASE || (import.meta.env.DEV ? "" : "https://api.concertfyi.com");
 
 const API = (path, options) => request(`${API_BASE}/api${path}`, options);
 
