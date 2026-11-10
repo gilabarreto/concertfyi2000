@@ -1,6 +1,7 @@
 # Deploy: Workers Builds do Cloudflare, a cada push em main, com Root directory
 # `server`. Sem isso o wrangler roda na raiz, não acha este arquivo e publica um
 # Worker vazio que responde 404 em tudo (aconteceu em 2026-11-10).
+# Secrets ficam no Worker, não na versão: um deploy pelo Builds herda os que existem.
 name = "concertfyi-api"
 main = "worker.mjs"
 compatibility_date = "2026-11-01"
