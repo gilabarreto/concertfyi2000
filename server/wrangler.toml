@@ -1,0 +1,14 @@
+name = "concertfyi-api"
+main = "worker.mjs"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Logs no painel (substitui o stdout do Render que o requestLog usa).
+[observability]
+enabled = true
+
+[vars]
+CLIENT_IP_HEADER = "cf-connecting-ip"
+
+# Chaves de API: secrets, nunca aqui. `npx wrangler secret put NOME` para cada uma
+# (lista no CLAUDE.md). Localmente o `wrangler dev` lê do server/.dev.vars.

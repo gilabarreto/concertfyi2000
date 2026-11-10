@@ -44,3 +44,7 @@ C:\\Users\\*
 # Material de pesquisa do dono; fica no disco, fora do repositório.
 *.pdf
 *:Zone.Identifier
+
+# Segredos locais do wrangler dev
+.dev.vars
+.wrangler/
