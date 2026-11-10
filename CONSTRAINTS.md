@@ -1,7 +1,7 @@
 CONSTRAINTS.md — Pendências e Exceções
 🔴 Só você pode resolver
 □ Rotacionar a SETLISTFM_API_KEY — vazou em bundle público da gh-pages em julho/2025. Sem self-service no portal do setlist.fm. Vence 2026-10-15 (abrir chamado).
-□ Restringir VITE_GOOGLE_MAPS_KEY por referrer no Google Cloud Console — nunca verificado; sem isso, a chave pública é abusável. Vence 2026-10-15.
+☑ Restringir VITE_GOOGLE_MAPS_KEY por referrer — feito em 2026-11-10 (referrers do site + localhost:3000; só Maps JavaScript e Maps Embed). Ver SUGESTOES.
 □ Sair do GitHub Pages — resolve de uma vez: CSP com frame-ancestors/report-uri/sandbox (hoje ignoradas em <meta>), status 404 real em /artists/..., e Cache-Control dos assets.
 🟡 Decisões de qualidade (com vencimento ou gatilho)
 □ 87 achados de gitleaks no histórico da gh-pages — bundles com a chave pública do Maps. Sem vencimento; aceito (chave de browser é pública por design).

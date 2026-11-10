@@ -1,14 +1,19 @@
 ConcertFYI — Pendências e Decisões
 🔴 Só você pode resolver (fora do repositório)
-□ Liberar Maps Static API na chave VITE_GOOGLE_MAPS_KEY (Google Cloud Console). Hoje retorna 403: "This API key is not authorized to use this service or API." Sem isso, não dá para trocar o mapa interativo por imagem estática.
-□ Restringir a mesma chave por referrer (mesma visita ao console). Vence 2026-10-15.
+☑ Liberar Maps Static API — superado em 2026-11-10: o mapa de um ponto virou Maps Embed (`37abc09`), grátis e sem cota; a Static API não é mais necessária e ficou desligada.
+☑ Restringir a chave do site por referrer — resolvido em 2026-11-10 via gcloud: só concertfyi.com, www, gilabarreto.github.io e localhost:3000, e só Maps JavaScript + Maps Embed. Testado: outro site é recusado, Geocoding negado.
 □ Rotacionar a SETLISTFM_API_KEY (vazou em bundle público na gh-pages em julho/2025). Abrir chamado no setlist.fm. Vence 2026-10-15.
 ☑ A SETLISTFM_API_KEY do server/.env local responde 403 — resolvido sozinho: respondeu 200 em 2026-10-01, testando o API Lab.
 □ Sentry e/ou Google Analytics — contas suas; ~20 linhas cada. Hoje erros de produção só aparecem no console do visitante.
-□ Conferir no painel do Render o que o log de acesso da plataforma guarda (IP? query?) e por quanto tempo — a promessa "sem IP e sem query" vale só para o nosso middleware.
-□ Sair do GitHub Pages (Netlify/Vercel/Cloudflare Pages). Resolve: página de artista responder 404 real, CSP via header em vez de <meta>, e Cache-Control dos assets.
+☑ Log de acesso do Render — descartado por opinião em 2026-11-10: o Render sai em 2026-11-13; os logs passam a ser os do Cloudflare (observability no wrangler.toml).
+□ Sair do GitHub Pages — esperando o dono: o DNS já está no Cloudflare (2026-11-10), então o site pode ir para Workers static assets (grátis, ilimitado) com 404 real, CSP por header e Cache-Control. Não feito nesta rodada.
 □ Tag de afiliado da Amazon Associates Canadá — os discos abaixo do player (`03a9664`, no ar em 2026-09-27) linkam para busca na amazon.ca sem tag, então não comissionam. Pegar a tag (formato `xxxx-20`) no painel do Associates e preencher `AMAZON_TAG` em `client/src/components/ArtistPage/Albums.jsx`.
 □ Definir `API_LAB_TOKEN` no painel do Render (Environment) com uma senha longa, para o `/api-lab` funcionar no site no ar (código em `1ca0e4a` e `bdf1c60`, 2026-10-02). Sem a variável a rota continua não existindo em produção.
+☑ Servidor do Render → Cloudflare Workers (2026-11-10): `181c24d` (mesmo Express nos dois), `4c68cca` (api.concertfyi.com), `3fd350b` (site aponta para a API nova), `4cfd71a` (CSP connect-src — a troca deixou a home vazia por ~1h40 até isto), `5f14deb`/`2bc5a41` (deploy pelo Workers Builds com Root directory `server`; um deploy na raiz publicou Worker vazio e apagou os secrets).
+□ Cancelar o Render — esperando o dono: data combinada sexta 2026-11-13. Já em instância Free. No dia: Delete Web Service e tirar o cartão; eu atualizo CLAUDE.md, README e comentários que citam o Render. Links de share antigos (onrender.com/share/…) param de abrir.
+☑ Cache do YouTube no Workers KV — `561ab27`: id do vídeo guardado 30 dias por música.
+□ minimatch (dev) com advisory — esperando upstream: a correção é major (11.x) e eslint/nodemon ainda pedem 10.x. Só ferramenta de dev; a verificação semanal vai continuar apontando até atualizarem.
+
 🟡 Decisões de produto/arquitetura
 □ Pôster oficial por tour — pesquisa de 25/09/2026: Event Art Archive fornece arte por MBID de evento, sem endpoint documentado por nome de tour. Experimento retirado da ArtistPage por decisão do dono em 26/09/2026; consultas mantidas no API Lab. Retomar associação à tour somente com fonte explícita; não tratar pôster de outra data como o show atual. Resumo e fontes em `docs/APIS_E_FONTES.md`.
 □ Enriquecimento visual e descoberta — Miniaturas TheAudioDB via MBID aprovadas pelo dono em 26/09/2026, com Ticketmaster como foto inicial. A revisão dos termos do provedor segue pendente. Cover Art Archive para capas de álbuns e ListenBrainz/Last.fm para recomendações seguem como candidatos pesquisados em 25/09/2026. Ver `docs/APIS_E_FONTES.md`.
@@ -116,7 +121,7 @@ Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG 
 
 ☑ Separador "·" (rodada /review de 2026-10-05) — troca em lista de shows, cópia do setlist, nome da playlist e título em `69a9b32`; título padrão e títulos sociais do `client/index.html` em `61f085a`; separador da lista com `aria-hidden` em `f92040c`.
 ☑ Venues: Google Places (rodada de 2026-10-05) — causa raiz: cota diária de 200 `GetPlaceRequest` estourada (429 engolido como "unavailable"). Log do motivo em `1d25962`; reviews na mesma chamada dos detalhes, lista de fotos sem custo e home usando a foto da Ticketmaster primeiro em `27a0879`; Google e Overpass em paralelo e sem esperar a Wikidata em `8178383`; `Loading…` até responder, `N/A` depois e sem avisos de erro em `cb6a5f1`; nome diferente aceito com coordenada exata e tipo de casa de show em `7428f46`; correspondência automática por palavras e segunda busca com a cidade em `3428ccc` (a confirmação manual foi descartada pelo dono antes do push).
-□ Cotas do Google Cloud alinhadas ao nível grátis — esperando o dono: só ele acessa o Console. Valores sugeridos na conversa de 2026-10-05.
+☑ Cotas do Google Cloud alinhadas ao grátis — resolvido em 2026-11-10 via gcloud: Places GetPlace 30/d, GetPhotoMedia 30/d, SearchText 150/d, demais métodos 0; Maps 280/d (concertifyi) + 20/d (calgary-skies) = 9.300/mês < 10.000; 14 APIs não usadas desligadas no concertifyi e 13 no calgary-skies; spud-spotters e My First Project desligados da cobrança; alerta `alerta-zero` de CA$ 1.
 ☑ Venues que faltam na lista da home — com os exemplos de Calgary (2026-10-08), elas estavam na lista; faltava foto/dados do Google. Resolvido nos commits da linha "Venues de Calgary".
 □ Banco de dados como cache das APIs — esperando o dono: pedido para depois desta rodada. Restrição: os termos do Google Places só permitem guardar o place ID, então conteúdo do Google não entra no banco; Ticketmaster, setlist.fm, Wikipedia/Wikidata e OSM entram conforme a licença de cada um.
 ☑ "Venues/Concerts are temporarily unavailable" na home — removido a pedido do dono junto com a padronização de mensagens vazias (ver commit seguinte a `5ffbef0`). Erros de ação continuam visíveis: busca de cidade, criação de playlist, clique no carrossel e formulário de contato.
