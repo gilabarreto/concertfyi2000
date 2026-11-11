@@ -8,7 +8,7 @@ import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
 import { useT } from "../../i18n";
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 
-export default function VenuePhotos({ identity, enabled, loading, name }) {
+export default function VenuePhotos({ identity, enabled, loading, name, firstPage }) {
   const t = useT();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
@@ -24,7 +24,14 @@ export default function VenuePhotos({ identity, enabled, loading, name }) {
     return () => media.removeEventListener("change", update);
   }, []);
   const limit = desktop ? 6 : 3;
-  const { data, isLoading } = useVenuePhotos(identity, enabled, page * limit, limit);
+  // Page 0 came with the venue services call; only later pages ask Google again.
+  const ownFirst =
+    page === 0 && firstPage?.photos?.length === Math.min(limit, firstPage?.total || 0)
+      ? firstPage
+      : null;
+  const query = useVenuePhotos(identity, enabled && !ownFirst, page * limit, limit);
+  const data = ownFirst || query.data;
+  const isLoading = !ownFirst && query.isLoading;
   const total = data?.total || 0;
   const photos = (data?.photos || []).filter((photo) => !failed.includes(photo.imageUrl));
   return (

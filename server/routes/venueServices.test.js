@@ -263,3 +263,27 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
   assert.equal(firstHit.queries.length, 1, "the city search is spent only on a miss");
   assert.equal((await run({ ...loose, city: ["x"] }, () => [])).body.error, "Invalid city");
 });
+
+test("services with a photo limit returns the first photo page from the same GetPlace", async () => {
+  const calls = [];
+  const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", overpassUrl: "https://overpass.example/api", fetchJson: async (url, options) => {
+    calls.push(url);
+    if (url.startsWith("https://overpass.example")) return { elements: [] };
+    if (url.endsWith("searchText")) return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 }, types: ["stadium"] }] };
+    if (url.endsWith("places/venue")) {
+      assert.match(options.headers["X-Goog-FieldMask"], /^photos,/, "photos ride on the services mask");
+      return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, photos: Array.from({ length: 10 }, (_, index) => ({ name: `places/venue/photos/photo_${index}` })) };
+    }
+    return { photoUri: `https://images.example.com/${url.split("/").at(-2)}.jpg` };
+  } });
+
+  const result = await call(handlers.services, { ...query, limit: "3" });
+  assert.equal(result.body.photos.total, 10);
+  assert.equal(result.body.photos.photos.length, 3);
+  assert.equal(calls.filter(url => url.endsWith("places/venue")).length, 1, "one GetPlace for details and photos");
+
+  const plain = await call(handlers.services);
+  assert.equal(plain.body.photos, null, "no limit, no media calls");
+  assert.equal(calls.filter(url => url.endsWith("/media")).length, 3);
+  assert.equal((await call(handlers.services, { ...query, limit: "5" })).code, 400);
+});

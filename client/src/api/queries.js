@@ -26,10 +26,11 @@ import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
 
 // Places content is retained only while displayed; reviews load on opening their dialog.
-export const useVenueServices = (identity, enabled) =>
+// `limit` brings the first photo page in the same Google call (one GetPlace, not two).
+export const useVenueServices = (identity, enabled, limit) =>
   useQuery({
-    queryKey: ["venue-services", identity],
-    queryFn: () => getVenueServices(identity),
+    queryKey: ["venue-services", identity, limit],
+    queryFn: () => getVenueServices(identity, limit),
     enabled: !!enabled && !!identity?.name && identity.lat != null && identity.long != null,
     staleTime: 0,
     gcTime: 0,

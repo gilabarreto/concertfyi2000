@@ -69,6 +69,8 @@ export default function VenuePage() {
     identity,
     // Ticketmaster's exact location settles the identity; only without it is Wikidata's worth waiting for.
     !!venue && (!!location || (!infoLoading && !eventsLoading)),
+    // Same page size VenuePhotos shows first, so its opening page needs no call of its own.
+    window.matchMedia("(min-width: 1024px)").matches ? 6 : 3,
   );
   // Pending covers the wait before the query is even enabled; without coordinates it never runs.
   const servicesLoading = servicesPending && identity.lat != null;
@@ -159,6 +161,7 @@ export default function VenuePage() {
           enabled={!!services.fields?.rating || services.providers?.google === "ok"}
           loading={servicesLoading}
           name={venue.name}
+          firstPage={services.photos}
         />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
           <div className="min-w-0 bg-white px-4 space-y-2">
