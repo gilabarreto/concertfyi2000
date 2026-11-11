@@ -36,12 +36,21 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     // Nominatim, not Overpass: overpass-api.de refuses Cloudflare's egress (521) and the public
     // mirrors time out. Its policy is 1 request a second with caching; the D1 store keeps each
     // venue 30 days. ponytail: no global throttle, add one if traffic makes bursts of new venues.
-    // "Dicken's Pub" finds nothing, "Dickens Pub" finds the pub: Nominatim wants bare words.
-    const searchName = text => text.replace(/['’]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
     const dLat = radius / 111, dLong = radius / (111 * Math.cos((lat * Math.PI) / 180));
-    try {
-      const results = await fetch(osmUrl, { headers: { "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, params: { q: searchName(name), format: "jsonv2", extratags: 1, namedetails: 1, addressdetails: 1, limit: 10, bounded: 1, viewbox: [long - dLong, lat + dLat, long + dLong, lat - dLat].join(",") } }, 7000);
+    const search = async q => {
+      const results = await fetch(osmUrl, { headers: { "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, params: { q, format: "jsonv2", extratags: 1, namedetails: 1, addressdetails: 1, limit: 10, bounded: 1, viewbox: [long - dLong, lat + dLat, long + dLong, lat - dLat].join(",") } }, 7000);
       if (!Array.isArray(results)) throw new Error("Unexpected Nominatim response");
+      return results;
+    };
+    // The name as given first: OSM has "Vern's" with the apostrophe. Bare words only on a miss:
+    // OSM has "Dickens Pub" without it. The pause keeps us inside Nominatim's 1 request a second.
+    const bare = name.replace(/['’]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    try {
+      let results = await search(name);
+      if (!results.length && bare !== name) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        results = await search(bare);
+      }
       // Back into OSM's own shape (type, id, tags) so the matching below reads raw tags.
       const elements = results.map(place => {
         // Without a house number Nominatim's address is the nearest road, not the venue's

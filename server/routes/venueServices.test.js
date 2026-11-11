@@ -153,14 +153,24 @@ test("descriptor matching never treats arbitrary partial names as a venue match"
 });
 
 test("OSM can supplement a pub's alternate descriptor and About, without hardcoded venue data", async () => {
-  let queryText;
+  const queries = [];
   const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async (_url, options) => {
-    queryText = options.params.q;
-    return nominatim([{ ...osmVenue, tags: { name: "Dickens", amenity: "pub", "description:en": "An independent live music pub." } }]);
+    queries.push(options.params.q);
+    // OSM spells it "Dickens": the name with the apostrophe finds nothing.
+    return options.params.q.includes("'") ? [] : nominatim([{ ...osmVenue, tags: { name: "Dickens", amenity: "pub", "description:en": "An independent live music pub." } }]);
   } });
   const result = await call(handlers.services, { ...query, name: "Dicken's Pub" });
   assert.equal(result.body.fields.description.value, "An independent live music pub.");
-  assert.equal(queryText, "Dickens Pub", "Nominatim misses names with an apostrophe");
+  assert.deepEqual(queries, ["Dicken's Pub", "Dickens Pub"], "bare words only after a miss");
+
+  // OSM spells "Vern's" with it: found on the first search, no second call.
+  queries.length = 0;
+  const verns = createVenueServicesHandlers({ apiKey: "", fetchJson: async (_url, options) => {
+    queries.push(options.params.q);
+    return nominatim([{ ...osmVenue, tags: { name: "Vern's", amenity: "bar", phone: "+1 403" } }]);
+  } });
+  assert.equal((await call(verns.services, { ...query, name: "Vern's" })).body.fields.phone.value, "+1 403");
+  assert.deepEqual(queries, ["Vern's"]);
 });
 
 test("profile rating uses Google's aggregate and count from the same details call as reviews", async () => {
