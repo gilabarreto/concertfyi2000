@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
-import { useCitySetlists, useLocalEvents, useVenuePhotos } from "../api/queries";
+import { useCitySetlists, useLocalEvents } from "../api/queries";
 import { artistOf, getExploreEvents, getUpcomingConcertsByCity } from "../helpers/selectors";
 import CardTitle from "./ArtistPage/CardTitle";
 import Icon from "./Icon";
@@ -24,23 +24,11 @@ const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefine
 function VenueTile({ venue, ticketmaster }) {
   const t = useT();
   const [failed, setFailed] = useState(false);
-  const [googleFailed, setGoogleFailed] = useState(false);
+  // Ticketmaster only. Google photos used to fill the gaps, but each tile cost a search,
+  // a GetPlace and an image against the same daily cap the venue pages need, and a few
+  // Home visits used it up: the venue page then showed nothing from Google all day.
   const image = ticketmaster?.images?.find((item) => safeUrl(item.url))?.url;
-  const location = ticketmaster?.location;
-  const identity = {
-    name: venue.name,
-    lat: location?.latitude != null ? Number(location.latitude) : venue.city?.coords?.lat,
-    long: location?.longitude != null ? Number(location.longitude) : venue.city?.coords?.long,
-    exact: !!location,
-    city: venue.city?.name,
-  };
-  // Google photos are 1,000 free a month, shared with the venue pages: only ask when
-  // Ticketmaster has no usable image.
-  const ticketmasterImage = !failed && image;
-  const { data, isLoading } = useVenuePhotos(identity, !ticketmasterImage, 0, 1);
-  const photo = data?.photos?.[0];
-  const googlePhoto = !ticketmasterImage && !googleFailed && safeUrl(photo?.imageUrl);
-  const src = ticketmasterImage || googlePhoto;
+  const src = !failed && image;
   return (
     <li className="w-[calc((100%-1.5rem)/3)] lg:w-[calc((100%-3.75rem)/6)] min-w-0">
       <Link to={`/venues/${venue.id}`} className="group block space-y-1 text-center">
@@ -49,13 +37,13 @@ function VenueTile({ venue, ticketmaster }) {
             src={src}
             alt={venue.name}
             loading="lazy"
-            onError={() => (googlePhoto ? setGoogleFailed(true) : setFailed(true))}
+            onError={() => setFailed(true)}
             className="aspect-square w-full rounded-md object-cover bg-zinc-100 transition-opacity group-hover:opacity-80"
           />
         ) : (
           <div
             className="aspect-square w-full rounded-md bg-zinc-100 flex items-center justify-center text-zinc-400"
-            aria-label={isLoading ? t("Loading venue photo") : t("No photo available.")}
+            aria-label={t("No photo available.")}
           >
             <Icon icon={faBuilding} className="text-3xl" />
           </div>
@@ -64,25 +52,6 @@ function VenueTile({ venue, ticketmaster }) {
           {venue.name}
         </span>
       </Link>
-      {googlePhoto && (
-        <div className="mt-1 text-center text-xs text-zinc-500 break-words">
-          <a
-            href={safeUrl(data.url)}
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-red-600"
-          >
-            Google Maps
-          </a>
-          {data.attributions?.map((author, index) => (
-            <p key={index}>
-              <a href={safeUrl(author.url)} target="_blank" rel="noreferrer">
-                {author.name}
-              </a>
-            </p>
-          ))}
-        </div>
-      )}
     </li>
   );
 }
