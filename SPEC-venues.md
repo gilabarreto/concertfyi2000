@@ -57,7 +57,7 @@ cd server && npx wrangler dev --port 8799     # D1 local para testar
   mantém o vencido quando `load` lança ou volta parcial, D1 com erro cai para a
   fonte.
 - `venueServices.test.js` / `venueInfo.test.js`: com um D1 de mentira, a segunda
-  visita à mesma venue faz 0 chamadas a Wikidata/Wikipedia/Overpass/SearchText
+  visita à mesma venue faz 0 chamadas a Wikidata/Wikipedia/Nominatim/SearchText
   e exatamente 1 GetPlace; o que fica guardado sob a chave do Google é só o ID.
 - Ponta a ponta no `wrangler dev` com D1 local: duas visitas, contar chamadas.
 
@@ -69,7 +69,7 @@ cd server && npx wrangler dev --port 8799     # D1 local para testar
 
 ## Critérios de sucesso
 1. Segunda visita a uma venue (qualquer isolate): 0 SearchText, 0 Wikidata,
-   0 Wikipedia, 0 Overpass, 1 GetPlace. Medido em teste e no `wrangler dev`.
+   0 Wikipedia, 0 Nominatim, 1 GetPlace. Medido em teste e no `wrangler dev`.
 2. Página de venue igual à de hoje para quem visita.
 3. Node (`npm run dev`) e testes funcionam sem D1.
 4. Plano grátis do D1 (5 mi leituras, 100 mil escritas/dia) folgado: ~4 escritas

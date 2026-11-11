@@ -5,7 +5,7 @@ const { createStore } = require("../store");
 const DAY = 24 * 60 * 60;
 const OSM_TTL = result => (result.status === "ok" ? 30 : 7) * DAY;
 const PLACE_ID_TTL = id => (id ? 365 : 7) * DAY;
-const { nearby, venueNamesMatch, venueNamesOverlap, venueNameParts } = require("../venueIdentity");
+const { nearby, venueNamesMatch, venueNamesOverlap } = require("../venueIdentity");
 const safeUrl = value => /^https?:\/\//i.test(value || "") ? value : "";
 const booleanLines = (options, labels) => Object.entries(labels).filter(([key]) => typeof options?.[key] === "boolean").map(([key, label]) => `${label}: ${options[key] ? "Yes" : "No"}`).join("\n");
 const parkingLabels = { freeParkingLot: "Free parking lot", paidParkingLot: "Paid parking lot", freeStreetParking: "Free street parking", paidStreetParking: "Paid street parking", valetParking: "Valet parking", freeGarageParking: "Free garage parking", paidGarageParking: "Paid garage parking" };
@@ -16,7 +16,7 @@ const TRANSIT = ["train_station", "bus_station", "bus_stop", "subway_station", "
 const VENUE_TYPES = ["stadium", "arena", "concert_hall", "live_music_venue", "performing_arts_theater", "event_venue", "amphitheatre", "auditorium", "night_club", "bar", "pub", "cultural_center"];
 const field = (value, source, url, attributions = []) => value ? { value, source, url: safeUrl(url), attributions } : null;
 
-function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env.GOOGLE_PLACES_API_KEY, overpassUrl = process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter" } = {}) {
+function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env.GOOGLE_PLACES_API_KEY, osmUrl = "https://nominatim.openstreetmap.org/search" } = {}) {
   // Sem banco (Node, testes) o store é memória; no Worker vem de app.locals (worker.mjs).
   const memoryStore = createStore();
   const pending = new Map();
@@ -33,13 +33,26 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
   // Lança em falha (e não devolve "unavailable") para o store manter o valor antigo.
   async function loadOsm(identity) {
     const { name, lat, long, radius } = identity;
-    // Optional punctuation accommodates Dicken's Pub / Dickens without a per-venue alias.
-    const escaped = [...venueNameParts(name).rawBase].filter(char => /[\p{L}\p{N}]/u.test(char)).join("[^[:alnum:]]*");
-    const query = `[out:json][timeout:6];nwr(around:${radius * 1000},${lat},${long})[~"^(name|name:en|official_name|alt_name)$"~${JSON.stringify(escaped)},i];out center tags;`;
+    // Nominatim, not Overpass: overpass-api.de refuses Cloudflare's egress (521) and the public
+    // mirrors time out. Its policy is 1 request a second with caching; the D1 store keeps each
+    // venue 30 days. ponytail: no global throttle, add one if traffic makes bursts of new venues.
+    // "Dicken's Pub" finds nothing, "Dickens Pub" finds the pub: Nominatim wants bare words.
+    const searchName = text => text.replace(/['’]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+    const dLat = radius / 111, dLong = radius / (111 * Math.cos((lat * Math.PI) / 180));
     try {
-      const data = await fetch(overpassUrl, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded", "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, body: new URLSearchParams({ data: query }).toString() }, 7000);
-      if (data.remark) throw new Error("Incomplete Overpass response");
-      const matches = (data.elements || []).filter(item => {
+      const results = await fetch(osmUrl, { headers: { "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com)" }, params: { q: searchName(name), format: "jsonv2", extratags: 1, namedetails: 1, addressdetails: 1, limit: 10, bounded: 1, viewbox: [long - dLong, lat + dLat, long + dLong, lat - dLat].join(",") } }, 7000);
+      if (!Array.isArray(results)) throw new Error("Unexpected Nominatim response");
+      // Back into OSM's own shape (type, id, tags) so the matching below reads raw tags.
+      const elements = results.map(place => {
+        // Without a house number Nominatim's address is the nearest road, not the venue's
+        // (Wembley came back as a footpath): no address beats a wrong one.
+        const address = place.address?.house_number ? place.address : {};
+        const tags = { ...place.extratags, ...place.namedetails, name: place.namedetails?.name || place.name, "addr:housenumber": address.house_number, "addr:street": address.road, "addr:city": address.city || address.town || address.village, "addr:postcode": address.postcode, "addr:country": address.country };
+        if (place.category && place.type) tags[place.category] = place.type;
+        const at = { lat: Number(place.lat), lon: Number(place.lon) };
+        return { type: place.osm_type, id: place.osm_id, ...(place.osm_type === "node" ? at : { center: at }), tags };
+      });
+      const matches = elements.filter(item => {
         const tags = item.tags || {};
         const types = [tags.amenity, tags.leisure, tags.building, tags.amenity === "theatre" ? "performing_arts_theater" : "", tags.amenity === "music_venue" ? "live_music_venue" : ""];
         return !tags.public_transport && !tags.railway && !tags.highway && !tags.route && [tags.name, tags["name:en"], tags.official_name, ...(tags.alt_name || "").split(";")].some(value => venueNamesMatch(name, value, types)) && nearby(lat, long, item.lat ?? item.center?.lat, item.lon ?? item.center?.lon, radius);

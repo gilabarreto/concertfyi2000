@@ -4,6 +4,8 @@ const { createVenueServicesHandlers } = require("./venueServices");
 // `google: "true"` is the visitor's click; most tests exercise the Google side.
 const query = { name: "Wembley Stadium", lat: "51.556", long: "-0.279", exact: "true", google: "true" };
 const osmVenue = { type: "way", id: 1, center: { lat: 51.556, lon: -0.279 }, tags: { name: query.name, wheelchair: "yes", phone: "+44 1234", opening_hours: "Mo-Fr 09:00-17:00", website: "https://www.wembleystadium.com", "payment:cash": "no" } };
+// Nominatim's answer for OSM elements written as raw tags: name apart, the rest as extratags.
+const nominatim = elements => elements.map(({ type, id, lat, lon, center, tags: { name, ...extratags } }) => ({ osm_type: type, osm_id: id, lat: String(lat ?? center.lat), lon: String(lon ?? center.lon), name, extratags }));
 async function call(handler, input = query) {
   const res = { code: 200, headers: {}, status(code) { this.code = code; return this; }, set(key, value) { this.headers[key] = value; return this; }, json(body) { this.body = body; return this; } };
   await handler({ query: input }, res);
@@ -12,7 +14,7 @@ async function call(handler, input = query) {
 
 test("OSM works without a Google key, preserves negative values and caches only free content", async () => {
   let requests = 0;
-  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => { requests++; return { elements: [osmVenue] }; } });
+  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => { requests++; return nominatim([osmVenue]); } });
   const first = await call(handlers.services);
   assert.equal(first.body.fields.phone.value, "+44 1234");
   assert.equal(first.body.fields.payments.value, "cash: no");
@@ -24,17 +26,24 @@ test("OSM works without a Google key, preserves negative values and caches only 
   assert.equal(first.body.providers.google, "unconfigured");
 });
 
-test("matching rejects namesakes, ambiguity and incomplete Overpass results", async () => {
+test("a Nominatim address without a house number is the nearest road, so it is dropped", async () => {
+  const place = nominatim([osmVenue])[0];
+  const answer = address => createVenueServicesHandlers({ apiKey: "", fetchJson: async () => [{ ...place, address }] });
+  assert.equal((await call(answer({ road: "Zig-a-Zag Allée Footpath", country: "United Kingdom" }).services)).body.fields.address, null);
+  assert.equal((await call(answer({ house_number: "1", road: "Olympic Way", city: "London", country: "United Kingdom" }).services)).body.fields.address.value, "1 Olympic Way, London, United Kingdom");
+});
+
+test("matching rejects namesakes, ambiguity and a failed Nominatim answer", async () => {
   for (const elements of [[{ ...osmVenue, center: { lat: 0, lon: 0 } }], [osmVenue, { ...osmVenue, id: 2, center: { lat: 51.56, lon: -0.279 } }], [{ ...osmVenue, tags: { name: "Wrong Stadium" } }]]) {
-    const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements }) });
+    const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => (nominatim(elements)) });
     assert.equal((await call(handlers.services)).body.fields.phone, null);
   }
-  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ remark: "Query timed out", elements: [osmVenue] }) });
+  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ error: "Nominatim is overloaded" }) });
   assert.equal((await call(handlers.services)).body.partial, true);
 });
 
 test("the area and its nearby label node do not make one OSM venue ambiguous", async () => {
-  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements: [osmVenue, { ...osmVenue, type: "node", lat: 51.556, lon: -0.279 }] }) });
+  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => (nominatim([osmVenue, { ...osmVenue, type: "node", lat: 51.556, lon: -0.279 }])) });
   assert.equal((await call(handlers.services)).body.fields.phone.value, "+44 1234");
 });
 
@@ -44,7 +53,7 @@ test("Google complements use explicit masks, fallback per missing field and neve
     requests.push({ url, options });
     if (url.endsWith("searchText")) return { places: [{ id: "test_place", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
     if (url.includes("places/test_place")) return { internationalPhoneNumber: "+44 5678", accessibilityOptions: { wheelchairAccessibleEntrance: false }, paymentOptions: { acceptsCashOnly: false }, googleMapsUri: "https://maps.google.com/?cid=1" };
-    return { elements: [osmVenue] };
+    return nominatim([osmVenue]);
   } });
   const result = await call(handlers.services);
   assert.equal(result.body.fields.phone.value, "+44 5678");
@@ -65,7 +74,7 @@ test("reviews ride on the services call, capped at five, preserving author/sourc
   const masks = [];
   const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async (url, options) => {
     if (url.endsWith("searchText")) return { places: [{ id: "test_place", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 } }] };
-    if (!url.includes("places.googleapis.com")) return { elements: [] };
+    if (!url.includes("places.googleapis.com")) return nominatim([]);
     masks.push(options.headers["X-Goog-FieldMask"]);
     return { rating: 4.5, userRatingCount: 100, location: { latitude: 51.5561, longitude: -0.2796 }, googleMapsUri: "https://maps.google.com/?cid=1", reviews: Array.from({ length: 6 }, () => ({ rating: 5, text: { text: "A review" }, authorAttribution: { displayName: "Author", uri: "https://maps.google.com/user", photoUri: "https://example.com/photo" } })) };
   } });
@@ -90,11 +99,11 @@ test("invalid inputs never reach providers, and failures expose no credentials",
 
 test("transport stops named after a stadium cannot supply its details", async () => {
   const station = { ...osmVenue, type: "node", lat: 51.554, lon: -0.284, tags: { name: query.name, public_transport: "station", phone: "wrong station phone" } };
-  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements: [station, osmVenue] }) });
+  const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => (nominatim([station, osmVenue])) });
   const body = (await call(handlers.services)).body;
   assert.equal(body.fields.phone.value, "+44 1234");
   assert.ok(body.location, "OSM's pin when Google has none");
-  const stationOnly = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => ({ elements: [station] }) });
+  const stationOnly = createVenueServicesHandlers({ apiKey: "", fetchJson: async () => (nominatim([station])) });
   assert.equal((await call(stationOnly.services)).body.providers.osm, "not-found");
 });
 
@@ -108,7 +117,7 @@ test("Google outage or an ambiguous match keeps the independent OSM fallback", a
         return { places: [place, { ...place, id: "other_place" }] };
       }
       if (url.includes("places.googleapis.com")) { detailRequests++; throw new Error("wrong place"); }
-      return { elements: [osmVenue] };
+      return nominatim([osmVenue]);
     } });
     const result = await call(handlers.services);
     assert.equal(result.body.fields.phone.source, "OpenStreetMap");
@@ -124,7 +133,7 @@ test("Dickens Pub matches Dickens only with pub category and compatible coordina
       assert.ok(options.headers["X-Goog-FieldMask"].includes("editorialSummary"));
       return { editorialSummary: { text: description }, internationalPhoneNumber: "+1 403-233-7550", googleMapsUri: "https://maps.google.com/?cid=1" };
     }
-    return { elements: [] };
+    return nominatim([]);
   } });
   const result = await call(handlers.services, { name: "Dicken's Pub", lat: "51.05", long: "-114.085", google: "true" });
   assert.equal(result.body.providers.google, "ok");
@@ -146,12 +155,12 @@ test("descriptor matching never treats arbitrary partial names as a venue match"
 test("OSM can supplement a pub's alternate descriptor and About, without hardcoded venue data", async () => {
   let queryText;
   const handlers = createVenueServicesHandlers({ apiKey: "", fetchJson: async (_url, options) => {
-    queryText = new URLSearchParams(options.body).get("data");
-    return { elements: [{ ...osmVenue, tags: { name: "Dickens", amenity: "pub", "description:en": "An independent live music pub." } }] };
+    queryText = options.params.q;
+    return nominatim([{ ...osmVenue, tags: { name: "Dickens", amenity: "pub", "description:en": "An independent live music pub." } }]);
   } });
   const result = await call(handlers.services, { ...query, name: "Dicken's Pub" });
   assert.equal(result.body.fields.description.value, "An independent live music pub.");
-  assert.ok(queryText.includes("D[^[:alnum:]]*i"));
+  assert.equal(queryText, "Dickens Pub", "Nominatim misses names with an apostrophe");
 });
 
 test("profile rating uses Google's aggregate and count from the same details call as reviews", async () => {
@@ -164,7 +173,7 @@ test("profile rating uses Google's aggregate and count from the same details cal
       assert.ok(mask.includes("reviews"));
       return { rating: 4.6, userRatingCount: 1438, googleMapsUri: "https://maps.google.com/?cid=1" };
     }
-    return { elements: [] };
+    return nominatim([]);
   } });
   const result = await call(handlers.services);
   assert.equal(result.body.fields.rating.value, 4.6);
@@ -217,7 +226,7 @@ test("with an exact pin, Google's top venue-typed result stands in for a renamed
     const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async url => {
       if (url.endsWith("searchText")) return { places };
       if (url.includes("places.googleapis.com")) return { internationalPhoneNumber: "+55 11 0000", googleMapsUri: "https://maps.google.com/?cid=1" };
-      return { elements: [] };
+      return nominatim([]);
     } });
     return (await call(handlers.services, input)).body;
   };
@@ -237,7 +246,7 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
     const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", fetchJson: async (url, options) => {
       if (url.endsWith("searchText")) { const { textQuery } = JSON.parse(options.body); queries.push(textQuery); return { places: answer(textQuery) }; }
       if (url.includes("places.googleapis.com")) return { internationalPhoneNumber: "+55 11 0000", googleMapsUri: "https://maps.google.com/?cid=1" };
-      return { elements: [] };
+      return nominatim([]);
     } });
     return { body: (await call(handlers.services, input)).body, queries };
   };
@@ -267,9 +276,9 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
 
 test("opening the page spends nothing on Google; the rating click spends one GetPlace and no media", async () => {
   const calls = [];
-  const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", overpassUrl: "https://overpass.example/api", fetchJson: async (url, options) => {
+  const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", osmUrl: "https://osm.example/search", fetchJson: async (url, options) => {
     calls.push(url);
-    if (url.startsWith("https://overpass.example")) return { elements: [osmVenue] };
+    if (url.startsWith("https://osm.example")) return nominatim([osmVenue]);
     if (url.endsWith("searchText")) return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 }, types: ["stadium"] }] };
     assert.doesNotMatch(options.headers["X-Goog-FieldMask"], /photos/, "photos are their own click");
     return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, photos: [{ name: "places/venue/photos/a" }] };
@@ -287,7 +296,7 @@ test("opening the page spends nothing on Google; the rating click spends one Get
   assert.equal(clicked.body.photos, undefined);
 });
 
-test("stored venue: second visit spends no search and no Overpass, only the live details call", async () => {
+test("stored venue: second visit spends no search and no Nominatim, only the live details call", async () => {
   const { createStore } = require("../store");
   const rows = new Map();
   // D1 de mentira compartilhado entre dois handlers = dois isolates do Worker.
@@ -297,15 +306,15 @@ test("stored venue: second visit spends no search and no Overpass, only the live
   }) }) };
   const counts = {};
   const fetchJson = async (url) => {
-    const kind = url.includes("overpass") ? "overpass" : url.endsWith("searchText") ? "search" : url.endsWith("/media") ? "media" : "details";
+    const kind = url.includes("osm.example") ? "osm" : url.endsWith("searchText") ? "search" : url.endsWith("/media") ? "media" : "details";
     counts[kind] = (counts[kind] || 0) + 1;
-    if (kind === "overpass") return { elements: [osmVenue] };
+    if (kind === "osm") return nominatim([osmVenue]);
     if (kind === "search") return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 }, types: ["stadium"] }] };
     return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, userRatingCount: 10 };
   };
   const app = { locals: { store: createStore({ db }) } };
   const visit = async () => {
-    const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", overpassUrl: "https://overpass.example/api", fetchJson });
+    const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", osmUrl: "https://osm.example/search", fetchJson });
     const res = { code: 200, headers: {}, status(code) { this.code = code; return this; }, set(k, v) { this.headers[k] = v; return this; }, json(body) { this.body = body; return this; } };
     await handlers.services({ query, app }, res);
     return res.body;
@@ -316,7 +325,7 @@ test("stored venue: second visit spends no search and no Overpass, only the live
   const second = await visit();
   assert.equal(second.fields.rating.value, 4.5);
   assert.equal(counts.search, first.search, "no new SearchText");
-  assert.equal(counts.overpass, first.overpass, "no new Overpass");
+  assert.equal(counts.osm, first.osm, "no new Nominatim");
   assert.equal(counts.details - first.details, 1, "details stay live: one GetPlace per visit");
   const stored = [...rows.entries()].filter(([key]) => key.startsWith("google-id:"));
   assert.deepEqual(stored.map(([, row]) => row.value), ['"venue"'], "only the place ID is kept from Google");
