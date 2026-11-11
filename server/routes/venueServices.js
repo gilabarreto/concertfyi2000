@@ -64,7 +64,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     } catch (error) { console.error("venue-services osm:", error.message); throw error; }
   }
 
-  async function google(identity, key, mode, photoOptions = {}, store = memoryStore) {
+  async function google(identity, key, mode, options = {}, store = memoryStore) {
     if (!apiKey) return { status: "unconfigured", fields: {}, reviews: [] };
     try {
       const headers = { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey };
@@ -100,15 +100,14 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
       if (!id) return { status: "not-found", fields: {}, reviews: [] };
       // Billing follows the priciest field. editorialSummary/parking/payments already make this
       // Enterprise + Atmosphere (1,000 free a month), so reviews ride along at no extra cost;
-      // the photo list stays IDs Only, which is unbilled.
-      // The services call also asks for `photos` (IDs Only, so no price change) and returns
-      // the first photo page with it: a venue page then spends one GetPlace instead of two
-      // against the daily cap, and the photos route is only for paging past the first.
-      const mask = mode === "photos" ? "photos,attributions" : "photos,location,reviews,formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
+      // the photo list stays IDs Only, which is unbilled. Photos are their own click
+      // (SPEC-google-on-click.md): whoever only wants the rating spends no media calls.
+      const mask = mode === "photos" ? "photos,attributions" : "location,reviews,formattedAddress,websiteUri,internationalPhoneNumber,regularOpeningHours,accessibilityOptions,parkingOptions,paymentOptions,editorialSummary,rating,userRatingCount,googleMapsUri,attributions";
       const place = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(id)}`, { headers: { ...headers, "X-Goog-FieldMask": mask }, params: { languageCode: "en" } });
       const attributions = (place.attributions || []).map(item => ({ name: item.provider, url: safeUrl(item.providerUri) }));
       const source = "Google Maps", url = safeUrl(place.googleMapsUri) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(identity.name)}&query_place_id=${id}`;
-      const photoPage = async (offset, limit) => {
+      if (mode === "photos") {
+        const { offset, limit } = options;
         const photos = (place.photos || []).slice(0, 10);
         const results = await Promise.allSettled(photos.slice(offset, offset + limit).map(async photo => {
           if (typeof photo.name !== "string" || !photo.name.startsWith(`places/${id}/photos/`) || !/^places\/[a-zA-Z0-9_-]+\/photos\/[a-zA-Z0-9_-]+$/.test(photo.name)) throw new Error("Invalid photo resource");
@@ -118,12 +117,10 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
           return { imageUrl, authors: (photo.authorAttributions || []).map(author => ({ name: author.displayName, url: safeUrl(author.uri) })) };
         }));
         return { status: "ok", source, url, attributions, total: photos.length, offset, photos: results.filter(item => item.status === "fulfilled").map(item => item.value), partial: results.some(item => item.status === "rejected") };
-      };
-      if (mode === "photos") return photoPage(photoOptions.offset, photoOptions.limit);
-      const firstPhotos = photoOptions.limit ? await photoPage(0, photoOptions.limit) : null;
+      }
       const reviews = (place.reviews || []).slice(0, 5).map(review => ({ rating: review.rating, text: review.text?.text || review.originalText?.text || "", author: review.authorAttribution?.displayName || "Google Maps user", authorUrl: safeUrl(review.authorAttribution?.uri), photoUrl: safeUrl(review.authorAttribution?.photoUri), published: review.relativePublishTimeDescription || "", url: safeUrl(review.googleMapsUri) }));
       const location = Number.isFinite(place.location?.latitude) && Number.isFinite(place.location?.longitude) ? { lat: place.location.latitude, long: place.location.longitude } : null;
-      return { status: "ok", reviews, location, photos: firstPhotos, fields: {
+      return { status: "ok", reviews, location, fields: {
         address: field(place.formattedAddress, source, url, attributions), website: field(safeUrl(place.websiteUri), source, url, attributions), phone: field(place.internationalPhoneNumber, source, url, attributions),
         openingHours: field(place.regularOpeningHours?.weekdayDescriptions?.join("\n"), source, url, attributions),
         accessibility: field(booleanLines(place.accessibilityOptions, accessLabels), source, url, attributions), parking: field(booleanLines(place.parkingOptions, parkingLabels), source, url, attributions), payments: field(booleanLines(place.paymentOptions, paymentLabels), source, url, attributions),
@@ -137,15 +134,16 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     }
   }
 
-  async function load(identity, key, mode, photoOptions, store) {
-    if (mode !== "services") return google(identity, key, mode, photoOptions, store);
+  async function load(identity, key, mode, options, store) {
+    if (mode !== "services") return google(identity, key, mode, options, store);
+    // Google only on the visitor's click (SPEC-google-on-click.md); opening the page is OSM alone.
     // In parallel: Google almost never fills every field, so waiting on it first only
     // stacked Overpass's latency (up to its timeout) behind Google's.
-    const [primary, fallback] = await Promise.all([google(identity, key, "services", photoOptions, store), osm(identity, key, store)]);
+    const [primary, fallback] = await Promise.all([options.google ? google(identity, key, "services", {}, store) : { status: "skipped", fields: {}, reviews: [] }, osm(identity, key, store)]);
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
     // The matched building's pin, for the map; never fed back into the identity.
-    return { fields, reviews: primary.reviews, photos: primary.photos || null, location: primary.location || fallback.location || null, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
+    return { fields, reviews: primary.reviews, location: primary.location || fallback.location || null, providers: { google: primary.status, osm: fallback.status }, partial: primary.status === "unavailable" || fallback.status === "unavailable" };
   }
 
   const handler = mode => async (req, res) => {
@@ -156,18 +154,13 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     if (city !== undefined && (typeof city !== "string" || city.length > 100)) return res.status(400).json({ error: "Invalid city" });
     const exact = req.query.exact === "true";
     const identity = { name: name.trim(), lat, long, exact, radius: exact ? 1.5 : 30, city: city?.trim() || undefined };
-    const photoOptions = { offset: Number(req.query.offset ?? 0), limit: Number(req.query.limit ?? 3) };
-    // Services: first photo page only when asked (`limit`), so old callers spend no media calls.
-    if (mode === "services") {
-      photoOptions.limit = req.query.limit === undefined ? 0 : Number(req.query.limit);
-      if (![0, 3, 6].includes(photoOptions.limit)) return res.status(400).json({ error: "Invalid photo page" });
-    }
-    if (mode === "photos" && (!Number.isInteger(photoOptions.offset) || photoOptions.offset < 0 || photoOptions.offset > 9 || ![1, 3, 6].includes(photoOptions.limit))) return res.status(400).json({ error: "Invalid photo page" });
+    const options = mode === "services" ? { google: req.query.google === "true" } : { offset: Number(req.query.offset ?? 0), limit: Number(req.query.limit ?? 3) };
+    if (mode === "photos" && (!Number.isInteger(options.offset) || options.offset < 0 || options.offset > 9 || ![1, 3, 6].includes(options.limit))) return res.status(400).json({ error: "Invalid photo page" });
     const key = JSON.stringify(identity);
-    const pendingKey = `${mode}:${key}:${JSON.stringify(photoOptions)}`;
+    const pendingKey = `${mode}:${key}:${JSON.stringify(options)}`;
     if (!pending.has(pendingKey)) {
       if (pending.size >= 8) return res.status(503).json({ error: "Venue information busy" });
-      pending.set(pendingKey, load(identity, key, mode, photoOptions, req.app?.locals?.store || memoryStore).finally(() => pending.delete(pendingKey)));
+      pending.set(pendingKey, load(identity, key, mode, options, req.app?.locals?.store || memoryStore).finally(() => pending.delete(pendingKey)));
     }
     res.set("Cache-Control", "no-store");
     return res.json(await pending.get(pendingKey));

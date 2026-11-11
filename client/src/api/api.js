@@ -22,8 +22,8 @@ export const getTicketmasterVenue = (venueId) =>
 export const getVenueInfo = (name, lat, long) =>
   API("/venue-info", { params: { name, lat, long }, timeout: 30000 });
 
-export const getVenueServices = (identity, limit) =>
-  API("/venue-services", { params: { ...identity, limit }, timeout: 45000 });
+export const getVenueServices = (identity, google) =>
+  API("/venue-services", { params: { ...identity, google }, timeout: 45000 });
 
 export const getVenuePhotos = (identity, offset, limit) =>
   API("/venue-photos", { params: { ...identity, offset, limit }, timeout: 45000 });

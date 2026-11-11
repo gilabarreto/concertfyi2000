@@ -8,10 +8,12 @@ import { faCamera } from "@fortawesome/free-solid-svg-icons/faCamera";
 import { useT } from "../../i18n";
 const safeUrl = (value) => (/^https?:\/\//i.test(value || "") ? value : undefined);
 
-export default function VenuePhotos({ identity, enabled, loading, name, firstPage }) {
+export default function VenuePhotos({ identity, enabled, name }) {
   const t = useT();
   const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [page, setPage] = useState(0);
+  // Every photo is a GetPhotoMedia call against the daily cap: none until asked for.
+  const [shown, setShown] = useState(false);
   const [failed, setFailed] = useState([]);
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
@@ -24,21 +26,26 @@ export default function VenuePhotos({ identity, enabled, loading, name, firstPag
     return () => media.removeEventListener("change", update);
   }, []);
   const limit = desktop ? 6 : 3;
-  // Page 0 came with the venue services call; only later pages ask Google again.
-  const ownFirst =
-    page === 0 && firstPage?.photos?.length === Math.min(limit, firstPage?.total || 0)
-      ? firstPage
-      : null;
-  const query = useVenuePhotos(identity, enabled && !ownFirst, page * limit, limit);
-  const data = ownFirst || query.data;
-  const isLoading = !ownFirst && query.isLoading;
+  const query = useVenuePhotos(identity, enabled && shown, page * limit, limit);
+  const data = query.data;
+  const isLoading = shown && query.isPending;
   const total = data?.total || 0;
   const photos = (data?.photos || []).filter((photo) => !failed.includes(photo.imageUrl));
   return (
     <section aria-label={t("Venue photos")} className="bg-white px-4 space-y-2">
       <CardTitle>{t("Photos")}</CardTitle>
       <div className="min-h-36 lg:min-h-52">
-        {loading || isLoading ? (
+        {!shown ? (
+          <div className="flex justify-center py-4">
+            <button
+              type="button"
+              onClick={() => setShown(true)}
+              className="font-semibold text-base text-red-600 hover:text-red-800"
+            >
+              {t("Show Google photos")}
+            </button>
+          </div>
+        ) : isLoading ? (
           <p role="status" className="text-center py-4">
             {t("Loading…")}
           </p>
@@ -84,7 +91,11 @@ export default function VenuePhotos({ identity, enabled, loading, name, firstPag
                   </li>
                 ))}
                 {!photos.length && (
-                  <li className="py-4 text-center">{t("No photos available.")}</li>
+                  <li className="py-4 text-center">
+                    {data?.status === "unavailable"
+                      ? t("Google information is unavailable right now.")
+                      : t("No photos available.")}
+                  </li>
                 )}
               </ul>
               <button

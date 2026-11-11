@@ -1,7 +1,8 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { createVenueServicesHandlers } = require("./venueServices");
-const query = { name: "Wembley Stadium", lat: "51.556", long: "-0.279", exact: "true" };
+// `google: "true"` is the visitor's click; most tests exercise the Google side.
+const query = { name: "Wembley Stadium", lat: "51.556", long: "-0.279", exact: "true", google: "true" };
 const osmVenue = { type: "way", id: 1, center: { lat: 51.556, lon: -0.279 }, tags: { name: query.name, wheelchair: "yes", phone: "+44 1234", opening_hours: "Mo-Fr 09:00-17:00", website: "https://www.wembleystadium.com", "payment:cash": "no" } };
 async function call(handler, input = query) {
   const res = { code: 200, headers: {}, status(code) { this.code = code; return this; }, set(key, value) { this.headers[key] = value; return this; }, json(body) { this.body = body; return this; } };
@@ -125,7 +126,7 @@ test("Dickens Pub matches Dickens only with pub category and compatible coordina
     }
     return { elements: [] };
   } });
-  const result = await call(handlers.services, { name: "Dicken's Pub", lat: "51.05", long: "-114.085" });
+  const result = await call(handlers.services, { name: "Dicken's Pub", lat: "51.05", long: "-114.085", google: "true" });
   assert.equal(result.body.providers.google, "ok");
   assert.equal(result.body.fields.description.value, description);
   assert.equal(result.body.fields.description.source, "Google Maps");
@@ -264,28 +265,26 @@ test("automatic matching: added/dropped words need a venue type, and a miss retr
   assert.equal((await run({ ...loose, city: ["x"] }, () => [])).body.error, "Invalid city");
 });
 
-test("services with a photo limit returns the first photo page from the same GetPlace", async () => {
+test("opening the page spends nothing on Google; the rating click spends one GetPlace and no media", async () => {
   const calls = [];
   const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", overpassUrl: "https://overpass.example/api", fetchJson: async (url, options) => {
     calls.push(url);
-    if (url.startsWith("https://overpass.example")) return { elements: [] };
+    if (url.startsWith("https://overpass.example")) return { elements: [osmVenue] };
     if (url.endsWith("searchText")) return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 }, types: ["stadium"] }] };
-    if (url.endsWith("places/venue")) {
-      assert.match(options.headers["X-Goog-FieldMask"], /^photos,/, "photos ride on the services mask");
-      return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, photos: Array.from({ length: 10 }, (_, index) => ({ name: `places/venue/photos/photo_${index}` })) };
-    }
-    return { photoUri: `https://images.example.com/${url.split("/").at(-2)}.jpg` };
+    assert.doesNotMatch(options.headers["X-Goog-FieldMask"], /photos/, "photos are their own click");
+    return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, photos: [{ name: "places/venue/photos/a" }] };
   } });
 
-  const result = await call(handlers.services, { ...query, limit: "3" });
-  assert.equal(result.body.photos.total, 10);
-  assert.equal(result.body.photos.photos.length, 3);
-  assert.equal(calls.filter(url => url.endsWith("places/venue")).length, 1, "one GetPlace for details and photos");
+  const opened = await call(handlers.services, { ...query, google: undefined });
+  assert.equal(calls.filter(url => url.includes("googleapis")).length, 0);
+  assert.equal(opened.body.providers.google, "skipped");
+  assert.equal(opened.body.fields.phone.source, "OpenStreetMap");
 
-  const plain = await call(handlers.services);
-  assert.equal(plain.body.photos, null, "no limit, no media calls");
-  assert.equal(calls.filter(url => url.endsWith("/media")).length, 3);
-  assert.equal((await call(handlers.services, { ...query, limit: "5" })).code, 400);
+  const clicked = await call(handlers.services);
+  assert.equal(clicked.body.fields.rating.value, 4.5);
+  assert.equal(calls.filter(url => url.endsWith("places/venue")).length, 1);
+  assert.equal(calls.filter(url => url.endsWith("/media")).length, 0);
+  assert.equal(clicked.body.photos, undefined);
 });
 
 test("stored venue: second visit spends no search and no Overpass, only the live details call", async () => {

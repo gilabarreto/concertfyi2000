@@ -231,5 +231,8 @@
   "No Setlist available. Check back later.": "Aucune setlist disponible. Revenez plus tard.",
   "No nearby venues.": "Aucune salle à proximité.",
   "No last concert available.": "Aucun dernier concert disponible.",
-  "Map": "Carte"
+  "Map": "Carte",
+  "Show Google rating and reviews": "Afficher la note et les avis Google",
+  "Show Google photos": "Afficher les photos Google",
+  "Google information is unavailable right now.": "Les informations Google sont indisponibles pour le moment."
 }
