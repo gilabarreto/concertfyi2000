@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import Icon from "../components/Icon";
@@ -68,16 +67,13 @@ export default function VenuePage() {
   };
   // Ticketmaster's exact location settles the identity; only without it is Wikidata's worth waiting for.
   const servicesReady = !!venue && (!!location || (!infoLoading && !eventsLoading));
-  const { data: free = {}, isPending: servicesPending } = useVenueServices(
+  // Google on open (owner's call, 2026-11-11): OSM and Wikipedia leave most small venues without
+  // phone, website or About. One GetPlace per visit; photos still wait for their own click.
+  const { data: services = {}, isPending: servicesPending } = useVenueServices(
     identity,
     servicesReady,
-    false,
+    true,
   );
-  // Google's rating and reviews cost a call against the daily cap, so they wait for a click.
-  const [showGoogle, setShowGoogle] = useState(false);
-  const google = useVenueServices(identity, servicesReady && showGoogle, true);
-  const services = google.data || free;
-  const googleLoading = showGoogle && google.isPending;
   // Pending covers the wait before the query is even enabled; without coordinates it never runs.
   const servicesLoading = servicesPending && identity.lat != null;
   // Google/OSM's pin for the building that gave the address; the city centre only as a last resort.
@@ -153,31 +149,17 @@ export default function VenuePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
-          {showGoogle ? (
-            <>
-              <VenueRating rating={services.fields?.rating} loading={googleLoading} />
-              <VenueReviewSummary
-                key={venueId}
-                reviews={services.reviews}
-                url={services.fields?.rating?.url}
-                loading={googleLoading}
-              />
-              {services.providers?.google === "unavailable" && (
-                <p className="text-center text-zinc-500 lg:col-span-2">
-                  {t("Google information is unavailable right now.")}
-                </p>
-              )}
-            </>
-          ) : (
-            <div className="flex justify-center bg-white py-4 lg:col-span-2">
-              <button
-                type="button"
-                onClick={() => setShowGoogle(true)}
-                className="font-semibold text-base text-red-600 hover:text-red-800"
-              >
-                {t("Show Google rating and reviews")}
-              </button>
-            </div>
+          <VenueRating rating={services.fields?.rating} loading={servicesLoading} />
+          <VenueReviewSummary
+            key={venueId}
+            reviews={services.reviews}
+            url={services.fields?.rating?.url}
+            loading={servicesLoading}
+          />
+          {services.providers?.google === "unavailable" && (
+            <p className="text-center text-zinc-500 lg:col-span-2">
+              {t("Google information is unavailable right now.")}
+            </p>
           )}
         </div>
         <VenuePhotos key={venueId} identity={identity} enabled={servicesReady} name={venue.name} />

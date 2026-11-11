@@ -1,5 +1,10 @@
 # Spec: Google só no clique (módulo google-on-click)
 
+> **Revisado pelo dono em 2026-11-11:** nota, reviews e campos do Google voltaram a carregar
+> ao abrir a página. Medido em 12 venues de Calgary: sem o Google, só 2 tinham About
+> (Wikipedia) e metade não tinha telefone nem site no OpenStreetMap. Só as **fotos** ficam no
+> clique. Custo por visita: 1 GetPlace (teto 30/dia); fotos 3/6 GetPhotoMedia por clique.
+
 ## Objetivo
 
 Abrir uma página de venue não gasta nenhuma chamada do Google. Hoje toda visita gasta
@@ -57,7 +62,7 @@ gastar fotos de quem não pediu.
 ## Limites
 
 - Sempre: crédito do Google exibido junto do conteúdo do Google, como hoje.
-- Perguntar antes: carregar qualquer coisa do Google sem clique.
+- Perguntar antes: carregar fotos do Google sem clique.
 - Nunca: guardar conteúdo do Google (nem no D1, nem no navegador além da exibição).
 
 ## Critérios de sucesso
