@@ -287,3 +287,38 @@ test("services with a photo limit returns the first photo page from the same Get
   assert.equal(calls.filter(url => url.endsWith("/media")).length, 3);
   assert.equal((await call(handlers.services, { ...query, limit: "5" })).code, 400);
 });
+
+test("stored venue: second visit spends no search and no Overpass, only the live details call", async () => {
+  const { createStore } = require("../store");
+  const rows = new Map();
+  // D1 de mentira compartilhado entre dois handlers = dois isolates do Worker.
+  const db = { prepare: sql => ({ bind: (...args) => ({
+    first: async () => rows.get(args[0]) || null,
+    run: async () => void rows.set(args[0], { value: args[1], expires_at: args[2] }),
+  }) }) };
+  const counts = {};
+  const fetchJson = async (url) => {
+    const kind = url.includes("overpass") ? "overpass" : url.endsWith("searchText") ? "search" : url.endsWith("/media") ? "media" : "details";
+    counts[kind] = (counts[kind] || 0) + 1;
+    if (kind === "overpass") return { elements: [osmVenue] };
+    if (kind === "search") return { places: [{ id: "venue", displayName: { text: query.name }, location: { latitude: 51.556, longitude: -0.279 }, types: ["stadium"] }] };
+    return { googleMapsUri: "https://maps.google.com/?cid=1", rating: 4.5, userRatingCount: 10 };
+  };
+  const app = { locals: { store: createStore({ db }) } };
+  const visit = async () => {
+    const handlers = createVenueServicesHandlers({ apiKey: "test-placeholder", overpassUrl: "https://overpass.example/api", fetchJson });
+    const res = { code: 200, headers: {}, status(code) { this.code = code; return this; }, set(k, v) { this.headers[k] = v; return this; }, json(body) { this.body = body; return this; } };
+    await handlers.services({ query, app }, res);
+    return res.body;
+  };
+
+  await visit();
+  const first = { ...counts };
+  const second = await visit();
+  assert.equal(second.fields.rating.value, 4.5);
+  assert.equal(counts.search, first.search, "no new SearchText");
+  assert.equal(counts.overpass, first.overpass, "no new Overpass");
+  assert.equal(counts.details - first.details, 1, "details stay live: one GetPlace per visit");
+  const stored = [...rows.entries()].filter(([key]) => key.startsWith("google-id:"));
+  assert.deepEqual(stored.map(([, row]) => row.value), ['"venue"'], "only the place ID is kept from Google");
+});

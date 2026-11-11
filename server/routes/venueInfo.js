@@ -1,4 +1,5 @@
 const { request } = require("../http");
+const { createStore } = require("../store");
 const { normalize, nearby } = require("../venueIdentity");
 const VENUE_DESCRIPTION = /\b(stadium|arena|venue|theat(?:re|er)|concert hall|music hall|club|auditorium|amphitheat(?:re|er)|arts cent(?:re|er))\b/i;
 const safeUrl = value => /^https?:\/\//i.test(value || "") ? value : "";
@@ -6,7 +7,8 @@ const claim = (entity, property) => (entity.claims?.[property] || []).filter(ite
 const year = value => /^\+\d{4}-/.test(value?.time || "") && value.precision >= 9 ? value.time.slice(1, 5) : "";
 
 function createVenueInfoHandler({ fetchJson = request } = {}) {
-  const cache = new Map();
+  // Sem banco (Node, testes) o store é memória; no Worker vem de app.locals (worker.mjs).
+  const memoryStore = createStore();
   const pending = new Map();
   const fetch = (url, params) => fetchJson(url, { params, headers: { "User-Agent": "ConcertFYI/1.0 (https://concertfyi.com; gilabarreto@gmail.com)" }, signal: AbortSignal.timeout(5000) });
 
@@ -73,19 +75,14 @@ function createVenueInfoHandler({ fetchJson = request } = {}) {
     const lat = Number(req.query.lat), long = Number(req.query.long);
     if (typeof name !== "string" || !name.trim() || name.length > 200 || req.query.lat == null || req.query.long == null || !Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) return res.status(400).json({ error: "Missing or invalid name/coordinates" });
     const key = JSON.stringify([name.trim(), lat, long]);
-    const cached = cache.get(key);
-    let data = cached?.expires > Date.now() ? cached.data : null;
-    if (!data) {
-      if (!pending.has(key)) {
-        if (pending.size >= 8) return res.status(503).json({ error: "Venue information busy" });
-        pending.set(key, load(name.trim(), lat, long));
-      }
-      try {
-        data = await pending.get(key);
-        if (cache.size >= 200) cache.delete(cache.keys().next().value);
-        if (!data.partial) cache.set(key, { data, expires: Date.now() + 24 * 60 * 60 * 1000 });
-      } finally { pending.delete(key); }
+    const store = req.app?.locals?.store || memoryStore;
+    // 30 dias quando achou, 7 quando não; parcial nunca substitui o que já está guardado.
+    const ttl = found => (found.description || found.wikidataUrl ? 30 : 7) * 24 * 60 * 60;
+    if (!pending.has(key)) {
+      if (pending.size >= 8) return res.status(503).json({ error: "Venue information busy" });
+      pending.set(key, store.cached(`venue-info:${key}`, ttl, () => load(name.trim(), lat, long), { keep: found => !found.partial }).finally(() => pending.delete(key)));
     }
+    const data = await pending.get(key);
     res.set("Cache-Control", data.partial ? "no-store" : "public, max-age=86400");
     return res.json(data);
   };

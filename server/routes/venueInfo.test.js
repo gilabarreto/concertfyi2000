@@ -81,3 +81,32 @@ test("Ticketmaster lookup by leading words still needs one nearby venue", () => 
   assert.equal(findTicketmasterVenue([centre, { ...centre, name: "Grey Eagle Casino" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
   assert.equal(findTicketmasterVenue([{ ...centre, name: "Grey Owl Hall" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
 });
+
+test("stored venue info survives a new isolate and a failed re-check keeps the old data", async () => {
+  const { createStore } = require("../store");
+  const rows = new Map();
+  const db = { prepare: () => ({ bind: (...args) => ({
+    first: async () => rows.get(args[0]) || null,
+    run: async () => void rows.set(args[0], { value: args[1], expires_at: args[2] }),
+  }) }) };
+  let t = 1000, calls = 0, down = false;
+  const fetchJson = async url => {
+    calls++;
+    if (down) throw { status: 503 };
+    return url.includes("wikipedia") ? { query: { pages: { 1: page } } } : { entities: { [entity.id]: entity } };
+  };
+  const app = { locals: { store: createStore({ db, now: () => t }) } };
+  const visit = async () => {
+    const res = { code: 200, status(code) { this.code = code; return this; }, set() {}, json(data) { this.body = data; return this; } };
+    await createVenueInfoHandler({ fetchJson })({ query: { name: "Wembley Stadium", lat: "51.51", long: "-0.12" }, app }, res);
+    return res.body;
+  };
+
+  await visit();
+  const spent = calls;
+  assert.equal((await visit()).opened, "2007");
+  assert.equal(calls, spent, "a new isolate reads the stored row");
+  t += 31 * 24 * 60 * 60;
+  down = true;
+  assert.equal((await visit()).description, page.extract, "expired + sources down: old data stays");
+});

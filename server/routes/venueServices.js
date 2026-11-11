@@ -1,4 +1,10 @@
 const { request } = require("../http");
+const { createStore } = require("../store");
+// Prazos do banco (SPEC-venues.md): achado é checado de novo em 30 dias, não achado em 7.
+// Do Google só o place ID fica guardado (os termos permitem; o conteúdo, não).
+const DAY = 24 * 60 * 60;
+const OSM_TTL = result => (result.status === "ok" ? 30 : 7) * DAY;
+const PLACE_ID_TTL = id => (id ? 365 : 7) * DAY;
 const { nearby, venueNamesMatch, venueNamesOverlap, venueNameParts } = require("../venueIdentity");
 const safeUrl = value => /^https?:\/\//i.test(value || "") ? value : "";
 const booleanLines = (options, labels) => Object.entries(labels).filter(([key]) => typeof options?.[key] === "boolean").map(([key, label]) => `${label}: ${options[key] ? "Yes" : "No"}`).join("\n");
@@ -11,15 +17,21 @@ const VENUE_TYPES = ["stadium", "arena", "concert_hall", "live_music_venue", "pe
 const field = (value, source, url, attributions = []) => value ? { value, source, url: safeUrl(url), attributions } : null;
 
 function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env.GOOGLE_PLACES_API_KEY, overpassUrl = process.env.OVERPASS_API_URL || "https://overpass-api.de/api/interpreter" } = {}) {
-  const osmCache = new Map();
-  const placeIds = new Map(); // Only place IDs are retained; Google content is never cached.
+  // Sem banco (Node, testes) o store é memória; no Worker vem de app.locals (worker.mjs).
+  const memoryStore = createStore();
   const pending = new Map();
   const fetch = (url, options = {}, timeout = 12000) => fetchJson(url, { ...options, signal: AbortSignal.timeout(timeout) });
-  const remember = (map, key, value, ttl) => { if (map.size >= 200) map.delete(map.keys().next().value); map.set(key, { value, expires: Date.now() + ttl }); };
 
-  async function osm(identity, key) {
-    const cached = osmCache.get(key);
-    if (cached?.expires > Date.now()) return cached.value;
+  async function osm(identity, key, store) {
+    try {
+      return await store.cached(`osm:${key}`, OSM_TTL, () => loadOsm(identity));
+    } catch {
+      return { status: "unavailable", fields: {} };
+    }
+  }
+
+  // Lança em falha (e não devolve "unavailable") para o store manter o valor antigo.
+  async function loadOsm(identity) {
     const { name, lat, long, radius } = identity;
     // Optional punctuation accommodates Dicken's Pub / Dickens without a per-venue alias.
     const escaped = [...venueNameParts(name).rawBase].filter(char => /[\p{L}\p{N}]/u.test(char)).join("[^[:alnum:]]*");
@@ -48,17 +60,16 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         parking: field(tags.parking, source, url), payments: field(payments, source, url),
         description: field(tags["description:en"] || tags.description, source, url),
       } };
-      remember(osmCache, key, result, 60 * 60 * 1000);
       return result;
-    } catch (error) { console.error("venue-services osm:", error.message); return { status: "unavailable", fields: {} }; }
+    } catch (error) { console.error("venue-services osm:", error.message); throw error; }
   }
 
-  async function google(identity, key, mode, photoOptions = {}) {
+  async function google(identity, key, mode, photoOptions = {}, store = memoryStore) {
     if (!apiKey) return { status: "unconfigured", fields: {}, reviews: [] };
     try {
-      let id = placeIds.get(key)?.expires > Date.now() ? placeIds.get(key).value : null;
       const headers = { "Content-Type": "application/json", "X-Goog-Api-Key": apiKey };
-      if (!id) {
+      // Só a busca (SearchText) sai do caminho; os detalhes continuam ao vivo a cada visita.
+      const id = await store.cached(`google-id:${key}`, PLACE_ID_TTL, async () => {
         // Strictest evidence first; each looser rung needs a venue type and a single candidate.
         const pick = places => {
           const isVenue = place => (place.types || []).some(type => VENUE_TYPES.includes(type));
@@ -83,11 +94,10 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
           picked = pick(data.places || []);
           if (picked) break;
         }
-        if (!picked) return { status: "not-found", fields: {}, reviews: [] };
-        id = picked.id;
-        if (typeof id !== "string" || !/^[a-zA-Z0-9_-]+$/.test(id)) return { status: "not-found", fields: {}, reviews: [] };
-        remember(placeIds, key, id, 24 * 60 * 60 * 1000);
-      }
+        const found = picked?.id;
+        return typeof found === "string" && /^[a-zA-Z0-9_-]+$/.test(found) ? found : null;
+      });
+      if (!id) return { status: "not-found", fields: {}, reviews: [] };
       // Billing follows the priciest field. editorialSummary/parking/payments already make this
       // Enterprise + Atmosphere (1,000 free a month), so reviews ride along at no extra cost;
       // the photo list stays IDs Only, which is unbilled.
@@ -127,11 +137,11 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     }
   }
 
-  async function load(identity, key, mode, photoOptions) {
-    if (mode !== "services") return google(identity, key, mode, photoOptions);
+  async function load(identity, key, mode, photoOptions, store) {
+    if (mode !== "services") return google(identity, key, mode, photoOptions, store);
     // In parallel: Google almost never fills every field, so waiting on it first only
     // stacked Overpass's latency (up to its timeout) behind Google's.
-    const [primary, fallback] = await Promise.all([google(identity, key, "services", photoOptions), osm(identity, key)]);
+    const [primary, fallback] = await Promise.all([google(identity, key, "services", photoOptions, store), osm(identity, key, store)]);
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
     // The matched building's pin, for the map; never fed back into the identity.
@@ -157,7 +167,7 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
     const pendingKey = `${mode}:${key}:${JSON.stringify(photoOptions)}`;
     if (!pending.has(pendingKey)) {
       if (pending.size >= 8) return res.status(503).json({ error: "Venue information busy" });
-      pending.set(pendingKey, load(identity, key, mode, photoOptions).finally(() => pending.delete(pendingKey)));
+      pending.set(pendingKey, load(identity, key, mode, photoOptions, req.app?.locals?.store || memoryStore).finally(() => pending.delete(pendingKey)));
     }
     res.set("Cache-Control", "no-store");
     return res.json(await pending.get(pendingKey));

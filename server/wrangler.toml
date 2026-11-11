@@ -25,3 +25,11 @@ CLIENT_IP_HEADER = "cf-connecting-ip"
 [[kv_namespaces]]
 binding = "SONG_CACHE"
 id = "1354ac50effc458a9be62ceaf5ec7227"
+
+# Venues guardadas (server/store.js, SPEC-venues.md). Tabela em schema.sql:
+# `npx wrangler d1 execute concertfyi --remote --command "$(cat schema.sql)"`. Grátis: 5 mi
+# leituras e 100 mil escritas por dia; passou disso, erro (o store cai para a fonte).
+[[d1_databases]]
+binding = "DB"
+database_name = "concertfyi"
+database_id = "16e19df4-9e51-43b5-9ce0-ce64627cec87"
