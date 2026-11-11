@@ -14,6 +14,8 @@ const paymentLabels = { acceptsCreditCards: "Credit cards", acceptsDebitCards: "
 const TRANSIT = ["train_station", "bus_station", "bus_stop", "subway_station", "transit_station", "light_rail_station"];
 // Places a show can happen in. A looser name match is only trusted for one of these.
 const VENUE_TYPES = ["stadium", "arena", "concert_hall", "live_music_venue", "performing_arts_theater", "event_venue", "amphitheatre", "auditorium", "night_club", "bar", "pub", "cultural_center"];
+// OSM's tags for places a show can happen in (amenity, leisure or building values).
+const OSM_VENUE_TYPES = ["theatre", "performing_arts_theater", "music_venue", "live_music_venue", "events_venue", "concert_hall", "arts_centre", "nightclub", "bar", "pub", "stadium", "arena", "amphitheatre", "auditorium", "community_centre"];
 const field = (value, source, url, attributions = []) => value ? { value, source, url: safeUrl(url), attributions } : null;
 
 function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env.GOOGLE_PLACES_API_KEY, osmUrl = "https://nominatim.openstreetmap.org/search" } = {}) {
@@ -61,11 +63,16 @@ function createVenueServicesHandlers({ fetchJson = request, apiKey = process.env
         const at = { lat: Number(place.lat), lon: Number(place.lon) };
         return { type: place.osm_type, id: place.osm_id, ...(place.osm_type === "node" ? at : { center: at }), tags };
       });
-      const matches = elements.filter(item => {
+      const names = tags => [tags.name, tags["name:en"], tags.official_name, ...(tags.alt_name || "").split(";")];
+      const typesOf = tags => [tags.amenity, tags.leisure, tags.building, tags.amenity === "theatre" ? "performing_arts_theater" : "", tags.amenity === "music_venue" ? "live_music_venue" : ""];
+      const close = elements.filter(item => {
         const tags = item.tags || {};
-        const types = [tags.amenity, tags.leisure, tags.building, tags.amenity === "theatre" ? "performing_arts_theater" : "", tags.amenity === "music_venue" ? "live_music_venue" : ""];
-        return !tags.public_transport && !tags.railway && !tags.highway && !tags.route && [tags.name, tags["name:en"], tags.official_name, ...(tags.alt_name || "").split(";")].some(value => venueNamesMatch(name, value, types)) && nearby(lat, long, item.lat ?? item.center?.lat, item.lon ?? item.center?.lon, radius);
+        return !tags.public_transport && !tags.railway && !tags.highway && !tags.route && nearby(lat, long, item.lat ?? item.center?.lat, item.lon ?? item.center?.lon, radius);
       });
+      // Same ladder as Google's: exact name first; added/dropped words ("Big Four Roadhouse" /
+      // "The Big Four Roadhouse") only for a place OSM tags as a venue, and only one of them.
+      const strict = close.filter(item => names(item.tags || {}).some(value => venueNamesMatch(name, value, typesOf(item.tags || {}))));
+      const matches = strict.length ? strict : close.filter(item => typesOf(item.tags || {}).some(type => OSM_VENUE_TYPES.includes(type)) && names(item.tags || {}).some(value => value && venueNamesOverlap(name, value)));
       // A stadium outline and its label node can represent the same physical venue.
       const unique = matches.filter(item => item.type !== "node" || !matches.some(area => area.type !== "node" && nearby(item.lat, item.lon, area.center?.lat, area.center?.lon, 0.1)));
       const item = unique.length === 1 ? unique[0] : null;

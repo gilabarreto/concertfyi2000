@@ -26,6 +26,17 @@ test("OSM works without a Google key, preserves negative values and caches only 
   assert.equal(first.body.providers.google, "unconfigured");
 });
 
+test("OSM accepts an added word only for a single place tagged as a venue", async () => {
+  const roadhouse = { ...osmVenue, tags: { name: "The Big Four Roadhouse", amenity: "events_venue", website: "https://bigfour.example" } };
+  const answer = elements => createVenueServicesHandlers({ apiKey: "", fetchJson: async () => nominatim(elements) });
+  const big = { ...query, name: "Big Four Roadhouse" };
+  assert.equal((await call(answer([roadhouse]).services, big)).body.fields.website.value, "https://bigfour.example");
+  // Not a venue tag (a shop, a road): no.
+  assert.equal((await call(answer([{ ...roadhouse, tags: { ...roadhouse.tags, amenity: "restaurant" } }]).services, big)).body.fields.website, null);
+  // Two candidates: ambiguous, no.
+  assert.equal((await call(answer([roadhouse, { ...roadhouse, id: 2, center: { lat: 51.5565, lon: -0.2795 } }]).services, big)).body.fields.website, null);
+});
+
 test("a Nominatim address without a house number is the nearest road, so it is dropped", async () => {
   const place = nominatim([osmVenue])[0];
   const answer = address => createVenueServicesHandlers({ apiKey: "", fetchJson: async () => [{ ...place, address }] });
