@@ -43,6 +43,25 @@ export function dateLabel(date) {
   return `${date.toLocaleDateString("en-GB", { month: "short" })} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
+// Ticketmaster's localTime ("19:30:00") is the venue's own clock, so it's shown as is,
+// built from its parts like every date here. Null when the event has no set time.
+export function timeLabel(localTime) {
+  const [hours, minutes] = (localTime || "").split(":").map(Number);
+  if (!Number.isInteger(hours) || !Number.isInteger(minutes)) return null;
+  const lang = getLanguage();
+  return new Date(2000, 0, 1, hours, minutes).toLocaleTimeString(lang === "en" ? "en-US" : lang, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+// Show and doors times of a Ticketmaster event. Doors come in only a few events.
+export function eventTimes(event) {
+  const start = event?.dates?.start;
+  const show = start?.timeTBA || start?.noSpecificTime ? null : timeLabel(start?.localTime);
+  return { show, doors: timeLabel(event?.doorsTimes?.localTime) };
+}
+
 export function getPastConcertsByArtist(setlist = [], artistId) {
   const now = new Date();
 

@@ -12,6 +12,7 @@ import {
   dateLabel,
   getBestImage,
   eventStatusLabel,
+  eventTimes,
 } from "../../helpers/selectors";
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
@@ -102,6 +103,7 @@ export default function NextConcert({
   const venue = upcomingConcert._embedded?.venues?.[0];
   const coords = venue?.location;
   const statusLabel = eventStatusLabel(upcomingConcert, t);
+  const times = eventTimes(upcomingConcert);
   // Prefer the selected show's tour; Ticketmaster dates use the most recent known tour.
   const tour =
     upcomingConcert.tourName || getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || null;
@@ -148,7 +150,9 @@ export default function NextConcert({
                   onClick={() => select(upcomingConcerts[idx - 1].id)}
                 />
               )}
-              {dateLabel(upcomingConcert.dateObj)}&ensp;
+              {dateLabel(upcomingConcert.dateObj)}
+              {times.show && ` · ${times.show}`}
+              {times.doors && ` (${t("doors {time}", { time: times.doors })})`}&ensp;
               {statusLabel && (
                 <span className="mr-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-semibold text-white">
                   {statusLabel}

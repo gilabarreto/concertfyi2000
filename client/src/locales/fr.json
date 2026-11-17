@@ -236,5 +236,6 @@
   "Google information is unavailable right now.": "Les informations Google sont indisponibles pour le moment.",
   "Official website": "Site officiel",
   "Postponed": "Reporté",
-  "Rescheduled": "Reprogrammé"
+  "Rescheduled": "Reprogrammé",
+  "doors {time}": "portes {time}"
 }

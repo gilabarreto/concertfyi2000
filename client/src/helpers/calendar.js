@@ -1,3 +1,5 @@
+import { eventTimes } from "./selectors.js";
+
 // Three ways into a calendar, none of which stores anything here or needs OAuth:
 // Google and Outlook take a template URL, Apple only accepts a file, so it gets the
 // .ics. The trade on the web links is the reminder: they apply the account default,
@@ -14,13 +16,16 @@ const addDays = (localDate, days) => {
 
 // The pieces all three targets need, or null when the date is missing and the entry
 // would land on the wrong day. Every entry is all day: the doors time is a promise the
-// event rarely keeps, and a whole-day block is what the day actually costs.
+// event rarely keeps, and a whole-day block is what the day actually costs. The show and
+// doors times still go in the notes, so they're one tap away inside the entry.
 // Exported too: the share button wants the same title/place/url, not a fourth copy of it.
 export function details(event, artistName) {
   const localDate = event?.dates?.start?.localDate;
   if (!localDate) return null;
 
   const venue = event._embedded?.venues?.[0];
+  const { show, doors } = eventTimes(event);
+  const times = [doors && `Doors ${doors}`, show && `Show ${show}`].filter(Boolean).join(" · ");
 
   return {
     localDate,
@@ -30,6 +35,7 @@ export function details(event, artistName) {
       .filter(Boolean)
       .join(", "),
     url: event.url,
+    notes: [times, event.url].filter(Boolean).join("\n"),
     id: event.id,
   };
 }
@@ -43,7 +49,7 @@ export function googleCalendarUrl(event, artistName) {
 
   const params = new URLSearchParams({ action: "TEMPLATE", text: show.title, dates });
   if (show.place) params.set("location", show.place);
-  if (show.url) params.set("details", show.url);
+  if (show.notes) params.set("details", show.notes);
 
   return `https://calendar.google.com/calendar/render?${params}`;
 }
@@ -62,7 +68,7 @@ export function outlookCalendarUrl(event, artistName) {
   });
 
   if (show.place) params.set("location", show.place);
-  if (show.url) params.set("body", show.url);
+  if (show.notes) params.set("body", show.notes);
 
   return `https://outlook.live.com/calendar/0/deeplink/compose?${params}`;
 }
@@ -98,6 +104,7 @@ export function concertIcs(event, artistName, { now = new Date() } = {}) {
     `SUMMARY:${escape(show.title)}`,
     show.place && `LOCATION:${escape(show.place)}`,
     show.url && `URL:${escape(show.url)}`,
+    show.notes && `DESCRIPTION:${escape(show.notes)}`,
     ...alarm("-P1D", `${artistName} plays tomorrow`),
     // an all-day entry starts at midnight, so the day-of alarm runs forward to 9am
     ...alarm("PT9H", `${artistName} plays tonight`),

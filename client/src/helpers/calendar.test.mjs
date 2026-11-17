@@ -99,3 +99,21 @@ test("the download url is a calendar file the browser can save", () => {
   assert.ok(!url.includes(" "), "a raw space would truncate the href");
   assert.match(decodeURIComponent(url.slice(prefix.length)), /^BEGIN:VCALENDAR/);
 });
+
+test("show and doors times go in the notes, the entry stays all day", () => {
+  const timed = {
+    ...event({ localDate: "2026-10-02", localTime: "20:00:00" }),
+    doorsTimes: { localTime: "18:30:00" },
+  };
+  const ics = concertIcs(timed, "Nekrogoblikon", { now });
+
+  assert.match(ics, /^DTSTART;VALUE=DATE:20261002$/m);
+  assert.match(ics, /^DESCRIPTION:Doors 6:30\sPM · Show 8:00\sPM\\nhttps:\/\/on\.fgtix\.com/m);
+  assert.match(
+    paramsOf(googleCalendarUrl(timed, "Nekrogoblikon")).get("details"),
+    /^Doors 6:30\sPM · Show 8:00\sPM\n/,
+  );
+
+  const tba = event({ localDate: "2026-10-02", localTime: "20:00:00", timeTBA: true });
+  assert.equal(paramsOf(googleCalendarUrl(tba, "Nekrogoblikon")).get("details"), timed.url);
+});
