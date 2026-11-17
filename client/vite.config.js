@@ -46,8 +46,33 @@ const cspMeta = {
     ),
 };
 
+// The same policy as a real response header, for the Cloudflare Workers static assets
+// (client/wrangler.toml), which read dist/_headers. A header can carry what <meta> can't,
+// so frame-ancestors goes here only. GitHub Pages ignores the file; once the site moves,
+// the <meta> above becomes redundant but harmless.
+const headersFile = {
+  name: "headers-file",
+  apply: "build",
+  generateBundle() {
+    this.emitFile({
+      type: "asset",
+      fileName: "_headers",
+      source: [
+        "/*",
+        `  Content-Security-Policy: ${csp}; frame-ancestors 'none'`,
+        "  X-Content-Type-Options: nosniff",
+        "  Referrer-Policy: strict-origin-when-cross-origin",
+        // Vite fingerprints everything under /assets, so a changed file is a new name.
+        "/assets/*",
+        "  Cache-Control: public, max-age=31536000, immutable",
+        "",
+      ].join("\n"),
+    });
+  },
+};
+
 export default defineConfig({
-  plugins: [react(), cspMeta],
+  plugins: [react(), cspMeta, headersFile],
   build: {
     // Teto de bundle do CONSTRAINTS.md. Avisa, não quebra o build.
     // Este número tem de andar junto com a tabela de lá: os dois ratchets de 2026-09-15

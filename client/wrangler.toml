@@ -1,0 +1,19 @@
+# The site as Cloudflare Workers static assets, replacing GitHub Pages (SUGESTOES, "Sair do
+# GitHub Pages"). Nothing here runs until Workers Builds is connected to this repo with Root
+# directory `client`, build command `npm run build` and the VITE_* variables; until then
+# deploy.yml keeps publishing gh-pages.
+name = "concertfyi-web"
+compatibility_date = "2026-11-01"
+
+# The domains are taken over on the first deploy, which fails while the GitHub Pages DNS
+# records for them still exist: delete those first.
+routes = [
+  { pattern = "concertfyi.com", custom_domain = true },
+  { pattern = "www.concertfyi.com", custom_domain = true },
+]
+
+[assets]
+directory = "./dist"
+# Every app route (/artists/..., /venues/...) gets index.html with a 200, where GitHub
+# Pages answers 404.html with a 404 status. Headers come from dist/_headers (vite.config.js).
+not_found_handling = "single-page-application"
