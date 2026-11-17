@@ -27,7 +27,12 @@ export default function ArtistPage() {
 
   // Opened directly (new tab, refresh, shared link): context is empty, so load by URL
   const { data: urlConcert, isError } = useSetlistById(concert ? null : concertId);
-  const { data: ticketmasterData } = useTicketmasterSearch(urlConcert?.artist?.name);
+  // Keyed on whichever concert is at hand, not urlConcert alone: the full list usually lands
+  // first, puts the concert in context and switches the URL query off, and a Ticketmaster
+  // query keyed on urlConcert then lost its key mid-flight and its answer was dropped. Only
+  // while context has no Ticketmaster data, so arriving from search spends no call.
+  const coldStartArtist = ticketmaster.attractions ? null : (concert || urlConcert)?.artist?.name;
+  const { data: ticketmasterData } = useTicketmasterSearch(coldStartArtist);
   const { data: artistSetlists, isError: listFailed } = useArtistSetlists(artistId);
 
   useEffect(() => {
