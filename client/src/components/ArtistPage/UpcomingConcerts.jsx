@@ -1,7 +1,7 @@
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { faEye } from "@fortawesome/free-solid-svg-icons/faEye";
 import Icon from "../Icon";
-import { getUpcomingConcertsByArtist } from "../../helpers/selectors";
+import { getUpcomingConcertsByArtist, eventStatusLabel } from "../../helpers/selectors";
 import ConcertList from "./ConcertList";
 import TicketOptions from "./TicketOptions";
 import HotelOptions from "./HotelOptions";
@@ -31,6 +31,7 @@ export default function UpcomingConcerts(props) {
         const parts = [venue?.city?.name, venue?.country?.countryCode].filter(Boolean);
         return parts.join(", ") || t("No location available.");
       }}
+      secondaryTextOf={(concert) => eventStatusLabel(concert, t)}
       iconTitle={t("Get tickets")}
       // NextConcert reads this same "next" param to pick which upcoming show its own
       // card previews; View concert also sets this ID before scrolling to the card.

@@ -71,6 +71,15 @@ export function isArtist(attraction, artist) {
 
 // A irmã da de cima, para o outro lado da linha do tempo. Casa pelo isArtist acima,
 // e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
+// Ticketmaster's dates.status.code. onsale/offsale only say whether tickets are sold right
+// now, so they get no label; cancelled is filtered out of every list before it gets here.
+export function eventStatusLabel(event, t) {
+  const code = event?.dates?.status?.code;
+  if (code === "postponed") return t("Postponed");
+  if (code === "rescheduled") return t("Rescheduled");
+  return null;
+}
+
 export function getUpcomingConcertsByArtist(events = [], artist) {
   // A rota /suggest pagina eventos por attractionId sem filtro de data, então o
   // passado vem junto — e, em ordem crescente, vinha listado em primeiro lugar.
@@ -78,11 +87,15 @@ export function getUpcomingConcertsByArtist(events = [], artist) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  return events
-    .filter((item) => item._embedded?.attractions?.some((a) => isArtist(a, artist)))
-    .map(withTicketmasterDate)
-    .filter((item) => item.dateObj >= today)
-    .sort((a, b) => a.dateObj - b.dateObj);
+  return (
+    events
+      .filter((item) => item._embedded?.attractions?.some((a) => isArtist(a, artist)))
+      // Same rule as the city lists: a cancelled show is not an upcoming one.
+      .filter((item) => item.dates?.status?.code !== "cancelled")
+      .map(withTicketmasterDate)
+      .filter((item) => item.dateObj >= today)
+      .sort((a, b) => a.dateObj - b.dateObj)
+  );
 }
 
 // A mesma forma, para a home: filtra por cidade da venue em vez de nome do artista.

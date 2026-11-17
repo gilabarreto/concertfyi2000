@@ -11,6 +11,7 @@ import {
   getPastConcertsByArtist,
   getUpcomingConcertsByArtist,
   isArtist,
+  eventStatusLabel,
   getBestImage,
   getCarouselSlides,
   parseSetlistDate,
@@ -414,4 +415,27 @@ test("getArtistAttraction: pelo mbid passa o tributo de mesmo nome", () => {
     getArtistAttraction({ attractions: [tribute, band] }, { name: "Band", mbid: "band" }),
     band,
   );
+});
+
+test("getUpcomingConcertsByArtist: show cancelado sai; adiado e remarcado ficam com aviso", () => {
+  const withStatus = (code, days) => ({
+    ...upcoming("Radiohead", dayOffset(days)),
+    dates: { start: { localDate: dayOffset(days) }, status: { code } },
+  });
+  const events = [
+    withStatus("cancelled", 10),
+    withStatus("postponed", 20),
+    withStatus("onsale", 30),
+  ];
+  const got = getUpcomingConcertsByArtist(events, "Radiohead");
+  const t = (text) => text;
+
+  assert.deepStrictEqual(
+    got.map((e) => e.id),
+    [dayOffset(20), dayOffset(30)],
+  );
+  assert.strictEqual(eventStatusLabel(got[0], t), "Postponed");
+  assert.strictEqual(eventStatusLabel(withStatus("rescheduled", 5), t), "Rescheduled");
+  assert.strictEqual(eventStatusLabel(got[1], t), null);
+  assert.strictEqual(eventStatusLabel(withStatus("offsale", 5), t), null);
 });

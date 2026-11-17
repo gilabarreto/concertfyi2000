@@ -7,7 +7,12 @@ import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
-import { getPastConcertsByArtist, dateLabel, getBestImage } from "../../helpers/selectors";
+import {
+  getPastConcertsByArtist,
+  dateLabel,
+  getBestImage,
+  eventStatusLabel,
+} from "../../helpers/selectors";
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
 import { getTourUpcomingConcerts } from "../../helpers/tourStats";
@@ -96,6 +101,7 @@ export default function NextConcert({
 
   const venue = upcomingConcert._embedded?.venues?.[0];
   const coords = venue?.location;
+  const statusLabel = eventStatusLabel(upcomingConcert, t);
   // Prefer the selected show's tour; Ticketmaster dates use the most recent known tour.
   const tour =
     upcomingConcert.tourName || getPastConcertsByArtist(setlist, artistId)[0]?.tour?.name || null;
@@ -143,6 +149,11 @@ export default function NextConcert({
                 />
               )}
               {dateLabel(upcomingConcert.dateObj)}&ensp;
+              {statusLabel && (
+                <span className="mr-2 rounded bg-red-600 px-1.5 py-0.5 text-xs font-semibold text-white">
+                  {statusLabel}
+                </span>
+              )}
               {idx < upcomingConcerts.length - 1 && (
                 <Icon
                   icon={faForward}
