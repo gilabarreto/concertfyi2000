@@ -6,8 +6,9 @@ import {
 } from "./selectors.js";
 
 // Keep the selected setlist.fm date available even when ticket vendors don't list it.
-export function getTourUpcomingConcerts(events, artistName, shows, selectedId) {
-  const upcoming = getUpcomingConcertsByArtist(events, artistName);
+export function getTourUpcomingConcerts(events, artist, shows, selectedId) {
+  const upcoming = getUpcomingConcertsByArtist(events, artist);
+  const artistName = typeof artist === "string" ? artist : artist?.name;
   if (!selectedId?.startsWith("setlist:")) return upcoming;
   const show = shows.find(
     (item) => `setlist:${item.id}` === selectedId && item.artist?.name === artistName,

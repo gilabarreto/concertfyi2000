@@ -52,7 +52,7 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
     const imageUrl =
       getTicketmasterEventImage(
         ticketmaster?.events,
-        concert.artist.name,
+        concert.artist,
         localDate,
         concert.venue?.name,
       ) || fallbackImage;

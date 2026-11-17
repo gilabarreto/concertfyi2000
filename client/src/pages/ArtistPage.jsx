@@ -77,13 +77,13 @@ export default function ArtistPage() {
     return <div className="p-8 w-full text-center text-zinc-400">{t("Loading…")}</div>;
   }
 
-  const attraction = getArtistAttraction(ticketmaster, concert.artist.name);
+  const attraction = getArtistAttraction(ticketmaster, concert.artist);
   const artistImage = attraction?.images?.[0]?.url || "";
   const artistName = concert.artist.name;
   const concertDate = concert.eventDate;
   const concertVenue = concert.venue?.name || "Concert";
   const hasNextConcert =
-    getTourUpcomingConcerts(ticketmaster.events, artistName, setlist, searchParams.get("next"))
+    getTourUpcomingConcerts(ticketmaster.events, concert.artist, setlist, searchParams.get("next"))
       .length > 0;
   // Next Concert some sem show futuro, porque o card dele fica vazio.
   // Índice do mobile: abaixo de lg as abas viram cards empilhados e a página fica longa.
@@ -113,7 +113,7 @@ export default function ArtistPage() {
       {/* O container das rotas no App.jsx é flex em linha; sem este wrapper o índice
           vira uma coluna ao lado da página em vez de uma faixa em cima dela. */}
       <div className="artist-page w-full min-w-0">
-        <NearbyConcertBanner artist={artistName} events={ticketmaster.events} />
+        <NearbyConcertBanner artist={concert.artist} events={ticketmaster.events} />
         {/* Dois grupos que podem quebrar linha em telas estreitas: metade de cima
             arredondada pra cima (7 títulos → 4 + 3; sem Next Concert, 3 + 3). */}
         <nav

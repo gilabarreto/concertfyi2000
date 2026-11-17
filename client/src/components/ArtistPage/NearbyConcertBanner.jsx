@@ -66,7 +66,7 @@ export default function NearbyConcertBanner({ artist, events }) {
 
   const venue = event._embedded?.venues?.[0];
   const bannerVars = {
-    artist,
+    artist: artist?.name,
     city: venue?.city?.name || t("near you"),
     date: dateLabel(event.dateObj),
     venue: venue?.name,

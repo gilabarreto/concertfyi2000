@@ -58,10 +58,20 @@ export function getPastConcertsByArtist(setlist = [], artistId) {
 export const artistOf = (event) =>
   event._embedded?.attractions?.[0]?.name || event.name || "Unknown artist";
 
-// A irmã da de cima, para o outro lado da linha do tempo. As duas APIs não
-// compartilham id nenhum: Setlist.fm casa com Ticketmaster pelo nome do artista,
+// Setlist.fm and Ticketmaster have no id in common, but Ticketmaster lists the artist's
+// MusicBrainz id under externalLinks.musicbrainz, and that is setlist.fm's artist.mbid.
+// When both sides have it, the id decides (a namesake with another mbid is a different
+// act); otherwise the exact name does. `artist` is a name or setlist.fm's { name, mbid }.
+export function isArtist(attraction, artist) {
+  const { name, mbid } = typeof artist === "string" ? { name: artist } : artist || {};
+  const id = attraction?.externalLinks?.musicbrainz?.[0]?.id;
+  if (mbid && id) return id.toLowerCase() === mbid.toLowerCase();
+  return !!name && attraction?.name === name;
+}
+
+// A irmã da de cima, para o outro lado da linha do tempo. Casa pelo isArtist acima,
 // e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
-export function getUpcomingConcertsByArtist(events = [], artistName) {
+export function getUpcomingConcertsByArtist(events = [], artist) {
   // A rota /suggest pagina eventos por attractionId sem filtro de data, então o
   // passado vem junto — e, em ordem crescente, vinha listado em primeiro lugar.
   // O show de hoje continua contando como próximo: o corte é a meia-noite de hoje.
@@ -69,7 +79,7 @@ export function getUpcomingConcertsByArtist(events = [], artistName) {
   today.setHours(0, 0, 0, 0);
 
   return events
-    .filter((item) => item._embedded?.attractions?.some((a) => a.name === artistName))
+    .filter((item) => item._embedded?.attractions?.some((a) => isArtist(a, artist)))
     .map(withTicketmasterDate)
     .filter((item) => item.dateObj >= today)
     .sort((a, b) => a.dateObj - b.dateObj);
@@ -185,11 +195,11 @@ export function getBestImage(images = [], minWidth = 640) {
   return pick.url;
 }
 
-// A atração do artista, casada pelo nome: o /suggest às vezes devolve um tributo ou banda de
-// abertura primeiro. Sem par, nada — foto, gênero, sociais e Spotify de outro artista são
+// A atração do artista, casada pelo isArtist: o /suggest às vezes devolve um tributo ou banda
+// de abertura primeiro. Sem par, nada — foto, gênero, sociais e Spotify de outro artista são
 // piores que um card vazio.
 export function getArtistAttraction(ticketmaster, artist) {
-  return ticketmaster?.attractions?.find((a) => a.name === artist);
+  return ticketmaster?.attractions?.find((a) => isArtist(a, artist));
 }
 
 // Única fonte do Genres: gênero e subgênero da classificação primária da Ticketmaster, que já

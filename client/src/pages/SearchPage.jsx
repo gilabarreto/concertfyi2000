@@ -5,6 +5,7 @@ import {
   getBestImage,
   getPastConcertsByArtist,
   getUpcomingConcertsByArtist,
+  isArtist,
   parseSetlistDate,
 } from "../helpers/selectors";
 import { AppContext } from "../context/AppContext";
@@ -42,10 +43,10 @@ export default function SearchPage() {
             const artistId = item.artist.mbid;
             const concertId = getPastConcertsByArtist(setlist, artistId)[0]?.id ?? item.id;
             const artist = item.artist.name;
-            const ticketmasterMap = attractions.find((a) => a.name === artist) || {};
+            const ticketmasterMap = attractions.find((a) => isArtist(a, item.artist)) || {};
             const rawImages = ticketmasterMap.images || [];
             const bestImageUrl = getBestImage(rawImages);
-            const nextConcert = getUpcomingConcertsByArtist(ticketmaster.events, artist)[0];
+            const nextConcert = getUpcomingConcertsByArtist(ticketmaster.events, item.artist)[0];
             const venue = nextConcert?._embedded?.venues?.[0];
             const concertLocation = [venue?.city?.name, venue?.country?.countryCode]
               .filter(Boolean)

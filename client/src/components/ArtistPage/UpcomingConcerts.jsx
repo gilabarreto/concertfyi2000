@@ -11,7 +11,10 @@ import { useT } from "../../i18n";
 export default function UpcomingConcerts(props) {
   const t = useT();
   const artistName = props.artistName || props.concert.artist.name;
-  const events = getUpcomingConcertsByArtist(props.ticketmaster.events, artistName);
+  const events = getUpcomingConcertsByArtist(props.ticketmaster.events, {
+    name: artistName,
+    mbid: props.concert?.artist?.mbid,
+  });
   const [, setSearchParams] = useSearchParams();
   const location = useLocation();
 

@@ -34,7 +34,7 @@ Setlist.fm — shows passados e suas músicas. Shows com chave concert.id, artis
 
 Ticketmaster — eventos futuros e imagens de artista. Eventos com id próprio, datas em dates.start.localDate (YYYY-MM-DD).
 
-São casados por string do nome do artista (attractions.find(a => a.name === concert.artist.name) em ArtistPage.jsx, mesmo filtro em UpcomingConcerts.jsx). Não há mapeamento de id entre eles — é a costura frágil do app, e é por isso que useArtistData busca os dois em paralelo e engole a falha de qualquer um em vez de quebrar a página.
+São casados por selectors.js:isArtist — pelo mbid quando a Ticketmaster o traz em externalLinks.musicbrainz (a maioria dos artistas grandes), senão pelo nome exato. Todo ponto que casa artista entre as duas fontes passa por ali. Sem mbid, o nome continua sendo a costura frágil do app, e é por isso que useArtistData busca os dois em paralelo e engole a falha de qualquer um em vez de quebrar a página.
 
 Como os dois formatos de data diferem, os dois construtores de lista parseiam para um dateObj antes de ordenar (selectors.js:getPastConcertsByArtist para passado, getUpcomingConcertsByArtist para futuro).
 

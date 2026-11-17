@@ -43,7 +43,7 @@ export default function NextConcert({
   // Concerts list below just hands out the current URL and expects it to land here.
   const upcomingConcerts = getTourUpcomingConcerts(
     ticketmaster.events,
-    artistName,
+    { name: artistName, mbid: artistId },
     concert ? [...setlist, concert] : setlist,
     searchParams.get("next"),
   );

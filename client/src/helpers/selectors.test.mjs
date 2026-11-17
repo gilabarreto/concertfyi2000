@@ -10,6 +10,7 @@ import assert from "node:assert";
 import {
   getPastConcertsByArtist,
   getUpcomingConcertsByArtist,
+  isArtist,
   getBestImage,
   getCarouselSlides,
   parseSetlistDate,
@@ -383,5 +384,34 @@ test("events without an artist leave the concert lists for Explore Events, city 
   assert.deepEqual(
     getExploreEvents(events, "Calgary", center).map((e) => e.id),
     ["neighbor-party", "party"],
+  );
+});
+
+test("isArtist: o mbid decide quando os dois lados têm; senão, o nome exato", () => {
+  const mb = (id) => ({ musicbrainz: [{ id }] });
+  const real = { name: "Bush", externalLinks: mb("AAAA-1") };
+  const namesake = { name: "Bush", externalLinks: mb("bbbb-2") };
+  const renamed = { name: "Guns N’ Roses", externalLinks: mb("cccc-3") };
+  const noId = { name: "Bush" };
+
+  assert.ok(isArtist(real, { name: "Bush", mbid: "aaaa-1" }), "mbid sem diferença de caixa");
+  assert.ok(!isArtist(namesake, { name: "Bush", mbid: "aaaa-1" }), "homônimo com outro mbid");
+  assert.ok(isArtist(renamed, { name: "Guns N' Roses", mbid: "cccc-3" }), "nome escrito diferente");
+  assert.ok(
+    isArtist(noId, { name: "Bush", mbid: "aaaa-1" }),
+    "sem mbid na Ticketmaster, cai no nome",
+  );
+  assert.ok(isArtist(real, "Bush"), "só o nome, como antes");
+  assert.ok(!isArtist(noId, { mbid: "aaaa-1" }));
+  assert.ok(!isArtist(undefined, "Bush"));
+});
+
+test("getArtistAttraction: pelo mbid passa o tributo de mesmo nome", () => {
+  const tribute = { name: "Band", externalLinks: { musicbrainz: [{ id: "tribute" }] } };
+  const band = { name: "Band", externalLinks: { musicbrainz: [{ id: "band" }] } };
+
+  assert.strictEqual(
+    getArtistAttraction({ attractions: [tribute, band] }, { name: "Band", mbid: "band" }),
+    band,
   );
 });

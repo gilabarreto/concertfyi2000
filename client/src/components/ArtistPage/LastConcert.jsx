@@ -81,7 +81,7 @@ export default function LastConcert({
   const coords = concert.venue.city?.coords;
   const localDate = concert.eventDate.split("-").reverse().join("-");
   const eventImage =
-    getTicketmasterEventImage(ticketmaster?.events, concert.artist.name, localDate, venue) ||
+    getTicketmasterEventImage(ticketmaster?.events, concert.artist, localDate, venue) ||
     fallbackImage;
   const shareVars = {
     artist: concert.artist.name,

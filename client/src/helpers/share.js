@@ -1,12 +1,12 @@
-import { getBestImage } from "./selectors.js";
+import { getBestImage, isArtist } from "./selectors.js";
 
 const normalized = (value) => value?.trim().toLocaleLowerCase();
 
-export function getTicketmasterEventImage(events = [], artistName, localDate, venueName) {
+export function getTicketmasterEventImage(events = [], artist, localDate, venueName) {
   const candidates = events.filter(
     (event) =>
       event.dates?.start?.localDate === localDate &&
-      event._embedded?.attractions?.some((attraction) => attraction.name === artistName),
+      event._embedded?.attractions?.some((attraction) => isArtist(attraction, artist)),
   );
   const venueMatch = candidates.find(
     (event) => normalized(event._embedded?.venues?.[0]?.name) === normalized(venueName),
