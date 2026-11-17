@@ -19,7 +19,8 @@ const fakeD1 = ({ broken = false } = {}) => {
             },
             async run() {
               if (broken) throw new Error("d1 down");
-              if (sql.startsWith("INSERT")) rows.set(args[0], { value: args[1], expires_at: args[2] });
+              if (sql.startsWith("INSERT"))
+                rows.set(args[0], { value: args[1], expires_at: args[2] });
             },
           };
         },
@@ -60,7 +61,12 @@ test("vencido e fonte falhou: devolve o antigo e não apaga", async () => {
   const { cached } = createStore({ db, now: () => t });
   await cached("k", 60, async () => "velho");
   t = 2000;
-  assert.equal(await cached("k", 60, async () => { throw new Error("fonte fora"); }), "velho");
+  assert.equal(
+    await cached("k", 60, async () => {
+      throw new Error("fonte fora");
+    }),
+    "velho",
+  );
   assert.equal(db.rows.get("k").value, JSON.stringify("velho"));
 });
 
@@ -70,15 +76,25 @@ test("vencido e resultado parcial: keep recusa, devolve o antigo", async () => {
   const keep = (v) => !v.partial;
   await cached("k", 60, async () => ({ v: 1 }), { keep });
   t = 2000;
-  assert.deepEqual(await cached("k", 60, async () => ({ v: 2, partial: true }), { keep }), { v: 1 });
+  assert.deepEqual(await cached("k", 60, async () => ({ v: 2, partial: true }), { keep }), {
+    v: 1,
+  });
 });
 
 test("sem antigo: parcial é devolvido mas não guardado; erro propaga", async () => {
   const db = fakeD1();
   const { cached } = createStore({ db, now: () => 1000 });
-  assert.deepEqual(await cached("k", 60, async () => ({ partial: true }), { keep: (v) => !v.partial }), { partial: true });
+  assert.deepEqual(
+    await cached("k", 60, async () => ({ partial: true }), { keep: (v) => !v.partial }),
+    { partial: true },
+  );
   assert.equal(db.rows.size, 0);
-  await assert.rejects(cached("x", 60, async () => { throw new Error("boom"); }), /boom/);
+  await assert.rejects(
+    cached("x", 60, async () => {
+      throw new Error("boom");
+    }),
+    /boom/,
+  );
 });
 
 test("D1 com erro: cai direto para a fonte", async () => {
@@ -97,7 +113,12 @@ test("sem banco (Node): Map em memória com o mesmo contrato", async () => {
   await cached("k", 60, load);
   assert.equal(load.calls, 1);
   t = 2000;
-  assert.equal(await cached("k", 60, async () => { throw new Error("fora"); }), "x");
+  assert.equal(
+    await cached("k", 60, async () => {
+      throw new Error("fora");
+    }),
+    "x",
+  );
 });
 
 test("o prazo pode depender do resultado (achado 30 dias, não achado 7)", async () => {

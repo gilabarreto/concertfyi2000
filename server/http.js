@@ -3,7 +3,7 @@ const request = async (url, { params, ...init } = {}) => {
   // axios dropped absent params; URLSearchParams would send them as "undefined"
   const target = params
     ? `${url}?${new URLSearchParams(
-        Object.entries(params).filter(([, v]) => v !== undefined && v !== null)
+        Object.entries(params).filter(([, v]) => v !== undefined && v !== null),
       )}`
     : url;
 

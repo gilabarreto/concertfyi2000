@@ -23,7 +23,11 @@ const call = (handler, query, songCache) =>
 
 const memoryKv = () => {
   const store = new Map();
-  return { store, get: async (k) => store.get(k) ?? null, put: async (k, v) => void store.set(k, v) };
+  return {
+    store,
+    get: async (k) => store.get(k) ?? null,
+    put: async (k, v) => void store.set(k, v),
+  };
 };
 
 test("a segunda vez sai do cache, sem gastar cota", async () => {
@@ -33,16 +37,33 @@ test("a segunda vez sai do cache, sem gastar cota", async () => {
   });
   const kv = memoryKv();
 
-  assert.deepStrictEqual((await call(handler, { artist: "Foo Fighters", song: "Everlong" }, kv)).body, { videoId: "abc" });
-  assert.deepStrictEqual((await call(handler, { artist: "foo fighters ", song: "EVERLONG" }, kv)).body, { videoId: "abc" });
+  assert.deepStrictEqual(
+    (await call(handler, { artist: "Foo Fighters", song: "Everlong" }, kv)).body,
+    { videoId: "abc" },
+  );
+  assert.deepStrictEqual(
+    (await call(handler, { artist: "foo fighters ", song: "EVERLONG" }, kv)).body,
+    { videoId: "abc" },
+  );
   assert.strictEqual(searches, 1);
 });
 
 test("KV fora do ar não derruba a busca", async () => {
-  const handler = createYoutubeHandler({ fetchJson: async () => ({ items: [{ id: { videoId: "abc" } }] }) });
-  const broken = { get: async () => { throw new Error("kv down"); }, put: async () => { throw new Error("kv down"); } };
+  const handler = createYoutubeHandler({
+    fetchJson: async () => ({ items: [{ id: { videoId: "abc" } }] }),
+  });
+  const broken = {
+    get: async () => {
+      throw new Error("kv down");
+    },
+    put: async () => {
+      throw new Error("kv down");
+    },
+  };
 
-  assert.deepStrictEqual((await call(handler, { artist: "a", song: "b" }, broken)).body, { videoId: "abc" });
+  assert.deepStrictEqual((await call(handler, { artist: "a", song: "b" }, broken)).body, {
+    videoId: "abc",
+  });
 });
 
 test("vídeo não achado não entra no cache", async () => {
@@ -54,6 +75,8 @@ test("vídeo não achado não entra no cache", async () => {
 });
 
 test("sem KV (Node) busca normalmente", async () => {
-  const handler = createYoutubeHandler({ fetchJson: async () => ({ items: [{ id: { videoId: "x" } }] }) });
+  const handler = createYoutubeHandler({
+    fetchJson: async () => ({ items: [{ id: { videoId: "x" } }] }),
+  });
   assert.deepStrictEqual((await call(handler, { artist: "a", song: "b" })).body, { videoId: "x" });
 });

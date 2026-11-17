@@ -32,11 +32,9 @@ router.get("/search", async (req, res) => {
     console.error("Setlist.fm API error:", error.status, error.message);
     console.error("API Key status:", process.env.SETLISTFM_API_KEY ? "Set" : "Missing");
 
-    res
-      .status(error.status || 500)
-      .json({
-        error: error.data?.message || "Setlist.fm fetch failed",
-      });
+    res.status(error.status || 500).json({
+      error: error.data?.message || "Setlist.fm fetch failed",
+    });
   }
 });
 
@@ -53,7 +51,7 @@ router.get("/artist/:mbid", async (req, res) => {
   try {
     const data = await request(
       `https://api.setlist.fm/rest/1.0/artist/${req.params.mbid}/setlists`,
-      { headers, params: { p: 1 } }
+      { headers, params: { p: 1 } },
     );
     res.json(data);
   } catch (error) {
@@ -81,7 +79,9 @@ async function allPages(url, params, maxPages) {
     } catch (error) {
       if (p === 1 && error.status !== 404) throw error;
       if (p > 1) {
-        console.error(`Setlist.fm page ${p} failed (${error.status || error.message}), returning ${setlist.length} of ${total}`);
+        console.error(
+          `Setlist.fm page ${p} failed (${error.status || error.message}), returning ${setlist.length} of ${total}`,
+        );
         partial = true;
       }
       break;
@@ -108,7 +108,10 @@ function cachedPages(url, params, maxPages) {
   if (pageCache.size >= 200) pageCache.delete(pageCache.keys().next().value);
   pageCache.set(key, { promise, expires: Date.now() + PAGE_TTL });
   // A partial answer isn't kept either: the next visitor gets a fresh try at every page.
-  promise.then((data) => data.partial && pageCache.delete(key), () => pageCache.delete(key));
+  promise.then(
+    (data) => data.partial && pageCache.delete(key),
+    () => pageCache.delete(key),
+  );
   return promise;
 }
 
@@ -124,7 +127,12 @@ const sendPages = async (res, url, params, maxPages) => {
 // Every show of one tour, for the Tour Statistics card; 5 pages (100 shows) covers most tours.
 router.get("/tour", (req, res) => {
   const { artistMbid, tourName } = req.query;
-  if (!MBID.test(artistMbid || "") || typeof tourName !== "string" || !tourName.trim() || tourName.length > 200) {
+  if (
+    !MBID.test(artistMbid || "") ||
+    typeof tourName !== "string" ||
+    !tourName.trim() ||
+    tourName.length > 200
+  ) {
     return res.status(400).json({ error: "Missing or invalid artistMbid/tourName" });
   }
   sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { artistMbid, tourName }, 5);
@@ -132,9 +140,13 @@ router.get("/tour", (req, res) => {
 
 // Venue page header: the venue on its own (name, city, coords), without its setlists.
 router.get("/venue-details/:venueId", async (req, res) => {
-  if (!/^[0-9a-f]{6,10}$/i.test(req.params.venueId)) return res.status(400).json({ error: "Invalid venue id" });
+  if (!/^[0-9a-f]{6,10}$/i.test(req.params.venueId))
+    return res.status(400).json({ error: "Invalid venue id" });
   try {
-    const venue = await request(`https://api.setlist.fm/rest/1.0/venue/${req.params.venueId}`, { headers, signal: AbortSignal.timeout(5000) });
+    const venue = await request(`https://api.setlist.fm/rest/1.0/venue/${req.params.venueId}`, {
+      headers,
+      signal: AbortSignal.timeout(5000),
+    });
     res.json(venue);
   } catch (error) {
     res.status(error.status === 404 ? 404 : 502).json({ error: "Venue fetch failed" });
@@ -155,25 +167,45 @@ router.get("/venue/:venueId", (req, res) => {
 router.get("/city", (req, res) => {
   const { cityName, countryCode } = req.query;
   const year = Number(req.query.year);
-  if (typeof cityName !== "string" || !cityName.trim() || cityName.length > 200 ||
-      !Number.isInteger(year) || year < 1900 || year > 2100 ||
-      (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))) {
+  if (
+    typeof cityName !== "string" ||
+    !cityName.trim() ||
+    cityName.length > 200 ||
+    !Number.isInteger(year) ||
+    year < 1900 ||
+    year > 2100 ||
+    (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))
+  ) {
     return res.status(400).json({ error: "Missing or invalid cityName/year/countryCode" });
   }
-  sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { cityName, countryCode, year }, 3);
+  sendPages(
+    res,
+    "https://api.setlist.fm/rest/1.0/search/setlists",
+    { cityName, countryCode, year },
+    3,
+  );
 });
 
 // Recent local entries include empty setlists: a future date is enough to list a show.
 router.get("/recent", (req, res) => {
   const { cityName, countryCode } = req.query;
-  if (typeof cityName !== "string" || !cityName.trim() || cityName.length > 200 ||
-      (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))) {
+  if (
+    typeof cityName !== "string" ||
+    !cityName.trim() ||
+    cityName.length > 200 ||
+    (countryCode !== undefined && !/^[a-z]{2}$/i.test(countryCode))
+  ) {
     return res.status(400).json({ error: "Missing or invalid cityName/countryCode" });
   }
   // Whole days only: a timestamp to the second would make every request a new cache key.
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const lastUpdated = `${since.toISOString().slice(0, 10).replace(/-/g, "")}000000`;
-  sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { cityName, countryCode, lastUpdated }, 3);
+  sendPages(
+    res,
+    "https://api.setlist.fm/rest/1.0/search/setlists",
+    { cityName, countryCode, lastUpdated },
+    3,
+  );
 });
 
 // single setlist, used when a concert page is opened directly (new tab, refresh, shared link)
@@ -181,7 +213,7 @@ router.get("/:id", async (req, res) => {
   try {
     const data = await request(
       `https://api.setlist.fm/rest/1.0/setlist/${encodeURIComponent(req.params.id)}`,
-      { headers }
+      { headers },
     );
     res.json(data);
   } catch (error) {

@@ -13,12 +13,13 @@ const escapeHtml = (value) =>
   });
 
 const boundedText = (value, maxLength) =>
-  (typeof value === "string" ? value.trim().slice(0, maxLength) : "");
+  typeof value === "string" ? value.trim().slice(0, maxLength) : "";
 
 function renderShare(req, res, data) {
   const targetParam = boundedText(data.target, 2048);
   const title = boundedText(data.title, 160) || "ConcertFYI";
-  const description = boundedText(data.description, 400) || "Discover concerts and setlists on ConcertFYI.";
+  const description =
+    boundedText(data.description, 400) || "Discover concerts and setlists on ConcertFYI.";
   const imageParam = boundedText(data.image, 2048);
 
   let target;
@@ -48,10 +49,7 @@ function renderShare(req, res, data) {
   const safeDescription = escapeHtml(description);
   const safeImage = escapeHtml(image);
 
-  res
-    .set("Cache-Control", "public, max-age=300")
-    .type("html")
-    .send(`<!doctype html>
+  res.set("Cache-Control", "public, max-age=300").type("html").send(`<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -85,7 +83,9 @@ router.get("/:token", (req, res) => {
 
   try {
     const compressed = Buffer.from(token, "base64url");
-    const payload = JSON.parse(inflateSync(compressed, { maxOutputLength: 12000 }).toString("utf8"));
+    const payload = JSON.parse(
+      inflateSync(compressed, { maxOutputLength: 12000 }).toString("utf8"),
+    );
     return renderShare(req, res, payload);
   } catch {
     return res.status(400).send("Invalid share token");

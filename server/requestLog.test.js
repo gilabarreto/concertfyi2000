@@ -54,9 +54,12 @@ test("registra a rota inteira e joga a query fora", () => {
   const lines = [];
   // Duas coisas de uma vez: o prefixo `/api/ticketmaster` tem de sobreviver (o Express
   // o corta de `req.path` dentro do router) e as coordenadas de quem chamou, não.
-  const { finish } = call(requestLog((l) => lines.push(l)), {
-    originalUrl: "/api/ticketmaster/events?lat=-23.5&long=-46.6",
-  });
+  const { finish } = call(
+    requestLog((l) => lines.push(l)),
+    {
+      originalUrl: "/api/ticketmaster/events?lat=-23.5&long=-46.6",
+    },
+  );
   finish();
 
   assert.match(lines[0], /^GET \/api\/ticketmaster\/events 200 \d+ms$/);
@@ -73,11 +76,14 @@ test("quem desiste no meio também vira linha, e não vira um 200 falso", () => 
 
 test("id do show vira :id no log, em vez de uma linha por show", () => {
   const lines = [];
-  const { finish } = call(requestLog((l) => lines.push(l)), {
-    originalUrl: "/api/setlist/6bf3a1c2-real-show-id",
-    baseUrl: "/api/setlist",
-    route: { path: "/:id" },
-  });
+  const { finish } = call(
+    requestLog((l) => lines.push(l)),
+    {
+      originalUrl: "/api/setlist/6bf3a1c2-real-show-id",
+      baseUrl: "/api/setlist",
+      route: { path: "/:id" },
+    },
+  );
   finish();
 
   assert.match(lines[0], /^GET \/api\/setlist\/:id 200 \d+ms$/);
@@ -85,9 +91,12 @@ test("id do show vira :id no log, em vez de uma linha por show", () => {
 
 test("caminho gigante não vira linha gigante", () => {
   const lines = [];
-  const { finish } = call(requestLog((l) => lines.push(l)), {
-    originalUrl: `/api/setlist/${"A".repeat(9000)}`,
-  });
+  const { finish } = call(
+    requestLog((l) => lines.push(l)),
+    {
+      originalUrl: `/api/setlist/${"A".repeat(9000)}`,
+    },
+  );
   finish();
 
   assert.ok(lines[0].length < 160, `linha com ${lines[0].length} caracteres`);

@@ -12,21 +12,26 @@ const createStore = ({ db, now = () => Math.floor(Date.now() / 1000) } = {}) => 
 
   const read = async (key) => {
     if (!db) return memory.get(key) || null;
-    const row = await db.prepare("SELECT value, expires_at FROM store WHERE key = ?").bind(key).first();
+    const row = await db
+      .prepare("SELECT value, expires_at FROM store WHERE key = ?")
+      .bind(key)
+      .first();
     return row ? { value: JSON.parse(row.value), expiresAt: row.expires_at } : null;
   };
 
   const write = async (key, value, expiresAt) => {
     if (!db) return void memory.set(key, { value, expiresAt });
     await db
-      .prepare("INSERT INTO store (key, value, expires_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, expires_at = excluded.expires_at")
+      .prepare(
+        "INSERT INTO store (key, value, expires_at) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value, expires_at = excluded.expires_at",
+      )
       .bind(key, JSON.stringify(value), expiresAt)
       .run();
   };
 
   // `ttlSeconds` pode ser função do resultado: "não achado" volta a ser checado antes.
   const cached = async (key, ttlSeconds, load, { keep = () => true } = {}) => {
-    let stored = null;
+    let stored;
     try {
       stored = await read(key);
     } catch (error) {
@@ -45,7 +50,11 @@ const createStore = ({ db, now = () => Math.floor(Date.now() / 1000) } = {}) => 
     if (!keep(fresh)) return stored ? stored.value : fresh;
 
     try {
-      await write(key, fresh, now() + (typeof ttlSeconds === "function" ? ttlSeconds(fresh) : ttlSeconds));
+      await write(
+        key,
+        fresh,
+        now() + (typeof ttlSeconds === "function" ? ttlSeconds(fresh) : ttlSeconds),
+      );
     } catch (error) {
       console.error("store write:", error.message);
     }

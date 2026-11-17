@@ -8,7 +8,10 @@ const LIMIT = 6;
 // para ordenar, e na prática é bootleg também.
 function studioAlbumsFrom(groups) {
   return groups
-    .filter((g) => g["primary-type"] === "Album" && !g["secondary-types"]?.length && g["first-release-date"])
+    .filter(
+      (g) =>
+        g["primary-type"] === "Album" && !g["secondary-types"]?.length && g["first-release-date"],
+    )
     .sort((a, b) => b["first-release-date"].localeCompare(a["first-release-date"]))
     .slice(0, LIMIT)
     .map((g) => ({ id: g.id, title: g.title, year: g["first-release-date"].slice(0, 4) }));
@@ -25,14 +28,21 @@ function createAlbumsHandler({ fetchPage = musicbrainzRequest } = {}) {
       // sem prender a fila de 1 req/s por mais de ~3 s.
       const groups = [];
       for (let offset = 0; offset < 300; offset += 100) {
-        const page = await fetchPage("release-group", { artist: mbid, type: "album", limit: 100, offset });
+        const page = await fetchPage("release-group", {
+          artist: mbid,
+          type: "album",
+          limit: 100,
+          offset,
+        });
         groups.push(...(page["release-groups"] || []));
         if (groups.length >= (page["release-group-count"] || 0)) break;
       }
       res.set("Cache-Control", "public, max-age=86400");
       return res.json({ albums: studioAlbumsFrom(groups) });
     } catch (error) {
-      return res.status(error.status === 503 ? 503 : 502).json({ error: "MusicBrainz fetch failed" });
+      return res
+        .status(error.status === 503 ? 503 : 502)
+        .json({ error: "MusicBrainz fetch failed" });
     }
   };
 }

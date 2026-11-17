@@ -5,9 +5,17 @@ const { createWikipediaHandler } = require("./wikipedia");
 async function call(fetchJson, artist) {
   const res = {
     code: 200,
-    status(code) { this.code = code; return this; },
-    set() { return this; },
-    json(body) { this.body = body; return this; },
+    status(code) {
+      this.code = code;
+      return this;
+    },
+    set() {
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
   };
   await createWikipediaHandler({ fetchJson })({ query: { artist } }, res);
   return res;
@@ -16,9 +24,20 @@ async function call(fetchJson, artist) {
 test("Wikipedia summary exposes plain biography and canonical source link", async () => {
   const res = await call(async (url) => {
     assert.ok(url.endsWith("/Foo_Fighters"));
-    return { title: "Foo Fighters", description: "American rock band", extract: "Biography.", extract_html: "<script>bad</script>" };
+    return {
+      title: "Foo Fighters",
+      description: "American rock band",
+      extract: "Biography.",
+      extract_html: "<script>bad</script>",
+    };
   }, "Foo Fighters");
-  assert.deepEqual(res.body, { title: "Foo Fighters", description: "American rock band", extract: "Biography.", imageUrl: "", pageUrl: "https://en.wikipedia.org/wiki/Foo_Fighters" });
+  assert.deepEqual(res.body, {
+    title: "Foo Fighters",
+    description: "American rock band",
+    extract: "Biography.",
+    imageUrl: "",
+    pageUrl: "https://en.wikipedia.org/wiki/Foo_Fighters",
+  });
 });
 
 test("non-musical namesake is skipped in favor of band article", async () => {
@@ -27,7 +46,11 @@ test("non-musical namesake is skipped in favor of band article", async () => {
     urls.push(url);
     return urls.length === 1
       ? { title: "Phoenix", description: "Mythical bird", extract: "Wrong subject" }
-      : { title: "Phoenix (band)", description: "French indie pop band", extract: "Correct artist" };
+      : {
+          title: "Phoenix (band)",
+          description: "French indie pop band",
+          extract: "Correct artist",
+        };
   }, "Phoenix");
   assert.equal(urls.length, 2);
   assert.equal(res.body.extract, "Correct artist");
@@ -38,7 +61,11 @@ test("Air Supply biography accepts Wikipedia's soft rock group description", asy
   const res = await call(async (url) => {
     calls++;
     assert.ok(url.endsWith("/Air_Supply"));
-    return { title: "Air Supply", description: "Australian-English soft rock group", extract: "Air Supply are a soft rock duo formed in Melbourne." };
+    return {
+      title: "Air Supply",
+      description: "Australian-English soft rock group",
+      extract: "Air Supply are a soft rock duo formed in Melbourne.",
+    };
   }, "Air Supply");
   assert.equal(calls, 1);
   assert.equal(res.body.title, "Air Supply");
@@ -46,7 +73,14 @@ test("Air Supply biography accepts Wikipedia's soft rock group description", asy
 });
 
 test("a non-musical group description does not pass the artist filter", async () => {
-  const res = await call(async () => ({ title: "Example", description: "Group of islands", extract: "Not a musical artist." }), "Example");
+  const res = await call(
+    async () => ({
+      title: "Example",
+      description: "Group of islands",
+      extract: "Not a musical artist.",
+    }),
+    "Example",
+  );
   assert.equal(res.body.extract, "");
 });
 
@@ -61,7 +95,9 @@ test("disambiguation and missing pages produce an explicit empty biography", asy
 });
 
 test("upstream failure is not presented as absent biography", async () => {
-  const res = await call(async () => { throw { status: 503 }; }, "Coldplay");
+  const res = await call(async () => {
+    throw { status: 503 };
+  }, "Coldplay");
   assert.equal(res.code, 502);
 });
 

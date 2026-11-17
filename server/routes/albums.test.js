@@ -6,15 +6,27 @@ const mbid = "cc197bad-dc9c-440d-a5b5-d52ba2e14234";
 const call = async (handler, query = { mbid }) => {
   const result = { status: 200 };
   const res = {
-    status(code) { result.status = code; return this; },
-    set() { return this; },
-    json(body) { result.body = body; return this; },
+    status(code) {
+      result.status = code;
+      return this;
+    },
+    set() {
+      return this;
+    },
+    json(body) {
+      result.body = body;
+      return this;
+    },
   };
   await handler({ query }, res);
   return result;
 };
 const group = (id, date, secondary = []) => ({
-  id, title: `T${id}`, "primary-type": "Album", "secondary-types": secondary, "first-release-date": date,
+  id,
+  title: `T${id}`,
+  "primary-type": "Album",
+  "secondary-types": secondary,
+  "first-release-date": date,
 });
 
 test("keeps dated studio albums, newest first", () => {
@@ -36,8 +48,13 @@ test("pages until the release-group count is reached", async () => {
   const handler = createAlbumsHandler({
     fetchPage: async (path, params) => {
       offsets.push(params.offset);
-      const all = Array.from({ length: 150 }, (_, i) => group(`g${i}`, `19${String(i % 100).padStart(2, "0")}`));
-      return { "release-group-count": 150, "release-groups": all.slice(params.offset, params.offset + 100) };
+      const all = Array.from({ length: 150 }, (_, i) =>
+        group(`g${i}`, `19${String(i % 100).padStart(2, "0")}`),
+      );
+      return {
+        "release-group-count": 150,
+        "release-groups": all.slice(params.offset, params.offset + 100),
+      };
     },
   });
   const { status, body } = await call(handler);
@@ -48,7 +65,11 @@ test("pages until the release-group count is reached", async () => {
 
 test("rejects a malformed mbid without calling MusicBrainz", async () => {
   let called = false;
-  const handler = createAlbumsHandler({ fetchPage: async () => { called = true; } });
+  const handler = createAlbumsHandler({
+    fetchPage: async () => {
+      called = true;
+    },
+  });
   assert.equal((await call(handler, { mbid: "../x" })).status, 400);
   assert.equal(called, false);
 });

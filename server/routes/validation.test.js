@@ -11,7 +11,12 @@ const setlist = require("./setlist");
 const call = require("../fakeRequest");
 
 test("/events exige coordenada de verdade", async () => {
-  for (const query of [{}, { lat: "abc", long: "1" }, { lat: "91", long: "0" }, { lat: "0", long: "181" }]) {
+  for (const query of [
+    {},
+    { lat: "abc", long: "1" },
+    { lat: "91", long: "0" },
+    { lat: "0", long: "181" },
+  ]) {
     const { status, body } = await call(ticketmaster, "/events", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query)}`);
     assert.match(body.error, /lat\/long/);
@@ -42,7 +47,12 @@ test("a lista do artista exige um mbid", async () => {
 
 test("a turnê exige mbid e nome da turnê", async () => {
   const artistMbid = "67f66c07-6e61-4026-ade5-7e782fad3a5d";
-  for (const query of [{ artistMbid }, { tourName: "Take Cover" }, { artistMbid: "x", tourName: "Take Cover" }, { artistMbid, tourName: "a".repeat(201) }]) {
+  for (const query of [
+    { artistMbid },
+    { tourName: "Take Cover" },
+    { artistMbid: "x", tourName: "Take Cover" },
+    { artistMbid, tourName: "a".repeat(201) },
+  ]) {
     const { status } = await call(setlist, "/tour", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
   }
@@ -56,14 +66,24 @@ test("o venue exige id do setlist.fm", async () => {
 });
 
 test("/venue-events exige nome e coordenada", async () => {
-  for (const query of [{ lat: "1", long: "1" }, { name: "Arena" }, { name: "Arena", lat: "91", long: "0" }, { name: "a".repeat(201), lat: "1", long: "1" }]) {
+  for (const query of [
+    { lat: "1", long: "1" },
+    { name: "Arena" },
+    { name: "Arena", lat: "91", long: "0" },
+    { name: "a".repeat(201), lat: "1", long: "1" },
+  ]) {
     const { status } = await call(ticketmaster, "/venue-events", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
   }
 });
 
 test("a cidade exige nome e ano, e país só com duas letras", async () => {
-  for (const query of [{ year: "2026" }, { cityName: "Calgary" }, { cityName: "Calgary", year: "abc" }, { cityName: "Calgary", year: "2026", countryCode: "Canada" }]) {
+  for (const query of [
+    { year: "2026" },
+    { cityName: "Calgary" },
+    { cityName: "Calgary", year: "abc" },
+    { cityName: "Calgary", year: "2026", countryCode: "Canada" },
+  ]) {
     const { status } = await call(setlist, "/city", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query)}`);
   }
@@ -77,7 +97,12 @@ test("os detalhes do venue exigem id do setlist.fm", async () => {
 });
 
 test("/recent exige cidade, e país só com duas letras", async () => {
-  for (const query of [{}, { cityName: "  " }, { cityName: "a".repeat(201) }, { cityName: "Vancouver", countryCode: "Canada" }]) {
+  for (const query of [
+    {},
+    { cityName: "  " },
+    { cityName: "a".repeat(201) },
+    { cityName: "Vancouver", countryCode: "Canada" },
+  ]) {
     const { status } = await call(setlist, "/recent", query);
     assert.strictEqual(status, 400, `aceitou ${JSON.stringify(query).slice(0, 60)}`);
   }

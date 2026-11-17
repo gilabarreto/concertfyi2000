@@ -10,8 +10,10 @@ const calls = [];
 http.request = async (url, { params }) => {
   calls.push({ url, params });
   if (params.cityName === "Falha") throw Object.assign(new Error("boom"), { status: 503 });
-  if (params.tourName === "Meia" && params.p === 2) throw Object.assign(new Error("slow down"), { status: 429 });
-  if (params.tourName === "Meia") return { total: 34, setlist: Array.from({ length: 20 }, (_, i) => ({ id: `m${i}` })) };
+  if (params.tourName === "Meia" && params.p === 2)
+    throw Object.assign(new Error("slow down"), { status: 429 });
+  if (params.tourName === "Meia")
+    return { total: 34, setlist: Array.from({ length: 20 }, (_, i) => ({ id: `m${i}` })) };
   return { total: 1, setlist: [{ id: "a" }] };
 };
 const setlist = require("./setlist");
@@ -50,5 +52,8 @@ test("página 2 falhando devolve o que veio, marcado como parcial e fora do cach
   assert.strictEqual(body.total, 34);
   assert.strictEqual(body.partial, true);
   await call("/tour", query);
-  assert.strictEqual(calls.filter((c) => c.params.tourName === "Meia" && c.params.p === 1).length, 2);
+  assert.strictEqual(
+    calls.filter((c) => c.params.tourName === "Meia" && c.params.p === 1).length,
+    2,
+  );
 });

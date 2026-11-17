@@ -16,7 +16,7 @@ node --test                      # todos os *.test.js/.mjs (22 arquivos), ~1.5s
 node --test server/http.test.js  # um arquivo só
 
 # portão de qualidade — package.json da raiz é só scripts, NÃO é workspace
-npm run check                    # gitleaks (staged) + lint do client + testes, ~2.5s
+npm run check                    # gitleaks (staged) + prettier/lint de client e server + testes, ~5s
 npm run check:full               # check + build do client, ~5s
 Ler CONSTRAINTS.md antes de mexer no código e fazer a mudança passar nele. Nunca enfraquecer limite, deletar teste ou adicionar supressão para a mudança passar — se um limite está errado, mudar em commit próprio com o motivo.
 
@@ -72,7 +72,7 @@ Auth code flow num popup: Setlist.jsx guarda as músicas em localStorage, abre g
 Qual processo governa o quê
 Dois conjuntos de instruções estão ativos ao mesmo tempo e puxam em direções opostas: ponytail (parar no primeiro degrau que funciona, sem abstrações não pedidas) e os workflows do agent-skills (spec primeiro, TDD, uma régua de qualidade escrita). A divisão, acordada com o dono:
 
-Planejamento, review, teste, constraints — os workflows do agent-skills lideram. É onde o projeto está genuinamente descoberto: sem lint, sem CI, e o client não tem teste nenhum.
+Planejamento, review, teste, constraints — os workflows do agent-skills lideram. É onde o projeto está genuinamente descoberto: o client não tem teste de componente.
 
 Implementação — ponytail lidera. É um app de ~3.5k linhas com duas chamadas de API e sem banco; scaffolding para uma escala que ele não vai alcançar é o modo de falha que ele existe para prevenir.
 

@@ -3,18 +3,50 @@ const assert = require("node:assert/strict");
 const { createVenueInfoHandler } = require("./venueInfo");
 const { findTicketmasterVenue, leadingWords } = require("../venueIdentity");
 const coords = { lat: 51.55, lon: -0.28 };
-const value = value => [{ mainsnak: { datavalue: { value } } }];
-const entity = { id: "Q128468", claims: { P625: value({ latitude: coords.lat, longitude: coords.lon }), P6375: value({ text: "Wembley Park, London HA9 0WS" }), P856: value("https://www.wembleystadium.com"), P1619: value({ time: "+2007-03-09T00:00:00Z", precision: 11 }), P571: value({ time: "+2002-01-01T00:00:00Z", precision: 9 }) } };
-const page = { title: "Wembley Stadium", coordinates: [coords], extract: "Wembley Stadium is a stadium in London.", pageprops: { wikibase_item: entity.id } };
+const value = (value) => [{ mainsnak: { datavalue: { value } } }];
+const entity = {
+  id: "Q128468",
+  claims: {
+    P625: value({ latitude: coords.lat, longitude: coords.lon }),
+    P6375: value({ text: "Wembley Park, London HA9 0WS" }),
+    P856: value("https://www.wembleystadium.com"),
+    P1619: value({ time: "+2007-03-09T00:00:00Z", precision: 11 }),
+    P571: value({ time: "+2002-01-01T00:00:00Z", precision: 9 }),
+  },
+};
+const page = {
+  title: "Wembley Stadium",
+  coordinates: [coords],
+  extract: "Wembley Stadium is a stadium in London.",
+  pageprops: { wikibase_item: entity.id },
+};
 async function call(handler, query = { name: "Wembley Stadium", lat: "51.51", long: "-0.12" }) {
-  const res = { code: 200, status(code) { this.code = code; return this; }, set() {}, json(data) { this.body = data; return this; } };
+  const res = {
+    code: 200,
+    status(code) {
+      this.code = code;
+      return this;
+    },
+    set() {},
+    json(data) {
+      this.body = data;
+      return this;
+    },
+  };
   await handler({ query }, res);
   return res;
 }
 
 test("venue profile combines canonical article and opening date, never construction date", async () => {
   let calls = 0;
-  const handler = createVenueInfoHandler({ fetchJson: async url => { calls++; return url.includes("wikipedia") ? { query: { pages: { 1: page } } } : { entities: { [entity.id]: entity } }; } });
+  const handler = createVenueInfoHandler({
+    fetchJson: async (url) => {
+      calls++;
+      return url.includes("wikipedia")
+        ? { query: { pages: { 1: page } } }
+        : { entities: { [entity.id]: entity } };
+    },
+  });
   const result = await call(handler);
   assert.equal(result.body.opened, "2007");
   assert.equal(result.body.address, "Wembley Park, London HA9 0WS");
@@ -25,12 +57,18 @@ test("venue profile combines canonical article and opening date, never construct
 });
 
 test("Wikidata remains a fallback when Wikipedia fails", async () => {
-  const fallback = { ...entity, labels: { en: { value: "Wembley Stadium" } }, descriptions: { en: { value: "Stadium in London" } } };
-  const handler = createVenueInfoHandler({ fetchJson: async (url, options) => {
-    if (url.includes("wikipedia")) throw { status: 503 };
-    if (options.params.action === "wbsearchentities") return { search: [{ id: entity.id }] };
-    return { entities: { [entity.id]: fallback } };
-  } });
+  const fallback = {
+    ...entity,
+    labels: { en: { value: "Wembley Stadium" } },
+    descriptions: { en: { value: "Stadium in London" } },
+  };
+  const handler = createVenueInfoHandler({
+    fetchJson: async (url, options) => {
+      if (url.includes("wikipedia")) throw { status: 503 };
+      if (options.params.action === "wbsearchentities") return { search: [{ id: entity.id }] };
+      return { entities: { [entity.id]: fallback } };
+    },
+  });
   const result = await call(handler);
   assert.equal(result.body.opened, "2007");
   assert.equal(result.body.description, "");
@@ -38,18 +76,33 @@ test("Wikidata remains a fallback when Wikipedia fails", async () => {
 });
 
 test("ambiguous and distant namesakes never enrich the venue", async () => {
-  const handler = createVenueInfoHandler({ fetchJson: async (url, options) => {
-    if (url.includes("wikipedia")) return { query: { pages: { 1: { ...page, pageprops: { disambiguation: "" } } } } };
-    if (options.params.action === "wbsearchentities") return { search: [{ id: "Q1" }, { id: "Q2" }] };
-    const match = { ...entity, labels: { en: { value: "Wembley Stadium" } }, descriptions: { en: { value: "Stadium" } } };
-    return { entities: { Q1: { ...match, id: "Q1" }, Q2: { ...match, id: "Q2" } } };
-  } });
+  const handler = createVenueInfoHandler({
+    fetchJson: async (url, options) => {
+      if (url.includes("wikipedia"))
+        return { query: { pages: { 1: { ...page, pageprops: { disambiguation: "" } } } } };
+      if (options.params.action === "wbsearchentities")
+        return { search: [{ id: "Q1" }, { id: "Q2" }] };
+      const match = {
+        ...entity,
+        labels: { en: { value: "Wembley Stadium" } },
+        descriptions: { en: { value: "Stadium" } },
+      };
+      return { entities: { Q1: { ...match, id: "Q1" }, Q2: { ...match, id: "Q2" } } };
+    },
+  });
   assert.equal((await call(handler)).body.opened, "");
-  assert.equal((await call(handler, { name: "Wembley Stadium", lat: 0, long: 0 })).body.description, "");
+  assert.equal(
+    (await call(handler, { name: "Wembley Stadium", lat: 0, long: 0 })).body.description,
+    "",
+  );
 });
 
 test("invalid input and all-provider outages leave predictable results", async () => {
-  const handler = createVenueInfoHandler({ fetchJson: async () => { throw { status: 503 }; } });
+  const handler = createVenueInfoHandler({
+    fetchJson: async () => {
+      throw { status: 503 };
+    },
+  });
   assert.equal((await call(handler, { name: "Wembley Stadium" })).code, 400);
   const result = await call(handler);
   assert.equal(result.code, 200);
@@ -58,8 +111,16 @@ test("invalid input and all-provider outages leave predictable results", async (
 });
 
 test("inception is not an opening date and unsafe websites are omitted", async () => {
-  const altered = { ...entity, claims: { ...entity.claims, P1619: [], P856: value("javascript:alert(1)") } };
-  const handler = createVenueInfoHandler({ fetchJson: async url => url.includes("wikipedia") ? { query: { pages: { 1: page } } } : { entities: { [entity.id]: altered } } });
+  const altered = {
+    ...entity,
+    claims: { ...entity.claims, P1619: [], P856: value("javascript:alert(1)") },
+  };
+  const handler = createVenueInfoHandler({
+    fetchJson: async (url) =>
+      url.includes("wikipedia")
+        ? { query: { pages: { 1: page } } }
+        : { entities: { [entity.id]: altered } },
+  });
   const result = await call(handler);
   assert.equal(result.body.opened, "");
   assert.equal(result.body.officialWebsite, "");
@@ -67,38 +128,96 @@ test("inception is not an opening date and unsafe websites are omitted", async (
 
 test("Ticketmaster lookup requires one venue with compatible name and coordinates", () => {
   const venue = { name: "Wembley Stadium", location: { latitude: 51.55, longitude: -0.28 } };
-  assert.equal(findTicketmasterVenue([{ name: "Wrong Arena", location: venue.location }, venue], "Wembley Stadium", 51.51, -0.12), venue);
+  assert.equal(
+    findTicketmasterVenue(
+      [{ name: "Wrong Arena", location: venue.location }, venue],
+      "Wembley Stadium",
+      51.51,
+      -0.12,
+    ),
+    venue,
+  );
   assert.equal(findTicketmasterVenue([venue, { ...venue }], "Wembley Stadium", 51.51, -0.12), null);
   assert.equal(findTicketmasterVenue([venue], "Wembley Stadium", 0, 0), null);
 });
 
 test("Ticketmaster lookup by leading words still needs one nearby venue", () => {
-  const centre = { name: "Grey Eagle Event Centre", location: { latitude: 51.0075, longitude: -114.1472 } };
+  const centre = {
+    name: "Grey Eagle Event Centre",
+    location: { latitude: 51.0075, longitude: -114.1472 },
+  };
   assert.equal(leadingWords("Grey Eagle Resort & Casino"), "grey eagle");
   assert.equal(leadingWords("Rogers Arena"), "", "two words are the whole name");
-  assert.equal(findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08), null, "exact by default");
-  assert.equal(findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08, true), centre);
-  assert.equal(findTicketmasterVenue([centre, { ...centre, name: "Grey Eagle Casino" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
-  assert.equal(findTicketmasterVenue([{ ...centre, name: "Grey Owl Hall" }], "Grey Eagle Resort & Casino", 51.05, -114.08, true), null);
+  assert.equal(
+    findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08),
+    null,
+    "exact by default",
+  );
+  assert.equal(
+    findTicketmasterVenue([centre], "Grey Eagle Resort & Casino", 51.05, -114.08, true),
+    centre,
+  );
+  assert.equal(
+    findTicketmasterVenue(
+      [centre, { ...centre, name: "Grey Eagle Casino" }],
+      "Grey Eagle Resort & Casino",
+      51.05,
+      -114.08,
+      true,
+    ),
+    null,
+  );
+  assert.equal(
+    findTicketmasterVenue(
+      [{ ...centre, name: "Grey Owl Hall" }],
+      "Grey Eagle Resort & Casino",
+      51.05,
+      -114.08,
+      true,
+    ),
+    null,
+  );
 });
 
 test("stored venue info survives a new isolate and a failed re-check keeps the old data", async () => {
   const { createStore } = require("../store");
   const rows = new Map();
-  const db = { prepare: () => ({ bind: (...args) => ({
-    first: async () => rows.get(args[0]) || null,
-    run: async () => void rows.set(args[0], { value: args[1], expires_at: args[2] }),
-  }) }) };
-  let t = 1000, calls = 0, down = false;
-  const fetchJson = async url => {
+  const db = {
+    prepare: () => ({
+      bind: (...args) => ({
+        first: async () => rows.get(args[0]) || null,
+        run: async () => void rows.set(args[0], { value: args[1], expires_at: args[2] }),
+      }),
+    }),
+  };
+  let t = 1000,
+    calls = 0,
+    down = false;
+  const fetchJson = async (url) => {
     calls++;
     if (down) throw { status: 503 };
-    return url.includes("wikipedia") ? { query: { pages: { 1: page } } } : { entities: { [entity.id]: entity } };
+    return url.includes("wikipedia")
+      ? { query: { pages: { 1: page } } }
+      : { entities: { [entity.id]: entity } };
   };
   const app = { locals: { store: createStore({ db, now: () => t }) } };
   const visit = async () => {
-    const res = { code: 200, status(code) { this.code = code; return this; }, set() {}, json(data) { this.body = data; return this; } };
-    await createVenueInfoHandler({ fetchJson })({ query: { name: "Wembley Stadium", lat: "51.51", long: "-0.12" }, app }, res);
+    const res = {
+      code: 200,
+      status(code) {
+        this.code = code;
+        return this;
+      },
+      set() {},
+      json(data) {
+        this.body = data;
+        return this;
+      },
+    };
+    await createVenueInfoHandler({ fetchJson })(
+      { query: { name: "Wembley Stadium", lat: "51.51", long: "-0.12" }, app },
+      res,
+    );
     return res.body;
   };
 

@@ -40,7 +40,6 @@ test("deixa passar até o teto e barra a partir dele", () => {
   assert.strictEqual(blocked.passed, false);
   assert.strictEqual(blocked.res.statusCode, 429);
   assert.ok(Number(blocked.res.headers["Retry-After"]) > 0);
-
 });
 
 test("um IP no teto não barra os outros", () => {
@@ -51,7 +50,6 @@ test("um IP no teto não barra os outros", () => {
   // Este é o modo de falha que importa: se a chave fosse o IP de um proxy, todo mundo
   // chegaria com o mesmo IP e o primeiro visitante derrubaria o site para o resto.
   assert.ok(call(limiter, "2.2.2.2").passed);
-
 });
 
 test("a janela reabre depois que expira", async () => {
@@ -62,7 +60,6 @@ test("a janela reabre depois que expira", async () => {
 
   await new Promise((r) => setTimeout(r, 30));
   assert.ok(call(limiter, "1.1.1.1").passed);
-
 });
 
 test("conta pela chave de keyOf, não por req.ip", () => {
@@ -70,7 +67,21 @@ test("conta pela chave de keyOf, não por req.ip", () => {
   const req = (ip) => ({ ip: "10.0.0.1", headers: { "cf-connecting-ip": ip } });
   const pass = (r) => {
     let passed = false;
-    limiter(r, { set() { return this; }, status() { return this; }, json() { return this; } }, () => (passed = true));
+    limiter(
+      r,
+      {
+        set() {
+          return this;
+        },
+        status() {
+          return this;
+        },
+        json() {
+          return this;
+        },
+      },
+      () => (passed = true),
+    );
     return passed;
   };
 

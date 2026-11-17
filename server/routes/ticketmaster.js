@@ -58,7 +58,7 @@ router.get("/suggest", async (req, res) => {
           // Parar é certo — o que já veio serve. Mudo não: um 429 na página 2 sai
           // daqui como um 200 com 20 eventos, igualzinho a um artista que só tem 20.
           console.error(
-            `Ticketmaster page ${i} failed (${err.status || err.message}), returning ${allEvents.length} events so far`
+            `Ticketmaster page ${i} failed (${err.status || err.message}), returning ${allEvents.length} events so far`,
           );
           break;
         }
@@ -77,11 +77,9 @@ router.get("/suggest", async (req, res) => {
   } catch (error) {
     console.error("Ticketmaster suggest error:", error.message);
 
-    res
-      .status(error.status || 500)
-      .json({
-        error: error.data || "Ticketmaster suggest fetch failed",
-      });
+    res.status(error.status || 500).json({
+      error: error.data || "Ticketmaster suggest fetch failed",
+    });
   }
 });
 
@@ -91,7 +89,12 @@ router.get("/events", async (req, res) => {
 
   // Sem isto, um pedido sem coordenada virava `latlong=undefined,undefined` e gastava
   // uma chamada da cota para receber erro da Ticketmaster.
-  if (!Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) {
+  if (
+    !Number.isFinite(lat) ||
+    Math.abs(lat) > 90 ||
+    !Number.isFinite(long) ||
+    Math.abs(long) > 180
+  ) {
     return res.status(400).json({ error: "Missing or invalid lat/long" });
   }
 
@@ -116,11 +119,9 @@ router.get("/events", async (req, res) => {
   } catch (error) {
     console.error("Ticketmaster events error:", error.message);
 
-    res
-      .status(error.status || 500)
-      .json({
-        error: error.data || "Ticketmaster events fetch failed",
-      });
+    res.status(error.status || 500).json({
+      error: error.data || "Ticketmaster events fetch failed",
+    });
   }
 });
 
@@ -131,16 +132,33 @@ router.get("/venue-events", async (req, res) => {
   const { name } = req.query;
   const lat = Number(req.query.lat);
   const long = Number(req.query.long);
-  if (typeof name !== "string" || !name.trim() || name.length > MAX_TERM ||
-      !Number.isFinite(lat) || Math.abs(lat) > 90 || !Number.isFinite(long) || Math.abs(long) > 180) {
+  if (
+    typeof name !== "string" ||
+    !name.trim() ||
+    name.length > MAX_TERM ||
+    !Number.isFinite(lat) ||
+    Math.abs(lat) > 90 ||
+    !Number.isFinite(long) ||
+    Math.abs(long) > 180
+  ) {
     return res.status(400).json({ error: "Missing or invalid name/lat/long" });
   }
 
   try {
-    const search = async keyword => (await request(`${TM_BASE}/venues.json`, {
-      params: { apikey: process.env.TICKETMASTER_API_KEY, keyword, latlong: `${lat},${long}`, radius: 50, unit: "km", size: 5 },
-      headers,
-    }))._embedded?.venues;
+    const search = async (keyword) =>
+      (
+        await request(`${TM_BASE}/venues.json`, {
+          params: {
+            apikey: process.env.TICKETMASTER_API_KEY,
+            keyword,
+            latlong: `${lat},${long}`,
+            radius: 50,
+            unit: "km",
+            size: 5,
+          },
+          headers,
+        })
+      )._embedded?.venues;
     let venue = findTicketmasterVenue(await search(name), name, lat, long);
     // A resort's stage is filed under its own name ("Grey Eagle Resort & Casino" is Ticketmaster's
     // "Grey Eagle Event Centre"): one more search by the first two words, one nearby hit or none.
@@ -149,16 +167,24 @@ router.get("/venue-events", async (req, res) => {
     if (!venue) return res.json({ venue: null, events: [] });
 
     const data = await request(`${TM_BASE}/events.json`, {
-      params: { apikey: process.env.TICKETMASTER_API_KEY, venueId: venue.id, classificationName: "Music", sort: "date,asc", size: 50 },
+      params: {
+        apikey: process.env.TICKETMASTER_API_KEY,
+        venueId: venue.id,
+        classificationName: "Music",
+        sort: "date,asc",
+        size: 50,
+      },
       headers,
-    }).catch(error => {
+    }).catch((error) => {
       console.error("Ticketmaster venue events unavailable:", error.status || error.message);
       return { _embedded: { events: [] } };
     });
     res.json({ venue, events: data._embedded?.events || [] });
   } catch (error) {
     console.error("Ticketmaster venue error:", error.message);
-    res.status(error.status || 500).json({ error: error.data || "Ticketmaster venue fetch failed" });
+    res
+      .status(error.status || 500)
+      .json({ error: error.data || "Ticketmaster venue fetch failed" });
   }
 });
 

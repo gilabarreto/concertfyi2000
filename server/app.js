@@ -31,7 +31,7 @@ app.use(
   cors({
     origin: allowedOrigins,
     credentials: true,
-  })
+  }),
 );
 
 // CORS decide o que o navegador deixa o JS ler; curl ignora e a rota roda igual.
@@ -45,7 +45,11 @@ app.use(
 const ipHeader = process.env.CLIENT_IP_HEADER;
 app.use(
   "/api",
-  rateLimit({ windowMs: 60_000, max: 60, keyOf: (req) => (ipHeader && req.get(ipHeader)) || req.ip })
+  rateLimit({
+    windowMs: 60_000,
+    max: 60,
+    keyOf: (req) => (ipHeader && req.get(ipHeader)) || req.ip,
+  }),
 );
 
 app.use("/share", require("./routes/share"));

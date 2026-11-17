@@ -58,6 +58,14 @@ jobs:
         run: npm run lint
         working-directory: ./client
 
+      - name: Format (server)
+        run: npm run format:check
+        working-directory: ./server
+
+      - name: Lint (server)
+        run: npm run lint
+        working-directory: ./server
+
       - name: Test
         run: node --test
 
