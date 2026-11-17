@@ -7,6 +7,12 @@ import { faInstagram } from "@fortawesome/free-brands-svg-icons/faInstagram";
 import { faXTwitter } from "@fortawesome/free-brands-svg-icons/faXTwitter";
 import { faYoutube } from "@fortawesome/free-brands-svg-icons/faYoutube";
 import { faWikipediaW } from "@fortawesome/free-brands-svg-icons/faWikipediaW";
+import { faFacebook } from "@fortawesome/free-brands-svg-icons/faFacebook";
+import { faSpotify } from "@fortawesome/free-brands-svg-icons/faSpotify";
+import { faItunesNote } from "@fortawesome/free-brands-svg-icons/faItunesNote";
+import { faLastfm } from "@fortawesome/free-brands-svg-icons/faLastfm";
+import { faTiktok } from "@fortawesome/free-brands-svg-icons/faTiktok";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
 import { getTicketmasterGenres } from "../../helpers/selectors";
 import { useArtistBackground } from "../../api/queries";
 import { useParams } from "react-router-dom";
@@ -25,10 +31,18 @@ function getFavoriteArtists() {
 // texto inerte, que é a falha certa aqui.
 const httpOnly = (url) => (/^https?:\/\//i.test(url) ? url : undefined);
 
+// Every key the Ticketmaster attraction can carry in externalLinks, minus `wiki` (the
+// Wikipedia icon below comes from the bio lookup) and `musicbrainz` (an id, not a page).
 const SOCIALS = [
+  { key: "homepage", icon: faGlobe },
+  { key: "spotify", icon: faSpotify, label: "Spotify" },
   { key: "youtube", icon: faYoutube, label: "YouTube" },
   { key: "instagram", icon: faInstagram, label: "Instagram" },
   { key: "twitter", icon: faXTwitter, label: "X" },
+  { key: "tiktok", icon: faTiktok, label: "TikTok" },
+  { key: "facebook", icon: faFacebook, label: "Facebook" },
+  { key: "itunes", icon: faItunesNote, label: "Apple Music" },
+  { key: "lastfm", icon: faLastfm, label: "Last.fm" },
 ];
 
 export default function ArtistInfo(props) {
@@ -48,15 +62,16 @@ export default function ArtistInfo(props) {
   };
 
   const links = attraction?.externalLinks || {};
-  const hasSocials = SOCIALS.some(({ key }) => links[key]);
+  const hasSocials = SOCIALS.some(({ key }) => links[key]?.[0]?.url);
   const socialIcons = SOCIALS.map(({ key, icon, label }) =>
-    links[key] ? (
+    links[key]?.[0]?.url ? (
       <a
         key={key}
         href={httpOnly(links[key][0].url)}
         target="_blank"
         rel="noreferrer"
-        aria-label={label}
+        aria-label={label || t("Official website")}
+        title={label || t("Official website")}
       >
         <Icon icon={icon} className="text-2xl text-zinc-500" />
       </a>
