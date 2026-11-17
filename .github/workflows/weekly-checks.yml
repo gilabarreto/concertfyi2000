@@ -1,7 +1,7 @@
 # O que aqui dentro não pode morar no deploy.yml, e por quê.
 #
 # Estes dois checks falham por motivo que não é commit de ninguém: uma CVE publicada de
-# madrugada, o Render fora do ar. Se morassem no portão do deploy, travariam o push de quem
+# madrugada, a API fora do ar. Se morassem no portão do deploy, travariam o push de quem
 # não mexeu em dependência — e um gate que reprova sem culpado é um gate que se aprende a
 # ignorar. Aqui eles abrem issue, que fica esperando, em vez de bloquear.
 name: Weekly checks

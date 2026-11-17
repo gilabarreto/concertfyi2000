@@ -1,11 +1,9 @@
-// Janela fixa por IP, em memória. O Render roda uma instância só, então um Map
-// resolve — Redis aqui seria infraestrutura nova para proteger uma cota de API.
-// Se um dia houver mais de uma instância, cada uma passa a ter seu próprio teto.
+// Janela fixa por IP, em memória.
 // ponytail: no Cloudflare cada isolate tem seu Map, então o teto vale por isolate;
 // o binding de rate limit do Cloudflare é a troca se um laço passar por isso.
 //
-// `keyOf` existe porque o IP vem de lugares diferentes: no Render é `req.ip` (trust
-// proxy), no Cloudflare é o header CF-Connecting-IP, que o Cloudflare sobrescreve.
+// `keyOf` existe porque o IP vem de lugares diferentes: no Cloudflare é o header
+// CF-Connecting-IP, que o Cloudflare sobrescreve; no dev local é `req.ip`.
 const rateLimit = ({ windowMs = 60_000, max = 60, keyOf = (req) => req.ip } = {}) => {
   const hits = new Map();
   let nextSweep = Date.now() + windowMs;

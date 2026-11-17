@@ -10,7 +10,7 @@ compatibility_flags = ["nodejs_compat"]
 # O Cloudflare cria o registro DNS e o certificado sozinho no deploy.
 routes = [{ pattern = "api.concertfyi.com", custom_domain = true }]
 
-# Logs no painel (substitui o stdout do Render que o requestLog usa).
+# Logs no painel: é aqui que cai o stdout do requestLog.
 [observability]
 enabled = true
 

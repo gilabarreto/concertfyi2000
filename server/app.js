@@ -6,10 +6,6 @@ require("dotenv").config();
 
 const app = express();
 
-// O Render serve atrás de um proxy. Sem isto req.ip é o IP do proxy para todo
-// mundo, e o rate limit abaixo passa a contar o site inteiro como um visitante só.
-app.set("trust proxy", 1);
-
 const allowedOrigins = [
   "https://gilabarreto.github.io",
   "https://concertfyi.com",
@@ -44,8 +40,8 @@ app.use(
 // 60/min é folgado para uso de verdade (uma sessão ativa faz ~15) e fecha o laço.
 //
 // CLIENT_IP_HEADER só existe no wrangler.toml: no Cloudflare o IP real vem nesse
-// header. No Render ele fica vazio de propósito — lá o header viria do visitante e
-// bastaria inventar um a cada chamada para escapar do limite.
+// header, que o Cloudflare sobrescreve. No dev local fica vazio de propósito — sem
+// proxy na frente, o header viria de quem chama e bastaria inventar um a cada chamada.
 const ipHeader = process.env.CLIENT_IP_HEADER;
 app.use(
   "/api",

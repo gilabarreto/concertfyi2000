@@ -13,7 +13,7 @@ const request = async (url, { params, ...init } = {}) => {
   if (!response.ok) {
     // `url` and not `target` on purpose: the API keys live in `params`, so `target`
     // carries them in its query string and every route prints this message with
-    // console.error — straight into the same stdout Render keeps.
+    // console.error — straight into the Cloudflare logs.
     throw Object.assign(new Error(`${response.status} ${url}`), {
       status: response.status,
       data,

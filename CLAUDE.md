@@ -20,12 +20,12 @@ npm run check                    # gitleaks (staged) + lint do client + testes, 
 npm run check:full               # check + build do client, ~5s
 Ler CONSTRAINTS.md antes de mexer no código e fazer a mudança passar nele. Nunca enfraquecer limite, deletar teste ou adicionar supressão para a mudança passar — se um limite está errado, mudar em commit próprio com o motivo.
 
-Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o client e publica client/dist na branch gh-pages (concertfyi.com). O servidor está no Render, que observa main sozinho e redeploya por conta própria — nenhum workflow deste repo faz isso, mas um push em main ainda entrega server/ para produção. Verificado em 2026-09-15 sondando /api/spotify/token ao vivo para uma mudança recém-pushada.
+Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o client e publica client/dist na branch gh-pages (concertfyi.com). O servidor está no Cloudflare Workers (api.concertfyi.com, config em server/wrangler.toml): o Workers Builds observa main com Root directory `server` e redeploya sozinho — nenhum workflow deste repo faz isso, mas um push em main ainda entrega server/ para produção. Secrets ficam no Worker (`npx wrangler secret put NOME` em server/); localmente o `npm run dev` lê server/.env e o `wrangler dev` lê server/.dev.vars.
 
 .history/ é um dump de histórico local do VS Code (gitignored, milhares de cópias .jsx com timestamp). Excluir de toda busca — hits de grep/find ali são duplicatas velhas, nunca o arquivo vivo.
 
 Arquitetura
-Client (GitHub Pages) → proxy Express (Render) → APIs de terceiros. O servidor existe só para manter as chaves de API fora do browser; não tem banco nem estado. Toda rota é repasse fino.
+Client (GitHub Pages) → proxy Express (Cloudflare Workers, api.concertfyi.com) → APIs de terceiros. O servidor existe para manter as chaves de API fora do browser. Estado só de cache: KV (id de vídeo do YouTube) e D1 (dados de venue, server/store.js). Fora isso toda rota é repasse fino.
 
 As duas fontes de dados e como se juntam
 O app inteiro é um join entre duas APIs que não compartilham ids:
@@ -61,7 +61,7 @@ Casamento de venue entre fontes: server/venueIdentity.js é o único lugar que d
 
 Eventos sem artista (attractions vazio) não entram nas listas de shows: selectors.js:getUpcomingConcertsByCity filtra e getExploreEvents os junta no card Explore Events da Home. A Ticketmaster classifica festas como Music, então não há outro sinal confiável.
 
-Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, GOOGLE_PLACES_API_KEY, PORT.
+Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, GOOGLE_PLACES_API_KEY; PORT só no dev local.
 Env do client: VITE_API_BASE, VITE_GOOGLE_MAPS_KEY, VITE_FORMSPREE_ID, VITE_SPOTIFY_CLIENT_ID (todas como secrets do GitHub para o deploy).
 
 Origens novas precisam entrar em allowedOrigins no server/index.js, ou o CORS bloqueia.
@@ -78,7 +78,7 @@ Implementação — ponytail lidera. É um app de ~3.5k linhas com duas chamadas
 
 Onde os dois colidem numa decisão concreta, dizer isso e deixar o dono escolher em vez de seguir um em silêncio. Uma spec ou um teste que o ponytail pularia não é desperdício aqui; uma interface com uma implementação só, sim.
 
-Uma correção por commit, pushada conforme entra. Não há staging: um push em main builda o client na gh-pages e o Render redeploya o server do mesmo commit, então todo commit é release dos dois lados. Um lote de cinco mudanças que sobe junto não tem falha bissetável, e o dono não consegue testar uma sem levar as outras quatro. Então: um item, um commit, push, próximo. Quando o dono está no teclado ele testa cada uma antes da próxima; quando não está, é uma rodada autônoma e o resumo vem no fim — não é motivo para lote.
+Uma correção por commit, pushada conforme entra. Não há staging: um push em main builda o client na gh-pages e o Workers Builds redeploya o server do mesmo commit, então todo commit é release dos dois lados. Um lote de cinco mudanças que sobe junto não tem falha bissetável, e o dono não consegue testar uma sem levar as outras quatro. Então: um item, um commit, push, próximo. Quando o dono está no teclado ele testa cada uma antes da próxima; quando não está, é uma rodada autônoma e o resumo vem no fim — não é motivo para lote.
 
 Mensagens de commit em inglês. Os docs do dono (SUGESTOES_ATUALIZADO.md, DOSSIE_TECNICO_ATUALIZADO.md, CONSTRAINTS.md) ficam em português, e a conversa também. Commits de 2026-09-15 estão em português; deixar, reescrever história por causa de idioma não vale o risco.
 

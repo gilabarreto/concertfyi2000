@@ -18,10 +18,10 @@ artista, o ponto mais frágil do app (ver `CLAUDE.md`).
 ### Hospedagem e Deploy
 - **Repositório**: dois projetos npm independentes (`client/`, `server/`), sem workspace raiz.
 - **Frontend**: GitHub Pages, publicado a partir de `client/dist` na branch `gh-pages`.
-- **Backend**: Render — só proxy, sem banco, sem estado. Redeploya sozinho a cada push em `main`,
-  sem workflow neste repo fazendo isso.
+- **Backend**: Cloudflare Workers (`api.concertfyi.com`) — proxy, com KV (cache do YouTube) e D1
+  (dados de venue). Workers Builds redeploya sozinho a cada push em `main`, sem workflow neste repo.
 - **Domínio**: `concertfyi.com`.
-- **Deploy é automático e imediato**: todo push em `main` builda o client e o Render reimplanta o
+- **Deploy é automático e imediato**: todo push em `main` builda o client e o Workers Builds reimplanta o
   server do mesmo commit. Não existe staging — cada commit é um release nos dois lados.
 
 ---

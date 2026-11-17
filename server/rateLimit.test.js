@@ -48,8 +48,8 @@ test("um IP no teto não barra os outros", () => {
 
   assert.ok(call(limiter, "1.1.1.1").passed);
   assert.strictEqual(call(limiter, "1.1.1.1").passed, false);
-  // Este é o modo de falha que importa: sem trust proxy no Render, todo mundo
-  // chega com o mesmo IP e o primeiro visitante derruba o site para o resto.
+  // Este é o modo de falha que importa: se a chave fosse o IP de um proxy, todo mundo
+  // chegaria com o mesmo IP e o primeiro visitante derrubaria o site para o resto.
   assert.ok(call(limiter, "2.2.2.2").passed);
 
 });

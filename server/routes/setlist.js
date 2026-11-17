@@ -93,7 +93,7 @@ async function allPages(url, params, maxPages) {
 // Every route below answers the same for every visitor (a tour, a venue, a city), and Home
 // alone fires two of them per visit, so one copy per query is kept for 30 min. The promise
 // is what's stored, so concurrent visitors share one fetch.
-// ponytail: in-memory, per instance and lost on restart; fine for one Render instance.
+// ponytail: in-memory, per Worker isolate and lost when it's recycled; D1 is the upgrade if hit rates matter.
 const PAGE_TTL = 30 * 60 * 1000;
 const pageCache = new Map();
 

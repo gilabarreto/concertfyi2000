@@ -25,7 +25,7 @@ A web platform for music lovers to explore live concerts and setlists by artist,
 
 - APIs: Setlist.fm, Ticketmaster, Google Maps e Places, OpenStreetMap (Nominatim, Overpass), Wikipedia/Wikidata, LRCLib, Spotify, YouTube
 
-- Hosting: Github Pages + Render
+- Hosting: GitHub Pages + Cloudflare Workers
 
 ---
 
@@ -93,7 +93,7 @@ Automático dos dois lados, a partir de um push no `main`:
 | Parte | Onde | Como dispara |
 |---|---|---|
 | Client | GitHub Pages (`concertfyi.com`) | `deploy.yml` builda e publica `client/dist` na branch `gh-pages` |
-| Server | Render | O próprio Render observa o `main` e redeploya sozinho — não há workflow neste repositório fazendo isso |
+| Server | Cloudflare Workers (`api.concertfyi.com`) | Workers Builds observa o `main` (Root directory `server`) e redeploya sozinho — não há workflow neste repositório fazendo isso |
 
 Ou seja: um push no `main` publica os dois. Não existe ambiente de staging.
 

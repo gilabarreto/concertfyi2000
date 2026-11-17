@@ -1,4 +1,4 @@
-// Uma linha por requisição no stdout, que é o que o Render guarda. Sem isto o único
+// Uma linha por requisição no stdout, que vai para os logs do Cloudflare. Sem isto o único
 // rastro de um dia ruim são os `console.error` das falhas: dá para ver que quebrou,
 // nunca quanto tráfego havia, o que estava lento nem quantos 429 o limite devolveu.
 //
@@ -26,7 +26,7 @@ const requestLog =
     // a query. O corte em 120 é porque esse caminho cru é texto de quem chama: cabe
     // ~16 kB nele (o limite de header do Node), e o rate limit não ajuda aqui — ele
     // responde 429, mas a linha é escrita mesmo assim, de propósito. Sem o corte, um
-    // cliente só enche o log do Render e empurra para fora o que interessa.
+    // cliente só enche o log e empurra para fora o que interessa.
     res.on("close", () => {
       const status = res.writableFinished ? res.statusCode : "ABORTED";
       const path = req.route

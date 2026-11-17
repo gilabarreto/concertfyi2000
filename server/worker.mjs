@@ -1,4 +1,4 @@
-// Entrada do Cloudflare Workers: o mesmo Express do Render, servido pelo adaptador
+// Entrada do Cloudflare Workers: o mesmo Express do dev local, servido pelo adaptador
 // node:http do Workers. A porta é interna — só liga o listen ao handler.
 import { env } from "cloudflare:workers";
 import { httpServerHandler } from "cloudflare:node";
