@@ -165,6 +165,12 @@ dialog.map-dialog[open] {
 .dark {
   color-scheme: dark;
 }
+/* Google maps in dark mode. The Embed map (one pin) takes no style options at all, so
+   both maps get the same filter: invert flips light to dark and hue-rotate puts the
+   colours back, so water stays blue and the red tour markers stay red. */
+.dark .map-dark {
+  filter: invert(90%) hue-rotate(180deg);
+}
 .dark body {
   background-color: theme("colors.zinc.900");
   color: theme("colors.zinc.100");

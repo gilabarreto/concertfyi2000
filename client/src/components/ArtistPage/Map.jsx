@@ -19,7 +19,7 @@ export default function Map({ latitude, longitude }) {
     <iframe
       title={t("Map")}
       src={src}
-      className="w-full h-full border-0"
+      className="map-dark w-full h-full border-0"
       loading="lazy"
       referrerPolicy="strict-origin-when-cross-origin"
     />
@@ -49,7 +49,7 @@ export function TourMap({ points, onSelect }) {
     <GoogleMap
       key={points.length}
       onLoad={fit}
-      mapContainerClassName="w-full h-full"
+      mapContainerClassName="map-dark w-full h-full"
       options={{ streetViewControl: false, mapTypeControl: false }}
     >
       {points.map((point, i) => (
