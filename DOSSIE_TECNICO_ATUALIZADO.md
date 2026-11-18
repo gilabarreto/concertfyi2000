@@ -17,7 +17,7 @@ artista, o ponto mais frágil do app (ver `CLAUDE.md`).
 
 ### Hospedagem e Deploy
 - **Repositório**: dois projetos npm independentes (`client/`, `server/`), sem workspace raiz.
-- **Frontend**: GitHub Pages, publicado a partir de `client/dist` na branch `gh-pages`.
+- **Frontend**: Cloudflare Workers (static assets, Worker `concertfyi-web`), publicado pelo Workers Builds a partir de `client/` desde 2026-11-18. Rotas do app respondem 200 com o `index.html`; CSP e cache vêm de `dist/_headers`.
 - **Backend**: Cloudflare Workers (`api.concertfyi.com`) — proxy, com KV (cache do YouTube) e D1
   (dados de venue). Workers Builds redeploya sozinho a cada push em `main`, sem workflow neste repo.
 - **Domínio**: `concertfyi.com`.

@@ -2,7 +2,7 @@ CONSTRAINTS.md — Pendências e Exceções
 🔴 Só você pode resolver
 □ Rotacionar a SETLISTFM_API_KEY — vazou em bundle público da gh-pages em julho/2025. Sem self-service no portal do setlist.fm. Vence 2026-10-15 (abrir chamado).
 ☑ Restringir VITE_GOOGLE_MAPS_KEY por referrer — feito em 2026-11-10 (referrers do site + localhost:3000; só Maps JavaScript e Maps Embed). Ver SUGESTOES.
-□ Sair do GitHub Pages — resolve de uma vez: CSP com frame-ancestors/report-uri/sandbox (hoje ignoradas em <meta>), status 404 real em /artists/..., e Cache-Control dos assets.
+☑ Sair do GitHub Pages — feito em 2026-11-18: concertfyi.com no Worker concertfyi-web. 404 real resolvido (/artists/... responde 200), CSP por header com frame-ancestors, assets com cache de 1 ano.
 🟡 Decisões de qualidade (com vencimento ou gatilho)
 □ 87 achados de gitleaks no histórico da gh-pages — bundles com a chave pública do Maps. Sem vencimento; aceito (chave de browser é pública por design).
 □ 2 CVEs abertas no react-router 6.30.6 (GHSA-337j-9hxr-rhxg só afeta SSR — app não tem; GHSA-wrjc-x8rr-h8h6 é open redirect, mas as 6 chamadas prefixam segmento literal). Reavaliar se o app aceitar caminho vindo do usuário.
@@ -11,7 +11,7 @@ CONSTRAINTS.md — Pendências e Exceções
 □ Componentes e hooks sem teste — Vitest + jsdom + testing-library vetados em 2026-09-15. Reabrir ao primeiro bug que só um teste de hook pegaria (useGeolocation é o candidato).
 ⚪ Fechado (registro)
 ☑ osv-scanner fora do npm run check — fechado em 2026-09-17: roda semanal em weekly-checks.yml, abrindo issue em vez de travar deploy. Continua fora do check diário de propósito.
-☑ CSP sem frame-ancestors, report-uri, sandbox — exceção registrada; volta só com a saída do GitHub Pages.
+☑ CSP sem frame-ancestors, report-uri, sandbox — frame-ancestors 'none' voltou com a saída do GitHub Pages (2026-11-18); report-uri e sandbox seguem de fora.
 ☑ Teto de bundle — 270 kB aplicado em build.chunkSizeWarningLimit no client/vite.config.js.
 ✅ Referência rápida — o piso (bloqueia)
 O quê	Regra	Comando
@@ -19,7 +19,7 @@ Lint do client	0 achados	npm run lint --prefix client
 Formatação do client	prettier --check limpo	npm run format:check --prefix client
 Lint do server	0 achados (eslint recommended, 2026-11-17)	npm run lint --prefix server
 Formatação do server	prettier --check limpo	npm run format:check --prefix server
-Testes	165 passam, 0 falham (2026-11-17)	node --test (raiz)
+Testes	167 passam, 0 falham (2026-11-18)	node --test (raiz)
 Teste deletado/pulado	proibido	—
 Segredo no que vai ser commitado	0	gitleaks git --staged --redact --no-banner
 CVE em dependência de runtime	0	osv-scanner scan source --config osv-scanner.toml ...

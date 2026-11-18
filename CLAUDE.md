@@ -5,7 +5,7 @@ Dois projetos npm independentes, sem workspace raiz. Sempre cd client ou cd serv
 bash
 # client (Vite dev em :3000, proxy /api → localhost:4000 — rode o server também)
 cd client && npm run dev
-cd client && npm run build       # vite build + copia dist/index.html para 404.html (SPA no GH Pages)
+cd client && npm run build       # vite build (+ dist/_headers com CSP e cache)
 
 # server (Express em :4000)
 cd server && npm run dev         # nodemon
@@ -21,12 +21,12 @@ npm run check:full               # check + build do client, ~5s
 # o mesmo check roda sozinho antes de todo push: git config core.hooksPath .githooks (uma vez por clone)
 Ler CONSTRAINTS.md antes de mexer no código e fazer a mudança passar nele. Nunca enfraquecer limite, deletar teste ou adicionar supressão para a mudança passar — se um limite está errado, mudar em commit próprio com o motivo.
 
-Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o client e publica client/dist na branch gh-pages (concertfyi.com). O servidor está no Cloudflare Workers (api.concertfyi.com, config em server/wrangler.toml): o Workers Builds observa main com Root directory `server` e redeploya sozinho — nenhum workflow deste repo faz isso, mas um push em main ainda entrega server/ para produção. Secrets ficam no Worker (`npx wrangler secret put NOME` em server/); localmente o `npm run dev` lê server/.env e o `wrangler dev` lê server/.dev.vars.
+Deploy é automático dos dois lados pelo Workers Builds da Cloudflare, que observa main: o site (concertfyi.com, Worker `concertfyi-web`, Root directory `client`, config em client/wrangler.toml; as VITE_* ficam em Settings → Build) e a API (api.concertfyi.com, Root directory `server`, config em server/wrangler.toml). O deploy.yml só roda as verificações e não barra o deploy — quem barra antes é o hook de pre-push. Secrets da API ficam no Worker (`npx wrangler secret put NOME` em server/); localmente o `npm run dev` lê server/.env e o `wrangler dev` lê server/.dev.vars.
 
 .history/ é um dump de histórico local do VS Code (gitignored, milhares de cópias .jsx com timestamp). Excluir de toda busca — hits de grep/find ali são duplicatas velhas, nunca o arquivo vivo.
 
 Arquitetura
-Client (GitHub Pages) → proxy Express (Cloudflare Workers, api.concertfyi.com) → APIs de terceiros. O servidor existe para manter as chaves de API fora do browser. Estado só de cache: KV (id de vídeo do YouTube) e D1 (dados de venue, server/store.js; tabela `venues` do Overture Maps, carregada por scripts/overture-venues.py). Fora isso toda rota é repasse fino.
+Client (Cloudflare Workers static assets, concertfyi.com) → proxy Express (Cloudflare Workers, api.concertfyi.com) → APIs de terceiros. O servidor existe para manter as chaves de API fora do browser. Estado só de cache: KV (id de vídeo do YouTube) e D1 (dados de venue, server/store.js; tabela `venues` do Overture Maps, carregada por scripts/overture-venues.py). Fora isso toda rota é repasse fino.
 
 As duas fontes de dados e como se juntam
 O app inteiro é um join entre duas APIs que não compartilham ids:
@@ -63,7 +63,7 @@ Casamento de venue entre fontes: server/venueIdentity.js é o único lugar que d
 Eventos sem artista (attractions vazio) não entram nas listas de shows: selectors.js:getUpcomingConcertsByCity filtra e getExploreEvents os junta no card Explore Events da Home. A Ticketmaster classifica festas como Music, então não há outro sinal confiável.
 
 Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, GOOGLE_PLACES_API_KEY; PORT só no dev local.
-Env do client: VITE_API_BASE, VITE_GOOGLE_MAPS_KEY, VITE_FORMSPREE_ID, VITE_SPOTIFY_CLIENT_ID (todas como secrets do GitHub para o deploy).
+Env do client: VITE_API_BASE, VITE_GOOGLE_MAPS_KEY, VITE_FORMSPREE_ID, VITE_SPOTIFY_CLIENT_ID (em Settings → Build do Worker concertfyi-web).
 
 Origens novas precisam entrar em allowedOrigins no server/index.js, ou o CORS bloqueia.
 
@@ -79,7 +79,7 @@ Implementação — ponytail lidera. É um app de ~3.5k linhas com duas chamadas
 
 Onde os dois colidem numa decisão concreta, dizer isso e deixar o dono escolher em vez de seguir um em silêncio. Uma spec ou um teste que o ponytail pularia não é desperdício aqui; uma interface com uma implementação só, sim.
 
-Uma correção por commit, pushada conforme entra. Não há staging: um push em main builda o client na gh-pages e o Workers Builds redeploya o server do mesmo commit, então todo commit é release dos dois lados. Um lote de cinco mudanças que sobe junto não tem falha bissetável, e o dono não consegue testar uma sem levar as outras quatro. Então: um item, um commit, push, próximo. Quando o dono está no teclado ele testa cada uma antes da próxima; quando não está, é uma rodada autônoma e o resumo vem no fim — não é motivo para lote.
+Uma correção por commit, pushada conforme entra. Não há staging: um push em main faz o Workers Builds redeployar o site e o server do mesmo commit, então todo commit é release dos dois lados. Um lote de cinco mudanças que sobe junto não tem falha bissetável, e o dono não consegue testar uma sem levar as outras quatro. Então: um item, um commit, push, próximo. Quando o dono está no teclado ele testa cada uma antes da próxima; quando não está, é uma rodada autônoma e o resumo vem no fim — não é motivo para lote.
 
 Mensagens de commit em inglês. Os docs do dono (SUGESTOES_ATUALIZADO.md, DOSSIE_TECNICO_ATUALIZADO.md, CONSTRAINTS.md) ficam em português, e a conversa também. Commits de 2026-09-15 estão em português; deixar, reescrever história por causa de idioma não vale o risco.
 

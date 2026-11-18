@@ -1,20 +1,11 @@
-name: Deploy to GitHub Pages
+name: Checks
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-# Dois pushes seguidos publicavam a `gh-pages` ao mesmo tempo e quem terminasse por
-# último ganhava — podia ser o commit mais antigo. Enfileira em vez de cancelar: um
-# deploy interrompido no meio da publicação deixa a branch pela metade.
-concurrency:
-  group: deploy-pages
-  cancel-in-progress: false
+  contents: read
 
 jobs:
   deploy:
@@ -49,7 +40,8 @@ jobs:
         run: npm ci
         working-directory: ./server
 
-      # O portão do CONSTRAINTS.md. Falhou aqui, o Deploy lá embaixo nem roda.
+      # O portão do CONSTRAINTS.md. O site e a API são publicados pelo Workers Builds da
+      # Cloudflare, que não espera este workflow: o que barra antes é o hook de pre-push.
       - name: Format
         run: npm run format:check
         working-directory: ./client
@@ -69,19 +61,7 @@ jobs:
       - name: Test
         run: node --test
 
+      # Só confere que compila; o build publicado é o do Workers Builds, com as VITE_* de lá.
       - name: Build client
-        run: npm run build 2>&1
+        run: npm run build
         working-directory: ./client
-        env:
-          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
-          VITE_GOOGLE_MAPS_KEY: ${{ secrets.VITE_GOOGLE_MAPS_KEY }}
-          VITE_FORMSPREE_ID: ${{ secrets.VITE_FORMSPREE_ID }}
-          VITE_SPOTIFY_CLIENT_ID: ${{ secrets.VITE_SPOTIFY_CLIENT_ID }}
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./client/dist
-          cname: concertfyi.com
-          publish_branch: gh-pages

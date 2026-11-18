@@ -33,23 +33,9 @@ const csp = [
   "object-src 'none'",
 ].join("; ");
 
-// Só no build: em desenvolvimento o Vite injeta script inline e abre um WebSocket de HMR,
-// que esta política barra. O <meta> entra antes de o build copiar o index.html para o
-// 404.html e para as cópias por rota, então as quatro saem com a política.
-const cspMeta = {
-  name: "csp-meta",
-  apply: "build",
-  transformIndexHtml: (html) =>
-    html.replace(
-      "<head>",
-      `<head>\n    <meta http-equiv="Content-Security-Policy" content="${csp}" />`,
-    ),
-};
-
 // The same policy as a real response header, for the Cloudflare Workers static assets
-// (client/wrangler.toml), which read dist/_headers. A header can carry what <meta> can't,
-// so frame-ancestors goes here only. GitHub Pages ignores the file; once the site moves,
-// the <meta> above becomes redundant but harmless.
+// (client/wrangler.toml), which read dist/_headers. Build only: in dev Vite injects inline
+// script and opens an HMR WebSocket that this policy blocks.
 const headersFile = {
   name: "headers-file",
   apply: "build",
@@ -72,7 +58,7 @@ const headersFile = {
 };
 
 export default defineConfig({
-  plugins: [react(), cspMeta, headersFile],
+  plugins: [react(), headersFile],
   build: {
     // Teto de bundle do CONSTRAINTS.md. Avisa, não quebra o build.
     // Este número tem de andar junto com a tabela de lá: os dois ratchets de 2026-09-15
