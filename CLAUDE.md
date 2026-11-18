@@ -1,4 +1,5 @@
 CLAUDE.md — Guia do repositório
+Estado atual em ESTADO.md. Ao fim de cada sessão que mudou algo, reescrever ESTADO.md (máx. 30 linhas), commitar e dar push.
 Comandos
 Dois projetos npm independentes, sem workspace raiz. Sempre cd client ou cd server primeiro.
 
