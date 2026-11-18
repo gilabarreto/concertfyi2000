@@ -19,10 +19,11 @@ Lint do client	0 achados	npm run lint --prefix client
 Formatação do client	prettier --check limpo	npm run format:check --prefix client
 Lint do server	0 achados (eslint recommended, 2026-11-17)	npm run lint --prefix server
 Formatação do server	prettier --check limpo	npm run format:check --prefix server
-Testes	157 passam, 0 falham (2026-11-17)	node --test (raiz)
+Testes	165 passam, 0 falham (2026-11-17)	node --test (raiz)
 Teste deletado/pulado	proibido	—
 Segredo no que vai ser commitado	0	gitleaks git --staged --redact --no-banner
 CVE em dependência de runtime	0	osv-scanner scan source --config osv-scanner.toml ...
+Antes do push: .githooks/pre-push roda o npm run check (ativar por clone com git config core.hooksPath .githooks; pular só com --no-verify).
 CI (deploy.yml): gitleaks dir . na árvore recém-clonada antes de instalar/buildar; depois formatação, lint e teste antes do build. Falhou, não publica.
 
 ✅ Referência rápida — medido, sem portão (2026-09-15)

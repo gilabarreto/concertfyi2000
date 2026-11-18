@@ -18,6 +18,7 @@ node --test server/http.test.js  # um arquivo só
 # portão de qualidade — package.json da raiz é só scripts, NÃO é workspace
 npm run check                    # gitleaks (staged) + prettier/lint de client e server + testes, ~5s
 npm run check:full               # check + build do client, ~5s
+# o mesmo check roda sozinho antes de todo push: git config core.hooksPath .githooks (uma vez por clone)
 Ler CONSTRAINTS.md antes de mexer no código e fazer a mudança passar nele. Nunca enfraquecer limite, deletar teste ou adicionar supressão para a mudança passar — se um limite está errado, mudar em commit próprio com o motivo.
 
 Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o client e publica client/dist na branch gh-pages (concertfyi.com). O servidor está no Cloudflare Workers (api.concertfyi.com, config em server/wrangler.toml): o Workers Builds observa main com Root directory `server` e redeploya sozinho — nenhum workflow deste repo faz isso, mas um push em main ainda entrega server/ para produção. Secrets ficam no Worker (`npx wrangler secret put NOME` em server/); localmente o `npm run dev` lê server/.env e o `wrangler dev` lê server/.dev.vars.

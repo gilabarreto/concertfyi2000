@@ -1,0 +1,6 @@
+#!/bin/sh
+# Todo push em main vai para produção (site e API), e o CI só roda depois que o commit já
+# chegou lá. Este hook roda o mesmo portão antes, na máquina. Ativar uma vez por clone:
+#   git config core.hooksPath .githooks
+# Pular numa emergência: git push --no-verify
+exec npm run check
