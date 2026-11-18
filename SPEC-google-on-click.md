@@ -1,9 +1,9 @@
 # Spec: Google só no clique (módulo google-on-click)
 
-> **Revisado pelo dono em 2026-11-11:** nota, reviews e campos do Google voltaram a carregar
-> ao abrir a página. Medido em 12 venues de Calgary: sem o Google, só 2 tinham About
-> (Wikipedia) e metade não tinha telefone nem site no OpenStreetMap. Só as **fotos** ficam no
-> clique. Custo por visita: 1 GetPlace (teto 30/dia); fotos 3/6 GetPhotoMedia por clique.
+> **Histórico:** em 2026-11-11 o dono pôs nota, reviews e campos do Google para carregar ao
+> abrir a página (faltava telefone/site em metade das venues). Em 2026-11-17 voltou ao clique:
+> o Overture Maps no D1 (`server/overture.js`) passa a cobrir site, telefone e endereço nos
+> EUA e no Canadá.
 
 ## Objetivo
 
@@ -62,7 +62,7 @@ gastar fotos de quem não pediu.
 ## Limites
 
 - Sempre: crédito do Google exibido junto do conteúdo do Google, como hoje.
-- Perguntar antes: carregar fotos do Google sem clique.
+- Perguntar antes: carregar qualquer coisa do Google sem clique.
 - Nunca: guardar conteúdo do Google (nem no D1, nem no navegador além da exibição).
 
 ## Critérios de sucesso
