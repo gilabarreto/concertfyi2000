@@ -1,6 +1,9 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
-const { createVenueServicesHandlers } = require("./venueServices");
+const venueServices = require("./venueServices");
+// The venue's own site is never fetched here (venueSite.test.js covers it): no network in tests.
+const createVenueServicesHandlers = (options) =>
+  venueServices.createVenueServicesHandlers({ siteAbout: async () => "", ...options });
 // `google: "true"` is the visitor's click; most tests exercise the Google side.
 const query = {
   name: "Wembley Stadium",
@@ -874,4 +877,24 @@ test("Overture fills only the fields OSM lacks, and Google still wins on the cli
   assert.equal(res.body.providers.overture, "ok");
   assert.equal(res.body.fields.website.source, "Overture Maps");
   assert.equal(res.body.fields.phone.source, "OpenStreetMap");
+});
+
+test("the venue's own site fills the About only when OSM and Overture have none", async () => {
+  const sites = [];
+  const handlers = createVenueServicesHandlers({
+    osmUrl: "https://osm.example/search",
+    fetchJson: async () => nominatim([osmVenue]),
+    siteAbout: async (url) => {
+      sites.push(url);
+      return "Wembley Stadium is the home of English football and a major concert venue.";
+    },
+  });
+  const opened = await call(handlers.services, { ...query, google: undefined });
+  assert.deepEqual(sites, ["https://www.wembleystadium.com"]);
+  assert.equal(opened.body.fields.description.source, "wembleystadium.com");
+  assert.equal(opened.body.fields.description.url, "https://www.wembleystadium.com");
+
+  // Second visit: the answer is stored, the site is not fetched again.
+  await call(handlers.services, { ...query, google: undefined });
+  assert.equal(sites.length, 1);
 });

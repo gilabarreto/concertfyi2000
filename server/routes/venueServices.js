@@ -1,6 +1,7 @@
 const { request } = require("../http");
 const { createStore } = require("../store");
 const { overtureVenue } = require("../overture");
+const { createSiteAbout } = require("../venueSite");
 // Prazos do banco (SPEC-venues.md): achado é checado de novo em 30 dias, não achado em 7.
 // Do Google só o place ID fica guardado (os termos permitem; o conteúdo, não).
 const DAY = 24 * 60 * 60;
@@ -82,6 +83,7 @@ function createVenueServicesHandlers({
   fetchJson = request,
   apiKey = process.env.GOOGLE_PLACES_API_KEY,
   osmUrl = "https://nominatim.openstreetmap.org/search",
+  siteAbout = createSiteAbout(),
 } = {}) {
   // Sem banco (Node, testes) o store é memória; no Worker vem de app.locals (worker.mjs).
   const memoryStore = createStore();
@@ -451,6 +453,24 @@ function createVenueServicesHandlers({
     }
   }
 
+  // The venue's own site, only when OSM and Overture have no description. Stored 30 days per
+  // address, an empty answer too; a failing site is retried on the next visit.
+  async function site(website, store) {
+    try {
+      const text = await store.cached(`site-about:${website}`, 30 * DAY, () => siteAbout(website));
+      if (!text) return null;
+      return {
+        value: text,
+        source: new URL(website).hostname.replace(/^www\./, ""),
+        url: website,
+        attributions: [],
+      };
+    } catch (error) {
+      console.error("venue-services site:", error.message);
+      return null;
+    }
+  }
+
   async function load(identity, key, mode, options, store, db) {
     if (mode !== "services") return google(identity, key, mode, options, store);
     // Google only on the visitor's click (SPEC-google-on-click.md); opening the page is OSM alone.
@@ -467,6 +487,8 @@ function createVenueServicesHandlers({
     const fields = { ...fallback.fields };
     for (const [key, value] of Object.entries(last.fields))
       if (value && !fields[key]) fields[key] = value;
+    if (!fields.description && fields.website?.value)
+      fields.description = await site(fields.website.value, store);
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
     // The matched building's pin, for the map; never fed back into the identity.
     return {

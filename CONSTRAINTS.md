@@ -19,7 +19,7 @@ Lint do client	0 achados	npm run lint --prefix client
 Formatação do client	prettier --check limpo	npm run format:check --prefix client
 Lint do server	0 achados (eslint recommended, 2026-11-17)	npm run lint --prefix server
 Formatação do server	prettier --check limpo	npm run format:check --prefix server
-Testes	167 passam, 0 falham (2026-11-18)	node --test (raiz)
+Testes	174 passam, 0 falham (2026-11-18)	node --test (raiz)
 Teste deletado/pulado	proibido	—
 Segredo no que vai ser commitado	0	gitleaks git --staged --redact --no-banner
 CVE em dependência de runtime	0	osv-scanner scan source --config osv-scanner.toml ...
