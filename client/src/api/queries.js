@@ -67,7 +67,10 @@ export const useArtistAlbums = (mbid) =>
     enabled: !!mbid,
     staleTime: 24 * 60 * 60 * 1000,
     gcTime: 7 * 24 * 60 * 60 * 1000,
-    retry: false,
+    // Primeira visita a um artista ainda depende do MusicBrainz, que recusa às vezes (1 req/s
+    // por IP); uma segunda tentativa depois da janela costuma passar.
+    retry: 1,
+    retryDelay: 2500,
   });
 
 // Song details don't change: cache for the session instead of the 1s global gcTime,

@@ -1,4 +1,5 @@
 const { musicbrainzRequest } = require("../musicbrainzClient");
+const { createStore } = require("../store");
 
 const MBID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const LIMIT = 6;
@@ -17,28 +18,39 @@ function studioAlbumsFrom(groups) {
     .map((g) => ({ id: g.id, title: g.title, year: g["first-release-date"].slice(0, 4) }));
 }
 
-function createAlbumsHandler({ fetchPage = musicbrainzRequest } = {}) {
+// MusicBrainz é CC0: pode ficar guardado. O D1 segura a discografia por 30 dias e continua
+// servindo a antiga quando a fonte falha — o 1 req/s é por IP, e o IP do Worker é dividido
+// com outros clientes do Cloudflare, então 503/502 lá é rotina, não exceção.
+const TTL = 30 * 24 * 60 * 60;
+
+function createAlbumsHandler({ fetchPage = musicbrainzRequest, memoryStore = createStore() } = {}) {
+  async function load(mbid) {
+    // 100 por página é o máximo da API; 3 páginas cobrem discografias com muito bootleg
+    // sem prender a fila de 1 req/s por mais de ~3 s.
+    const groups = [];
+    for (let offset = 0; offset < 300; offset += 100) {
+      const page = await fetchPage("release-group", {
+        artist: mbid,
+        type: "album",
+        limit: 100,
+        offset,
+      });
+      groups.push(...(page["release-groups"] || []));
+      if (groups.length >= (page["release-group-count"] || 0)) break;
+    }
+    return studioAlbumsFrom(groups);
+  }
+
   return async (req, res) => {
     const { mbid } = req.query;
     if (typeof mbid !== "string" || !MBID_RE.test(mbid)) {
       return res.status(400).json({ error: "Missing or invalid mbid" });
     }
+    const store = req.app?.locals?.store || memoryStore;
     try {
-      // 100 por página é o máximo da API; 3 páginas cobrem discografias com muito bootleg
-      // sem prender a fila de 1 req/s por mais de ~3 s.
-      const groups = [];
-      for (let offset = 0; offset < 300; offset += 100) {
-        const page = await fetchPage("release-group", {
-          artist: mbid,
-          type: "album",
-          limit: 100,
-          offset,
-        });
-        groups.push(...(page["release-groups"] || []));
-        if (groups.length >= (page["release-group-count"] || 0)) break;
-      }
+      const albums = await store.cached(`albums:${mbid.toLowerCase()}`, TTL, () => load(mbid));
       res.set("Cache-Control", "public, max-age=86400");
-      return res.json({ albums: studioAlbumsFrom(groups) });
+      return res.json({ albums });
     } catch (error) {
       return res
         .status(error.status === 503 ? 503 : 502)

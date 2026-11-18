@@ -1,6 +1,7 @@
 const { test } = require("node:test");
 const assert = require("node:assert/strict");
 const { studioAlbumsFrom, createAlbumsHandler } = require("./albums");
+const { createStore } = require("../store");
 
 const mbid = "cc197bad-dc9c-440d-a5b5-d52ba2e14234";
 const call = async (handler, query = { mbid }) => {
@@ -72,4 +73,22 @@ test("rejects a malformed mbid without calling MusicBrainz", async () => {
   });
   assert.equal((await call(handler, { mbid: "../x" })).status, 400);
   assert.equal(called, false);
+});
+
+test("serves the stored discography when MusicBrainz fails after it expired", async () => {
+  let clock = 0;
+  let down = false;
+  const handler = createAlbumsHandler({
+    memoryStore: createStore({ now: () => clock }),
+    fetchPage: async () => {
+      if (down) throw Object.assign(new Error("busy"), { status: 503 });
+      return { "release-group-count": 1, "release-groups": [group("a", "2001-01-01")] };
+    },
+  });
+  assert.equal((await call(handler)).body.albums.length, 1);
+  clock = 31 * 24 * 60 * 60;
+  down = true;
+  const { status, body } = await call(handler);
+  assert.equal(status, 200);
+  assert.deepEqual(body.albums, [{ id: "a", title: "Ta", year: "2001" }]);
 });
