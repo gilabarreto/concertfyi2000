@@ -26,7 +26,7 @@ Deploy é automático dos dois lados: push em main roda deploy.yml, que builda o
 .history/ é um dump de histórico local do VS Code (gitignored, milhares de cópias .jsx com timestamp). Excluir de toda busca — hits de grep/find ali são duplicatas velhas, nunca o arquivo vivo.
 
 Arquitetura
-Client (GitHub Pages) → proxy Express (Cloudflare Workers, api.concertfyi.com) → APIs de terceiros. O servidor existe para manter as chaves de API fora do browser. Estado só de cache: KV (id de vídeo do YouTube) e D1 (dados de venue, server/store.js). Fora isso toda rota é repasse fino.
+Client (GitHub Pages) → proxy Express (Cloudflare Workers, api.concertfyi.com) → APIs de terceiros. O servidor existe para manter as chaves de API fora do browser. Estado só de cache: KV (id de vídeo do YouTube) e D1 (dados de venue, server/store.js; tabela `venues` do Overture Maps, carregada por scripts/overture-venues.py). Fora isso toda rota é repasse fino.
 
 As duas fontes de dados e como se juntam
 O app inteiro é um join entre duas APIs que não compartilham ids:
@@ -56,7 +56,7 @@ ArtistPage.jsx compõe os cards; tudo sob components/ArtistPage/ é um card. Con
 Superfícies de monetização (vendedores de ingresso, hotéis) são alvos de link de afiliado. Os comentários dizendo por que um vendedor foi mantido ou removido são load-bearing — ler antes de adicionar ou remover um. A Ticketmaster publica priceRanges só para uma fatia do inventário, então todo tile cai para "Check price".
 
 Rotas do servidor
-server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta erro como { status, data }. Rotas: ticketmaster (suggest pagina até 5 páginas / 100 eventos, /events faz a busca geográfica, /venue-events acha o venue por nome perto da coordenada), setlist, spotify (troca de token — o client nunca vê o segredo), lyrics (lrclib.net, sem chave), youtube, wikipedia, albums, audiodb, share (prévia Open Graph), venue-info (Wikipedia/Wikidata), venue-lookup (venue da Ticketmaster → setlist.fm), venue-services e venue-photos (OpenStreetMap via Nominatim ao abrir; Google Places só no clique), reverse-geocode (cidade do visitante pelo Nominatim, cacheada no D1).
+server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta erro como { status, data }. Rotas: ticketmaster (suggest pagina até 5 páginas / 100 eventos, /events faz a busca geográfica, /venue-events acha o venue por nome perto da coordenada), setlist, spotify (troca de token — o client nunca vê o segredo), lyrics (lrclib.net, sem chave), youtube, wikipedia, albums, audiodb, share (prévia Open Graph), venue-info (Wikipedia/Wikidata), venue-lookup (venue da Ticketmaster → setlist.fm), venue-services e venue-photos (OpenStreetMap via Nominatim + Overture Maps do D1 ao abrir; Google Places só no clique), reverse-geocode (cidade do visitante pelo Nominatim, cacheada no D1).
 
 Casamento de venue entre fontes: server/venueIdentity.js é o único lugar que decide se dois nomes são o mesmo lugar (palavras genéricas como bar/pub/stage não contam, exige proximidade e um candidato só). Ajuste de casamento entra ali, com teste, não espalhado nas rotas.
 

@@ -63,7 +63,7 @@ cd server && npx wrangler dev --port 8799     # D1 local para testar
 
 ## Limites
 - Sempre: crédito de cada fonte continua exibido; prazo por fonte como na tabela.
-- Perguntar antes: qualquer tabela além de `store`; guardar dado de setlist.fm
+- Perguntar antes: qualquer tabela além de `store` e `venues` (Overture, aprovada pelo dono em 2026-11-17); guardar dado de setlist.fm
   ou Ticketmaster (é o módulo api-cache, spec própria).
 - Nunca: guardar conteúdo do Google além do place ID.
 

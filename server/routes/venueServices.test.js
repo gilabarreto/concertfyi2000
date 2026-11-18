@@ -842,3 +842,36 @@ test("stored venue: second visit spends no search and no Nominatim, only the liv
     "only the place ID is kept from Google",
   );
 });
+
+test("Overture fills only the fields OSM lacks, and Google still wins on the click", async () => {
+  const { tags } = osmVenue;
+  const osmWithoutSite = { ...osmVenue, tags: { ...tags, website: undefined } };
+  const db = {
+    prepare: () => ({
+      bind: () => ({
+        all: async () => ({
+          results: [
+            {
+              id: "o",
+              name: query.name,
+              category: "stadium_arena",
+              lat: 51.556,
+              lon: -0.279,
+              website: "https://overture.example",
+              phone: "+44 9999",
+            },
+          ],
+        }),
+      }),
+    }),
+  };
+  const handlers = createVenueServicesHandlers({
+    osmUrl: "https://osm.example/search",
+    fetchJson: async () => nominatim([osmWithoutSite]),
+  });
+  const res = { status: () => res, set: () => res, json: (body) => (res.body = body) };
+  await handlers.services({ query: { ...query, google: undefined }, app: { locals: { db } } }, res);
+  assert.equal(res.body.providers.overture, "ok");
+  assert.equal(res.body.fields.website.source, "Overture Maps");
+  assert.equal(res.body.fields.phone.source, "OpenStreetMap");
+});

@@ -1,5 +1,6 @@
 const { request } = require("../http");
 const { createStore } = require("../store");
+const { overtureVenue } = require("../overture");
 // Prazos do banco (SPEC-venues.md): achado é checado de novo em 30 dias, não achado em 7.
 // Do Google só o place ID fica guardado (os termos permitem; o conteúdo, não).
 const DAY = 24 * 60 * 60;
@@ -441,25 +442,38 @@ function createVenueServicesHandlers({
     }
   }
 
-  async function load(identity, key, mode, options, store) {
+  async function overture(identity, db) {
+    try {
+      return await overtureVenue(db, identity);
+    } catch (error) {
+      console.error("venue-services overture:", error.message);
+      return { status: "unavailable", fields: {} };
+    }
+  }
+
+  async function load(identity, key, mode, options, store, db) {
     if (mode !== "services") return google(identity, key, mode, options, store);
     // Google only on the visitor's click (SPEC-google-on-click.md); opening the page is OSM alone.
     // In parallel: Google almost never fills every field, so waiting on it first only
     // stacked Overpass's latency (up to its timeout) behind Google's.
-    const [primary, fallback] = await Promise.all([
+    const [primary, fallback, last] = await Promise.all([
       options.google
         ? google(identity, key, "services", {}, store)
         : { status: "skipped", fields: {}, reviews: [] },
       osm(identity, key, store),
+      overture(identity, db),
     ]);
+    // Google over OSM over Overture, field by field: each only fills what the one above lacks.
     const fields = { ...fallback.fields };
+    for (const [key, value] of Object.entries(last.fields))
+      if (value && !fields[key]) fields[key] = value;
     for (const [key, value] of Object.entries(primary.fields)) if (value) fields[key] = value;
     // The matched building's pin, for the map; never fed back into the identity.
     return {
       fields,
       reviews: primary.reviews,
-      location: primary.location || fallback.location || null,
-      providers: { google: primary.status, osm: fallback.status },
+      location: primary.location || fallback.location || last.location || null,
+      providers: { google: primary.status, osm: fallback.status, overture: last.status },
       partial: primary.status === "unavailable" || fallback.status === "unavailable",
     };
   }
@@ -512,9 +526,14 @@ function createVenueServicesHandlers({
       if (pending.size >= 8) return res.status(503).json({ error: "Venue information busy" });
       pending.set(
         pendingKey,
-        load(identity, key, mode, options, req.app?.locals?.store || memoryStore).finally(() =>
-          pending.delete(pendingKey),
-        ),
+        load(
+          identity,
+          key,
+          mode,
+          options,
+          req.app?.locals?.store || memoryStore,
+          req.app?.locals?.db,
+        ).finally(() => pending.delete(pendingKey)),
       );
     }
     res.set("Cache-Control", "no-store");

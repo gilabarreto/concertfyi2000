@@ -8,6 +8,7 @@ import { createStore } from "./store.js";
 // Bindings do wrangler.toml que as rotas usam; no Node isto não existe e elas seguem sem.
 app.locals.songCache = env.SONG_CACHE;
 app.locals.store = createStore({ db: env.DB });
+app.locals.db = env.DB;
 
 app.listen(4000);
 export default httpServerHandler({ port: 4000 });

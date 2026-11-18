@@ -48,3 +48,6 @@ C:\\Users\\*
 # Segredos locais do wrangler dev
 .dev.vars
 .wrangler/
+
+# === DADOS GERADOS (Overture, CSV da Ticketmaster) ===
+data/
