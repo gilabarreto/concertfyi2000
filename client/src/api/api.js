@@ -62,3 +62,4 @@ export const getArtistBackground = (artist) =>
 export const getArtistImages = (mbid) => API("/audiodb/artist-images", { params: { mbid } });
 
 export const getArtistAlbums = (mbid) => API("/albums", { params: { mbid } });
+export const getReverseGeocode = (lat, long) => API("/reverse-geocode", { params: { lat, long } });

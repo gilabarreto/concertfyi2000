@@ -1,14 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { getReverseGeocode } from "../api/api";
 
 const fetchCity = async (lat, long) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}`,
-  );
-  const data = await response.json();
-  const city = data.address.city || data.address.town || data.address.village || "Unknown";
-  const country = data.address.country || "Unknown";
-  return { city, country };
+  const data = await getReverseGeocode(lat, long);
+  return { city: data.city || "Unknown", country: data.country || "Unknown" };
 };
 
 export const useGeolocation = () => {
