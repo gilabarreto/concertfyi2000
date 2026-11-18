@@ -88,8 +88,6 @@ export function isArtist(attraction, artist) {
   return !!name && attraction?.name === name;
 }
 
-// A irmã da de cima, para o outro lado da linha do tempo. Casa pelo isArtist acima,
-// e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
 // Ticketmaster's dates.status.code. onsale/offsale only say whether tickets are sold right
 // now, so they get no label; cancelled is filtered out of every list before it gets here.
 export function eventStatusLabel(event, t) {
@@ -99,6 +97,8 @@ export function eventStatusLabel(event, t) {
   return null;
 }
 
+// A irmã da de cima, para o outro lado da linha do tempo. Casa pelo isArtist acima,
+// e as datas vêm em formatos trocados — DD-MM-YYYY lá, YYYY-MM-DD aqui.
 export function getUpcomingConcertsByArtist(events = [], artist) {
   // A rota /suggest pagina eventos por attractionId sem filtro de data, então o
   // passado vem junto — e, em ordem crescente, vinha listado em primeiro lugar.
