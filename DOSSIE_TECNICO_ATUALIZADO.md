@@ -31,7 +31,7 @@ artista, o ponto mais frágil do app (ver `CLAUDE.md`).
 ### Frontend — `client/src/`
 ```
 App.jsx              # Router + Suspense; Home no bundle inicial, resto em React.lazy por rota
-pages/               # Home, SearchPage, ArtistPage, VenuePage, VenuesPage, CityPage,
+pages/               # Home, SearchPage, ArtistPage, VenuePage, VenuesPage,
                      # About, Contact, SpotifyCallback
 components/
   ArtistPage/        # cards da página de artista; ConcertList é o shell de toda lista de shows
@@ -85,7 +85,6 @@ são APIs de cota).
 | `/artists/:artistId/concerts/:concertId` | `ArtistPage.jsx` | Lazy; arrasta o Google Maps |
 | `/venues` | `VenuesPage.jsx` | Venues da cidade atual, mais movimentados primeiro |
 | `/venues/:venueId` | `VenuePage.jsx` | id do setlist.fm ou `ticketmaster:<id>` |
-| `/city` | `CityPage.jsx` | My City; `?view=upcoming\|nearby\|recent` foca uma lista |
 | `/about`, `/contact` | `About.jsx`, `Contact.jsx` | Lazy |
 | `/callback` | `SpotifyCallback.jsx` | Lazy; recebe o OAuth |
 
