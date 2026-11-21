@@ -1,0 +1,81 @@
+# Atualiza a tabela `venues` do D1 quando sai release nova do Overture Maps (mensal).
+#
+# O estado mora nos anexos da Release `overture-data` deste repo, não em commit: um commit
+# em main redeployaria site e API à toa. Dados do Overture são CDLA-Permissive 2.0, podem
+# ficar públicos. Anexos:
+#   overture-venues.parquet + loaded.txt  última carga completa no D1 e o nome do release
+#   next.parquet + next.txt + 00N.sql     carga em andamento: o diff, ainda não gravado
+#
+# Roda todo dia porque o D1 grátis grava 100 mil linhas/dia: cada rodada carrega no máximo
+# 2 arquivos de 45 mil (scripts/overture-venues.py) e para. Sem release novo nem carga
+# pendente, sai em segundos.
+name: Overture venues
+
+on:
+  schedule:
+    - cron: "30 1 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: overture
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      # Token errado aparece aqui, antes de gastar 8 min baixando o Overture.
+      - name: Check D1 access
+        run: npx -y wrangler@4 d1 execute concertfyi --remote --config server/wrangler.toml --command "SELECT 1"
+
+      - name: Download state
+        run: |
+          mkdir -p data/overture-sql
+          # Sem a Release (antes da primeira carga ser anexada) não há o que fazer.
+          gh release download overture-data -D data -p '*.parquet' -p '*.txt' || true
+          ls -l data
+
+      - uses: actions/setup-python@v5
+        if: hashFiles('data/next.txt') == '' && hashFiles('data/loaded.txt') != ''
+        with:
+          python-version: "3.12"
+
+      - name: Diff a new Overture release
+        if: hashFiles('data/next.txt') == '' && hashFiles('data/loaded.txt') != ''
+        run: |
+          latest=$(curl -sf "https://overturemaps-us-west-2.s3.us-west-2.amazonaws.com/?list-type=2&prefix=release/&delimiter=/" \
+            | grep -oE 'release/[0-9][^/<]*/' | cut -d/ -f2 | sort -V | tail -1)
+          echo "último release: $latest, carregado: $(cat data/loaded.txt)"
+          [ -n "$latest" ] && [ "$latest" != "$(cat data/loaded.txt)" ] || exit 0
+          pip install -q duckdb==2.0.1
+          python scripts/overture-venues.py "$latest"
+          mv "data/overture-venues-$latest.parquet" data/next.parquet
+          echo "$latest" > data/next.txt
+          shopt -s nullglob  # release sem mudança não gera .sql
+          gh release upload overture-data data/next.parquet data/next.txt data/overture-sql/*.sql
+
+      - name: Load up to 2 files
+        if: hashFiles('data/next.txt') != ''
+        run: |
+          gh release view overture-data --json assets -q '.assets[].name' | grep -E '^[0-9]{3}\.sql$' | sort | head -2 > todo.txt || true
+          for f in $(cat todo.txt); do
+            [ -f "data/overture-sql/$f" ] || gh release download overture-data -p "$f" -D data/overture-sql
+            npx -y wrangler@4 d1 execute concertfyi --remote --config server/wrangler.toml --file "data/overture-sql/$f" -y
+            gh release delete-asset overture-data "$f" -y
+          done
+          # Nada pendente: o novo vira a última carga.
+          if ! gh release view overture-data --json assets -q '.assets[].name' | grep -qE '^[0-9]{3}\.sql$'; then
+            cp data/next.parquet data/overture-venues.parquet && cp data/next.txt data/loaded.txt
+            gh release upload overture-data data/overture-venues.parquet data/loaded.txt --clobber
+            gh release delete-asset overture-data next.parquet -y
+            gh release delete-asset overture-data next.txt -y
+            echo "carga de $(cat data/loaded.txt) completa"
+          fi
