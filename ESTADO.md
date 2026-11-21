@@ -24,5 +24,5 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
 - Recusado: scraping stealth do ticketmaster.com. Não reabrir; o caminho é a Discovery API.
 - Google Maps Platform: não guardar nada do Google além do place ID (termos). Nota/reviews/fotos só no clique.
 - Comandos que alteram produção (`wrangler deploy`, `d1 execute --remote`) são barrados no modo auto; o dono roda.
-- Render suspenso (não apagado); SETLISTFM_API_KEY vazada em 2025 ainda sem rotação.
+- Render suspenso (não apagado). SETLISTFM_API_KEY: dono considera já trocada (2026-11-21); não está no histórico atual.
 - `server/` ainda tem advisory de minimatch via nodemon (só dev) — esperando versão nova do nodemon.

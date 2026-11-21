@@ -2,7 +2,7 @@ ConcertFYI — Pendências e Decisões
 🔴 Só você pode resolver (fora do repositório)
 ☑ Liberar Maps Static API — superado em 2026-11-10: o mapa de um ponto virou Maps Embed (`37abc09`), grátis e sem cota; a Static API não é mais necessária e ficou desligada.
 ☑ Restringir a chave do site por referrer — resolvido em 2026-11-10 via gcloud: só concertfyi.com, www, gilabarreto.github.io e localhost:3000, e só Maps JavaScript + Maps Embed. Testado: outro site é recusado, Geocoding negado.
-□ Rotacionar a SETLISTFM_API_KEY (vazou em bundle público na gh-pages em julho/2025). Abrir chamado no setlist.fm. Vence 2026-10-15.
+☑ Rotacionar a SETLISTFM_API_KEY (vazou em bundle público na gh-pages em julho/2025) — fechado por avaliação do dono em 2026-11-21: ele tem quase certeza de que a chave já foi trocada. Conferido: a chave atual (36 caracteres) não aparece em nenhum commit do histórico; o bundle vazado ficava só na gh-pages, já apagada, então não dá para provar por comparação. Se surgir 403 ou uso estranho na conta, mandar o pedido de revogação ao setlist.fm.
 ☑ A SETLISTFM_API_KEY do server/.env local responde 403 — resolvido sozinho: respondeu 200 em 2026-10-01, testando o API Lab.
 □ Sentry e/ou Google Analytics — contas suas; ~20 linhas cada. Hoje erros de produção só aparecem no console do visitante.
 ☑ Log de acesso do Render — descartado por opinião em 2026-11-10: o Render sai em 2026-11-13; os logs passam a ser os do Cloudflare (observability no wrangler.toml).
