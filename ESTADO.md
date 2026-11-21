@@ -10,7 +10,7 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
 
 ## Falta para terminar
 
-- Carga remota do Overture: 001 e 002 no D1 (90 mil venues); faltam 003–008, **2 por dia** (limite 100 mil gravações/dia do D1).
+- Carga remota do Overture: 001–006 no D1 (270 mil venues, 51,6 MB); faltam 007 e 008, **2 por dia** (limite 100 mil gravações/dia do D1).
   Os `.sql` estão em `data/overture-sql/`, que só existe na máquina local do dono — a nuvem não consegue fazer a carga.
   Comando: `npx wrangler d1 execute concertfyi --remote --config server/wrangler.toml --file data/overture-sql/00N.sql -y`
   Depois do 008: `mv data/overture-venues-2026-10-21.0.parquet data/overture-venues.parquet`.
