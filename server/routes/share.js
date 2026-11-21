@@ -29,7 +29,8 @@ function renderShare(req, res, data) {
     return res.status(400).send("Invalid share target");
   }
 
-  if (target.origin !== SITE_URL || !target.pathname.startsWith("/artists/")) {
+  // Artist pages, plus venue pages for events with no artist (Home's Explore Events).
+  if (target.origin !== SITE_URL || !/^\/(artists|venues)\//.test(target.pathname)) {
     return res.status(400).send("Invalid share target");
   }
 

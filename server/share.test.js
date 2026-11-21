@@ -34,6 +34,14 @@ test("/share/:token renders the preview and rejects bad tokens", async (t) => {
   );
   assert.match(foreign.body, /og:image" content="https:\/\/concertfyi\.com\/og-image\.png"/);
 
+  // Evento sem artista (Explore Events) compartilha a página da venue.
+  const venue = await get(
+    token({ target: "https://concertfyi.com/venues/ticketmaster:KovZ1", title: "Club Night" }),
+  );
+  assert.equal(venue.status, 200);
+  assert.match(venue.body, /href="https:\/\/concertfyi\.com\/venues\/ticketmaster:KovZ1"/);
+  assert.equal((await get(token({ target: "https://concertfyi.com/about" }))).status, 400);
+
   assert.equal((await get(token({ target: "https://evil.com/artists/a" }))).status, 400);
   assert.equal((await get(token(null))).status, 400);
   assert.equal((await get("not*base64")).status, 400);

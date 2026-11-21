@@ -4,7 +4,8 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { AppContext } from "../context/AppContext";
-import { artistOf, dateLabel } from "../helpers/selectors";
+import { artistOf, dateLabel, getBestImage } from "../helpers/selectors";
+import { shareOrCopy } from "../helpers/share";
 import Icon from "./Icon";
 import TicketOptions from "./ArtistPage/TicketOptions";
 import HotelOptions from "./ArtistPage/HotelOptions";
@@ -12,8 +13,8 @@ import ConcertReminder from "./ArtistPage/ConcertReminder";
 import { useT } from "../i18n";
 
 // Next Concert's rows for an event with no artist (Home's Explore Events): no tour, no map,
-// and no date arrows since there's no tour to step through. Share points at the venue page — the
-// share route only previews /artists/ pages, and these events have none.
+// and no date arrows since there's no tour to step through. Share points at the venue page, the
+// only page these events have, with the event's own title and image in the preview.
 export default function ExploreEvent({ event }) {
   const t = useT();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
@@ -25,13 +26,9 @@ export default function ExploreEvent({ event }) {
   const share = async () => {
     const url = new URL(venuePath || "/", window.location.origin).href;
     const text = `${artistOf(event)} · ${dateLabel(event.dateObj)}${venue?.name ? ` · ${venue.name}` : ""}`;
-    try {
-      if (navigator.share) return await navigator.share({ title: artistOf(event), text, url });
-      await navigator.clipboard.writeText(`${text} ${url}`);
+    if (await shareOrCopy(url, artistOf(event), { text, imageUrl: getBestImage(event.images) })) {
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
-    } catch {
-      // Cancelled share sheet or no clipboard permission: nothing to report.
     }
   };
 
