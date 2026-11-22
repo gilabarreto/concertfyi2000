@@ -15,10 +15,8 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
   `overture-data` com esse parquet + `loaded.txt` (`2026-10-21.0`) e rodar `gh workflow run overture.yml`.
   A partir daí a Action carrega sozinha o diff para o `2026-11-18.0` (2 arquivos/dia).
 - Token Cloudflare dos secrets conferido em 2026-11-21 (run 44929251182 acessou o D1).
-- Próximo item: CSV diário da Ticketmaster (EUA+Canadá) num repo privado à parte, nunca neste
-  (público, e commit aqui redeploya). Esquema aceito em conversa: `upcoming.csv` sobrescrito a
-  cada rodada, eventos passados acrescentados em `past-AAAA.csv`, coluna `last_seen`.
-  Esperando o dono: chave separada e o repo com o secret `TICKETMASTER_CSV_KEY`.
+- CSV diário da Ticketmaster no ar desde 2026-11-22 no repo privado `concertfyi-data` (fora deste,
+  que é público e redeploya a cada commit). Mesma chave de produção, teto de 1.000 chamadas/rodada.
 
 ## Avisos fora do código
 
