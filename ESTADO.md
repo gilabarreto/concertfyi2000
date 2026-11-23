@@ -1,19 +1,18 @@
-# Estado — 2026-11-21
+# Estado — 2026-11-23
 
 Último commit relevante: `3aa29a1` (Action diária do Overture, `.github/workflows/overture.yml`).
 Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedir.
 
 ## Agora
 
-- Branch `main`. Frente aberta: carga do Overture Maps na tabela `venues` do D1 (270 mil de ~325 mil).
+- Branch `main`. Frente aberta: primeira atualização automática do Overture Maps no D1.
 - Arquivos: `.github/workflows/overture.yml`, `scripts/overture-venues.py`, `server/overture.js`.
 
 ## Falta para terminar
 
-- Dono, a partir de 2026-11-22 00:00 UTC: carregar 007 e 008 de `data/overture-sql/` (só na máquina dele),
-  `mv data/overture-venues-2026-10-21.0.parquet data/overture-venues.parquet`, criar a Release
-  `overture-data` com esse parquet + `loaded.txt` (`2026-10-21.0`) e rodar `gh workflow run overture.yml`.
-  A partir daí a Action carrega sozinha o diff para o `2026-11-18.0` (2 arquivos/dia).
+- Carga inicial do Overture completa em 2026-11-23: 325.589 venues (62,4 MB) no D1, Release `overture-data`
+  com o parquet + `loaded.txt` (`2026-10-21.0`). A Action diária (01:30 UTC) deve calcular e carregar
+  sozinha o diff para o `2026-11-18.0`, 2 arquivos/dia — conferir a primeira rodada em 2026-11-24.
 - Token Cloudflare dos secrets conferido em 2026-11-21 (run 44929251182 acessou o D1).
 - CSV diário da Ticketmaster no ar desde 2026-11-22 no repo privado `concertfyi-data` (fora deste,
   que é público e redeploya a cada commit). Mesma chave de produção, teto de 1.000 chamadas/rodada.
