@@ -61,6 +61,8 @@ server/http.js é o wrapper de fetch compartilhado; toda rota o usa e reporta er
 
 Casamento de venue entre fontes: server/venueIdentity.js é o único lugar que decide se dois nomes são o mesmo lugar (palavras genéricas como bar/pub/stage não contam, exige proximidade e um candidato só). Ajuste de casamento entra ali, com teste, não espalhado nas rotas.
 
+Backup privado (repo `concertfyi-data`, Action diária) importa daqui `server/overture.js` (overtureVenue), `server/routes/venueInfo.js` (createVenueInfoHandler) e `server/venueSite.js` (createSiteAbout). Mudar a assinatura deles quebra o backup em silêncio (os passos lá têm continue-on-error) — conferir lá.
+
 Eventos sem artista (attractions vazio) não entram nas listas de shows: selectors.js:getUpcomingConcertsByCity filtra e getExploreEvents os junta no card Explore Events da Home. A Ticketmaster classifica festas como Music, então não há outro sinal confiável.
 
 Env do server: TICKETMASTER_API_KEY, SETLISTFM_API_KEY, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, YOUTUBE_API_KEY, GOOGLE_PLACES_API_KEY; PORT só no dev local.
