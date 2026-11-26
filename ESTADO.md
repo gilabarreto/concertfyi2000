@@ -1,6 +1,6 @@
-# Estado — 2026-11-23
+# Estado — 2026-11-26
 
-Último commit relevante: `3aa29a1` (Action diária do Overture, `.github/workflows/overture.yml`).
+Último commit relevante: `8915fc5` (ordem de gravação do Overture: nenhuma venue some no meio da carga).
 Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedir.
 
 ## Agora
@@ -10,9 +10,9 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
 
 ## Falta para terminar
 
-- Carga inicial do Overture completa em 2026-11-23: 325.589 venues (62,4 MB) no D1, Release `overture-data`
-  com o parquet + `loaded.txt` (`2026-10-21.0`). A Action diária (01:30 UTC) deve calcular e carregar
-  sozinha o diff para o `2026-11-18.0`, 2 arquivos/dia — conferir a primeira rodada em 2026-11-24.
+- Atualização `2026-10-21.0` → `2026-11-18.0` em andamento pela Action (2 arquivos/dia, 9 restantes em
+  2026-11-26, fim ~2026-12-01). Gerada antes do `8915fc5`: os DELETE vieram primeiro e o D1 está com
+  ~55 mil venues até a carga terminar (site cai no OSM/Google nesse meio). Não mexer; próximas usam `plan()`.
 - Token Cloudflare dos secrets conferido em 2026-11-21 (run 44929251182 acessou o D1).
 - CSV diário da Ticketmaster no ar desde 2026-11-22 no repo privado `concertfyi-data` (fora deste,
   que é público e redeploya a cada commit). Mesma chave de produção, teto de 1.000 chamadas/rodada.
