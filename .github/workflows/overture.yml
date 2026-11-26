@@ -56,6 +56,7 @@ jobs:
           echo "último release: $latest, carregado: $(cat data/loaded.txt)"
           [ -n "$latest" ] && [ "$latest" != "$(cat data/loaded.txt)" ] || exit 0
           pip install -q duckdb==2.0.1
+          python scripts/overture-venues.py --selftest
           python scripts/overture-venues.py "$latest"
           mv "data/overture-venues-$latest.parquet" data/next.parquet
           echo "$latest" > data/next.txt
