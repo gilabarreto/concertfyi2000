@@ -14,8 +14,10 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
   2026-11-26, fim ~2026-12-01). Gerada antes do `8915fc5`: os DELETE vieram primeiro e o D1 está com
   ~55 mil venues até a carga terminar (site cai no OSM/Google nesse meio). Não mexer; próximas usam `plan()`.
 - Token Cloudflare dos secrets conferido em 2026-11-21 (run 44929251182 acessou o D1).
-- CSV diário da Ticketmaster no ar desde 2026-11-22 no repo privado `concertfyi-data` (fora deste,
-  que é público e redeploya a cada commit). Mesma chave de produção, teto de 1.000 chamadas/rodada.
+- Backup no repo privado `concertfyi-data` (Action diária): shows da Ticketmaster EUA+CA, `artists.csv`
+  (MusicBrainz+Wikipedia, ~270/dia, completo ~2026-12-08) e `venues.csv` (Overture pela mesma regra do
+  site, importa `server/overture.js` deste repo). Setlists NÃO: termos do setlist.fm proíbem guardar.
+  Esperando o dono: setlists (recomendado: não) e About da venue no backup (sim/não).
 
 ## Avisos fora do código
 
