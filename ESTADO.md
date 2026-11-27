@@ -1,29 +1,27 @@
-# Estado — 2026-11-26
+# Estado — 2026-11-27
 
-Último commit relevante: `8915fc5` (ordem de gravação do Overture: nenhuma venue some no meio da carga).
+Último commit relevante: `915672f` (link do Spotify pelo MusicBrainz quando a Ticketmaster não traz).
 Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedir.
 
 ## Agora
 
-- Branch `main`. Frente aberta: primeira atualização automática do Overture Maps no D1.
-- Arquivos: `.github/workflows/overture.yml`, `scripts/overture-venues.py`, `server/overture.js`.
+- Branch `main`, tudo pushado. Lista de 2026-11-27 concluída: share no iPhone (`e09be7a`), busca no
+  Genius sem letra (`2a5bcd0`), foto inteira sobre cópia borrada (`d22572f`), skeletons (`48b2cde`),
+  Spotify via MusicBrainz (`915672f`, rota `/api/artist-spotify`, só na página de show).
+- Testar no aparelho: share no iPhone real; skeletons em rede lenta; card Top tracks de artista sem Spotify na TM.
 
 ## Falta para terminar
 
-- Atualização `2026-10-21.0` → `2026-11-18.0` em andamento pela Action (2 arquivos/dia, 9 restantes em
-  2026-11-26, fim ~2026-12-01). Gerada antes do `8915fc5`: os DELETE vieram primeiro e o D1 está com
-  ~55 mil venues até a carga terminar (site cai no OSM/Google nesse meio). Não mexer; próximas usam `plan()`.
-- Token Cloudflare dos secrets conferido em 2026-11-21 (run 44929251182 acessou o D1).
+- Overture `2026-10-21.0` → `2026-11-18.0` carregando pela Action (fim ~2026-12-01). Conferir ~338.655
+  venues no D1 depois. Próximas atualizações já usam `plan()` (`8915fc5`).
 - Backup no repo privado `concertfyi-data` (Action diária): shows da Ticketmaster EUA+CA, `artists.csv`
-  (MusicBrainz+Wikipedia, ~270/dia, completo ~2026-12-08) e `venues.csv` (Overture pela mesma regra do
-  site, importa `server/overture.js` deste repo). Setlists NÃO: termos do setlist.fm proíbem guardar.
-  Esperando o dono: setlists (recomendado: não) e About da venue no backup (sim/não).
+  (completo ~2026-12-08, conferir ~3.188 com mbid) e `venues.csv` com About. Setlists fora (termos).
+- Entrada do bundle em 265 kB, teto 270 kB: pouca folga, o build avisa quando passar.
 
 ## Avisos fora do código
 
-- Termos da Ticketmaster: guardar só por "períodos razoáveis"; 24 h só se o dono do evento pedir. Backup pessoal é risco que o dono assume.
-- Esperando o dono: confirmar as 4 `VITE_*` em Settings → Build do Worker `concertfyi-web` e desligar o GitHub Pages em Settings → Pages.
+- Termos da Ticketmaster: guardar só por "períodos razoáveis". Backup pessoal é risco que o dono assume.
 - Dado errado conhecido: o site que o Overture dá para o Dickens Pub de Calgary é de um Dickens de Ottawa.
 - Recusado: scraping stealth do ticketmaster.com. Separar client/server em repos: desaconselhado (2026-11-19).
 - Comandos que alteram produção ou publicam (`d1 execute --remote`, `gh release create`) são barrados no modo auto; o dono roda.
-- `/city` apagada em `5b02289`. SETLISTFM_API_KEY: dono considera já trocada.
+- O backup importa `server/overture.js`, `routes/venueInfo.js` e `venueSite.js`: mudar assinatura quebra lá.
