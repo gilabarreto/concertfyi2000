@@ -110,7 +110,18 @@ export default function SongDetails({ songName, artistName }) {
         <div className="mt-3">
           {loading && <p className="text-sm text-zinc-500 text-center">{t("Loading…")}</p>}
           {!loading && (lyricsError || !lyrics) && (
-            <p className="text-sm text-zinc-500 text-center">{t("No lyrics available.")}</p>
+            <p className="text-sm text-zinc-500 text-center">
+              {t("No lyrics available.")}{" "}
+              {/* Only a search link: Genius has no free lyrics API, and its pages can't be scraped. */}
+              <a
+                href={`https://genius.com/search?q=${encodeURIComponent(`${artistName} ${songName}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:opacity-80"
+              >
+                {t("Search on Genius")}
+              </a>
+            </p>
           )}
           {lyrics && !loading && (
             <>

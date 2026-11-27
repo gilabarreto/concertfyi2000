@@ -47,7 +47,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Favoritar — resolvido em `3e8398d`. Pedido original era favoritar o show em ConcertInfo.jsx; o dono não curtiu, preferiu favoritar o artista (coração em ArtistInfo.jsx) e marcar presença no show ("I WAS THERE" em ConcertInfo.jsx) — os dois já existiam desabilitados na UI, agora ligados em localStorage.
 ☑ Botão "Compartilhar" — resolvido em `5f881a0` (2026-09-26). ConcertInfo.jsx não existe mais; entrou ao lado do "I WAS THERE" em LastConcert.jsx. Share sheet nativo no celular, cópia do link no desktop.
 □ Loading skeleton em ConcertInfo.jsx.
-□ Genius link como fallback em SongDetails.jsx.
+☑ Genius link como fallback em SongDetails.jsx — feito em 2026-11-26: sem letra no LRCLIB, "Search on Genius" abre a busca do Genius (só link; sem API nem scraping).
 □ Ícone de loading na busca (SearchBar.jsx) — tentado em `01696ef` (spinner ao lado do X) e revertido a pedido do dono em 2026-09-26. Reabrir só com outro formato.
 ☑ Timeout próprio nas requisições — já existia (achado 2026-09-26): request.js aborta em 10 s desde a saída do axios e o erro vem como "Request timed out".
 ☑ Mensagem de erro na busca — resolvido em `4e06b7b` ("Search failed. Try again" abaixo do campo). Toast descartado por opinião: mensagem inline como nas outras telas basta; o dono pode vetar.
