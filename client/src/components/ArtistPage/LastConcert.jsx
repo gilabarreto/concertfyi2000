@@ -6,14 +6,14 @@ import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
-import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import { getReviews } from "../../helpers/concertReviews";
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
 import ConcertRatingDialog from "./ConcertRatingDialog";
 import ConcertComments from "./ConcertComments";
-import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
+import { getTicketmasterEventImage } from "../../helpers/share";
+import ShareButton from "../ShareButton";
 import CardTitle from "./CardTitle";
 
 import { useT } from "../../i18n";
@@ -34,7 +34,6 @@ export default function LastConcert({
   const navigate = useNavigate();
   const { artistId, concertId } = useParams();
   const [attended, setAttended] = useState(getAttended);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [reviews, setReviews] = useState(() => getReviews(concert.id));
   const [tourMapOpen, setTourMapOpen] = useState(false);
   const ratingRef = useRef(null);
@@ -54,18 +53,6 @@ export default function LastConcert({
     // Just marked as attended: prompt for a rating right away rather than leaving it
     // to be found later.
     if (!wasThere) ratingRef.current.open("rate");
-  };
-
-  const share = async () => {
-    if (
-      await shareOrCopy(window.location.href, `${concert.artist.name} concert`, {
-        text: shareText,
-        imageUrl: eventImage,
-      })
-    ) {
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2000);
-    }
   };
 
   const pastConcerts = getPastConcertsByArtist(setlist, artistId);
@@ -96,10 +83,13 @@ export default function LastConcert({
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
     <>
-      <button type="button" onClick={share} title={t("Share this concert")} className="pill">
-        <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-        {linkCopied ? t("LINK COPIED") : t("SHARE")}
-      </button>
+      <ShareButton
+        url={window.location.href}
+        title={`${concert.artist.name} concert`}
+        text={shareText}
+        imageUrl={eventImage}
+        label={t("Share this concert")}
+      />
       <button
         type="button"
         onClick={toggleWasThere}

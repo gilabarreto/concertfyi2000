@@ -5,7 +5,6 @@ import { faBackward } from "@fortawesome/free-solid-svg-icons/faBackward";
 import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons/faChevronDown";
 import { faChevronUp } from "@fortawesome/free-solid-svg-icons/faChevronUp";
-import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faSpotify } from "@fortawesome/free-brands-svg-icons/faSpotify";
@@ -16,7 +15,8 @@ import { createSpotifyPlaylist } from "../../helpers/spotifyPlaylist";
 import { getPastConcertsByArtist, parseSetlistDate, dateLabel } from "../../helpers/selectors";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
-import { getTicketmasterEventImage, shareOrCopy } from "../../helpers/share";
+import { getTicketmasterEventImage } from "../../helpers/share";
+import ShareButton from "../ShareButton";
 
 import { useT } from "../../i18n";
 // Páginas de 10, com paginação só acima disso.
@@ -29,46 +29,35 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
   const [page, setPage] = useState(0);
   const [creatingPlaylist, setCreatingPlaylist] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
-  const shareTimerRef = useRef(null);
   const titleRef = useRef(null);
   const copyTimerRef = useRef(null);
 
   useEffect(
     () => () => {
       clearTimeout(copyTimerRef.current);
-      clearTimeout(shareTimerRef.current);
     },
     [],
   );
 
-  const shareSetlist = async () => {
-    const url = new URL(window.location.href);
-    url.searchParams.delete("next");
-    url.hash = "setlist";
-    const city = concert.venue?.city?.name;
-    const place = [concert.venue?.name, city].filter(Boolean).join(", ");
-    const localDate = concert.eventDate.split("-").reverse().join("-");
-    const imageUrl =
-      getTicketmasterEventImage(
-        ticketmaster?.events,
-        concert.artist,
-        localDate,
-        concert.venue?.name,
-      ) || fallbackImage;
-    const text = t("Check out {artist}'s setlist from their concert at {place} on {date}.", {
-      artist: concert.artist.name,
-      place: place || t("the concert venue"),
-      date: dateLabel(parseSetlistDate(concert.eventDate)),
-    });
-    const title = t("{artist} setlist", { artist: concert.artist.name });
-
-    if (await shareOrCopy(url.href, title, { text, imageUrl })) {
-      setLinkCopied(true);
-      clearTimeout(shareTimerRef.current);
-      shareTimerRef.current = setTimeout(() => setLinkCopied(false), 2000);
-    }
-  };
+  const shareUrl = new URL(window.location.href);
+  shareUrl.searchParams.delete("next");
+  shareUrl.hash = "setlist";
+  const shareCity = concert.venue?.city?.name;
+  const sharePlace = [concert.venue?.name, shareCity].filter(Boolean).join(", ");
+  const shareDate = concert.eventDate.split("-").reverse().join("-");
+  const shareImage =
+    getTicketmasterEventImage(
+      ticketmaster?.events,
+      concert.artist,
+      shareDate,
+      concert.venue?.name,
+    ) || fallbackImage;
+  const shareText = t("Check out {artist}'s setlist from their concert at {place} on {date}.", {
+    artist: concert.artist.name,
+    place: sharePlace || t("the concert venue"),
+    date: dateLabel(parseSetlistDate(concert.eventDate)),
+  });
+  const shareTitle = t("{artist} setlist", { artist: concert.artist.name });
 
   useEffect(() => {
     if (window.location.hash !== "#setlist") return;
@@ -231,18 +220,14 @@ export default function Setlist({ concert, setlist, ticketmaster, fallbackImage 
             <span role="status" aria-live="polite" className="sr-only">
               {copied ? t("Setlist copied to clipboard") : ""}
             </span>
-            <button
-              type="button"
-              onClick={shareSetlist}
-              title={t("Share setlist")}
-              className="pill"
-            >
-              <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-              {linkCopied ? t("LINK COPIED") : t("SHARE")}
-            </button>
-            <span role="status" className="sr-only">
-              {linkCopied ? t("Setlist link copied") : ""}
-            </span>
+            <ShareButton
+              url={shareUrl.href}
+              title={shareTitle}
+              text={shareText}
+              imageUrl={shareImage}
+              label={t("Share setlist")}
+              copiedStatus={t("Setlist link copied")}
+            />
           </div>
         )}
       </div>

@@ -6,7 +6,6 @@ import { faForward } from "@fortawesome/free-solid-svg-icons/faForward";
 import { faLocationDot } from "@fortawesome/free-solid-svg-icons/faLocationDot";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
-import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import {
   getPastConcertsByArtist,
   dateLabel,
@@ -17,7 +16,7 @@ import {
 import Map from "./Map";
 import TourMapPanel from "./TourMapPanel";
 import { getTourUpcomingConcerts } from "../../helpers/tourStats";
-import { shareOrCopy } from "../../helpers/share";
+import ShareButton from "../ShareButton";
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
 import TicketOptions from "./TicketOptions";
@@ -41,7 +40,6 @@ export default function NextConcert({
   const artistName = name || concert.artist.name;
   const [searchParams, setSearchParams] = useSearchParams();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
-  const [linkCopied, setLinkCopied] = useState(false);
   const [tourMapOpen, setTourMapOpen] = useState(false);
 
   // ?next picks which upcoming show this card previews, same idea as :concertId for the
@@ -88,17 +86,6 @@ export default function NextConcert({
     ? t("{artist} are playing {city} on {date} at {venue}. Are you going?", shareVars)
     : t("{artist} are playing {city} on {date}. Are you going?", shareVars);
   const eventImage = getBestImage(upcomingConcert.images);
-  const share = async () => {
-    if (
-      await shareOrCopy(window.location.href, `${artistName} concert`, {
-        text: shareText,
-        imageUrl: eventImage,
-      })
-    ) {
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2000);
-    }
-  };
 
   const venue = upcomingConcert._embedded?.venues?.[0];
   const coords = venue?.location;
@@ -111,10 +98,13 @@ export default function NextConcert({
   // No mobile ficam numa linha própria no topo; no desktop, na linha do Concert date.
   const actions = (
     <>
-      <button type="button" onClick={share} title={t("Share this concert")} className="pill">
-        <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-        {linkCopied ? t("LINK COPIED") : t("SHARE")}
-      </button>
+      <ShareButton
+        url={window.location.href}
+        title={`${artistName} concert`}
+        text={shareText}
+        imageUrl={eventImage}
+        label={t("Share this concert")}
+      />
       <button
         type="button"
         onClick={toggleGoing}

@@ -1,11 +1,10 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
-import { faShareNodes } from "@fortawesome/free-solid-svg-icons/faShareNodes";
 import { AppContext } from "../context/AppContext";
 import { artistOf, dateLabel, getBestImage } from "../helpers/selectors";
-import { shareOrCopy } from "../helpers/share";
+import ShareButton from "./ShareButton";
 import Icon from "./Icon";
 import TicketOptions from "./ArtistPage/TicketOptions";
 import HotelOptions from "./ArtistPage/HotelOptions";
@@ -18,28 +17,24 @@ import { useT } from "../i18n";
 export default function ExploreEvent({ event }) {
   const t = useT();
   const { goingConcertIds, toggleGoingConcert } = useContext(AppContext);
-  const [linkCopied, setLinkCopied] = useState(false);
   const venue = event._embedded?.venues?.[0];
   const imGoing = goingConcertIds.includes(event.id);
   const venuePath = venue?.id && `/venues/ticketmaster:${venue.id}`;
 
-  const share = async () => {
-    const url = new URL(venuePath || "/", window.location.origin).href;
-    const text = `${artistOf(event)} · ${dateLabel(event.dateObj)}${venue?.name ? ` · ${venue.name}` : ""}`;
-    if (await shareOrCopy(url, artistOf(event), { text, imageUrl: getBestImage(event.images) })) {
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2000);
-    }
-  };
+  const shareUrl = new URL(venuePath || "/", window.location.origin).href;
+  const shareText = `${artistOf(event)} · ${dateLabel(event.dateObj)}${venue?.name ? ` · ${venue.name}` : ""}`;
 
   return (
     <div className="px-2 py-3 sm:px-4">
       <ol className="min-w-0">
         <li className="flex justify-center gap-1 border-y border-zinc-300/50 py-2">
-          <button type="button" onClick={share} title={t("Share this concert")} className="pill">
-            <Icon icon={linkCopied ? faCheck : faShareNodes} className="text-[0.65rem]" />
-            {linkCopied ? t("LINK COPIED") : t("SHARE")}
-          </button>
+          <ShareButton
+            url={shareUrl}
+            title={artistOf(event)}
+            text={shareText}
+            imageUrl={getBestImage(event.images)}
+            label={t("Share this concert")}
+          />
           <button
             type="button"
             onClick={() => toggleGoingConcert(event.id)}
