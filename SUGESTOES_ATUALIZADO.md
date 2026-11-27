@@ -116,7 +116,7 @@ Tooltips nos ícones de Spotify e YouTube em SongDetails.jsx e Setlist.jsx (acha
 Review de 2026-09-29: contraste dos botões do menu de seções subiu para WCAG AA (eb92be3); rota `/share/:token` ganhou teste, incluindo a bomba de deflate (5adf0a3).
 
 □ Agregação de concertos e cobertura Brasil — catálogo e origem/fallbacks em `docs/APIS_E_FONTES.md` e API Lab. Antes de produção, comparar amostras equivalentes e resolver credenciais/licenças, especialmente Bandsintown, Sympla/Ingresse e planos comerciais.
-□ Fallbacks gratuitos — avaliar link Spotify via MusicBrainz/Wikidata, biografia TheAudioDB por MBID, busca LRCLIB, placeholder de capas e link OSM; propostas documentadas, sem mudança automática na ArtistPage.
+◐ Fallbacks gratuitos — link Spotify via MusicBrainz feito (rota `/api/artist-spotify`, só quando a Ticketmaster não traz; página de show). Faltam: biografia TheAudioDB por MBID, busca LRCLIB, placeholder de capas e link OSM; propostas documentadas, sem mudança automática na ArtistPage.
 □ Localização divergente — Home configura Calgary nas listas e o hook usa Vancouver como fallback; carrossel pode usar seleção manual. Revisar unificação em tarefa própria.
 
 □ Estatísticas adicionais de tour — card retirado da ArtistPage por decisão do dono; países, cidades, músicas por show, músicas mais tocadas, abertura/encerramento e raridades preservados para futura avaliação em `docs/TOUR_STATISTICS.md`. Mapa e legenda ficam acessíveis pelo nome da tour em Last/Next Concert.

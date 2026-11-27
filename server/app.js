@@ -66,6 +66,7 @@ app.get("/api/venue-services", require("./routes/venueServices").services);
 app.get("/api/venue-photos", require("./routes/venueServices").photos);
 app.get("/api/audiodb/artist-images", require("./routes/audiodb"));
 app.get("/api/albums", require("./routes/albums"));
+app.get("/api/artist-spotify", require("./routes/artistSpotify"));
 app.get("/api/reverse-geocode", require("./routes/reverseGeocode"));
 
 module.exports = app;

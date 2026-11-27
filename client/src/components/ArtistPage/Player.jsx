@@ -1,12 +1,16 @@
 import CardTitle from "./CardTitle";
 import CardNotice from "./CardNotice";
+import { useArtistSpotify } from "../../api/queries";
 
 import { useT } from "../../i18n";
 // Spotify's own embed is an iframe; the wrapper packages that used to be here added a
 // dependency for the same markup. The artist link only needs "/embed" spliced into it.
-export default function Player({ attraction }) {
+// Sem link na Ticketmaster, tenta o do MusicBrainz pelo mbid (só a página de show tem um).
+export default function Player({ attraction, mbid }) {
   const t = useT();
-  const spotify = attraction?.externalLinks?.spotify?.[0]?.url;
+  const ticketmaster = attraction?.externalLinks?.spotify?.[0]?.url;
+  const { data } = useArtistSpotify(mbid, !ticketmaster);
+  const spotify = ticketmaster || data?.spotify;
 
   if (!spotify) {
     return (

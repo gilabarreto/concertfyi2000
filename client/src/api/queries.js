@@ -21,6 +21,7 @@ import {
   getArtistBackground,
   getArtistImages,
   getArtistAlbums,
+  getArtistSpotify,
 } from "./api";
 import { findTrackUri } from "../helpers/spotifyPlaylist";
 import { clearAccessToken } from "../helpers/spotifyAuth";
@@ -69,6 +70,18 @@ export const useArtistAlbums = (mbid) =>
     gcTime: 7 * 24 * 60 * 60 * 1000,
     // Primeira visita a um artista ainda depende do MusicBrainz, que recusa às vezes (1 req/s
     // por IP); uma segunda tentativa depois da janela costuma passar.
+    retry: 1,
+    retryDelay: 2500,
+  });
+
+// Link do Spotify pelo MusicBrainz, só quando a Ticketmaster não traz um. Muda quase nunca.
+export const useArtistSpotify = (mbid, enabled) =>
+  useQuery({
+    queryKey: ["artist-spotify", mbid],
+    queryFn: () => getArtistSpotify(mbid),
+    enabled: !!mbid && enabled,
+    staleTime: 24 * 60 * 60 * 1000,
+    gcTime: 7 * 24 * 60 * 60 * 1000,
     retry: 1,
     retryDelay: 2500,
   });
