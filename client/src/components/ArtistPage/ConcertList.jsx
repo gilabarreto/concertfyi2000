@@ -22,6 +22,7 @@ import { useT } from "../../i18n";
 export default function ConcertList({
   title,
   empty,
+  loading = false,
   showSearch = true,
   items,
   locationOf,
@@ -52,7 +53,17 @@ export default function ConcertList({
     <>
       <CardTitle>{title}</CardTitle>
 
-      {items.length === 0 ? (
+      {loading && items.length === 0 ? (
+        // Gray rows in the shape of the list while it loads, instead of a "Loading…" line.
+        <ol role="status" className="px-[12px]">
+          <li className="sr-only">{t("Loading…")}</li>
+          {Array.from({ length: Math.min(pageSize, 5) }, (_, i) => (
+            <li key={i} aria-hidden="true" className="border-b border-zinc-300/50 py-3">
+              <div className="h-3.5 w-3/4 rounded bg-zinc-200 motion-safe:animate-pulse" />
+            </li>
+          ))}
+        </ol>
+      ) : items.length === 0 ? (
         <CardNotice>
           <p>{empty}</p>
           {showSearch && (

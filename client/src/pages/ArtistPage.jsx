@@ -74,7 +74,18 @@ export default function ArtistPage() {
   }
 
   if (!concert) {
-    return <div className="p-8 w-full text-center text-zinc-400">{t("Loading…")}</div>;
+    // Same two-column card grid the page settles into, in gray, while the concert loads.
+    return (
+      <div role="status" className="w-full p-4 sm:px-6 space-y-4">
+        <span className="sr-only">{t("Loading…")}</span>
+        <div aria-hidden="true" className="h-48 rounded-md bg-zinc-200 motion-safe:animate-pulse" />
+        <div aria-hidden="true" className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-3">
+          {[0, 1, 2, 3].map((i) => (
+            <div key={i} className="h-64 rounded-md bg-zinc-200 motion-safe:animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
   }
 
   const attraction = getArtistAttraction(ticketmaster, concert.artist);

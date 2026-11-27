@@ -94,9 +94,20 @@ function VenueCarousel({ venues, events, city, loading }) {
           {t("Nearby Venues")}
         </Link>
       </CardTitle>
-      {!venues.length ? (
+      {!venues.length && loading ? (
+        <ul role="status" className="flex justify-center gap-3 py-1">
+          <li className="sr-only">{t("Loading…")}</li>
+          {[0, 1, 2, 3].map((i) => (
+            <li
+              key={i}
+              aria-hidden="true"
+              className="h-[84px] w-[84px] rounded-md bg-zinc-200 motion-safe:animate-pulse"
+            />
+          ))}
+        </ul>
+      ) : !venues.length ? (
         <p className="py-4 text-center text-sm text-zinc-500" role="status">
-          {loading ? t("Loading…") : t("No nearby venues.")}
+          {t("No nearby venues.")}
         </p>
       ) : (
         <div ref={carouselRef} className="flex items-start gap-4" aria-roledescription="carousel">
@@ -179,13 +190,8 @@ export default function HomeDiscovery({ location }) {
           >
             <ConcertList
               title={title}
-              empty={
-                local.isLoading
-                  ? t("Loading…")
-                  : nearby
-                    ? t("No concerts available.")
-                    : t("No upcoming concerts available.")
-              }
+              loading={local.isLoading}
+              empty={nearby ? t("No concerts available.") : t("No upcoming concerts available.")}
               showSearch={false}
               pageSize={nearby || mobile ? 5 : 7}
               items={getUpcomingConcertsByCity(events, city, !nearby, { lat, long })}

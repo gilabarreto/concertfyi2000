@@ -185,7 +185,8 @@ export default function VenuePage() {
           <div className="min-w-0 bg-white px-4 space-y-2">
             <ConcertList
               title={t("Past Concerts")}
-              empty={isLoading ? t("Loading…") : t("No past concerts available.")}
+              loading={isLoading}
+              empty={t("No past concerts available.")}
               showSearch={false}
               items={past}
               locationOf={(show) => show.artist.name}
