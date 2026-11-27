@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { request } = require("../http");
+const { createStore } = require("../store");
 
 // index.js loads dotenv before requiring the routes, so env is set by now
 const headers = {
@@ -91,17 +92,33 @@ async function allPages(url, params, maxPages) {
 }
 
 // Every route below answers the same for every visitor (a tour, a venue, a city), and Home
-// alone fires two of them per visit, so one copy per query is kept for 30 min. The promise
-// is what's stored, so concurrent visitors share one fetch.
-// ponytail: in-memory, per Worker isolate and lost when it's recycled; D1 is the upgrade if hit rates matter.
+// alone fires two of them per visit, so one copy per query is kept for 30 min: in memory
+// (the promise, so concurrent visitors share one fetch) and in D1, which every Worker
+// isolate shares and which survives the isolate being recycled.
+// Os termos do setlist.fm só permitem cache "por períodos curtos", e o store serve a cópia
+// vencida quando a fonte falha. Por isso cada busca nova apaga as vencidas há mais de
+// 23,5 h: nenhuma fica mais de 24 h no banco.
 const PAGE_TTL = 30 * 60 * 1000;
+const STORE_GRACE = 23.5 * 60 * 60;
 const pageCache = new Map();
+const memoryStore = createStore();
 
-function cachedPages(url, params, maxPages) {
+function cachedPages(req, url, params, maxPages) {
   const key = JSON.stringify([url, params, maxPages]);
   const hit = pageCache.get(key);
   if (hit?.expires > Date.now()) return hit.promise;
-  const promise = allPages(url, params, maxPages);
+  const store = req.app?.locals?.store || memoryStore;
+  const promise = store.cached(
+    `setlist:${key}`,
+    PAGE_TTL / 1000,
+    async () => {
+      await store.purge("setlist:", STORE_GRACE).catch((error) => {
+        console.error("setlist purge:", error.message);
+      });
+      return allPages(url, params, maxPages);
+    },
+    { keep: (data) => !data.partial },
+  );
   // An expired key is re-inserted at the end, so the size cap evicts the oldest data,
   // not this fresh copy (Map.set on an existing key keeps its old position).
   pageCache.delete(key);
@@ -115,9 +132,9 @@ function cachedPages(url, params, maxPages) {
   return promise;
 }
 
-const sendPages = async (res, url, params, maxPages) => {
+const sendPages = async (req, res, url, params, maxPages) => {
   try {
-    res.json(await cachedPages(url, params, maxPages));
+    res.json(await cachedPages(req, url, params, maxPages));
   } catch (error) {
     console.error("Setlist.fm API error:", error.status, error.message);
     res.status(error.status || 500).json({ error: "Setlist.fm fetch failed" });
@@ -135,7 +152,13 @@ router.get("/tour", (req, res) => {
   ) {
     return res.status(400).json({ error: "Missing or invalid artistMbid/tourName" });
   }
-  sendPages(res, "https://api.setlist.fm/rest/1.0/search/setlists", { artistMbid, tourName }, 5);
+  sendPages(
+    req,
+    res,
+    "https://api.setlist.fm/rest/1.0/search/setlists",
+    { artistMbid, tourName },
+    5,
+  );
 });
 
 // Venue page header: the venue on its own (name, city, coords), without its setlists.
@@ -159,7 +182,13 @@ router.get("/venue/:venueId", (req, res) => {
   if (!/^[0-9a-f]{6,10}$/i.test(req.params.venueId)) {
     return res.status(400).json({ error: "Invalid venue id" });
   }
-  sendPages(res, `https://api.setlist.fm/rest/1.0/venue/${req.params.venueId}/setlists`, {}, 3);
+  sendPages(
+    req,
+    res,
+    `https://api.setlist.fm/rest/1.0/venue/${req.params.venueId}/setlists`,
+    {},
+    3,
+  );
 });
 
 // My City page: this year's setlists in one city, any artist. countryCode is optional
@@ -179,6 +208,7 @@ router.get("/city", (req, res) => {
     return res.status(400).json({ error: "Missing or invalid cityName/year/countryCode" });
   }
   sendPages(
+    req,
     res,
     "https://api.setlist.fm/rest/1.0/search/setlists",
     { cityName, countryCode, year },
@@ -201,6 +231,7 @@ router.get("/recent", (req, res) => {
   const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
   const lastUpdated = `${since.toISOString().slice(0, 10).replace(/-/g, "")}000000`;
   sendPages(
+    req,
     res,
     "https://api.setlist.fm/rest/1.0/search/setlists",
     { cityName, countryCode, lastUpdated },

@@ -61,7 +61,24 @@ const createStore = ({ db, now = () => Math.floor(Date.now() / 1000) } = {}) => 
     return fresh;
   };
 
-  return { cached };
+  // Exceção ao "nunca apaga": fonte cujos termos só permitem cache curto (setlist.fm). Apaga
+  // as linhas do prefixo vencidas há mais de `graceSeconds`. A faixa de chave usa o índice
+  // da chave primária em vez de varrer a tabela, como faria um LIKE.
+  const purge = async (prefix, graceSeconds) => {
+    const cutoff = now() - graceSeconds;
+    if (!db) {
+      for (const [key, row] of memory)
+        if (key.startsWith(prefix) && row.expiresAt < cutoff) memory.delete(key);
+      return;
+    }
+    const end = prefix.slice(0, -1) + String.fromCharCode(prefix.charCodeAt(prefix.length - 1) + 1);
+    await db
+      .prepare("DELETE FROM store WHERE key >= ? AND key < ? AND expires_at < ?")
+      .bind(prefix, end, cutoff)
+      .run();
+  };
+
+  return { cached, purge };
 };
 
 module.exports = { createStore };

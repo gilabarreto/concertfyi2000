@@ -21,6 +21,9 @@ const fakeD1 = ({ broken = false } = {}) => {
               if (broken) throw new Error("d1 down");
               if (sql.startsWith("INSERT"))
                 rows.set(args[0], { value: args[1], expires_at: args[2] });
+              if (sql.startsWith("DELETE"))
+                for (const [key, row] of rows)
+                  if (key >= args[0] && key < args[1] && row.expires_at < args[2]) rows.delete(key);
             },
           };
         },
@@ -130,4 +133,24 @@ test("o prazo pode depender do resultado (achado 30 dias, não achado 7)", async
   assert.equal(db.rows.get("achado").expires_at, 30);
   assert.equal(db.rows.get("nada").expires_at, 7);
   assert.equal(await cached("nada", ttl, async () => "não deveria"), null);
+});
+
+test("purge apaga só as linhas do prefixo vencidas há mais da folga", async () => {
+  for (const db of [fakeD1(), undefined]) {
+    let clock = 1000;
+    const store = createStore({ db, now: () => clock });
+    await store.cached("setlist:velha", 10, counter("v"));
+    await store.cached("setlist:nova", 500, counter("n"));
+    await store.cached("venue:velha", 10, counter("x"));
+    clock = 1200; // setlist:velha venceu em 1010, há 190 s
+    await store.purge("setlist:", 100);
+    const reload = counter("recarregada");
+    assert.equal(await store.cached("setlist:velha", 10, reload), "recarregada");
+    assert.equal(await store.cached("setlist:nova", 500, counter("não")), "n");
+    // venue:velha venceu, mas é de outro prefixo: com a fonte fora, ainda é servida
+    const failing = async () => {
+      throw new Error("fonte fora");
+    };
+    assert.equal(await store.cached("venue:velha", 10, failing), "x");
+  }
 });
