@@ -48,14 +48,24 @@ export default function ArtistPhotos({ artistId, artist, attraction }) {
 
   return (
     <div className="w-full sm:max-w-[520px] space-y-2" aria-label={t("Artist photos")}>
-      <div className="aspect-video overflow-hidden rounded-md bg-zinc-200 flex items-center justify-center">
+      <div className="relative aspect-video overflow-hidden rounded-md bg-zinc-200 flex items-center justify-center">
         {selected ? (
-          <img
-            src={selected.imageUrl}
-            alt={`${artist} — ${selected.label}`}
-            className="h-full w-full object-cover"
-            onError={() => failImage(selected.imageUrl)}
-          />
+          <>
+            {/* TheAudioDB photos come square or portrait: show the whole photo, with a
+                blurred copy of itself filling the 16:9 box instead of cropping heads off. */}
+            <img
+              src={selected.imageUrl}
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full scale-110 object-cover blur-xl opacity-60"
+            />
+            <img
+              src={selected.imageUrl}
+              alt={`${artist} — ${selected.label}`}
+              className="relative h-full w-full object-contain"
+              onError={() => failImage(selected.imageUrl)}
+            />
+          </>
         ) : (
           <p className="px-4 text-center text-sm text-zinc-500">
             {isLoading ? t("Loading…") : t("No photos available.")}
