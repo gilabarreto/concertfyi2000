@@ -128,7 +128,7 @@ Favoritos, avaliações, comentários locais e presença não são dados de APIs
 - **Fonte:** LRCLIB.
 - **Informações:** plainLyrics por artista e faixa.
 - **Fallback atual:** Lookup exato; não usa busca alternativa automaticamente.
-- **Opção a avaliar (não implementada):** /api/search com artista/título/duração validados; diferenciar letra sincronizada.
+- **Fallback:** sem par exato, /api/search do LRCLIB, aceito só com artista e música iguais depois de normalizar (caixa, acento, pontuação). Duração não entra: o setlist.fm não a traz.
 - **Código:** `client/src/components/SongDetails.jsx`, `server/routes/lyrics.js`.
 
 ### SongDetails → vídeos
