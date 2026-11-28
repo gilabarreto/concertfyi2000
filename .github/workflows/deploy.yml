@@ -1,7 +1,11 @@
 name: Checks
 
+# Em pull_request também: quem abrir PR (branch própria, dependabot) vê o portão antes do
+# merge. O dia a dia segue direto em main, onde o hook de pre-push é quem barra.
 on:
   push:
+    branches: [main]
+  pull_request:
     branches: [main]
 
 permissions:

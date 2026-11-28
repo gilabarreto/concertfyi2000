@@ -62,7 +62,7 @@ ConcertFYI — Pendências e Decisões
 □ Testar com screen readers (NVDA, JAWS).
 ☑ osv-scanner semanal — rodar em workflow agendado (não no deploy), abrindo issue. — já existia: job "CVE scan" do `.github/workflows/weekly-checks.yml`, abre issue.
 ☑ Bundle de entrada acima do teto de 270 kB — conferido em 2026-11-27: a entrada está em 264,86 kB e o build não avisa mais (sobra ~5 kB; queries.js e api.js continuam na entrada). Registro original: — achado em 2026-10-02: a `main` em `6951817` já buildava 282,66 kB (o build avisa, mas não trava). Não veio do API Lab (que soma 0,3 kB). Falta achar qual commit passou do teto e cortar, ou subir o teto em commit próprio com motivo. Em 2026-10-01 as seções novas do setlist.fm somaram ~5 kB (286,20 → 290,94 kB): `queries.js` e `api.js` entram na entrada pela Home, então cada hook novo pesa ali mesmo com as páginas em lazy.
-□ Workflow em pull_request — hoje o CI é sempre pós-fato (todo commit vai direto para main).
+☑ Workflow em pull_request — o deploy.yml (Checks) também roda em PR para main (commit desta linha). O fluxo direto em main continua; o pre-push segue sendo o portão real.
 ☑ Seções novas a partir da resposta do setlist.fm (rodada de 2026-10-01, pedido do dono):
   - lista da página de artista pelo mbid em vez do nome (a busca por nome trazia ~17% de outros artistas) — `5e2a264`;
   - cover, convidado, tape, nota da música, nome do set e nota do show no Setlist — `9c75099`;
