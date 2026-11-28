@@ -1,6 +1,6 @@
 # O que aqui dentro não pode morar no deploy.yml, e por quê.
 #
-# Estes dois checks falham por motivo que não é commit de ninguém: uma CVE publicada de
+# Estes checks falham por motivo que não é commit de ninguém: uma CVE publicada de
 # madrugada, a API fora do ar. Se morassem no portão do deploy, travariam o push de quem
 # não mexeu em dependência — e um gate que reprova sem culpado é um gate que se aprende a
 # ignorar. Aqui eles abrem issue, que fica esperando, em vez de bloquear.
@@ -84,3 +84,35 @@ jobs:
           fi
           gh issue create --title "$TITLE" \
             --body "O proxy no Render não respondeu 400 em \`/api/ticketmaster/events\` sem parâmetro. [Run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Com o proxy fora, o site abre e não carrega nada."
+
+  vitals:
+    name: Core Web Vitals
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # Laboratório, não campo: o site não tem tráfego para o CrUX. O runner já traz Chrome
+      # e jq. A tabela fica no resumo da run, então o histórico semanal está na aba Actions.
+      - name: Measure (median of 3 runs)
+        # `shell: bash` explícito liga o pipefail; sem ele o `tee` engolia a falha do script.
+        shell: bash
+        run: |
+          CHROME_PATH=$(which google-chrome) scripts/vitals.sh \
+            https://concertfyi.com/ https://concertfyi.com/venues | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Open an issue if a page got much slower
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TITLE: "Core Web Vitals regressed"
+        run: |
+          if gh issue list --state open --json title -q '.[].title' | grep -qxF "$TITLE"; then
+            echo "já existe issue aberta"; exit 0
+          fi
+          gh issue create --title "$TITLE" \
+            --body "Uma mediana passou do piso em \`scripts/vitals.sh\` (performance < 50, LCP > 8 s ou CLS > 0,25). Tabela no resumo [desta run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Comparar com a faixa do CONSTRAINTS.md antes de concluir: o runner não é o aparelho de lá."

@@ -58,7 +58,7 @@ ConcertFYI — Pendências e Decisões
 ☑ Timeout próprio nas requisições — já existia (achado 2026-09-26): request.js aborta em 10 s desde a saída do axios e o erro vem como "Request timed out".
 ☑ Mensagem de erro na busca — resolvido em `4e06b7b` ("Search failed. Try again" abaixo do campo). Toast descartado por opinião: mensagem inline como nas outras telas basta; o dono pode vetar.
 ✅ Loading skeletons — listas de shows (Home, venue), tiles de venues da Home e página de artista no cold-start; blocos `motion-safe:animate-pulse`, sem biblioteca.
-□ Monitoramento contínuo de Core Web Vitals — Lighthouse só roda na mão.
+☑ Monitoramento contínuo de Core Web Vitals — job semanal no weekly-checks.yml (`scripts/vitals.sh`, mediana de 3 rodadas do Lighthouse mobile em / e /venues); tabela no resumo da run, issue se passar do piso frouxo (perf < 50, LCP > 8 s, CLS > 0,25). Página de artista fora: precisa de id de show fixo.
 □ Testar com screen readers (NVDA, JAWS).
 ☑ osv-scanner semanal — rodar em workflow agendado (não no deploy), abrindo issue. — já existia: job "CVE scan" do `.github/workflows/weekly-checks.yml`, abre issue.
 ☑ Bundle de entrada acima do teto de 270 kB — conferido em 2026-11-27: a entrada está em 264,86 kB e o build não avisa mais (sobra ~5 kB; queries.js e api.js continuam na entrada). Registro original: — achado em 2026-10-02: a `main` em `6951817` já buildava 282,66 kB (o build avisa, mas não trava). Não veio do API Lab (que soma 0,3 kB). Falta achar qual commit passou do teto e cortar, ou subir o teto em commit próprio com motivo. Em 2026-10-01 as seções novas do setlist.fm somaram ~5 kB (286,20 → 290,94 kB): `queries.js` e `api.js` entram na entrada pela Home, então cada hook novo pesa ali mesmo com as páginas em lazy.
