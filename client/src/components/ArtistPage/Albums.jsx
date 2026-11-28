@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useArtistAlbums } from "../../api/queries";
 import CardTitle from "./CardTitle";
+import Icon from "../Icon";
+import { faCompactDisc } from "@fortawesome/free-solid-svg-icons/faCompactDisc";
 
 import { useT } from "../../i18n";
 // Tag de afiliado da Amazon Associates Canadá (só vale na amazon.ca). Sem ela o link funciona igual, só não comissiona.
@@ -20,9 +22,10 @@ const amazonSearchUrl = (artist, title) => {
 export default function Albums({ artistId, artist, className = "" }) {
   const t = useT();
   const { data } = useArtistAlbums(artistId);
-  // Capa que o Cover Art Archive não tem: some o disco, em vez de um quadrado quebrado.
+  // Capa que o Cover Art Archive não tem: um disco cinza no lugar, em vez de um quadrado
+  // quebrado — o álbum continua na lista, com o link.
   const [missing, setMissing] = useState([]);
-  const albums = (data?.albums || []).filter((album) => !missing.includes(album.id));
+  const albums = data?.albums || [];
 
   if (!albums.length) return null;
 
@@ -44,13 +47,22 @@ export default function Albums({ artistId, artist, className = "" }) {
               title={`${album.title} (${album.year}) on Amazon`}
               className="group block space-y-1 text-center"
             >
-              <img
-                src={`https://coverartarchive.org/release-group/${album.id}/front-250`}
-                alt={`${album.title} cover`}
-                loading="lazy"
-                onError={() => setMissing((ids) => [...ids, album.id])}
-                className="aspect-square w-full rounded-md object-cover bg-zinc-100 transition-opacity group-hover:opacity-80"
-              />
+              {missing.includes(album.id) ? (
+                <span
+                  aria-hidden="true"
+                  className="flex aspect-square w-full items-center justify-center rounded-md bg-zinc-200 text-4xl text-zinc-400 transition-opacity group-hover:opacity-80"
+                >
+                  <Icon icon={faCompactDisc} />
+                </span>
+              ) : (
+                <img
+                  src={`https://coverartarchive.org/release-group/${album.id}/front-250`}
+                  alt={`${album.title} cover`}
+                  loading="lazy"
+                  onError={() => setMissing((ids) => [...ids, album.id])}
+                  className="aspect-square w-full rounded-md object-cover bg-zinc-100 transition-opacity group-hover:opacity-80"
+                />
+              )}
               <span className="line-clamp-2 text-balance text-sm group-hover:text-red-800">
                 {album.title}
               </span>

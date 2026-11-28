@@ -159,8 +159,8 @@ Favoritos, avaliações, comentários locais e presença não são dados de APIs
 
 - **Fonte:** MusicBrainz → Cover Art Archive.
 - **Informações:** Release groups de álbuns de estúdio, título/ano e capa; até 6 álbuns recentes.
-- **Fallback atual:** Sem outro catálogo; álbum com capa quebrada é ocultado. Amazon é link de busca gerado, não API de preço.
-- **Opção a avaliar (não implementada):** Placeholder de capa; catálogo Apple/Spotify se acesso/licença justificarem.
+- **Fallback atual:** Sem outro catálogo. Amazon é link de busca gerado, não API de preço.
+- **Fallback:** sem capa no Cover Art Archive, um disco cinza no lugar (o álbum e o link ficam). Catálogo Apple/Spotify só se acesso/licença justificarem.
 - **Código:** `server/routes/albums.js`, `client/src/components/ArtistPage/Albums.jsx`.
 
 ### Localização → busca e cidade
