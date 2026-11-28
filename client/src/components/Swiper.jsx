@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef, useSyncExternalStore } from "r
 import { useNavigate } from "react-router-dom";
 import { useLocalEvents, useArtistData } from "../api/queries";
 import { dateLabel, getBestImage, getCarouselSlides } from "../helpers/selectors";
-import { useGeolocation } from "../hooks/useGeolocation";
+import { useCurrentCity } from "../hooks/useCurrentCity";
 import useIsSmallScreen from "../hooks/useScreenSize";
 import { AppContext } from "../context/AppContext";
 import { getArtistOverviewTarget, getConcertTarget } from "../helpers/concertTarget";
@@ -59,7 +59,7 @@ function getSlideStyle(offset, depth, restDepth, image, isMobileScreen, spacing)
 
 export default function Swiper() {
   const t = useT();
-  const { setSetlist, setTicketmaster, selectedLocation } = useContext(AppContext);
+  const { setSetlist, setTicketmaster } = useContext(AppContext);
   const [slides, setSlides] = useState([]);
   const [active, setActive] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
@@ -96,18 +96,10 @@ export default function Swiper() {
       ? SPACING_TABLET
       : SPACING_DESKTOP;
 
-  const {
-    coords = { lat: -23.5505, long: -46.6333 },
-    city,
-    country,
-    isLoading: isGeoLoading,
-  } = useGeolocation();
+  // Mesma cidade das listas da Home (URL, menu ou navegador), para o carrossel não mostrar outra.
+  const { city, country, lat, long, isLoading: isGeoLoading } = useCurrentCity();
 
-  const effectiveCoords = selectedLocation
-    ? { lat: selectedLocation.lat, long: selectedLocation.lon }
-    : coords;
-
-  const { data: localEventsData } = useLocalEvents(effectiveCoords?.lat, effectiveCoords?.long);
+  const { data: localEventsData } = useLocalEvents(lat, long);
 
   // Ticketmaster has no events near this city (e.g. Tokyo, Buenos Aires)
   const noEvents =

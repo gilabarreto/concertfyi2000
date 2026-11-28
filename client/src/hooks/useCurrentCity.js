@@ -3,8 +3,8 @@ import { AppContext } from "../context/AppContext";
 import { useGeolocation } from "./useGeolocation";
 import { useSearchParams } from "react-router-dom";
 
-// The city picked in the location menu, or the browser's own (same order as the Home
-// carousel). My City and the venues list both read it.
+// The city picked in the location menu, or the browser's own (the URL's first).
+// The Home lists, its carousel and the venues list all read it.
 export function useCurrentCity() {
   const { selectedLocation } = useContext(AppContext);
   const geo = useGeolocation();
@@ -27,6 +27,7 @@ export function useCurrentCity() {
       countryCode: params.get("countryCode") || undefined,
       lat,
       long: lon,
+      isLoading: false,
     };
   }
   return {
@@ -35,5 +36,6 @@ export function useCurrentCity() {
     countryCode: selectedLocation?.countryCode,
     lat: selectedLocation?.lat ?? geo.coords.lat,
     long: selectedLocation?.lon ?? geo.coords.long,
+    isLoading: !selectedLocation && geo.isLoading,
   };
 }
