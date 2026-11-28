@@ -176,7 +176,7 @@ Favoritos, avaliações, comentários locais e presença não são dados de APIs
 - **Fonte:** Google Maps + coordenadas setlist.fm/Ticketmaster.
 - **Informações:** Mapa Google; Last pode localizar cidade, Next usa venue.
 - **Fallback atual:** Sem mapa alternativo automático; coordenadas ausentes impedem mapa.
-- **Opção a avaliar (não implementada):** Link OpenStreetMap sem SDK/chave; Leaflet + tiles apenas com atribuição e política de uso.
+- **Fallback sem chave do Google:** embed do OpenStreetMap (sem SDK nem chave, atribuição no iframe). Leaflet + tiles próprios não: o embed já basta.
 - **Código:** `client/src/components/ArtistPage/LastConcert.jsx`, `client/src/components/ArtistPage/NextConcert.jsx`.
 
 ### Ingressos, hotéis, calendários e logos

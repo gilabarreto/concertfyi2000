@@ -14,7 +14,11 @@ export default function Map({ latitude, longitude }) {
   const lng = parseFloat(longitude);
   if (!lat || !lng) return null;
 
-  const src = `https://www.google.com/maps/embed/v1/place?key=${mapsOptions.googleMapsApiKey}&q=${lat},${lng}&zoom=12`;
+  // Sem chave do Google (dev sem .env, chave revogada), o embed do OpenStreetMap: sem chave
+  // nem SDK, com a atribuição dentro do próprio iframe. Caixa de ~0,1° ≈ o zoom 12 do Google.
+  const src = mapsOptions.googleMapsApiKey
+    ? `https://www.google.com/maps/embed/v1/place?key=${mapsOptions.googleMapsApiKey}&q=${lat},${lng}&zoom=12`
+    : `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.1},${lat - 0.06},${lng + 0.1},${lat + 0.06}&layer=mapnik&marker=${lat},${lng}`;
   return (
     <iframe
       title={t("Map")}
