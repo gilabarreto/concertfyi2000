@@ -20,13 +20,11 @@ Backlog completo em SUGESTOES_ATUALIZADO.md — só consultar quando o dono pedi
 - Overture `2026-10-21.0` → `2026-11-18.0` carregando pela Action (fim ~2026-12-01). Conferir ~338.655
   venues no D1 depois. Próximas atualizações já usam `plan()` (`8915fc5`).
 - Backup no repo privado `concertfyi-data`: `artists.csv` completo ~2026-12-08 (conferir ~3.188 com mbid).
-- Entrada do bundle em 265 kB, teto 270 kB: pouca folga.
 
 ## Avisos
 
 - Desejos só com fonte externa (pôster, horários, estatísticas, duração do show): bloco no topo do SUGESTOES.
 - setlist.js, wikipedia.js e musicbrainzClient.js mandam o e-mail do dono no User-Agent; o plugin de
   privacidade barra comandos de shell que tocam neles — editar com Edit. Trocar por contato genérico: dono decide.
-- Termos da Ticketmaster: guardar só por "períodos razoáveis". Backup pessoal é risco do dono.
 - Comandos que alteram produção ou publicam (`d1 execute --remote`, `gh release create`): o dono roda.
 - O backup importa `server/overture.js`, `routes/venueInfo.js` e `venueSite.js`: mudar assinatura quebra lá.
