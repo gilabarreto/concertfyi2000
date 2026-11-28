@@ -377,44 +377,51 @@ export default function Swiper() {
             >
               {slides.map(renderSlide)}
             </div>
-            {activeSlide && (
-              <div className="mx-auto w-full sm:w-[80%] lg:w-[64%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-zinc-900 font-sans">
-                <button
-                  type="button"
-                  onClick={() => go(-1)}
-                  aria-label={t("Previous")}
-                  disabled={active === 0}
-                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-                >
-                  {"{"}
-                </button>
-                <div className="swiper-artist-info h-[84px] sm:h-auto min-h-[60px] min-w-0 flex flex-col items-center gap-1">
-                  <h2 className="min-w-0 shrink-0 text-2xl font-bold text-balance text-center">
-                    <button
-                      type="button"
-                      onClick={() => setSelectedArtist(activeSlide)}
-                      className="line-clamp-1 sm:line-clamp-none break-words rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
-                    >
-                      {activeSlide.artistName}
-                    </button>
-                  </h2>
-                  <p className="line-clamp-2 sm:line-clamp-none break-words text-base font-normal text-center text-pretty">
-                    {concertDate} @ {activeSlide.venue || t("No venue available.")}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => go(1)}
-                  aria-label={t("Next")}
-                  disabled={active === slides.length - 1}
-                  className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-                >
-                  {"}"}
-                </button>
+            {/* Sempre montados, invisíveis até os shows chegarem: aparecer depois empurrava a
+                Home inteira 122 px para baixo (CLS 0,13 medido em 2026-11-28). */}
+            <div
+              aria-hidden={!activeSlide || undefined}
+              className={`${activeSlide ? "" : "invisible "}mx-auto w-full sm:w-[80%] lg:w-[64%] grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3 pt-3 text-zinc-900 font-sans`}
+            >
+              <button
+                type="button"
+                onClick={() => go(-1)}
+                aria-label={t("Previous")}
+                disabled={active === 0}
+                className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+              >
+                {"{"}
+              </button>
+              <div className="swiper-artist-info h-[84px] sm:h-auto min-h-[60px] min-w-0 flex flex-col items-center gap-1">
+                <h2 className="min-w-0 shrink-0 text-2xl font-bold text-balance text-center">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedArtist(activeSlide)}
+                    className="line-clamp-1 sm:line-clamp-none break-words rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-red-600"
+                  >
+                    {activeSlide?.artistName ?? "\u00a0"}
+                  </button>
+                </h2>
+                <p className="line-clamp-2 sm:line-clamp-none break-words text-base font-normal text-center text-pretty">
+                  {activeSlide
+                    ? `${concertDate} @ ${activeSlide.venue || t("No venue available.")}`
+                    : "\u00a0"}
+                </p>
               </div>
-            )}
-            {slides.length > 1 && (
+              <button
+                type="button"
+                onClick={() => go(1)}
+                aria-label={t("Next")}
+                disabled={active === slides.length - 1}
+                className="min-h-11 text-6xl text-red-600 px-1 enabled:hover:text-red-800 disabled:opacity-30 disabled:cursor-not-allowed focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
+              >
+                {"}"}
+              </button>
+            </div>
+            {slides.length !== 1 && (
               <input
+                disabled={!slides.length}
+                aria-hidden={!slides.length || undefined}
                 type="range"
                 min={0}
                 max={slides.length - 1}
@@ -423,7 +430,7 @@ export default function Swiper() {
                 onChange={(event) => setActive(Number(event.target.value))}
                 aria-label={t("Scroll through concert photos")}
                 aria-valuetext={activeSlide?.artistName}
-                className="swiper-scrollbar mx-auto mt-2 sm:mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                className={`${slides.length ? "" : "invisible "}swiper-scrollbar mx-auto mt-2 sm:mt-4 mb-2 block w-full sm:w-[80%] lg:w-[64%] cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600`}
               />
             )}
           </div>
