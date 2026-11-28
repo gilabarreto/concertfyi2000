@@ -88,7 +88,7 @@ Favoritos, avaliações, comentários locais e presença não são dados de APIs
 - **Fonte:** Wikipedia.
 - **Informações:** Resumo, título e link canônico.
 - **Fallback atual:** Tentativas com sufixos band/musician/singer/rapper; rejeita páginas não musicais/desambiguação; sem segundo provedor.
-- **Opção a avaliar (não implementada):** TheAudioDB por MBID (já retorna biografia no Lab), ou Wikipedia em outro idioma via Wikidata.
+- **Fallback:** sem Wikipedia, biografia do TheAudioDB por MBID (mesma consulta das fotos), com crédito "Source: TheAudioDB". Wikipedia em outro idioma via Wikidata: não feito.
 - **Código:** `client/src/components/ArtistPage/ArtistInfo.jsx`, `server/routes/wikipedia.js`.
 
 ### ArtistInfo → gêneros e redes sociais

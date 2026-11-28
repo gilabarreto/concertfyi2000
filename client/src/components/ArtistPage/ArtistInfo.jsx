@@ -14,7 +14,7 @@ import { faLastfm } from "@fortawesome/free-brands-svg-icons/faLastfm";
 import { faTiktok } from "@fortawesome/free-brands-svg-icons/faTiktok";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
 import { getTicketmasterGenres } from "../../helpers/selectors";
-import { useArtistBackground } from "../../api/queries";
+import { useArtistBackground, useArtistImages } from "../../api/queries";
 import { useParams } from "react-router-dom";
 import CardTitle from "./CardTitle";
 
@@ -80,7 +80,12 @@ export default function ArtistInfo(props) {
 
   const artist = props.artistName || concert.artist.name;
   const { data: background = {}, isLoading: isBackgroundLoading } = useArtistBackground(artist);
-  const hasMoreBiography = (background.extract?.length || 0) > 300;
+  // Sem Wikipedia, a biografia do TheAudioDB pelo mbid — a mesma consulta das fotos, já em
+  // cache. A Wikipedia vem primeiro por causa da licença clara (CC BY-SA).
+  const { data: audiodb } = useArtistImages(props.musicbrainzId ?? concert?.artist?.mbid);
+  const audiodbBio = !background.extract && audiodb?.profile?.biography;
+  const biography = background.extract || audiodbBio || "";
+  const hasMoreBiography = biography.length > 300;
   const biographyMask =
     hasMoreBiography && !showFullBiography
       ? "linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)"
@@ -89,7 +94,19 @@ export default function ArtistInfo(props) {
   // A fonte só aparece com o texto inteiro à mostra (View Less aberto, ou bio curta sem
   // botão — nessa a CC BY-SA ainda exige o crédito da Wikipedia).
   const showSource = !hasMoreBiography || showFullBiography;
-  const source = (
+  const source = audiodbBio ? (
+    <>
+      {t("Source:")}{" "}
+      <a
+        href={httpOnly(audiodb.sourceUrl)}
+        target="_blank"
+        rel="noreferrer"
+        className="underline hover:text-red-600"
+      >
+        TheAudioDB
+      </a>
+    </>
+  ) : (
     <>
       {t("Source:")}{" "}
       <a
@@ -148,7 +165,7 @@ export default function ArtistInfo(props) {
           )}
           {!isBackgroundLoading && (
             <li className="border-b border-zinc-300/50 py-2">
-              {background.extract ? (
+              {biography ? (
                 <>
                   <p
                     id="artist-biography"
@@ -157,8 +174,8 @@ export default function ArtistInfo(props) {
                   >
                     <span className="font-semibold">{t("Bio:")}</span>&ensp;
                     {hasMoreBiography && !showFullBiography
-                      ? `${background.extract.slice(0, 300).replace(/\s+\S*$/, "")}…`
-                      : background.extract}
+                      ? `${biography.slice(0, 300).replace(/\s+\S*$/, "")}…`
+                      : biography}
                   </p>
                   {/* Afastada da bio por uma linha dela (text-base leading-relaxed = 1.625rem). */}
                   {showSource && (

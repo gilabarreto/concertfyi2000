@@ -39,7 +39,8 @@ function artistImagesFrom(data, expectedMbid) {
     artistId: id,
     sourceUrl: id ? `https://www.theaudiodb.com/artist/${id}` : "https://www.theaudiodb.com/",
     profile: {
-      biography: artist.strBiographyEN || "",
+      // O inglês era strBiographyEN; hoje a API o manda sem sufixo (conferido em 2026-11-28).
+      biography: artist.strBiography || artist.strBiographyEN || "",
       country: artist.strCountry || "",
       genre: artist.strGenre || "",
       style: artist.strStyle || "",

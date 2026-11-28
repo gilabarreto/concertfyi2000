@@ -93,3 +93,9 @@ test("artist lookup validates MBID and caches successful results", async () => {
   await call(handler);
   assert.equal(calls, 1);
 });
+
+test("English biography comes from strBiography, with the old EN field as fallback", () => {
+  const artist = (fields) => ({ artists: [{ strMusicBrainzID: mbid, ...fields }] });
+  assert.equal(artistImagesFrom(artist({ strBiography: "now" }), mbid).profile.biography, "now");
+  assert.equal(artistImagesFrom(artist({ strBiographyEN: "old" }), mbid).profile.biography, "old");
+});
